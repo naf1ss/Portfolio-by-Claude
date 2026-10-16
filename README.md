@@ -15,7 +15,7 @@ A plain static site: HTML, CSS and a little JavaScript. No build step, no framew
 | `js/contact-utils.js` | Turns the contact details into links; unit tested |
 | `js/works-utils.js` | Pure helpers (srcset, filtering, captions); unit tested |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
-| `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), up to three widths each; small photos have fewer, since they are never enlarged |
+| `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
 | `fonts/` | Self-hosted Instrument Serif and Hanken Grotesk (SIL OFL) |
 | `tools/optimize_images.py` | Makes web-sized, metadata-free copies of new photos |
 | `tests/` | Unit tests and catalogue checks |
@@ -47,7 +47,7 @@ Each work gets a shareable link: `work.html#a012` opens that piece, and `work.ht
 
 ## Photography
 
-Photographs are listed in `js/works-photography.js`, sorted last in "All" and shown without captions so they do not swamp the paintings.
+Photographs are listed in `js/works-photography.js` (one `[year, height]` row each; files are `photo-NNNN-600/1200/1800.jpg`, numbered by capture date), sorted last in "All" and shown without captions so they do not swamp the paintings.
 To give a photo a title, or move a group into a series, edit its row or move it into `works-data.js`.
 
 ## Resume
