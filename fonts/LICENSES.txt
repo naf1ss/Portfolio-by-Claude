@@ -1,0 +1,8 @@
+Fonts are licensed under the SIL Open Font License 1.1.
+
+Instrument Serif - https://github.com/Instrument/instrument-serif
+Hanken Grotesk - https://github.com/marcologous/hanken-grotesk
+
+Full license texts ship with the @fontsource packages:
+https://fontsource.org/fonts/instrument-serif/license
+https://fontsource.org/fonts/hanken-grotesk/license

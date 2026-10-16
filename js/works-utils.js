@@ -1,0 +1,169 @@
+/**
+ * Pure helpers shared by the gallery, the lightbox and the tests.
+ *
+ * Loaded as a classic script in the browser (exposes window.WorksUtils) and
+ * with require() under Node, so everything here must stay free of DOM access.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    root.WorksUtils = factory();
+  }
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  const IMAGE_ROOT = 'images/';
+
+  // Filename suffixes written by the image-optimisation step, smallest first.
+  const SIZE_SUFFIXES = Object.freeze([600, 1200, 1800]);
+
+  // Display order of the medium filters.
+  const CATEGORIES = Object.freeze([
+    { id: 'painting', label: 'Painting' },
+    { id: 'mixed', label: 'Mixed media' },
+    { id: 'drawing', label: 'Drawing' },
+    { id: 'print', label: 'Prints' },
+    { id: 'digital', label: 'Digital' },
+    { id: 'ceramics', label: 'Ceramics' },
+  ]);
+
+  function isCategory(value) {
+    return CATEGORIES.some((category) => category.id === value);
+  }
+
+  function imageUrl(work, suffix, imageRoot = IMAGE_ROOT) {
+    return `${imageRoot}${work.base}-${suffix}.jpg`;
+  }
+
+  /**
+   * Builds a srcset using each file's real pixel width. Sources smaller than
+   * a target size are never upscaled, so `work.ws[i]` can be lower than the
+   * filename suffix; repeated widths are collapsed to one entry.
+   */
+  function buildSrcset(work, imageRoot = IMAGE_ROOT) {
+    const seenWidths = new Set();
+    const entries = [];
+    SIZE_SUFFIXES.forEach((suffix, i) => {
+      const width = work.ws[i];
+      if (seenWidths.has(width)) return;
+      seenWidths.add(width);
+      entries.push(`${imageUrl(work, suffix, imageRoot)} ${width}w`);
+    });
+    return entries.join(', ');
+  }
+
+  function aspectRatio(work) {
+    return Number((work.w / work.h).toFixed(4));
+  }
+
+  function filterWorks(works, category) {
+    return category === 'all'
+      ? works.slice()
+      : works.filter((work) => work.category === category);
+  }
+
+  function countByCategory(works) {
+    const counts = { all: works.length };
+    CATEGORIES.forEach(({ id }) => {
+      counts[id] = 0;
+    });
+    works.forEach((work) => {
+      counts[work.category] = (counts[work.category] || 0) + 1;
+    });
+    return counts;
+  }
+
+  /** Newest first; undated works go last; ties keep their catalogue order. */
+  function sortWorks(works) {
+    return works
+      .map((work, index) => ({ work, index }))
+      .sort((a, b) => {
+        const yearDiff = (b.work.year || 0) - (a.work.year || 0);
+        return yearDiff !== 0 ? yearDiff : a.index - b.index;
+      })
+      .map(({ work }) => work);
+  }
+
+  /** "12x9 inches" -> "12 × 9 in"; "1526x2048 px" -> "1526 × 2048 px". */
+  function formatDimensions(dimensions) {
+    if (!dimensions) return '';
+    const match = /^\s*([\d.]+)\s*x\s*([\d.]+)\s*(inches|inch|in|px)\s*$/i.exec(dimensions);
+    if (!match) return dimensions.trim();
+    const unit = /^inch/i.test(match[3]) ? 'in' : match[3].toLowerCase();
+    return `${match[1]} × ${match[2]} ${unit}`;
+  }
+
+  /** "2026 · Oil on Paper"; works without a year or title still read cleanly. */
+  function metaLine(work) {
+    return [work.year, work.medium].filter(Boolean).join(' · ');
+  }
+
+  /** Alt text for the large view, where the image is the content. */
+  function altText(work) {
+    if (!work.title) return work.medium || 'Artwork';
+    const detail = [work.medium, work.year].filter(Boolean).join(', ');
+    return detail ? `${work.title}, ${detail}` : work.title;
+  }
+
+  /** Title and detail line for the large view. Untitled works lead with their medium. */
+  function captionParts(work) {
+    const dimensions = formatDimensions(work.dimensions);
+    if (work.title) {
+      return { title: work.title, meta: [metaLine(work), dimensions].filter(Boolean).join(' · ') };
+    }
+    return {
+      title: work.medium || 'Artwork',
+      meta: [work.year, dimensions].filter(Boolean).join(' · '),
+    };
+  }
+
+  /** Link name for a gallery tile; untitled works are numbered by position. */
+  function accessibleName(work, position) {
+    return work.title || `${work.medium || 'Artwork'}, photograph ${position}`;
+  }
+
+  /** Reads the `?c=` filter from a query string, falling back to "all". */
+  function categoryFromSearch(search) {
+    const value = new URLSearchParams(search || '').get('c');
+    return isCategory(value) ? value : 'all';
+  }
+
+  /** Resolves a "#a012"-style hash to a work id, or null if none matches. */
+  function workIdFromHash(hash, works) {
+    let wanted;
+    try {
+      wanted = decodeURIComponent(String(hash || '').replace(/^#/, '')).toLowerCase();
+    } catch (error) {
+      return null;
+    }
+    if (!wanted) return null;
+    const match = works.find((work) => work.id.toLowerCase() === wanted);
+    return match ? match.id : null;
+  }
+
+  function hashForWork(work) {
+    return `#${work.id.toLowerCase()}`;
+  }
+
+  return {
+    IMAGE_ROOT,
+    SIZE_SUFFIXES,
+    CATEGORIES,
+    isCategory,
+    imageUrl,
+    buildSrcset,
+    aspectRatio,
+    filterWorks,
+    countByCategory,
+    sortWorks,
+    formatDimensions,
+    metaLine,
+    altText,
+    captionParts,
+    accessibleName,
+    categoryFromSearch,
+    workIdFromHash,
+    hashForWork,
+  };
+});

@@ -1,0 +1,8 @@
+{
+  "name": "nuances-by-nafis",
+  "private": true,
+  "description": "Static portfolio site for Nafis. No build step.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

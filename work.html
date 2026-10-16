@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Work — nuances by nafis</title>
+  <meta name="description" content="Paintings, mixed media, drawings, prints, digital art and ceramics by Nafis.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Work — nuances by nafis">
+  <meta property="og:description" content="Paintings, mixed media, drawings, prints, digital art and ceramics by Nafis.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/hanken-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/works-utils.js" defer></script>
+  <script src="js/works-data.js" defer></script>
+  <script src="js/site-config.js" defer></script>
+  <script src="js/gallery.js" defer></script>
+  <script src="js/lightbox.js" defer></script>
+  <script src="js/pages.js" defer></script>
+</head>
+<body data-page="work">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="wrap site-header">
+    <a class="wordmark" href="index.html" aria-label="nuances by nafis, home">nuances <em>by nafis</em></a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="work.html" aria-current="page">Work</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="wrap">
+    <h1 class="page-title">Work</h1>
+    <nav id="filters" aria-label="Filter by medium"></nav>
+    <p id="result-status" class="visually-hidden" role="status"></p>
+    <ul class="gallery" id="gallery"></ul>
+    <noscript><p class="muted">Please enable JavaScript to view the gallery.</p></noscript>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>&copy; 2026 Nafis. All images &copy; the artist.</p>
+    </div>
+  </footer>
+
+  <!-- tabindex lets lightbox.js focus the viewer itself when it opens -->
+  <dialog class="viewer" id="viewer" aria-labelledby="viewer-title" tabindex="-1">
+    <div class="viewer__stage">
+      <img class="viewer__image" alt="">
+    </div>
+    <div class="viewer__bar">
+      <div>
+        <h2 class="viewer__title" id="viewer-title"></h2>
+        <p class="viewer__meta"></p>
+      </div>
+      <div class="viewer__controls">
+        <button type="button" class="viewer__button" data-action="prev" aria-label="Previous work">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="viewer__count" aria-live="polite"></span>
+        <button type="button" class="viewer__button" data-action="next" aria-label="Next work">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <button type="button" class="viewer__button" data-action="close" aria-label="Close viewer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>
