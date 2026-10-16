@@ -1,16 +1,21 @@
 /**
- * Settings you are likely to change. Everything else is driven by works-data.js.
+ * Settings you are likely to change. Everything else is driven by works-data.js
+ * and works-photography.js.
  */
 window.SITE_CONFIG = {
-  // Works shown on the home page, in this order. Swap ids freely (see works-data.js).
+  // The three works in the home page hero: [large, top-right, bottom-right].
+  heroIds: ['A012', 'A027', 'ceramics-11'],
+
+  // Works shown under "Selected work" on the home page, in this order.
   featuredIds: [
-    'A030', 'A012', 'ceramics-44', 'A027',
-    'A010', 'A031', 'A019', 'ceramics-11',
+    'A030', 'A010', 'ceramics-44', 'A031',
+    'A019', 'A036', 'ceramics-59', 'A002',
   ],
 
-  // Only the items you fill in are shown on the contact page.
+  // Only the items you fill in are shown on the contact and resume pages.
   contact: {
-    email: '',
-    instagram: '', // handle without the @, e.g. 'nafis.art'
+    email: 'nafisulhasansamimd@gmail.com',
+    instagram: 'nuancesbynafis', // handle without the @
+    linkedin: 'https://www.linkedin.com/in/nafisulhasansami',
   },
 };

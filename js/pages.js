@@ -5,21 +5,31 @@
 (function () {
   'use strict';
 
-  const U = window.WorksUtils;
   const config = window.SITE_CONFIG || {};
-  const allWorks = U.sortWorks(window.PORTFOLIO_WORKS);
-  const worksById = new Map(allWorks.map((work) => [work.id, work]));
+
+  /** Every work (artwork + photography) in display order, plus a lookup by id. */
+  function loadWorks() {
+    const U = window.WorksUtils;
+    const all = U.sortWorks(window.PORTFOLIO_WORKS.concat(window.PORTFOLIO_PHOTOS || []));
+    return { U, all, byId: new Map(all.map((work) => [work.id, work])) };
+  }
 
   function initHome() {
-    const featured = (config.featuredIds || [])
-      .map((id) => worksById.get(id))
-      .filter(Boolean);
-    window.Gallery.renderGallery(document.getElementById('featured-gallery'), featured, {
-      hrefFor: (work) => `work.html${U.hashForWork(work)}`,
+    const { U, all, byId } = loadWorks();
+    const pick = (ids) => (ids || []).map((id) => byId.get(id)).filter(Boolean);
+    const hrefFor = (work) => `work.html${U.hashForWork(work)}`;
+
+    const hero = pick(config.heroIds);
+    const mosaic = document.getElementById('hero-mosaic');
+    if (hero.length === 3) window.Gallery.renderMosaic(mosaic, hero, { hrefFor });
+    else mosaic.hidden = true;
+
+    window.Gallery.renderGallery(document.getElementById('featured-gallery'), pick(config.featuredIds), {
+      hrefFor,
       eagerCount: 4,
     });
 
-    const counts = U.countByCategory(allWorks);
+    const counts = U.countByCategory(all);
     const rows = U.CATEGORIES.filter((category) => counts[category.id] > 0).map((category) => {
       const link = document.createElement('a');
       link.href = `work.html?c=${category.id}`;
@@ -38,18 +48,19 @@
   }
 
   function initWork() {
+    const { U, all, byId } = loadWorks();
     const list = document.getElementById('gallery');
     const status = document.getElementById('result-status');
     const lightbox = window.Lightbox.create(document.getElementById('viewer'));
-    const counts = U.countByCategory(allWorks);
+    const counts = U.countByCategory(all);
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
 
     let category = U.categoryFromSearch(location.search);
 
     // A deep-linked work must be in the visible list, so widen the filter if needed.
-    const linkedId = U.workIdFromHash(location.hash, allWorks);
+    const linkedId = U.workIdFromHash(location.hash, all);
     const widenedFilter =
-      linkedId && category !== 'all' && worksById.get(linkedId).category !== category;
+      linkedId && category !== 'all' && byId.get(linkedId).category !== category;
     if (widenedFilter) category = 'all';
 
     const filters = window.Gallery.createFilters(document.getElementById('filters'), {
@@ -59,7 +70,7 @@
 
     function show(next, { updateUrl }) {
       category = next;
-      const visible = U.filterWorks(allWorks, category);
+      const visible = U.filterWorks(all, category);
       window.Gallery.renderGallery(list, visible, {
         hrefFor: (work) => U.hashForWork(work),
         eagerCount: 6,
@@ -92,40 +103,42 @@
     if (linkedId) lightbox.open(linkedId, 'load');
   }
 
-  function initContact() {
-    const contact = config.contact || {};
-    const entries = [];
-    if (contact.email) {
-      entries.push({ label: 'Email', text: contact.email, href: `mailto:${contact.email}` });
-    }
-    if (contact.instagram) {
-      const handle = contact.instagram.replace(/^@/, '');
-      entries.push({
-        label: 'Instagram',
-        text: `@${handle}`,
-        href: `https://www.instagram.com/${encodeURIComponent(handle)}/`,
-      });
-    }
-
-    const list = document.getElementById('contact-list');
-    const fallback = document.getElementById('contact-empty');
+  /** Fills a <ul> with contact links; `showValue` also prints the address or handle. */
+  function renderContactLinks(list, { showValue }) {
+    const entries = window.ContactUtils.contactEntries(config.contact);
     const items = entries.map(({ label, text, href }) => {
-      const term = document.createElement('span');
-      term.className = 'contact-list__label';
-      term.textContent = label;
+      const item = document.createElement('li');
       const link = document.createElement('a');
       link.href = href;
-      link.textContent = text;
-      const item = document.createElement('li');
-      item.append(term, link);
+      if (showValue) {
+        const term = document.createElement('span');
+        term.className = 'contact-list__label';
+        term.textContent = label;
+        link.textContent = text;
+        item.append(term, link);
+      } else {
+        link.textContent = label;
+        item.append(link);
+      }
       return item;
     });
     list.replaceChildren(...items);
-    list.hidden = items.length === 0;
-    fallback.hidden = items.length > 0;
+    return items.length;
   }
 
-  const pages = { home: initHome, work: initWork, contact: initContact };
+  function initContact() {
+    const count = renderContactLinks(document.getElementById('contact-list'), { showValue: true });
+    document.getElementById('contact-list').hidden = count === 0;
+    document.getElementById('contact-empty').hidden = count > 0;
+  }
+
+  function initResume() {
+    const links = document.getElementById('resume-links');
+    links.hidden = renderContactLinks(links, { showValue: false }) === 0;
+    document.querySelector('[data-print]').addEventListener('click', () => window.print());
+  }
+
+  const pages = { home: initHome, work: initWork, contact: initContact, resume: initResume };
   const init = pages[document.body.dataset.page];
   if (init) init();
 })();

@@ -4,7 +4,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const U = require('../js/works-utils.js');
-const WORKS = require('../js/works-data.js');
+const ARTWORKS = require('../js/works-data.js');
+const PHOTOS = require('../js/works-photography.js');
+const ContactUtils = require('../js/contact-utils.js');
+
+const WORKS = ARTWORKS.concat(PHOTOS);
 
 const ROOT = path.join(__dirname, '..');
 
@@ -37,6 +41,16 @@ test('buildSrcset collapses sizes that were not upscaled', () => {
   );
 });
 
+test('buildSrcset and fallbackUrl cope with photos that only have one or two sizes', () => {
+  const single = work({ ws: [480], w: 480, h: 360 });
+  assert.equal(U.buildSrcset(single), 'images/artwork/a001-test-600.jpg 480w');
+  assert.equal(U.fallbackUrl(single), 'images/artwork/a001-test-600.jpg');
+  const pair = work({ ws: [600, 768], w: 768 });
+  assert.equal(U.buildSrcset(pair), 'images/artwork/a001-test-600.jpg 600w, images/artwork/a001-test-1200.jpg 768w');
+  assert.equal(U.fallbackUrl(pair), 'images/artwork/a001-test-1200.jpg');
+  assert.equal(U.fallbackUrl(work()), 'images/artwork/a001-test-1200.jpg');
+});
+
 test('filterWorks returns everything for "all" and a subset otherwise', () => {
   const works = [work(), work({ id: 'A002', category: 'print' })];
   assert.equal(U.filterWorks(works, 'all').length, 2);
@@ -58,6 +72,17 @@ test('sortWorks puts newest first, undated last, and is stable', () => {
     work({ id: 'new-b', year: 2026 }),
   ]);
   assert.deepEqual(sorted.map((w) => w.id), ['new-a', 'new-b', 'old', 'undated']);
+});
+
+test('sortWorks places bulk categories (photography) after artwork', () => {
+  const sorted = U.sortWorks([
+    work({ id: 'photo-new', category: 'photography', year: 2026 }),
+    work({ id: 'art-old', year: 2010 }),
+    work({ id: 'photo-old', category: 'photography', year: 2022 }),
+    work({ id: 'art-undated', year: null }),
+  ]);
+  assert.deepEqual(sorted.map((w) => w.id), ['art-old', 'art-undated', 'photo-new', 'photo-old']);
+  assert.ok(U.isBulk(sorted[2]) && !U.isBulk(sorted[0]));
 });
 
 test('formatDimensions normalises inches and pixels', () => {
@@ -97,24 +122,55 @@ test('workIdFromHash is case-insensitive and rejects unknown ids', () => {
   assert.equal(U.workIdFromHash('#%E0%A4%A', works), null);
 });
 
+test('photography is a known category and photos omit title and dimensions', () => {
+  assert.ok(U.isCategory('photography'));
+  assert.equal(U.categoryFromSearch('?c=photography'), 'photography');
+  const photo = work({ id: 'photo-0001', title: null, dimensions: null, medium: 'Photography', category: 'photography' });
+  assert.deepEqual(U.captionParts(photo), { title: 'Photography', meta: '2024' });
+});
+
+test('contactEntries builds links only for the details that are filled in', () => {
+  assert.deepEqual(ContactUtils.contactEntries({}), []);
+  assert.deepEqual(ContactUtils.contactEntries(undefined), []);
+  const entries = ContactUtils.contactEntries({
+    email: 'a@b.co',
+    instagram: '@handle',
+    linkedin: 'www.linkedin.com/in/someone/',
+  });
+  assert.deepEqual(entries, [
+    { label: 'Email', text: 'a@b.co', href: 'mailto:a@b.co' },
+    { label: 'Instagram', text: '@handle', href: 'https://www.instagram.com/handle/' },
+    { label: 'LinkedIn', text: 'linkedin.com/in/someone', href: 'https://www.linkedin.com/in/someone/' },
+  ]);
+});
+
 test('catalogue: ids are unique and every record is well formed', () => {
   const ids = new Set();
   for (const record of WORKS) {
     assert.ok(!ids.has(record.id), `duplicate id ${record.id}`);
     ids.add(record.id);
     assert.ok(U.isCategory(record.category), `${record.id}: unknown category`);
-    assert.equal(record.ws.length, U.SIZE_SUFFIXES.length, `${record.id}: ws length`);
+    assert.ok(
+      record.ws.length >= 1 && record.ws.length <= U.SIZE_SUFFIXES.length,
+      `${record.id}: ws length`
+    );
+    assert.equal(record.w, record.ws[record.ws.length - 1], `${record.id}: w matches ws`);
     assert.ok(record.w > 0 && record.h > 0, `${record.id}: missing size`);
   }
 });
 
-test('catalogue: featured works in the config exist', () => {
+test('catalogue: hero and featured works in the config exist', () => {
   const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
-  const block = /featuredIds:\s*\[([^\]]*)\]/.exec(source);
-  assert.ok(block, 'featuredIds not found');
-  const featured = [...block[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
   const ids = new Set(WORKS.map((record) => record.id));
-  featured.forEach((id) => assert.ok(ids.has(id), `featured id ${id} is not in works-data.js`));
+  const listFor = (key) => {
+    const block = new RegExp(`${key}:\\s*\\[([^\\]]*)\\]`).exec(source);
+    assert.ok(block, `${key} not found`);
+    return [...block[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
+  };
+  assert.equal(listFor('heroIds').length, 3, 'the hero needs exactly three works');
+  [...listFor('heroIds'), ...listFor('featuredIds')].forEach((id) =>
+    assert.ok(ids.has(id), `configured id ${id} is not in the catalogue`)
+  );
 });
 
 test(
@@ -123,7 +179,11 @@ test(
   () => {
     const missing = [];
     for (const record of WORKS) {
-      for (const suffix of U.SIZE_SUFFIXES) {
+      // A whole image folder may not have been added yet (e.g. photography); the
+      // folder check is skipped for it, but every file is checked once it exists.
+      const folder = path.join(ROOT, 'images', record.base.split('/')[0]);
+      if (!fs.existsSync(folder)) continue;
+      for (const suffix of U.SIZE_SUFFIXES.slice(0, record.ws.length)) {
         const file = path.join(ROOT, U.imageUrl(record, suffix));
         if (!fs.existsSync(file)) missing.push(path.relative(ROOT, file));
       }

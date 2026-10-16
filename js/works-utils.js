@@ -25,11 +25,20 @@
     { id: 'drawing', label: 'Drawing' },
     { id: 'print', label: 'Prints' },
     { id: 'digital', label: 'Digital' },
+    { id: 'photography', label: 'Photography' },
     { id: 'ceramics', label: 'Ceramics' },
   ]);
 
+  // Large contact-sheet categories are listed after the artwork in the "All" view
+  // and shown without per-tile captions.
+  const BULK_CATEGORIES = Object.freeze(['photography']);
+
   function isCategory(value) {
     return CATEGORIES.some((category) => category.id === value);
+  }
+
+  function isBulk(work) {
+    return BULK_CATEGORIES.includes(work.category);
   }
 
   function imageUrl(work, suffix, imageRoot = IMAGE_ROOT) {
@@ -39,18 +48,25 @@
   /**
    * Builds a srcset using each file's real pixel width. Sources smaller than
    * a target size are never upscaled, so `work.ws[i]` can be lower than the
-   * filename suffix; repeated widths are collapsed to one entry.
+   * filename suffix, repeated widths are collapsed to one entry, and works
+   * with fewer than three sizes (small photographs) simply list fewer files.
    */
   function buildSrcset(work, imageRoot = IMAGE_ROOT) {
     const seenWidths = new Set();
     const entries = [];
     SIZE_SUFFIXES.forEach((suffix, i) => {
       const width = work.ws[i];
-      if (seenWidths.has(width)) return;
+      if (width === undefined || seenWidths.has(width)) return;
       seenWidths.add(width);
       entries.push(`${imageUrl(work, suffix, imageRoot)} ${width}w`);
     });
     return entries.join(', ');
+  }
+
+  /** The `src` for browsers without srcset: the mid size, or the largest that exists. */
+  function fallbackUrl(work, imageRoot = IMAGE_ROOT) {
+    const index = Math.min(1, work.ws.length - 1);
+    return imageUrl(work, SIZE_SUFFIXES[index], imageRoot);
   }
 
   function aspectRatio(work) {
@@ -74,11 +90,16 @@
     return counts;
   }
 
-  /** Newest first; undated works go last; ties keep their catalogue order. */
+  /**
+   * Artwork first, then bulk categories (photography); within each group newest
+   * first, undated last, and ties keep their catalogue order.
+   */
   function sortWorks(works) {
     return works
       .map((work, index) => ({ work, index }))
       .sort((a, b) => {
+        const rankDiff = Number(isBulk(a.work)) - Number(isBulk(b.work));
+        if (rankDiff !== 0) return rankDiff;
         const yearDiff = (b.work.year || 0) - (a.work.year || 0);
         return yearDiff !== 0 ? yearDiff : a.index - b.index;
       })
@@ -151,8 +172,10 @@
     SIZE_SUFFIXES,
     CATEGORIES,
     isCategory,
+    isBulk,
     imageUrl,
     buildSrcset,
+    fallbackUrl,
     aspectRatio,
     filterWorks,
     countByCategory,

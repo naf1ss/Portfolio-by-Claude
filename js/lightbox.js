@@ -11,6 +11,7 @@
 
   const U = window.WorksUtils;
   const SWIPE_DISTANCE = 50; // px of horizontal travel that counts as a swipe
+  const MAX_ENLARGEMENT = 2; // never show an image above 2x its real pixel size
 
   function create(dialog) {
     const stage = dialog.querySelector('.viewer__stage');
@@ -36,9 +37,12 @@
       image.alt = U.altText(work);
       image.width = work.w;
       image.height = work.h;
+      // Small photographs may be enlarged to at most twice their real size.
+      image.style.maxWidth = `${work.w * MAX_ENLARGEMENT}px`;
+      image.style.maxHeight = `${work.h * MAX_ENLARGEMENT}px`;
       image.sizes = '100vw';
       image.srcset = U.buildSrcset(work);
-      image.src = U.imageUrl(work, 1200);
+      image.src = U.fallbackUrl(work);
 
       title.textContent = caption.title;
       meta.textContent = caption.meta;
