@@ -3,23 +3,37 @@
 
 /* ---------- Fonts (self-hosted, Latin subset, SIL OFL) ---------- */
 @font-face {
-  font-family: 'Instrument Serif';
-  src: url('../fonts/instrument-serif-latin-400-normal.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Bodoni Moda';
+  src: url('../fonts/bodoni-moda-latin-wght-normal.woff2') format('woff2');
+  font-weight: 400 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Instrument Serif';
-  src: url('../fonts/instrument-serif-latin-400-italic.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Bodoni Moda';
+  src: url('../fonts/bodoni-moda-latin-wght-italic.woff2') format('woff2');
+  font-weight: 400 900;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('../fonts/hanken-grotesk-latin-wght-normal.woff2') format('woff2');
-  font-weight: 100 900;
+  font-family: 'Cormorant Garamond';
+  src: url('../fonts/cormorant-garamond-latin-wght-normal.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('../fonts/cormorant-garamond-latin-wght-italic.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-latin-wght-normal.woff2') format('woff2');
+  font-weight: 200 800;
   font-style: normal;
   font-display: swap;
 }
@@ -28,23 +42,27 @@
 :root {
   color-scheme: light dark;
 
-  /* Warm paper and ink; accent is a muted terracotta (AA on both themes). */
-  --paper: #f5f2ec;
-  --paper-sunken: #ebe6dc;
-  --ink: #1c1b19;
-  --ink-muted: #625e56;
-  --rule: #d9d4c8;
-  --accent: #9a4a28;
+  /* Text is only ever black, white or red (AA on both themes). Backgrounds and
+     hairlines may be neutral. Secondary text keeps the same colour and is set
+     apart by size, weight and style instead (see --ink-muted). */
+  --paper: #f4f3f0;
+  --paper-sunken: #e8e6e1;
+  --ink: #000;
+  --ink-muted: var(--ink);
+  --on-ink: #fff; /* text on an ink- or accent-coloured fill */
+  --rule: #cdcac3;
+  --accent: #c8102e;
 
-  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-text: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bodoni Moda', Didot, 'Bodoni MT', Georgia, serif;
+  --font-prose: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-text: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Fluid type scale */
   --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   --step-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-  --step-2: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
-  --step-3: clamp(2.5rem, 1.9rem + 3vw, 4.25rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --step-3: clamp(2.25rem, 1.7rem + 2.6vw, 3.75rem);
   --step-4: clamp(3rem, 1.9rem + 5.5vw, 6.75rem);
 
   --gutter: clamp(1.25rem, 4vw, 3.5rem);
@@ -55,12 +73,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #141311;
-    --paper-sunken: #1d1b18;
-    --ink: #efebe3;
-    --ink-muted: #a8a396;
-    --rule: #2d2b27;
-    --accent: #e0956b;
+    --paper: #0a0a0a;
+    --paper-sunken: #171717;
+    --ink: #fff;
+    --on-ink: #000;
+    --rule: #333;
+    --accent: #ff4d5e;
   }
 }
 
@@ -110,9 +128,9 @@ h2,
 h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -139,7 +157,7 @@ a:hover {
 
 ::selection {
   background: var(--accent);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
 /* ---------- Layout ---------- */
@@ -157,14 +175,14 @@ a:hover {
   z-index: 10;
   padding: 0.6rem 1rem;
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
   transform: translateY(-120%);
   transition: transform 0.2s var(--ease);
 }
 
 .skip-link:focus {
   transform: translateY(0.5rem);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
 /* ---------- Header and footer ---------- */
@@ -179,7 +197,9 @@ a:hover {
 
 .wordmark {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   line-height: 1;
   text-decoration: none;
 }
@@ -204,8 +224,9 @@ a:hover {
   display: inline-block;
   padding-block: 0.6rem;
   border-bottom: 1px solid transparent;
-  font-size: var(--step--1);
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -215,19 +236,100 @@ a:hover {
   border-bottom-color: currentColor;
 }
 
+/* The footer is always black with white text, in both themes. It is built by
+   js/footer.js so its markup lives in one place. */
 .site-footer {
+  --footer-ink: #fff;
+  --footer-accent: #ff4d5e;
   margin-top: clamp(4rem, 10vw, 8rem);
-  padding-block: 2rem 2.5rem;
-  border-top: 1px solid var(--rule);
-  color: var(--ink-muted);
+  background: #000;
+  color: var(--footer-ink);
   font-size: var(--step--1);
 }
 
-.site-footer .wrap {
+.site-footer a {
+  text-decoration: none;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: var(--footer-accent);
+}
+
+.footer__top {
+  display: grid;
+  gap: 3rem 4rem;
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 56rem) {
+  .footer__top {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.footer__brand {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 1.6rem + 3vw, 3.9rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.footer__brand em {
+  color: var(--footer-accent);
+}
+
+.footer__tagline {
+  max-width: 24rem;
+  margin-top: 1.25rem;
+  font-family: var(--font-prose);
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.footer__heading {
+  margin-bottom: 1.1rem;
+  font-family: var(--font-text);
+  color: var(--footer-accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer__list {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__list a {
+  display: inline-block;
+  padding-block: 0.3rem;
+  font-size: 1rem;
+  border-bottom: 1px solid transparent;
+}
+
+.footer__bottom {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 0.5rem 2rem;
+  gap: 0.75rem 2rem;
+  padding-block: 1.25rem 1.75rem;
+  border-top: 1px solid #333;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.footer__top-link {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /* ---------- Page sections ---------- */
@@ -250,20 +352,22 @@ a:hover {
 }
 
 .hero__title {
-  font-size: clamp(3.25rem, 1.6rem + 5.6vw, 6.5rem);
-  line-height: 0.98;
+  font-size: clamp(2.9rem, 1.4rem + 4.6vw, 5.5rem);
+  line-height: 1;
 }
 
 .hero__title em {
+  padding-left: 0.1em; /* the italic f overhangs to the left */
   color: var(--accent);
 }
 
 .hero__lede {
   max-width: 30rem;
   margin-top: clamp(1.25rem, 2.5vw, 2rem);
-  color: var(--ink-muted);
-  font-size: var(--step-1);
-  line-height: 1.45;
+  font-family: var(--font-prose);
+  font-size: clamp(1.35rem, 1.2rem + 0.6vw, 1.6rem);
+  font-weight: 500;
+  line-height: 1.35;
 }
 
 .hero__actions {
@@ -280,8 +384,9 @@ a:hover {
   background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: var(--step--1);
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer;
@@ -289,13 +394,13 @@ a:hover {
 }
 
 .button:hover {
-  color: var(--paper);
+  color: var(--on-ink);
   background: var(--ink);
 }
 
 .button--solid {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
 .button--solid:hover {
@@ -367,15 +472,16 @@ a:hover {
 .eyebrow {
   margin: 0;
   font-family: var(--font-text);
-  font-size: var(--step--1);
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .text-link {
-  font-size: var(--step--1);
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -405,6 +511,8 @@ a:hover {
 .medium-list__name {
   font-family: var(--font-display);
   font-size: var(--step-2);
+  font-weight: 500;
+  letter-spacing: -0.02em;
   line-height: 1.1;
   transition: color 0.2s var(--ease);
 }
@@ -433,8 +541,10 @@ a:hover {
 
 .prose {
   max-width: var(--measure);
-  font-size: var(--step-1);
-  line-height: 1.5;
+  font-family: var(--font-prose);
+  font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.65rem);
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .prose p + p {
@@ -443,6 +553,7 @@ a:hover {
 
 .prose .prose__links {
   margin-top: 2em;
+  font-family: var(--font-text);
   font-size: var(--step--1);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -477,7 +588,7 @@ a:hover {
   color: var(--ink-muted);
   font-family: var(--font-text);
   font-size: var(--step--1);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -513,7 +624,7 @@ a:hover {
 .filter[aria-pressed='true'] {
   border-color: var(--ink);
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
 .filter__count {
@@ -524,7 +635,6 @@ a:hover {
 
 .filter[aria-pressed='true'] .filter__count {
   color: inherit;
-  opacity: 0.7;
 }
 
 /* ---------- Gallery: justified rows without JavaScript layout ----------
@@ -592,8 +702,9 @@ a:hover {
 }
 
 .tile__title {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-family: var(--font-prose);
+  font-size: 1.35rem;
+  font-weight: 600;
   line-height: 1.2;
 }
 
@@ -747,8 +858,9 @@ a:hover {
   margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
-  font-size: var(--step--1);
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -826,7 +938,6 @@ a:hover {
   :root {
     --paper: #fff;
     --ink: #000;
-    --ink-muted: #333;
     --rule: #bbb;
     --accent: #000;
   }

@@ -1,8 +1,11 @@
 Fonts are licensed under the SIL Open Font License 1.1.
 
-Instrument Serif - https://github.com/Instrument/instrument-serif
-Hanken Grotesk - https://github.com/marcologous/hanken-grotesk
+Bodoni Moda       - https://github.com/indestructible-type/Bodoni
+Manrope           - https://github.com/sharanda/manrope
+Cormorant Garamond - https://github.com/CatharsisFonts/Cormorant
 
-Full license texts ship with the @fontsource packages:
-https://fontsource.org/fonts/instrument-serif/license
-https://fontsource.org/fonts/hanken-grotesk/license
+Latin subsets are the variable builds from the @fontsource-variable packages.
+Full license texts ship with those packages:
+https://fontsource.org/fonts/bodoni-moda/license
+https://fontsource.org/fonts/manrope/license
+https://fontsource.org/fonts/cormorant-garamond/license
