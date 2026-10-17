@@ -3,9 +3,11 @@ Fonts are licensed under the SIL Open Font License 1.1.
 Bodoni Moda       - https://github.com/indestructible-type/Bodoni
 Manrope           - https://github.com/sharanda/manrope
 Cormorant Garamond - https://github.com/CatharsisFonts/Cormorant
+Kaushan Script    - https://github.com/impallari/Kaushan-Script (the "by nafis" script)
 
 Latin subsets are the variable builds from the @fontsource-variable packages.
 Full license texts ship with those packages:
 https://fontsource.org/fonts/bodoni-moda/license
 https://fontsource.org/fonts/manrope/license
 https://fontsource.org/fonts/cormorant-garamond/license
+https://fontsource.org/fonts/kaushan-script/license

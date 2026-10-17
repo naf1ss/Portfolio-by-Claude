@@ -15,7 +15,7 @@
   <link rel="preload" href="fonts/bodoni-moda-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=7f4e66ef">
+  <link rel="stylesheet" href="css/styles.css?v=f1d163d9">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/motion.js?v=0a50deb5"></script>
@@ -40,16 +40,35 @@
     </nav>
   </header>
 
-  <main id="main" class="wrap">
-    <h1 class="page-title">About</h1>
-    <div class="prose-layout">
-      <p class="eyebrow">Artist statement</p>
-      <div class="prose">
-        <p>I have always been drawn to what lies beyond the familiar. Growing up in Bangladesh, I developed a curiosity that rarely allowed me to settle into one way of seeing or understanding the world. That curiosity continues to shape my artistic practice, where I explore the relationships between observation, memory, imagination, and the structures that surround us.</p>
-        <p>Painting remains at the center of my work, but my practice extends into photography, digital media, and interactive experiences. I am interested in how an image can move beyond representation, becoming a space for interpretation, emotion, and discovery. Sometimes this begins with an ordinary moment, a landscape, or a familiar object. Other times, it emerges from an abstract idea that I cannot fully articulate until I begin making something.</p>
-        <p>My background in mathematics influences how I approach composition, proportion, pattern, and spatial relationships. Yet I am equally interested in what resists calculation: intuition, ambiguity, and the imperfections that give an artwork its character.</p>
-        <p>I have never been particularly comfortable with the familiar simply because it is familiar. For me, making art is an act of questioning my own limitations, moving between disciplines, and finding new ways to give form to things that are difficult to express otherwise.</p>
-        <p class="prose__links"><a href="work.html">See the work</a> &nbsp;&middot;&nbsp; <a href="resume.html">Resume</a> &nbsp;&middot;&nbsp; <a href="contact.html">Contact</a></p>
+  <main id="main" class="wrap about">
+    <header class="about__head">
+      <p class="eyebrow" data-reveal-on-load>About</p>
+      <h1 class="about__title" data-reveal-on-load>Artist statement<span class="about__dot">.</span></h1>
+    </header>
+
+    <div class="about__body">
+      <figure class="about__figure" data-reveal-on-load>
+        <span class="about__frame">
+          <img class="about__image"
+               src="images/artwork/a030-almost-happy-1200.jpg"
+               srcset="images/artwork/a030-almost-happy-600.jpg 600w, images/artwork/a030-almost-happy-1200.jpg 1200w, images/artwork/a030-almost-happy-1800.jpg 1800w"
+               sizes="(min-width: 56rem) 32vw, 80vw"
+               width="1800" height="2411" alt="Almost Happy, an abstract acrylic painting in sweeping strokes of violet, teal and ochre">
+        </span>
+        <figcaption class="about__caption"><span class="about__caption-title">Almost Happy</span> 2026 &middot; Acrylic on canvas</figcaption>
+      </figure>
+
+      <div class="about__text">
+        <p class="about__lead" data-reveal-on-load>I have always been drawn to what lies beyond the familiar. Growing up in Bangladesh, I developed a curiosity that rarely allowed me to settle into one way of seeing or understanding the world. That curiosity continues to shape my artistic practice, where I explore the relationships between observation, memory, imagination, and the structures that surround us.</p>
+        <p data-reveal-on-load>Painting remains at the center of my work, but my practice extends into photography, digital media, and interactive experiences. I am interested in how an image can move beyond representation, becoming a space for interpretation, emotion, and discovery. Sometimes this begins with an ordinary moment, a landscape, or a familiar object. Other times, it emerges from an abstract idea that I cannot fully articulate until I begin making something.</p>
+        <p data-reveal-on-load>My background in mathematics influences how I approach composition, proportion, pattern, and spatial relationships. Yet I am equally interested in what resists calculation: intuition, ambiguity, and the imperfections that give an artwork its character.</p>
+        <p class="about__pull" data-reveal-on-load>I have never been particularly comfortable with the familiar simply because it is familiar.</p>
+        <p data-reveal-on-load>For me, making art is an act of questioning my own limitations, moving between disciplines, and finding new ways to give form to things that are difficult to express otherwise.</p>
+        <p class="about__links" data-reveal-on-load>
+          <a class="button button--solid" href="work.html">See the work</a>
+          <a class="button" href="resume.html">Resume</a>
+          <a class="button" href="contact.html">Contact</a>
+        </p>
       </div>
     </div>
   </main>
