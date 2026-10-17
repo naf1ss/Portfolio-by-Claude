@@ -32,6 +32,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `fonts/` | Self-hosted Bodoni Moda (headings), Cormorant Garamond (reading text) and Manrope (labels), all SIL OFL |
 | `tools/stamp-assets.js` | Content-hash stamps for css/js addresses (used by the build) |
 | `tools/optimize_images.py` | Makes web-sized, metadata-free copies of new photos |
+| `tools/cutout-portrait.py` | Cuts the portrait out of its black backdrop into transparent WebP files (`images/about/`) |
 | `tests/` | Unit tests and catalogue checks |
 
 ## Colours
