@@ -45,6 +45,9 @@
       return item;
     });
     document.getElementById('medium-list').replaceChildren(...rows);
+
+    window.Motion.reveal(document.querySelectorAll('#featured-gallery .gallery__item'));
+    window.Motion.reveal(document.querySelectorAll('#medium-list li'));
   }
 
   function initWork() {

@@ -41,12 +41,13 @@
 
   function brandBlock() {
     const block = element('div');
-    const brand = element('a', 'footer__brand', 'nuances ');
+    const brand = element('a', 'footer__brand');
     brand.href = 'index.html';
-    brand.append(element('em', '', 'by nafis'));
+    brand.setAttribute('aria-label', 'nuances by Nafis, home');
+    brand.append(element('span', 'footer__name', 'nuances'), element('span', 'footer__by', 'by Nafis'));
     block.append(
       brand,
-      element('p', 'footer__tagline', 'Painting, ceramics, prints, photography and digital work.')
+      element('p', 'footer__tagline', 'Paintings, prints, ceramics and photographs by Nafis.')
     );
     return block;
   }

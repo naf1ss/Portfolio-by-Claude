@@ -113,6 +113,7 @@
     const largeColumn = element('div', 'mosaic__column mosaic__column--large');
     largeColumn.append(createMosaicItem(large, { hrefFor, priority: true }));
     const stackColumn = element('div', 'mosaic__column mosaic__column--stack');
+    stackColumn.dataset.parallax = '1'; // lags a little when scrolling (see motion.js)
     stackColumn.append(
       createMosaicItem(top, { hrefFor, priority: false }),
       createMosaicItem(bottom, { hrefFor, priority: false })

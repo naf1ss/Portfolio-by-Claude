@@ -14,6 +14,7 @@ A plain static site: HTML, CSS and a little JavaScript. No build step, no framew
 | `js/site-config.js` | Hero works, featured works, public contact details (email, Instagram, LinkedIn) |
 | `js/contact-utils.js` | Turns the contact details into links; unit tested |
 | `js/works-utils.js` | Pure helpers (srcset, filtering, captions); unit tested |
+| `js/motion.js` | Hero entrance, scroll reveals and parallax; does nothing when reduced motion is requested |
 | `js/footer.js` | Builds the footer on every page, so its markup lives in one place |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
