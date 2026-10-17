@@ -6,6 +6,7 @@ const path = require('node:path');
 const U = require('../js/works-utils.js');
 const ARTWORKS = require('../js/works-data.js');
 const PHOTOS = require('../js/works-photography.js');
+const SERIES = require('../js/series-data.js');
 const ContactUtils = require('../js/contact-utils.js');
 
 const WORKS = ARTWORKS.concat(PHOTOS);
@@ -219,18 +220,6 @@ test('every page loads the theme script before first paint', () => {
 
 const IntroUtils = require('../js/intro-utils.js');
 
-test('viewer: only the visible picture counts, not the empty margin of its box', () => {
-  // A 2:1 picture inside a square 1000x1000 box is drawn 1000x500, centred vertically.
-  const box = { left: 0, top: 0, width: 1000, height: 1000 };
-  const wide = { w: 2000, h: 1000 };
-  assert.equal(U.isPointOnContainedPicture(box, wide, { x: 500, y: 500 }), true);
-  assert.equal(U.isPointOnContainedPicture(box, wide, { x: 500, y: 100 }), false);
-  assert.equal(U.isPointOnContainedPicture(box, wide, { x: 500, y: 900 }), false);
-  const tall = { w: 1000, h: 2000 };
-  assert.equal(U.isPointOnContainedPicture(box, tall, { x: 100, y: 500 }), false);
-  assert.equal(U.isPointOnContainedPicture(box, tall, { x: 500, y: 100 }), true);
-});
-
 test('intro: plays on arrival and reload of the home page only', () => {
   const base = { pathname: '/', referrer: '', origin: 'https://site.test', navigationType: 'navigate' };
   assert.equal(IntroUtils.shouldPlayIntro(base), true);
@@ -249,4 +238,38 @@ test('intro: recognises the home page under a sub-folder host', () => {
   assert.equal(IntroUtils.isHomePath('/Portfolio-by-Claude/'), true);
   assert.equal(IntroUtils.isHomePath('/Portfolio-by-Claude/index.html'), true);
   assert.equal(IntroUtils.isHomePath('/Portfolio-by-Claude/about.html'), false);
+});
+
+test('series: ids are unique and every series has at least one work', () => {
+  const ids = SERIES.map((series) => series.id);
+  assert.equal(new Set(ids).size, ids.length);
+  SERIES.forEach((series) => {
+    assert.ok(U.worksInSeries(series, WORKS).length > 0, `${series.id} is empty`);
+  });
+});
+
+test('series: listed ids all exist and keep their order', () => {
+  SERIES.filter((series) => series.workIds).forEach((series) => {
+    const found = U.worksInSeries(series, WORKS).map((work) => work.id);
+    assert.deepEqual(found, series.workIds, `${series.id} lists a work that does not exist`);
+  });
+});
+
+test('series: a category + year rule collects only matching works', () => {
+  const found = U.worksInSeries({ category: 'photography', year: 2022 }, WORKS);
+  assert.ok(found.length > 0);
+  assert.ok(found.every((w) => w.category === 'photography' && w.year === 2022));
+});
+
+test('series: meta line gives the count and the year or span of years', () => {
+  assert.equal(U.seriesMeta([work({ year: 2023 })]), '1 work · 2023');
+  assert.equal(U.seriesMeta([work({ year: 2023 }), work({ year: 2025 })]), '2 works · 2023–2025');
+  assert.equal(U.seriesMeta([work({ year: null })]), '1 work');
+});
+
+test('series: every page links to the Series page and series.html exists', () => {
+  ['index', 'work', 'about', 'contact', 'resume', 'series'].forEach((page) => {
+    const html = fs.readFileSync(path.join(ROOT, `${page}.html`), 'utf8');
+    assert.match(html, /<li><a href="series\.html"/, page);
+  });
 });

@@ -69,6 +69,11 @@
     return imageUrl(work, SIZE_SUFFIXES[index], imageRoot);
   }
 
+  /** The largest file that exists for a work (small photographs have fewer than three sizes). */
+  function largestUrl(work, imageRoot = IMAGE_ROOT) {
+    return imageUrl(work, SIZE_SUFFIXES[work.ws.length - 1], imageRoot);
+  }
+
   function aspectRatio(work) {
     return Number((work.w / work.h).toFixed(4));
   }
@@ -167,19 +172,26 @@
     return `#${work.id.toLowerCase()}`;
   }
 
-  /**
-   * Whether a point lies on the visible picture inside an object-fit: contain
-   * box. The element's box is larger than the picture whenever their shapes
-   * differ, so a click in the empty margin must not count as a click on the work.
-   *   box: { left, top, width, height } of the <img>; point: { x, y }
-   */
-  function isPointOnContainedPicture(box, work, point) {
-    const scale = Math.min(box.width / work.w, box.height / work.h);
-    const width = work.w * scale;
-    const height = work.h * scale;
-    const left = box.left + (box.width - width) / 2;
-    const top = box.top + (box.height - height) / 2;
-    return point.x >= left && point.x <= left + width && point.y >= top && point.y <= top + height;
+  /** The works a series contains: its listed ids in order, or everything matching its category / year. */
+  function worksInSeries(series, works) {
+    if (series.workIds) {
+      const byId = new Map(works.map((work) => [work.id, work]));
+      return series.workIds.map((id) => byId.get(id)).filter(Boolean);
+    }
+    return works.filter(
+      (work) =>
+        (!series.category || work.category === series.category) && (!series.year || work.year === series.year)
+    );
+  }
+
+  /** "7 works" or "63 works · 2023" / "12 works · 2024–2026". */
+  function seriesMeta(works) {
+    const years = works.map((work) => work.year).filter(Boolean);
+    const first = Math.min(...years);
+    const last = Math.max(...years);
+    const span = years.length === 0 ? null : first === last ? String(first) : `${first}–${last}`;
+    const count = `${works.length} ${works.length === 1 ? 'work' : 'works'}`;
+    return span ? `${count} · ${span}` : count;
   }
 
   return {
@@ -191,6 +203,7 @@
     imageUrl,
     buildSrcset,
     fallbackUrl,
+    largestUrl,
     aspectRatio,
     filterWorks,
     countByCategory,
@@ -203,6 +216,7 @@
     categoryFromSearch,
     workIdFromHash,
     hashForWork,
-    isPointOnContainedPicture,
+    worksInSeries,
+    seriesMeta,
   };
 });

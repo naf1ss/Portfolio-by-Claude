@@ -14,6 +14,24 @@
     return { U, all, byId: new Map(all.map((work) => [work.id, work])) };
   }
 
+  /** The gallery <img> for a work, so the viewer can glide to and from it. */
+  function findTileImage(workId) {
+    return document.querySelector(`a[data-work-id="${workId}"] .tile__image`);
+  }
+
+  /** Creates the viewer for a gallery list and opens it when a tile is clicked. */
+  function mountViewer(list) {
+    const lightbox = window.Lightbox.create(document.getElementById('viewer'), { findOrigin: findTileImage });
+    list.addEventListener('click', (event) => {
+      const link = event.target.closest('a[data-work-id]');
+      const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+      if (!link || event.defaultPrevented || event.button !== 0 || modified) return;
+      event.preventDefault();
+      lightbox.open(link.dataset.workId, 'user');
+    });
+    return lightbox;
+  }
+
   function initHome() {
     const { U, all, byId } = loadWorks();
     const pick = (ids) => (ids || []).map((id) => byId.get(id)).filter(Boolean);
@@ -54,7 +72,7 @@
     const { U, all, byId } = loadWorks();
     const list = document.getElementById('gallery');
     const status = document.getElementById('result-status');
-    const lightbox = window.Lightbox.create(document.getElementById('viewer'));
+    const lightbox = mountViewer(list);
     const counts = U.countByCategory(all);
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
 
@@ -93,16 +111,47 @@
       }
     }
 
-    list.addEventListener('click', (event) => {
-      const link = event.target.closest('a[data-work-id]');
-      const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
-      if (!link || event.defaultPrevented || event.button !== 0 || modified) return;
-      event.preventDefault();
-      lightbox.open(link.dataset.workId, 'user');
-    });
-
     // When the filter was widened, rewrite the URL so ?c= matches what is shown.
     show(category, { updateUrl: widenedFilter });
+    if (linkedId) lightbox.open(linkedId, 'load');
+  }
+
+  /** Lists every series, or (with ?s=<id>) shows one series as a gallery. */
+  function initSeries() {
+    const { U, all, byId } = loadWorks();
+    const entries = (window.PORTFOLIO_SERIES || [])
+      .map((series) => {
+        const works = U.worksInSeries(series, all);
+        return { series, works, cover: byId.get(series.cover) || works[0] };
+      })
+      .filter((entry) => entry.works.length > 0);
+
+    const chosen = entries.find((entry) => entry.series.id === new URLSearchParams(location.search).get('s'));
+    const title = document.getElementById('series-title');
+    const note = document.getElementById('series-note');
+    const back = document.getElementById('series-back');
+    const list = document.getElementById('series-list');
+    const gallery = document.getElementById('gallery');
+
+    if (!chosen) {
+      window.Gallery.renderSeriesList(list, entries, { hrefFor: (series) => `series.html?s=${series.id}` });
+      window.Motion.reveal(list.children);
+      return;
+    }
+
+    const { series, works } = chosen;
+    document.title = `${series.title} — nuances by nafis`;
+    title.textContent = series.title;
+    note.textContent = series.note || U.seriesMeta(works);
+    note.classList.toggle('series-note--meta', !series.note);
+    back.hidden = false;
+    list.hidden = true;
+    gallery.hidden = false;
+
+    window.Gallery.renderGallery(gallery, works, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
+    const lightbox = mountViewer(gallery);
+    lightbox.setWorks(works);
+    const linkedId = U.workIdFromHash(location.hash, works);
     if (linkedId) lightbox.open(linkedId, 'load');
   }
 
@@ -141,7 +190,7 @@
     document.querySelector('[data-print]').addEventListener('click', () => window.print());
   }
 
-  const pages = { home: initHome, work: initWork, contact: initContact, resume: initResume };
+  const pages = { home: initHome, work: initWork, series: initSeries, contact: initContact, resume: initResume };
   const init = pages[document.body.dataset.page];
   if (init) init();
 })();

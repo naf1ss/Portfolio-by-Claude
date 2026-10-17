@@ -1,6 +1,8 @@
 /**
  * Light / dark theme. Follows the device setting until the visitor uses the
- * toggle in the header; that choice is remembered in this browser.
+ * toggle in the header; that choice is remembered in this browser. Holding the
+ * toggle down (or Shift + click / Shift + Enter) forgets the choice and goes
+ * back to following the device.
  *
  * Loaded synchronously in <head> so a saved choice is applied before the first
  * paint (no flash of the wrong theme). The CSS does the rest: it reads
@@ -12,6 +14,8 @@
   const { parseTheme, resolveTheme, oppositeTheme } = window.ThemeUtils;
   const STORAGE_KEY = 'theme';
   const SWITCH_DURATION_MS = 1400;
+  const HOLD_TO_RESET_MS = 650;
+  const STATUS_VISIBLE_MS = 2200;
 
   const root = document.documentElement;
   const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -28,7 +32,8 @@
 
   function saveChoice(theme) {
     try {
-      localStorage.setItem(STORAGE_KEY, theme);
+      if (theme) localStorage.setItem(STORAGE_KEY, theme);
+      else localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       /* not remembered, still applied */
     }
@@ -49,6 +54,7 @@
     button.type = 'button';
     button.className = 'theme-toggle';
     button.setAttribute('aria-label', 'Dark mode');
+    button.title = 'Switch theme. Hold to follow your device.';
     button.innerHTML = ICON;
     return button;
   }
@@ -58,12 +64,13 @@
   }
 
   /**
-   * Switches theme, revealing the new one as a circle growing from the button.
+   * Sets the theme (null = follow the device), revealing it as a circle growing from the button.
    * Falls back to an instant change without view transitions or with reduced motion.
    */
   function applyTheme(theme, origin) {
     const apply = () => {
-      root.dataset.theme = theme;
+      if (theme) root.dataset.theme = theme;
+      else delete root.dataset.theme;
     };
     if (!document.startViewTransition || reducedMotion.matches) {
       apply();
@@ -92,12 +99,57 @@
     reflect(button);
     header.append(button);
 
-    button.addEventListener('click', () => {
-      const next = oppositeTheme(currentTheme());
+    const status = document.createElement('p');
+    status.className = 'theme-status';
+    status.setAttribute('role', 'status');
+    document.body.append(status);
+    let statusTimer = null;
+    function announce(message) {
+      status.textContent = message;
+      status.classList.add('is-shown');
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => status.classList.remove('is-shown'), STATUS_VISIBLE_MS);
+    }
+
+    const originOf = () => {
       const rect = button.getBoundingClientRect();
-      saveChoice(next);
-      applyTheme(next, { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
-      button.setAttribute('aria-pressed', String(next === 'dark'));
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    };
+
+    function chooseTheme(theme) {
+      saveChoice(theme);
+      applyTheme(theme, originOf());
+      // The device setting decides when nothing is chosen.
+      button.setAttribute('aria-pressed', String((theme || (systemDark.matches ? 'dark' : 'light')) === 'dark'));
+    }
+
+    function followDevice() {
+      chooseTheme(null);
+      announce('Following your device');
+    }
+
+    // A long press resets; the click that ends it must not also toggle.
+    let holdTimer = null;
+    let holdFired = false;
+    button.addEventListener('pointerdown', () => {
+      holdFired = false;
+      holdTimer = setTimeout(() => {
+        holdFired = true;
+        followDevice();
+      }, HOLD_TO_RESET_MS);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((type) =>
+      button.addEventListener(type, () => clearTimeout(holdTimer))
+    );
+    button.addEventListener('contextmenu', (event) => event.preventDefault());
+
+    button.addEventListener('click', (event) => {
+      if (holdFired) {
+        holdFired = false;
+        return;
+      }
+      if (event.shiftKey) followDevice();
+      else chooseTheme(oppositeTheme(currentTheme()));
     });
 
     // With no saved choice the page follows the device, including live changes.

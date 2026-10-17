@@ -18,6 +18,8 @@ A plain static site: HTML, CSS and a little JavaScript. No build step, no framew
 | `js/theme.js` | Header toggle, remembered choice, circular reveal when switching; loads in `<head>` to avoid a flash |
 | `js/intro-utils.js` | Pure rule for when the opening animation plays (arrival or reload of the home page); unit tested |
 | `js/intro.js` | Opening animation: large "n." that travels into the header logo while the cover closes onto it |
+| `js/series-data.js` | Named groups of works for the Series pages (edit here to regroup) |
+| `js/magnifier-utils.js`, `js/magnifier.js` | Round hover magnifier: geometry (unit tested) and the lens itself |
 | `js/motion.js` | Hero entrance, scroll reveals and parallax; does nothing when reduced motion is requested |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
 | `js/footer.js` | Builds the footer on every page, so its markup lives in one place |

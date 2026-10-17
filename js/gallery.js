@@ -39,6 +39,7 @@
     img.loading = eager ? 'eager' : 'lazy';
     if (priority) img.fetchPriority = 'high';
     img.decoding = 'async';
+    img.dataset.zoomSrc = U.largestUrl(work); // full-size file for the hover magnifier
     img.sizes = sizes;
     img.srcset = U.buildSrcset(work);
     img.src = U.fallbackUrl(work);
@@ -84,6 +85,25 @@
       createTile(work, i + 1, { hrefFor, eager: i < eagerCount })
     );
     list.replaceChildren(...tiles);
+  }
+
+  const SERIES_SIZES = '(min-width: 60rem) 30vw, (min-width: 40rem) 45vw, 92vw';
+
+  /** One card per series: a cover picture, the title and a "7 works · 2026" line. */
+  function renderSeriesList(list, entries, { hrefFor, eagerCount = 3 }) {
+    const cards = entries.map(({ series, works, cover }, i) => {
+      const link = element('a', 'series-card');
+      link.href = hrefFor(series);
+      const frame = element('span', 'tile__frame');
+      frame.append(createImage(cover, { eager: i < eagerCount, sizes: SERIES_SIZES }));
+      const caption = element('span', 'tile__caption');
+      caption.append(element('span', 'tile__title', series.title), element('span', 'tile__meta', U.seriesMeta(works)));
+      link.append(frame, caption);
+      const item = element('li');
+      item.append(link);
+      return item;
+    });
+    list.replaceChildren(...cards);
   }
 
   // Width of each mosaic image relative to the viewport, for choosing a file size.
@@ -159,5 +179,5 @@
     };
   }
 
-  window.Gallery = { renderGallery, renderMosaic, createFilters };
+  window.Gallery = { renderGallery, renderMosaic, renderSeriesList, createFilters };
 })();

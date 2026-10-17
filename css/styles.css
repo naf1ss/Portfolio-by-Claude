@@ -68,7 +68,7 @@
   --step-4: clamp(3rem, 1.9rem + 5.5vw, 6.75rem);
 
   --gutter: clamp(1.25rem, 4vw, 3.5rem);
-  --page-max: 90rem;
+  --page-max: 96rem;
   --measure: 38rem;
   --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -106,6 +106,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Everything is sized in rem, so on big monitors (from about 1760px wide) the
+     whole page scales up with the screen instead of floating in empty margins. */
+  font-size: max(100%, calc(0.5vw + 7.2px));
 }
 
 html.has-viewer {
@@ -243,6 +246,36 @@ a:hover {
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
   color: var(--on-ink);
+}
+
+.theme-toggle {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Brief confirmation ("Following your device") when the saved choice is cleared. */
+.theme-status {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  z-index: 40;
+  padding: 0.7rem 1.25rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  opacity: 0;
+  pointer-events: none;
+  text-transform: uppercase;
+  transform: translate(-50%, 0.75rem);
+  transition: opacity 0.3s var(--ease), transform 0.5s var(--ease-out);
+}
+
+.theme-status.is-shown {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .theme-toggle svg {
@@ -630,12 +663,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
   object-fit: cover;
 }
 
-@media (hover: hover) {
-  .mosaic__item:hover .tile__image {
-    transform: scale(1.05);
-  }
-}
-
 .section {
   margin-top: clamp(3rem, 7vw, 6rem);
 }
@@ -680,6 +707,67 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .page-title {
   padding-block: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 3vw, 2.5rem);
   font-size: var(--step-3);
+}
+
+/* Series */
+.series-back {
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.series-back[hidden] + .page-title {
+  padding-top: clamp(2rem, 6vw, 5rem);
+}
+
+.series-back + .page-title {
+  padding-top: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.series-note {
+  max-width: var(--measure);
+  margin: 0 0 clamp(1.75rem, 3vw, 2.75rem);
+  font-family: var(--font-prose);
+  font-size: var(--step-1);
+}
+
+.series-note--meta {
+  font-family: var(--font-text);
+  font-size: var(--step--1);
+}
+
+.series-note:empty {
+  display: none;
+}
+
+.series-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem) clamp(0.75rem, 1.6vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.series-list[hidden] {
+  display: none;
+}
+
+.series-card {
+  display: block;
+  text-decoration: none;
+}
+
+.series-card:hover {
+  color: inherit;
+}
+
+.series-card .tile__image {
+  aspect-ratio: 4 / 5;
+  height: auto;
+  object-fit: cover;
 }
 
 /* Medium index on the home page */
@@ -891,13 +979,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
   opacity: 1;
 }
 
-/* A slow, almost imperceptible push-in. */
-@media (hover: hover) {
-  .tile:hover .tile__image {
-    transform: scale(1.05);
-  }
-}
-
 .tile__caption {
   display: flex;
   flex-direction: column;
@@ -949,6 +1030,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .viewer__stage {
+  container-type: size; /* lets the picture size itself from the stage (cqw / cqh) */
   display: grid;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
@@ -956,11 +1038,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
   touch-action: pan-y pinch-zoom;
 }
 
-/* The box fills the stage (JS caps it at 2x the real size); contain keeps proportions. */
+/* The box is exactly the picture: as large as fits the stage, never past 2x its real size. */
 .viewer__image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  width: min(100cqw, calc(100cqh * var(--picture-ratio, 1)), var(--picture-max-width, 100%));
+  height: auto;
+  aspect-ratio: var(--picture-ratio, 1);
   opacity: 0;
   transition: opacity 0.35s var(--ease);
 }
@@ -1202,46 +1284,31 @@ button:focus-visible > .roll .roll__face + .roll__face {
   transform: translateY(-0.07em);
 }
 
-/* Label that follows the pointer over pictures (built by interactions.js). */
-.cursor-label {
+/* Round magnifier that follows the pointer over pictures (js/magnifier.js). */
+.lens {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 30;
-  display: grid;
-  place-items: center;
-  width: 5rem;
-  height: 5rem;
+  width: 10.5rem;
+  height: 10.5rem;
   border-radius: 50%;
-  background: var(--ink);
-  box-shadow: 0 0 0 1px var(--paper);
-  color: var(--on-ink);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  background-color: var(--paper-sunken);
+  background-repeat: no-repeat;
+  box-shadow: 0 0 0 2px var(--paper), 0 1.25rem 3rem rgb(0 0 0 / 0.28);
   opacity: 0;
   pointer-events: none;
-  text-transform: uppercase;
-  transform: translate3d(var(--cursor-x, -9rem), var(--cursor-y, -9rem), 0) translate(-50%, -50%);
+  transform: translate3d(var(--lens-x, -20rem), var(--lens-y, -20rem), 0) translate(-50%, -50%) scale(0.6);
+  transition: opacity 0.25s var(--ease), transform 0.45s var(--ease-out);
 }
 
-.cursor-label span {
-  display: block;
-  transform: scale(0.4);
-  transition: transform 0.5s var(--ease-out);
-}
-
-.cursor-label.is-visible {
+.lens.is-visible {
   opacity: 1;
+  transform: translate3d(var(--lens-x, -20rem), var(--lens-y, -20rem), 0) translate(-50%, -50%) scale(1);
 }
 
-.cursor-label.is-visible span {
-  transform: scale(1);
-}
-
-/* The label replaces the arrow while it is over a picture. */
-.has-cursor-label .tile,
-.has-cursor-label .mosaic__item {
+/* The lens replaces the arrow while it is over a picture. */
+.has-lens .tile__frame {
   cursor: none;
 }
 
@@ -1294,6 +1361,12 @@ button:focus-visible > .roll .roll__face + .roll__face {
     opacity: 0;
     filter: blur(8px);
   }
+}
+
+/* Pictures glide between a tile and the viewer (js/lightbox.js). */
+::view-transition-group(work-picture) {
+  animation-duration: 0.6s;
+  animation-timing-function: var(--ease-out);
 }
 
 /* Smooth cross-fade between pages where the browser supports it. */
@@ -1415,7 +1488,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
   .intro-cover,
   .intro-mark,
-  .cursor-label,
+  .lens,
+  .theme-status,
   .theme-toggle {
     display: none !important;
   }
