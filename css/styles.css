@@ -865,6 +865,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
    before the first row of pictures, so the cut-off never shows. */
 .gallery-page {
   position: relative;
+  overflow-x: clip; /* the photographer starts off to the right while he slides in */
 }
 
 .gallery-page > :not(.gallery-peek) {
