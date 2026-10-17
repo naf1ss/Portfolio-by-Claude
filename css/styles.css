@@ -45,13 +45,14 @@
   /* Text is only ever black, white or red (AA on both themes). Backgrounds and
      hairlines may be neutral. Secondary text keeps the same colour and is set
      apart by size, weight and style instead (see --ink-muted). */
-  --paper: #f4f3f0;
-  --paper-sunken: #e8e6e1;
+  --paper: #fff;
+  --paper-sunken: #eceef2;
   --ink: #000;
   --ink-muted: var(--ink);
   --on-ink: #fff; /* text on an ink- or accent-coloured fill */
-  --rule: #cdcac3;
-  --accent: #c8102e;
+  --rule: #d8dbe2;
+  --accent: #1f3bff;
+  --footer-accent: #7c92ff;
 
   --font-display: 'Bodoni Moda', Didot, 'Bodoni MT', Georgia, serif;
   --font-prose: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
@@ -80,6 +81,7 @@
     --on-ink: #000;
     --rule: #333;
     --accent: #ff4d5e;
+    --footer-accent: #ff4d5e;
   }
 }
 
@@ -190,7 +192,7 @@ a:hover {
 .site-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 0.25rem 2rem;
   padding-block: 1.5rem;
@@ -211,7 +213,7 @@ a:hover {
 
 .site-nav ul {
   display: flex;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: clamp(0.15rem, 1vw, 0.5rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -219,8 +221,8 @@ a:hover {
 
 .site-nav a {
   display: inline-block;
-  padding-block: 0.6rem;
-  border-bottom: 1px solid transparent;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid transparent;
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.14em;
@@ -228,16 +230,98 @@ a:hover {
   text-transform: uppercase;
 }
 
-.site-nav a:hover,
-.site-nav a[aria-current='page'] {
-  border-bottom-color: currentColor;
+.site-nav a:hover {
+  color: var(--on-ink);
 }
 
-/* The footer is always black with white text, in both themes. It is built by
-   js/footer.js so its markup lives in one place. */
+@media (max-width: 30rem) {
+  .site-nav ul {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .site-nav a {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+.site-nav a[aria-current='page'] {
+  border-color: var(--ink);
+}
+
+.site-nav a[aria-current='page']:hover {
+  border-color: var(--ink);
+}
+
+/* Interactive pills. A circle of colour grows from wherever the pointer entered
+   (js/interactions.js sets --mx / --my) and shrinks back toward where it left. */
+.site-nav a,
+.button,
+.filter {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.site-nav a::before,
+.button::before,
+.filter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--fill, var(--ink));
+  clip-path: circle(0 at var(--mx, 50%) var(--my, 50%));
+  transition: clip-path 0.6s var(--ease-out);
+}
+
+.site-nav a:hover::before,
+.site-nav a:focus-visible::before,
+.button:hover::before,
+.button:focus-visible::before,
+.filter:hover::before,
+.filter:focus-visible::before {
+  clip-path: circle(150% at var(--mx, 50%) var(--my, 50%));
+}
+
+/* Button label that rolls up to reveal a copy of itself (built by interactions.js). */
+.roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.roll__face {
+  display: block;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.roll__face + .roll__face {
+  position: absolute;
+  inset: 0;
+  transform: translateY(110%);
+}
+
+a:hover > .roll .roll__face,
+a:focus-visible > .roll .roll__face,
+button:hover > .roll .roll__face,
+button:focus-visible > .roll .roll__face {
+  transform: translateY(-110%);
+}
+
+a:hover > .roll .roll__face + .roll__face,
+a:focus-visible > .roll .roll__face + .roll__face,
+button:hover > .roll .roll__face + .roll__face,
+button:focus-visible > .roll .roll__face + .roll__face {
+  transform: translateY(0);
+}
+
 .site-footer {
   --footer-ink: #fff;
-  --footer-accent: #ff4d5e;
   margin-top: clamp(4rem, 10vw, 8rem);
   background: #000;
   color: var(--footer-ink);
@@ -318,7 +402,13 @@ a:hover {
   display: inline-block;
   padding-block: 0.3rem;
   font-size: 1rem;
-  border-bottom: 1px solid transparent;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.5s var(--ease-out), color 0.3s var(--ease);
+}
+
+.footer__list a:hover,
+.footer__list a:focus-visible {
+  background-size: 100% 1px;
 }
 
 .footer__bottom {
@@ -400,7 +490,7 @@ a:hover {
 
 .button {
   display: inline-block;
-  padding: 0.85rem 1.5rem;
+  padding: 0.95rem 1.8rem;
   border: 1px solid var(--ink);
   background: transparent;
   color: var(--ink);
@@ -411,21 +501,23 @@ a:hover {
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  transition: color 0.35s var(--ease), border-color 0.35s var(--ease),
+    transform 0.45s var(--ease-out);
 }
 
-.button:hover {
+.button:hover,
+.button:focus-visible {
   color: var(--on-ink);
-  background: var(--ink);
 }
 
 .button--solid {
+  --fill: var(--accent);
   background: var(--ink);
   color: var(--on-ink);
 }
 
-.button--solid:hover {
-  background: var(--accent);
+.button--solid:hover,
+.button--solid:focus-visible {
   border-color: var(--accent);
 }
 
@@ -485,9 +577,19 @@ a:hover {
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem 2rem;
+  position: relative;
   margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
   padding-top: 1rem;
-  border-top: 1px solid var(--rule);
+}
+
+.section__head::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: var(--rule);
+  transform-origin: left;
+  transition: transform 1.4s var(--ease-out) var(--reveal-delay, 0s);
 }
 
 .eyebrow {
@@ -648,6 +750,7 @@ a:hover {
 
 .filter:hover {
   border-color: var(--ink);
+  color: var(--on-ink);
 }
 
 .filter[aria-pressed='true'] {
@@ -994,6 +1097,34 @@ a:hover {
   }
 }
 
+/* Section lines draw in from the left as they scroll into view. */
+.js-motion [data-reveal]:not(.is-in) .section__head::before,
+.js-motion .section__head[data-reveal]:not(.is-in)::before {
+  transform: scaleX(0);
+}
+
+/* Progress line along the top of the page (built by interactions.js). */
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 20;
+  height: 3px;
+  background: var(--accent);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* Once the entrance has played, letters respond to the pointer. */
+.js-motion.is-settled .hero__name .letter {
+  transition: transform 0.6s var(--ease-out), color 0.3s var(--ease);
+}
+
+.js-motion.is-settled .hero__name .letter:hover {
+  color: var(--accent);
+  transform: translateY(-0.07em);
+}
+
 /* Smooth cross-fade between pages where the browser supports it. */
 @view-transition {
   navigation: auto;
@@ -1104,6 +1235,12 @@ a:hover {
 }
 
 @media print {
+  [data-reveal],
+  [data-reveal] .section__head::before {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   @page {
     margin: 1.6cm;
   }
@@ -1179,6 +1316,10 @@ a:hover {
     animation: none;
     flex-wrap: wrap;
     width: auto;
+  }
+
+  .scroll-progress {
+    display: none;
   }
 
   .marquee__group + .marquee__group {

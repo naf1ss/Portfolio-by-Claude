@@ -12,6 +12,7 @@
   const root = document.documentElement;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const READY_TIMEOUT_MS = 2500; // never leave the page hidden if fonts or scripts stall
+  const SETTLE_DELAY_MS = 2800; // entrance (letters, images) is finished by then
   const REVEAL_STAGGER_S = 0.08;
   const PARALLAX_MAX_PX = 36;
 
@@ -96,6 +97,8 @@
 
   function markReady() {
     root.classList.add('is-ready');
+    // After the entrance has played, the hero letters can respond to the pointer.
+    setTimeout(() => root.classList.add('is-settled'), SETTLE_DELAY_MS);
   }
 
   document.addEventListener('DOMContentLoaded', () => {

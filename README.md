@@ -15,6 +15,7 @@ A plain static site: HTML, CSS and a little JavaScript. No build step, no framew
 | `js/contact-utils.js` | Turns the contact details into links; unit tested |
 | `js/works-utils.js` | Pure helpers (srcset, filtering, captions); unit tested |
 | `js/motion.js` | Hero entrance, scroll reveals and parallax; does nothing when reduced motion is requested |
+| `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line |
 | `js/footer.js` | Builds the footer on every page, so its markup lives in one place |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
@@ -24,7 +25,7 @@ A plain static site: HTML, CSS and a little JavaScript. No build step, no framew
 
 ## Colours
 
-Text is only black, white or red (`--ink`, `--on-ink`, `--accent` in the tokens at the top of `css/styles.css`; the footer is always black
+Text is only black, white or the accent: blue on the white light theme, red on the black dark theme (`--ink`, `--on-ink`, `--accent` in the tokens at the top of `css/styles.css`; the footer is always black
 with white text). Secondary text uses the same colour and is set apart by size and weight, via `--ink-muted`.
 To bring back a softer grey, change that one token.
 

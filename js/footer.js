@@ -74,6 +74,7 @@
     if (elsewhere.length > 0) top.append(column('Elsewhere', elsewhere));
 
     footer.replaceChildren(top, bottomBar());
+    if (window.Motion) window.Motion.reveal(top.children);
   }
 
   const footer = document.querySelector('[data-site-footer]');
