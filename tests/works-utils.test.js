@@ -297,3 +297,28 @@ test('pickRandom returns distinct items, never more than exist, and does not tou
 test('pickRandom follows the random source', () => {
   assert.deepEqual(U.pickRandom(['a', 'b', 'c'], 2, () => 0.99), ['c', 'b']);
 });
+
+test('composeMailto encodes the subject and body and signs the note with the sender name', () => {
+  const href = ContactUtils.composeMailto('hi@example.com', { topic: 'A commission', name: 'Sam', message: 'Hello & welcome' });
+  const url = new URL(href);
+  assert.equal(url.protocol, 'mailto:');
+  assert.equal(url.pathname, 'hi@example.com');
+  assert.equal(url.searchParams.get('subject'), 'A commission — Sam');
+  assert.equal(url.searchParams.get('body'), 'Hello & welcome\n\n— Sam');
+});
+
+test('composeMailto leaves out the name parts when no name is given', () => {
+  const url = new URL(ContactUtils.composeMailto('hi@example.com', { topic: 'Just saying hello', name: '  ', message: ' Hi ' }));
+  assert.equal(url.searchParams.get('subject'), 'Just saying hello');
+  assert.equal(url.searchParams.get('body'), 'Hi');
+});
+
+test('clockAt gives the local time in a place and whether it is daytime there', () => {
+  const instant = new Date('2026-10-17T06:31:00Z');
+  assert.deepEqual(ContactUtils.clockAt(instant, 'America/New_York'), { time: '2:31 AM', isDay: false });
+  assert.deepEqual(ContactUtils.clockAt(instant, 'Asia/Dhaka'), { time: '12:31 PM', isDay: true });
+});
+
+test('NOTE_TOPICS starts with the friendliest default', () => {
+  assert.equal(ContactUtils.NOTE_TOPICS[0], 'Just saying hello');
+});

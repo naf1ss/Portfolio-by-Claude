@@ -15,8 +15,10 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `css/styles.css` | All styling: tokens, layout, gallery, viewer |
 | `js/works-data.js` | **The catalogue.** One record per work (title, year, medium, category, image info) |
 | `js/works-photography.js` | The photographs: one compact row each (year, real widths, height). Untitled for now |
-| `js/site-config.js` | Hero works, featured works, public contact details (email, Instagram, LinkedIn). The build also reads the contact details for the footer |
-| `js/contact-utils.js` | Turns the contact details into links; unit tested |
+| `js/site-config.js` | Hero works, featured works, the clock places, public contact details (email, Instagram, LinkedIn). The build also reads the contact details for the footer |
+| `js/contact-utils.js` | Turns the contact details into links, composes the note's mailto link and the clocks' times; unit tested |
+| `js/contact.js` | Contact page: note composer, copy email, live clocks (`places` in `site-config.js`) |
+| `js/painted-text.js` | Fills lettering marked `data-painted` with random photographs or paintings from the catalogue (footer "n.", contact headline) |
 | `js/works-utils.js` | Pure helpers (srcset, filtering, captions); unit tested |
 | `js/theme-utils.js` | Pure light/dark rules (saved choice beats the device setting); unit tested |
 | `js/theme.js` | Header toggle, remembered choice, circular reveal when switching; loads in `<head>` to avoid a flash |

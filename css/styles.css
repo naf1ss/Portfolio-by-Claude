@@ -439,6 +439,57 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: var(--footer-accent);
 }
 
+/* Painted lettering: pictures seen through the letters (js/painted-text.js).
+   Two layers crossfade; the letters are plain ink until the first picture has loaded. */
+.painted {
+  display: inline-grid;
+}
+
+.painted__layer {
+  grid-area: 1 / 1;
+  background: var(--painted-url, none) 50% 50% / cover no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: brightness(var(--painted-brightness, 1)) saturate(1.1);
+  transition: opacity 1.6s var(--ease);
+}
+
+.painted__layer + .painted__layer {
+  opacity: 0;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  [data-painted].is-painted .painted__layer {
+    color: transparent;
+    animation: painted-drift 22s ease-in-out infinite alternate;
+  }
+}
+
+[data-painted].is-painted .painted__layer.is-shown {
+  opacity: 1;
+}
+
+[data-painted].is-painted .painted__layer:not(.is-shown) {
+  opacity: 0;
+}
+
+@keyframes painted-drift {
+  from {
+    background-position: 30% 25%;
+  }
+
+  to {
+    background-position: 70% 75%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painted__layer {
+    animation: none !important;
+    transition: none;
+  }
+}
+
 /* Footer: a big "n." filled with photographs (js/footer-art.js), an invitation to write, and the link lists.
    --logo-size sets the letter; the text beside it is sized to end level with the letter's top and baseline. */
 .footer__top {
@@ -468,44 +519,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .footer__n {
-  display: grid;
-}
-
-.footer__n-layer {
-  grid-area: 1 / 1;
-  background: var(--footer-photo, none) 50% 50% / cover no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: brightness(1.25) saturate(1.1); /* keeps dusk photographs readable on black */
-  transition: opacity 1.6s var(--ease);
-}
-
-/* The letter is plain white until a photograph is ready; the second layer waits to fade in over the first. */
-.footer__n-layer + .footer__n-layer {
-  opacity: 0;
-}
-
-.footer__logo.is-painted .footer__n-layer {
-  color: transparent;
-  animation: footer-drift 22s ease-in-out infinite alternate;
-}
-
-.footer__logo.is-painted .footer__n-layer.is-shown {
-  opacity: 1;
-}
-
-.footer__logo.is-painted .footer__n-layer:not(.is-shown) {
-  opacity: 0;
-}
-
-@keyframes footer-drift {
-  from {
-    background-position: 30% 25%;
-  }
-
-  to {
-    background-position: 70% 75%;
-  }
+  --painted-brightness: 1.25; /* keeps dusk photographs readable on black */
 }
 
 .footer__dot {
@@ -562,13 +576,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
   .footer__elsewhere {
     grid-area: elsewhere;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .footer__n-layer {
-    animation: none !important;
-    transition: none;
   }
 }
 
@@ -997,32 +1004,338 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: var(--ink-muted);
 }
 
-.contact-list {
+/* ---------- Contact ---------- */
+.contact {
+  --paint: none; /* set by js/contact.js to the painting currently in the headline */
+}
+
+.contact__head {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  padding-block: clamp(2rem, 6vw, 4.5rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+.contact__title {
+  width: fit-content;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 20vw, 19rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  cursor: pointer;
+}
+
+/* room for the descender of the "y", which would otherwise fall outside the painted box */
+.contact__title .painted__layer {
+  padding-block: 0.04em 0.12em;
+}
+
+.contact__title .painted {
+  margin-bottom: -0.12em;
+}
+
+.contact__dot {
+  color: var(--accent);
+}
+
+.contact__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem 3rem;
+}
+
+.contact__lede {
+  max-width: 28rem;
+  font-family: var(--font-prose);
+  font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.contact__credit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.25rem;
+  font-size: var(--step--1);
+}
+
+.contact__credit a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.contact__shuffle {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.contact__shuffle span {
+  display: inline-block;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.contact__shuffle:hover span,
+.contact__shuffle:focus-visible span {
+  transform: rotate(180deg);
+}
+
+.contact__grid {
+  display: grid;
+  gap: clamp(3rem, 6vw, 4rem) clamp(2.5rem, 7vw, 7rem);
+  align-items: start;
+}
+
+@media (min-width: 56rem) {
+  .contact__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+/* The note: a form that composes an email (see js/contact.js). */
+.note__form {
+  display: grid;
+  gap: 1.75rem;
+  margin-top: 1.5rem;
+}
+
+.note__topics {
+  min-width: 0;
   margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.note__label {
+  display: block;
+  padding: 0; /* the <legend> shares this class */
+  margin-bottom: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.note__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.625rem;
+}
+
+.chip {
+  position: relative;
+}
+
+.chip__input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.chip__text {
+  display: block;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: var(--step--1);
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease),
+    transform 0.4s var(--ease-out);
+}
+
+.chip:hover .chip__text {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.chip__input:checked + .chip__text {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.chip__input:focus-visible + .chip__text {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.note__field {
+  display: block;
+}
+
+.note__input {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0 0.7rem;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--font-prose);
+  font-size: clamp(1.3rem, 1.15rem + 0.5vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.35;
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.note__input--message {
+  resize: vertical;
+  min-height: 7rem;
+}
+
+.note__input::placeholder {
+  color: inherit;
+  opacity: 0.4;
+}
+
+.note__input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  box-shadow: 0 1px 0 var(--accent);
+}
+
+.note__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.note__status {
+  min-height: 1.4em;
+  font-size: var(--step--1);
+}
+
+/* Elsewhere: big links that fill with the headline's painting when pointed at. */
+.contact-list {
+  margin: 1.5rem 0 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--rule);
 }
 
 .contact-list li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 2rem;
-  padding-block: 1.1rem;
+  display: grid;
+  gap: 0.1rem;
+  padding-block: 1rem;
   border-bottom: 1px solid var(--rule);
-  font-family: var(--font-display);
-  font-size: var(--step-2);
-  line-height: 1.1;
 }
 
 .contact-list__label {
-  min-width: 8rem;
-  color: var(--ink-muted);
-  font-family: var(--font-text);
-  font-size: var(--step--1);
+  font-size: 0.78rem;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.contact-list a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 1rem + 1.1vw, 1.75rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: padding-left 0.5s var(--ease-out);
+}
+
+.contact-list a::after {
+  content: '\2197';
+  flex: none;
+  font-family: var(--font-text);
+  font-size: 0.7em;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.contact-list a:hover,
+.contact-list a:focus-visible {
+  padding-left: 0.6rem;
+}
+
+.contact-list a:hover::after,
+.contact-list a:focus-visible::after {
+  transform: translate(0.2em, -0.2em);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .contact-list a:hover,
+  .contact-list a:focus-visible {
+    background: var(--paint) 50% 50% / cover no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Where I am: two clocks, with a dot that glows by day. */
+.clocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.5rem;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clocks__place {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.clocks__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.clocks__name::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+}
+
+.clocks__place.is-day .clocks__name::before {
+  border-color: var(--accent);
+  background: var(--accent);
+  animation: clock-glow 3.2s ease-in-out infinite;
+}
+
+.clocks__time {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+@keyframes clock-glow {
+  50% {
+    box-shadow: 0 0 0 0.35rem transparent;
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clocks__place.is-day .clocks__name::before {
+    animation: none;
+  }
 }
 
 /* ---------- About ---------- */

@@ -15,7 +15,7 @@
     {"file": "works-data"},
     {"file": "works-photography"},
     {"file": "series-data"},
-    {"file": "footer-art", "requires": ["works-utils", "works-photography"]},
+    {"file": "painted-text", "requires": ["works-utils", "works-photography"]},
     {"file": "site-config"},
     {"file": "hero-window-utils"},
     {"file": "hero-window"},
@@ -23,12 +23,13 @@
     {"file": "lightbox"},
     {"file": "contact-utils"},
     {"file": "pages", "requires": ["site-config", "contact-utils"]},
+    {"file": "contact", "requires": ["contact-utils", "site-config"]},
     {"file": "interactions"},
     {"file": "magnifier-utils"},
     {"file": "magnifier"},
     {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "motion", "interactions", "footer-art"],
+  "baseScripts": ["theme-utils", "theme", "motion", "interactions", "painted-text"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",

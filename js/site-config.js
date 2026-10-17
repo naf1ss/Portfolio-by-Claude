@@ -15,6 +15,12 @@ window.SITE_CONFIG = {
     'A019', 'A036', 'ceramics-59', 'A002',
   ],
 
+  // Shown as live clocks on the contact page; timeZone is an IANA name.
+  places: [
+    { label: 'Gettysburg', timeZone: 'America/New_York' },
+    { label: 'Dhaka', timeZone: 'Asia/Dhaka' },
+  ],
+
   // Only the items you fill in are shown on the contact and resume pages.
   contact: {
     email: 'nafisulhasansamimd@gmail.com',

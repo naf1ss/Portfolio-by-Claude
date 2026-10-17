@@ -1,15 +1,49 @@
 ---
 title: Contact — nuances by nafis
-description: Get in touch with Nafis.
-scripts: pages
+description: Say hello to Nafis: write a note, or find him on Instagram and LinkedIn.
+scripts: pages, works-data, contact
 ---
-  <main id="main" class="wrap">
-    <h1 class="page-title">Contact</h1>
-    <div class="prose-layout">
-      <p class="eyebrow">Get in touch</p>
-      <div>
+  <main id="main" class="wrap contact">
+    <header class="contact__head">
+      <h1 class="contact__title" data-painted="paintings" data-reveal-on-load aria-label="Say hello."><span class="painted" aria-hidden="true"><span class="painted__layer">Say hello</span><span class="painted__layer">Say hello</span></span><span class="contact__dot" aria-hidden="true">.</span></h1>
+      <div class="contact__meta" data-reveal-on-load>
+        <p class="contact__lede">A question, a commission, a collaboration, or just a hello. Write a note below, or find me elsewhere.</p>
+        <p class="contact__credit" data-painted-credit hidden>
+          <span>The words are painted with <a href="work.html" data-painted-title></a>.</span>
+          <button class="contact__shuffle" type="button" data-painted-next>Another painting <span aria-hidden="true">&#8635;</span></button>
+        </p>
+      </div>
+    </header>
+
+    <div class="contact__grid">
+      <section class="note" aria-labelledby="note-heading" data-note hidden>
+        <h2 class="eyebrow" id="note-heading" data-reveal-on-load>Write a note</h2>
+        <form class="note__form" data-note-form novalidate data-reveal-on-load>
+          <fieldset class="note__topics">
+            <legend class="note__label">What is it about?</legend>
+            <div class="note__chips" data-note-topics></div>
+          </fieldset>
+          <label class="note__field">
+            <span class="note__label">Your name</span>
+            <input class="note__input" type="text" name="name" autocomplete="name" placeholder="Optional">
+          </label>
+          <label class="note__field">
+            <span class="note__label">Your note</span>
+            <textarea class="note__input note__input--message" name="message" rows="5" placeholder="Say what you have in mind&hellip;" required></textarea>
+          </label>
+          <div class="note__actions">
+            <button class="button button--solid" type="submit">Open in my mail app</button>
+            <button class="button" type="button" data-copy-email>Copy email address</button>
+          </div>
+          <p class="note__status" role="status" aria-live="polite" data-note-status></p>
+        </form>
+      </section>
+
+      <section class="elsewhere" aria-labelledby="elsewhere-heading">
+        <h2 class="eyebrow" id="elsewhere-heading" data-reveal-on-load>Elsewhere</h2>
         <ul class="contact-list" id="contact-list" hidden></ul>
         <p class="prose muted" id="contact-empty">Contact details are coming soon.</p>
-      </div>
+        <ul class="clocks" data-clocks aria-label="Local time" hidden></ul>
+      </section>
     </div>
   </main>
