@@ -44,7 +44,9 @@
     const brand = element('a', 'footer__brand');
     brand.href = 'index.html';
     brand.setAttribute('aria-label', 'nuances by Nafis, home');
-    brand.append(element('span', 'footer__name', 'nuances'), element('span', 'footer__by', 'by Nafis'));
+    const name = element('span', 'footer__name', 'nuances');
+    name.append(element('span', 'footer__dot', '.'));
+    brand.append(name, element('span', 'footer__by', 'by nafis'));
     block.append(
       brand,
       element('p', 'footer__tagline', 'Paintings, prints, ceramics and photographs by Nafis.')

@@ -191,3 +191,28 @@ test(
     assert.deepEqual(missing, []);
   }
 );
+
+const ThemeUtils = require('../js/theme-utils.js');
+
+test('theme: a saved choice beats the device setting', () => {
+  assert.equal(ThemeUtils.resolveTheme({ chosen: 'light', systemPrefersDark: true }), 'light');
+  assert.equal(ThemeUtils.resolveTheme({ chosen: 'dark', systemPrefersDark: false }), 'dark');
+});
+
+test('theme: with no (or an invalid) choice the device setting decides', () => {
+  assert.equal(ThemeUtils.resolveTheme({ chosen: null, systemPrefersDark: true }), 'dark');
+  assert.equal(ThemeUtils.resolveTheme({ chosen: 'sepia', systemPrefersDark: false }), 'light');
+  assert.equal(ThemeUtils.parseTheme(undefined), null);
+});
+
+test('theme: opposite flips between the two themes', () => {
+  assert.equal(ThemeUtils.oppositeTheme('light'), 'dark');
+  assert.equal(ThemeUtils.oppositeTheme('dark'), 'light');
+});
+
+test('every page loads the theme script before first paint', () => {
+  ['index', 'work', 'about', 'contact', 'resume'].forEach((page) => {
+    const html = fs.readFileSync(path.join(ROOT, `${page}.html`), 'utf8');
+    assert.match(html, /<script src="js\/theme-utils\.js"><\/script>\s*<script src="js\/theme\.js"><\/script>/, page);
+  });
+});

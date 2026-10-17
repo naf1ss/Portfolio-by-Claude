@@ -23,14 +23,30 @@
 
   root.classList.add('js-motion');
 
-  /** Splits an element's text into one span per letter, for staggered animation. */
+  /**
+   * Splits an element into one span per letter, for staggered animation. Text is
+   * split character by character; a child element (like the accent dot) becomes
+   * a single letter of its own.
+   */
   function splitLetters(element) {
-    const letters = [...element.textContent].map((character, index) => {
+    let index = 0;
+    const createLetter = () => {
       const span = document.createElement('span');
       span.className = 'letter';
-      span.style.setProperty('--i', index);
-      span.textContent = character;
+      span.style.setProperty('--i', index++);
       return span;
+    };
+    const letters = [...element.childNodes].flatMap((node) => {
+      if (node.nodeType !== Node.TEXT_NODE) {
+        const letter = createLetter();
+        letter.append(node);
+        return [letter];
+      }
+      return [...node.textContent].map((character) => {
+        const letter = createLetter();
+        letter.textContent = character;
+        return letter;
+      });
     });
     element.replaceChildren(...letters);
   }
