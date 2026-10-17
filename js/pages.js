@@ -35,7 +35,7 @@
   function initHome() {
     const { U, all, byId } = loadWorks();
     const pick = (ids) => (ids || []).map((id) => byId.get(id)).filter(Boolean);
-    const hrefFor = (work) => `work.html${U.hashForWork(work)}`;
+    const hrefFor = (work) => `gallery.html${U.hashForWork(work)}`;
 
     window.Gallery.renderGallery(document.getElementById('featured-gallery'), pick(config.featuredIds), {
       hrefFor,
@@ -45,7 +45,7 @@
     const counts = U.countByCategory(all);
     const rows = U.CATEGORIES.filter((category) => counts[category.id] > 0).map((category) => {
       const link = document.createElement('a');
-      link.href = `work.html?c=${category.id}`;
+      link.href = `gallery.html?c=${category.id}`;
       const name = document.createElement('span');
       name.className = 'medium-list__name';
       name.textContent = category.label;
@@ -63,7 +63,7 @@
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
   }
 
-  function initWork() {
+  function initGallery() {
     const { U, all, byId } = loadWorks();
     const list = document.getElementById('gallery');
     const status = document.getElementById('result-status');
@@ -185,7 +185,7 @@
     document.querySelector('[data-print]').addEventListener('click', () => window.print());
   }
 
-  const pages = { home: initHome, work: initWork, series: initSeries, contact: initContact, resume: initResume };
+  const pages = { home: initHome, gallery: initGallery, series: initSeries, contact: initContact, resume: initResume };
   const init = pages[document.body.dataset.page];
   if (init) init();
 })();

@@ -1,0 +1,20 @@
+---
+title: Page not found — nuances by nafis
+description: That address does not lead anywhere on nuances by nafis.
+base: /
+scripts: works-data
+---
+  <main id="main" class="wrap lost">
+    <header class="lost__head">
+      <h1 class="contact__title lost__title" data-painted="paintings" data-reveal-on-load aria-label="Nothing here."><span class="painted" aria-hidden="true"><span class="painted__layer">Nothing here</span><span class="painted__layer">Nothing here</span></span><span class="contact__dot" aria-hidden="true">.</span></h1>
+      <p class="contact__lede" data-reveal-on-load>That address does not lead anywhere. It may have moved, or a letter may be off. These will get you back to the work.</p>
+      <p class="lost__links" data-reveal-on-load>
+        <a class="button button--solid" href="index.html">Home</a>
+        <a class="button" href="gallery.html">Gallery</a>
+        <a class="button" href="series.html">Series</a>
+        <a class="button" href="contact.html">Contact</a>
+      </p>
+    </header>
+    <!-- This page is served at any address, so "skip to content" must point at the page it is on. -->
+    <script>document.querySelector('.skip-link').setAttribute('href', location.pathname + '#main');</script>
+  </main>

@@ -10,7 +10,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `src/pages/*.html` | **Edit pages here.** One file per page: a short front matter block (title, description, extra scripts) followed by that page's own content |
 | `src/layout.html`, `src/partials/` | The shared page skeleton, head, header, footer and image viewer |
 | `src/site.json` | The nav links, script order and dependencies, font preloads and the footer's copyright year |
-| `index.html`, `work.html`, `series.html`, `about.html`, `resume.html`, `contact.html` | **Generated** from `src/` by `npm run build`; do not edit by hand |
+| `index.html`, `gallery.html`, `series.html`, `artist-statement.html`, `resume.html`, `contact.html`, `404.html`, plus the redirect pages for old addresses (`redirects` in `src/site.json`) | **Generated** from `src/` by `npm run build`; do not edit by hand |
 | `tools/build-pages.js`, `tools/page-builder.js` | The build script and its unit-tested template logic |
 | `css/styles.css` | All styling: tokens, layout, gallery, viewer |
 | `js/works-data.js` | **The catalogue.** One record per work (title, year, medium, category, image info) |
@@ -65,7 +65,7 @@ The catalogue checks also confirm every image referenced in `works-data.js` and 
 3. To feature it on the home page, add its `id` to `featuredIds` in `js/site-config.js`. The works that scan through the hero's "nuances." are `heroSlides` (in this order).
 4. Run `npm test`, then commit and push.
 
-Each work gets a shareable link: `work.html#a012` opens that piece, and `work.html?c=print` opens a filtered view.
+Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gallery.html?c=print` opens a filtered view.
 
 ## Photography
 

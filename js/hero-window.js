@@ -266,7 +266,7 @@
     const { work } = slides[index];
     countLabel.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
     titleLink.textContent = work.title;
-    titleLink.href = `work.html${Works.hashForWork(work)}`;
+    titleLink.href = `gallery.html${Works.hashForWork(work)}`;
     prefetchAround(index);
   }
 

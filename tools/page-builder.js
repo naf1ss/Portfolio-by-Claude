@@ -73,6 +73,31 @@ function renderFontPreloads(fonts) {
     .join('\n');
 }
 
+/**
+ * A tiny page that sends visitors from an address that used to exist to its new one,
+ * keeping any ?query and #fragment (a script does that; the meta refresh is the fallback).
+ */
+function renderRedirect(target) {
+  const href = escapeAttribute(target);
+  return [
+    '<!doctype html>',
+    '<html lang="en">',
+    '<head>',
+    '  <meta charset="utf-8">',
+    '  <title>Moved \u2014 nuances by nafis</title>',
+    '  <meta name="robots" content="noindex">',
+    `  <link rel="canonical" href="${href}">`,
+    `  <meta http-equiv="refresh" content="0; url=${href}">`,
+    `  <script>location.replace(${JSON.stringify(target).replace(/</g, '\\u003c')} + location.search + location.hash);</script>`,
+    '</head>',
+    '<body>',
+    `  <p>This page has moved to <a href="${href}">${href}</a>.</p>`,
+    '</body>',
+    '</html>',
+    '',
+  ].join('\n');
+}
+
 function escapeAttribute(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
@@ -152,6 +177,8 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] })
     description: assertAttributeSafe('description', meta.description),
     ogTitle: assertAttributeSafe('og-title', meta['og-title'] || meta.title),
     ogDescription: assertAttributeSafe('og-description', meta['og-description'] || meta.description),
+    // Pages that can be served from any depth (the 404 page) resolve their files from the site root.
+    base: meta.base ? `  <base href="${assertAttributeSafe('base', meta.base)}">` : '',
     fontPreloads: renderFontPreloads(site.fonts),
     scripts: renderScripts(site, scripts),
   });
@@ -168,4 +195,4 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] })
   });
 }
 
-module.exports = { parsePage, fillTemplate, renderPage, renderNav };
+module.exports = { parsePage, fillTemplate, renderPage, renderNav, renderRedirect };

@@ -1,8 +1,8 @@
 {
   "nav": [
-    {"label": "Gallery", "href": "work.html"},
+    {"label": "Gallery", "href": "gallery.html"},
     {"label": "Series", "href": "series.html"},
-    {"label": "Artist statement", "href": "about.html"},
+    {"label": "Artist statement", "href": "artist-statement.html"},
     {"label": "Resume", "href": "resume.html"},
     {"label": "Contact", "href": "contact.html"}
   ],
@@ -35,6 +35,10 @@
     "manrope-latin-wght-normal.woff2",
     "cormorant-garamond-latin-wght-normal.woff2",
     "kaushan-script-latin-400-normal.woff2"
+  ],
+  "redirects": [
+    {"from": "work.html", "to": "gallery.html"},
+    {"from": "about.html", "to": "artist-statement.html"}
   ],
   "copyrightYear": 2026
 }

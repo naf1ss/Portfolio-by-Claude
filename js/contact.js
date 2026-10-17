@@ -23,7 +23,7 @@
     const { work, url } = detail;
     page.style.setProperty('--paint', `url("${url}")`); // the link list borrows the same painting on hover
     creditLink.textContent = work.title || work.medium;
-    creditLink.href = `work.html#${work.id.toLowerCase()}`;
+    creditLink.href = `gallery.html#${work.id.toLowerCase()}`;
     credit.hidden = false;
   });
 

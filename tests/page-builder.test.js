@@ -114,3 +114,11 @@ test('the footer omits the Elsewhere column when no contact details are set', ()
   assert.doesNotMatch(html, /\n\n\(c\)/, 'no blank line is left behind');
   assert.match(html, /\(c\) 2026 contact\.html/, 'without an email, hello goes to the contact page');
 });
+
+test('a page with a base front matter key gets a <base> tag, and others do not', () => {
+  const headParts = { ...parts, partials: { ...parts.partials, head: '  <title>{{title}}</title>\n{{base}}\n  <meta content="{{ogTitle}}">\n{{fontPreloads}}\n{{scripts}}\n' } };
+  const withBase = renderPage('404', page('title: t\ndescription: d\nbase: /'), headParts);
+  const without = renderPage('about', page('title: t\ndescription: d'), headParts);
+  assert.match(withBase, /<title>t<\/title>\n  <base href="\/">\n  <meta/);
+  assert.doesNotMatch(without, /<base/);
+});

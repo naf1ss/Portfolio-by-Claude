@@ -15,7 +15,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { contactEntries } = require('../js/contact-utils.js');
-const { renderPage } = require('./page-builder.js');
+const { renderPage, renderRedirect } = require('./page-builder.js');
 const { stampHtml } = require('./stamp-assets.js');
 
 const ROOT = path.join(__dirname, '..');
@@ -44,13 +44,21 @@ function readSources() {
 
 function build() {
   const parts = readSources();
-  return fs.readdirSync(path.join(SRC, 'pages'))
+  const pages = fs.readdirSync(path.join(SRC, 'pages'))
     .filter((file) => file.endsWith('.html'))
     .map((file) => {
       const name = path.basename(file, '.html');
       const source = fs.readFileSync(path.join(SRC, 'pages', file), 'utf8');
       return { file: `${name}.html`, html: stampHtml(renderPage(name, source, parts)) };
     });
+
+  const pageFiles = new Set(pages.map(({ file }) => file));
+  const redirects = (parts.site.redirects || []).map(({ from, to }) => {
+    if (pageFiles.has(from)) throw new Error(`redirects: ${from} is also a page.`);
+    if (!pageFiles.has(to)) throw new Error(`redirects: ${from} points to ${to}, which is not a page.`);
+    return { file: from, html: renderRedirect(to) };
+  });
+  return pages.concat(redirects);
 }
 
 function run(check) {
