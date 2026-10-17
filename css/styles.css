@@ -654,18 +654,29 @@ button:focus-visible > .roll .roll__face + .roll__face {
   z-index: 1;
   display: grid;
   justify-items: center;
-  gap: clamp(1.25rem, 3vw, 1.75rem);
+  gap: clamp(1.75rem, 4vw, 2.5rem);
   padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
   text-align: center;
 }
 
 .hero__lede {
-  max-width: 30rem;
+  max-width: 44rem;
   font-family: var(--font-prose);
   font-size: clamp(1.45rem, 1.25rem + 0.7vw, 1.8rem);
   font-weight: 500;
   line-height: 1.35;
   text-wrap: balance;
+}
+
+/* Two lines on screens wide enough; on narrow ones the sentence just wraps. */
+.hero__break {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  .hero__break {
+    display: inline;
+  }
 }
 
 .hero__actions {

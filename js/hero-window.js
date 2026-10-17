@@ -299,13 +299,17 @@
       callback();
       return;
     }
-    const watcher = new MutationObserver(() => {
-      if (!root.classList.contains('is-ready')) return;
+    // Whichever of "page is ready" and "gave up waiting" comes first runs the entrance, and only once.
+    const begin = Geometry.once(() => {
       watcher.disconnect();
+      clearTimeout(giveUpTimer);
       callback();
     });
+    const watcher = new MutationObserver(() => {
+      if (root.classList.contains('is-ready')) begin();
+    });
     watcher.observe(root, { attributes: true, attributeFilter: ['class'] });
-    setTimeout(() => { watcher.disconnect(); callback(); }, 5000); // never leave the name unwritten
+    const giveUpTimer = setTimeout(begin, 5000); // never leave the name unwritten
   }
 
   function start() {

@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const U = require('../js/hero-window-utils.js');
+const Geometry = U;
 
 // 50 units per character at a 100px font size.
 const measure = (text) => text.length * 50;
@@ -72,4 +73,15 @@ test('pickSizeIndex chooses the smallest sufficient file', () => {
   assert.equal(U.pickSizeIndex([600, 1200, 1800], 500), 0);
   assert.equal(U.pickSizeIndex([600, 1200, 1800], 601), 1);
   assert.equal(U.pickSizeIndex([600, 1200, 1526], 4000), 2, 'falls back to the largest');
+});
+
+test('once runs the callback a single time and keeps its first result', () => {
+  let calls = 0;
+  const run = Geometry.once((value) => {
+    calls += 1;
+    return value * 2;
+  });
+  assert.equal(run(4), 8);
+  assert.equal(run(5), undefined);
+  assert.equal(calls, 1);
 });

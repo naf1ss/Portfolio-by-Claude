@@ -102,5 +102,15 @@
     return index === -1 ? widths.length - 1 : index;
   }
 
-  return { splitName, fitLines, slideAt, skipAhead, scanPosition, pickSizeIndex, easeInOut, clamp, lerp };
+  /** Wraps a callback so only its first call runs; later calls (a timer firing after an event, say) do nothing. */
+  function once(callback) {
+    let called = false;
+    return (...args) => {
+      if (called) return undefined;
+      called = true;
+      return callback(...args);
+    };
+  }
+
+  return { once, splitName, fitLines, slideAt, skipAhead, scanPosition, pickSizeIndex, easeInOut, clamp, lerp };
 });
