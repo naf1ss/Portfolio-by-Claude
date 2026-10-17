@@ -194,6 +194,16 @@
     return span ? `${count} · ${span}` : count;
   }
 
+  /** Up to `count` distinct items in random order; `random` is injectable so tests are deterministic. */
+  function pickRandom(items, count, random = Math.random) {
+    const pool = items.slice();
+    const picked = [];
+    while (picked.length < count && pool.length > 0) {
+      picked.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+    }
+    return picked;
+  }
+
   return {
     IMAGE_ROOT,
     SIZE_SUFFIXES,
@@ -218,5 +228,6 @@
     hashForWork,
     worksInSeries,
     seriesMeta,
+    pickRandom,
   };
 });

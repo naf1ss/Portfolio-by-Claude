@@ -422,7 +422,9 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .site-footer {
   --footer-ink: #fff;
-  margin-top: clamp(4rem, 10vw, 8rem);
+  --logo-size: clamp(11rem, 8rem + 20vw, 20rem);
+  --n-height: calc(var(--logo-size) * 0.47); /* height of a Bodoni "n" */
+  margin-top: clamp(3rem, 7vw, 5.5rem);
   background: #000;
   color: var(--footer-ink);
   font-size: var(--step--1);
@@ -437,41 +439,72 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: var(--footer-accent);
 }
 
-/* Footer: a big "n." filled with a painting, an invitation to write, and the link lists. */
+/* Footer: a big "n." filled with photographs (js/footer-art.js), an invitation to write, and the link lists.
+   --logo-size sets the letter; the text beside it is sized to end level with the letter's top and baseline. */
 .footer__top {
   display: grid;
-  gap: 2.5rem 4rem;
-  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 2rem;
+  padding-block: clamp(2.25rem, 5vw, 3.5rem) clamp(1.75rem, 4vw, 2.5rem);
 }
 
+.footer__logo,
+.footer__hello {
+  grid-column: 1 / -1;
+}
+
+/* Boxes are .73em tall so the baseline sits on the bottom edge; the 0.47em letter then fills the lower part. */
 .footer__logo {
+  display: flex;
+  align-items: flex-end;
   justify-self: start;
+  height: var(--n-height);
   font-family: var(--font-display);
-  font-size: clamp(14rem, 8rem + 30vw, 34rem);
+  font-size: var(--logo-size);
   font-weight: 500;
   letter-spacing: -0.04em;
-  line-height: 0.7;
-  /* a painting seen through the letter; plain white where background-clip: text is missing */
+  line-height: 0.73;
   color: #fff;
 }
 
-@supports (background-clip: text) or (-webkit-background-clip: text) {
-  .footer__n {
-    /* inline-block so the painting covers the whole glyph box; margins cancel the extra line height */
-    display: inline-block;
-    margin-block: -0.15em;
-    line-height: 1;
-    background: url('../images/artwork/a003-common-sunset-600.jpg') 50% 10% / 100% 150% no-repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: footer-drift 28s ease-in-out infinite alternate;
-  }
+.footer__n {
+  display: grid;
+}
+
+.footer__n-layer {
+  grid-area: 1 / 1;
+  background: var(--footer-photo, none) 50% 50% / cover no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: brightness(1.25) saturate(1.1); /* keeps dusk photographs readable on black */
+  transition: opacity 1.6s var(--ease);
+}
+
+/* The letter is plain white until a photograph is ready; the second layer waits to fade in over the first. */
+.footer__n-layer + .footer__n-layer {
+  opacity: 0;
+}
+
+.footer__logo.is-painted .footer__n-layer {
+  color: transparent;
+  animation: footer-drift 22s ease-in-out infinite alternate;
+}
+
+.footer__logo.is-painted .footer__n-layer.is-shown {
+  opacity: 1;
+}
+
+.footer__logo.is-painted .footer__n-layer:not(.is-shown) {
+  opacity: 0;
 }
 
 @keyframes footer-drift {
+  from {
+    background-position: 30% 25%;
+  }
+
   to {
-    background-position: 50% 90%;
+    background-position: 70% 75%;
   }
 }
 
@@ -480,10 +513,10 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .footer__hello {
-  align-self: end;
   justify-self: start;
+  margin-top: -0.07em; /* lets the capital's top, not the line box, meet the letter's top */
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 1.2rem + 3.6vw, 4.2rem);
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.2rem);
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -500,53 +533,51 @@ button:focus-visible > .roll .roll__face + .roll__face {
   transform: translateX(0.25em);
 }
 
-@media (min-width: 30rem) and (max-width: 55.99rem) {
-  .footer__top {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .footer__logo,
-  .footer__hello {
-    grid-column: 1 / -1;
-  }
-}
-
 @media (min-width: 56rem) {
+  .site-footer {
+    --logo-size: 31rem;
+  }
+
   .footer__top {
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: auto 11rem 11rem minmax(0, 1fr);
     grid-template-areas:
-      'logo hello hello'
-      'logo explore elsewhere';
-    align-items: end;
+      'logo hello hello .'
+      'logo explore elsewhere .';
+    grid-template-rows: auto 1fr;
+    gap: 0 clamp(2rem, 5vw, 4.5rem);
+    min-height: var(--n-height);
   }
 
   .footer__logo {
     grid-area: logo;
+    align-self: end;
   }
 
   .footer__hello {
     grid-area: hello;
+    align-self: start;
   }
 
   .footer__explore {
     grid-area: explore;
-    align-self: start;
+    align-self: end;
   }
 
   .footer__elsewhere {
     grid-area: elsewhere;
-    align-self: start;
+    align-self: end;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer__n {
-    animation: none;
+  .footer__n-layer {
+    animation: none !important;
+    transition: none;
   }
 }
 
 .footer__heading {
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.6rem;
   font-family: var(--font-text);
   color: var(--footer-accent);
   font-size: 0.78rem;
@@ -557,16 +588,16 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .footer__list {
   display: grid;
-  gap: 0.2rem;
-  margin: 0;
+  gap: 0;
+  margin: 0 0 -0.15rem; /* the last link's text, not its padding, rests on the letter's baseline */
   padding: 0;
   list-style: none;
 }
 
 .footer__list a {
   display: inline-block;
-  padding-block: 0.3rem;
-  font-size: 1rem;
+  padding-block: 0.15rem;
+  font-size: 0.95rem;
   background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
   transition: background-size 0.5s var(--ease-out), color 0.3s var(--ease);
 }
@@ -582,7 +613,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem 2rem;
-  padding-block: 1.25rem 1.75rem;
+  padding-block: 1rem 1.25rem;
   border-top: 1px solid #333;
   font-size: 0.78rem;
   letter-spacing: 0.06em;

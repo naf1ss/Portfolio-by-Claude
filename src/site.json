@@ -15,6 +15,7 @@
     {"file": "works-data"},
     {"file": "works-photography"},
     {"file": "series-data"},
+    {"file": "footer-art", "requires": ["works-utils", "works-photography"]},
     {"file": "site-config"},
     {"file": "hero-window-utils"},
     {"file": "hero-window"},
@@ -27,7 +28,7 @@
     {"file": "magnifier"},
     {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "motion", "interactions"],
+  "baseScripts": ["theme-utils", "theme", "motion", "interactions", "footer-art"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",

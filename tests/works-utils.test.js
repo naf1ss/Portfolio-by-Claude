@@ -284,3 +284,16 @@ test('asset stamps: local css and js get a content hash, other links are untouch
   assert.match(out, /href="favicon\.svg"/);
   assert.equal(stampHtml(out), out, 'stamping twice changes nothing');
 });
+
+test('pickRandom returns distinct items, never more than exist, and does not touch the input', () => {
+  const items = ['a', 'b', 'c', 'd'];
+  const picked = U.pickRandom(items, 3, () => 0);
+  assert.deepEqual(picked, ['a', 'b', 'c']);
+  assert.deepEqual(items, ['a', 'b', 'c', 'd']);
+  assert.equal(new Set(U.pickRandom(items, 10)).size, 4);
+  assert.deepEqual(U.pickRandom([], 3), []);
+});
+
+test('pickRandom follows the random source', () => {
+  assert.deepEqual(U.pickRandom(['a', 'b', 'c'], 2, () => 0.99), ['c', 'b']);
+});
