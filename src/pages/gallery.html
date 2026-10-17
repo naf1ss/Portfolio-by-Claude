@@ -3,7 +3,12 @@ title: Gallery — nuances by nafis
 description: Paintings, mixed media, drawings, prints, digital art, photography and ceramics by Nafis.
 scripts: works-utils, works-data, works-photography, gallery, lightbox, pages, magnifier-utils, magnifier
 ---
-  <main id="main" class="wrap">
+  <main id="main" class="wrap gallery-page">
+    <!-- Decorative: the photographer peeks in from the right edge; the page fades out his lower half. -->
+    <img class="gallery-peek"
+         src="images/gallery/photographer-640.webp"
+         srcset="images/gallery/photographer-640.webp 640w, images/gallery/photographer-1100.webp 1100w"
+         sizes="14rem" width="640" height="1115" alt="" aria-hidden="true">
     <h1 class="page-title">Gallery</h1>
     <nav id="filters" aria-label="Filter by medium"></nav>
     <p id="result-status" class="visually-hidden" role="status"></p>

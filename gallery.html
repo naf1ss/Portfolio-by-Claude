@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=ef628898">
+  <link rel="stylesheet" href="css/styles.css?v=59ab3739">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/motion.js?v=f83564ed"></script>
@@ -49,7 +49,12 @@
     </nav>
   </header>
 
-  <main id="main" class="wrap">
+  <main id="main" class="wrap gallery-page">
+    <!-- Decorative: the photographer peeks in from the right edge; the page fades out his lower half. -->
+    <img class="gallery-peek"
+         src="images/gallery/photographer-640.webp"
+         srcset="images/gallery/photographer-640.webp 640w, images/gallery/photographer-1100.webp 1100w"
+         sizes="14rem" width="640" height="1115" alt="" aria-hidden="true">
     <h1 class="page-title">Gallery</h1>
     <nav id="filters" aria-label="Filter by medium"></nav>
     <p id="result-status" class="visually-hidden" role="status"></p>
