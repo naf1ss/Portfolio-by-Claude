@@ -1,13 +1,17 @@
 # nuances by nafis
 
 Portfolio of Nafis, an art student working in painting, ceramics, prints, photography, digital art and drawing.
-A plain static site: HTML, CSS and a little JavaScript. No build step, no framework, no third-party requests.
+A plain static site: HTML, CSS and a little JavaScript. No framework and no third-party requests. The HTML pages are assembled from small templates by a tiny Node script (`npm run build`) and the result is committed, so GitHub Pages serves plain files.
 
 ## Layout
 
 | Path | What it is |
 | --- | --- |
-| `index.html`, `work.html`, `about.html`, `resume.html`, `contact.html` | The five pages (header and footer are repeated in each) |
+| `src/pages/*.html` | **Edit pages here.** One file per page: a short front matter block (title, description, extra scripts) followed by that page's own content |
+| `src/layout.html`, `src/partials/` | The shared page skeleton, head, header, footer and image viewer |
+| `src/site.json` | The nav links, the script order and the font preloads |
+| `index.html`, `work.html`, `series.html`, `about.html`, `resume.html`, `contact.html` | **Generated** from `src/` by `npm run build`; do not edit by hand |
+| `tools/build-pages.js`, `tools/page-builder.js` | The build script and its unit-tested template logic |
 | `css/styles.css` | All styling: tokens, layout, gallery, viewer |
 | `js/works-data.js` | **The catalogue.** One record per work (title, year, medium, category, image info) |
 | `js/works-photography.js` | The photographs: one compact row each (year, real widths, height). Untitled for now |
@@ -26,6 +30,7 @@ A plain static site: HTML, CSS and a little JavaScript. No build step, no framew
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
 | `fonts/` | Self-hosted Bodoni Moda (headings), Cormorant Garamond (reading text) and Manrope (labels), all SIL OFL |
+| `tools/stamp-assets.js` | Content-hash stamps for css/js addresses (used by the build) |
 | `tools/optimize_images.py` | Makes web-sized, metadata-free copies of new photos |
 | `tests/` | Unit tests and catalogue checks |
 
@@ -76,6 +81,11 @@ Repository **Settings → Pages → Build and deployment → Deploy from a branc
 The site is then served at `https://<username>.github.io/<repository>/`. All paths are relative, so it works under that sub-path
 and on a custom domain without changes.
 
-## After changing any CSS or JS
+## After changing a page, the nav, or any CSS or JS
 
-Run `npm run stamp`. It adds a short content hash to every stylesheet and script address in the HTML (`css/styles.css?v=1a2b3c4d`), so browsers re-download a file the moment it changes instead of showing an old cached copy. `npm test` fails if a stamp is out of date.
+Run `npm run build`. It regenerates the six HTML pages from `src/` and adds a short content hash to every stylesheet and script address (`css/styles.css?v=1a2b3c4d`), so browsers re-download a file the moment it changes instead of showing an old cached copy.
+`npm test` fails if any page is out of date, so a forgotten build cannot be pushed unnoticed.
+
+- **Change the nav, footer or viewer:** edit `src/site.json` or the file in `src/partials/`, then build. All pages follow.
+- **Add a page:** create `src/pages/<name>.html` (copy `contact.html`'s front matter), add it to `nav` in `src/site.json` if it should be linked, build.
+- **Add a script:** put it in `js/`, list it in `scripts` in `src/site.json` (the order there is the load order), and name it in the `scripts:` line of each page that needs it.

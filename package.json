@@ -1,10 +1,10 @@
 {
   "name": "nuances-by-nafis",
   "private": true,
-  "description": "Static portfolio site for Nafis. No build step.",
+  "description": "Static portfolio site for Nafis. Pages are built from src/ and committed.",
   "scripts": {
+    "build": "node tools/build-pages.js",
     "test": "node --test",
-    "stamp": "node tools/stamp-assets.js",
-    "pretest": "node tools/stamp-assets.js --check"
+    "pretest": "node tools/build-pages.js --check"
   }
 }
