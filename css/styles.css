@@ -469,13 +469,14 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .footer__by {
   display: block;
   margin-top: -0.2rem;
+  text-align: right;
   color: var(--footer-accent);
   font-family: var(--font-script);
   font-size: clamp(1.7rem, 1.1rem + 1.7vw, 2.5rem);
   font-weight: 400;
   line-height: 1.2;
   rotate: -3deg;
-  transform-origin: left center;
+  transform-origin: right center;
 }
 
 .footer__tagline {
@@ -551,6 +552,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .hero__title {
+  width: fit-content; /* shrink to the wordmark so the by-line can sit under its right edge */
   line-height: 1;
 }
 
@@ -575,7 +577,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .hero__by {
   display: block;
   margin-top: -0.3rem;
-  margin-left: 0.15em;
+  margin-right: 0.05em;
+  text-align: right;
   color: var(--accent);
   font-family: var(--font-script);
   font-size: clamp(2rem, 0.8rem + 3vw, 3.3rem);
@@ -583,7 +586,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
   letter-spacing: 0;
   line-height: 1.2;
   rotate: -3deg;
-  transform-origin: left center;
+  transform-origin: right center;
 }
 
 .hero__lede {
