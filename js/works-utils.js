@@ -167,6 +167,21 @@
     return `#${work.id.toLowerCase()}`;
   }
 
+  /**
+   * Whether a point lies on the visible picture inside an object-fit: contain
+   * box. The element's box is larger than the picture whenever their shapes
+   * differ, so a click in the empty margin must not count as a click on the work.
+   *   box: { left, top, width, height } of the <img>; point: { x, y }
+   */
+  function isPointOnContainedPicture(box, work, point) {
+    const scale = Math.min(box.width / work.w, box.height / work.h);
+    const width = work.w * scale;
+    const height = work.h * scale;
+    const left = box.left + (box.width - width) / 2;
+    const top = box.top + (box.height - height) / 2;
+    return point.x >= left && point.x <= left + width && point.y >= top && point.y <= top + height;
+  }
+
   return {
     IMAGE_ROOT,
     SIZE_SUFFIXES,
@@ -188,5 +203,6 @@
     categoryFromSearch,
     workIdFromHash,
     hashForWork,
+    isPointOnContainedPicture,
   };
 });

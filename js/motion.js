@@ -1,7 +1,7 @@
 /**
  * Motion: the hero entrance, scroll reveals and a little parallax.
  *
- * Loaded synchronously in <head> so the "js-motion" class is on <html> before
+ * Loaded synchronously in <head> so the "js-motion" (and, on arrival, "js-intro") class is on <html> before
  * the first paint; the CSS only hides things that this script will then show.
  * With reduced motion requested nothing is hidden and nothing moves.
  * Exposes window.Motion.reveal(nodes) for content that is rendered later.
@@ -22,6 +22,19 @@
   }
 
   root.classList.add('js-motion');
+
+  const navigationEntry = performance.getEntriesByType('navigation')[0];
+  if (
+    window.IntroUtils &&
+    window.IntroUtils.shouldPlayIntro({
+      pathname: location.pathname,
+      referrer: document.referrer,
+      origin: location.origin,
+      navigationType: navigationEntry ? navigationEntry.type : 'navigate',
+    })
+  ) {
+    root.classList.add('js-intro');
+  }
 
   /**
    * Splits an element into one span per letter, for staggered animation. Text is
@@ -123,11 +136,22 @@
     initParallax();
 
     // Start once the fonts are in, so the headline does not animate and then jump.
-    const timeout = setTimeout(markReady, READY_TIMEOUT_MS);
+    let started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      if (window.Intro && root.classList.contains('js-intro')) {
+        window.Intro.play({ onReveal: markReady });
+      } else {
+        root.classList.remove('js-intro');
+        markReady();
+      }
+    }
+    const timeout = setTimeout(start, READY_TIMEOUT_MS);
     const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
     fontsReady.then(() => {
       clearTimeout(timeout);
-      requestAnimationFrame(markReady);
+      requestAnimationFrame(start);
     });
   });
 

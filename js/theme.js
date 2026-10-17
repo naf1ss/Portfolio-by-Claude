@@ -11,7 +11,7 @@
 
   const { parseTheme, resolveTheme, oppositeTheme } = window.ThemeUtils;
   const STORAGE_KEY = 'theme';
-  const SWITCH_DURATION_MS = 750;
+  const SWITCH_DURATION_MS = 1400;
 
   const root = document.documentElement;
   const systemDark = window.matchMedia('(prefers-color-scheme: dark)');

@@ -52,8 +52,8 @@
   --ink-muted: var(--ink);
   --on-ink: #fff; /* text on an ink- or accent-coloured fill */
   --rule: #d8dbe2;
-  --accent: #1f3bff;
-  --footer-accent: #7c92ff;
+  --accent: #0071e3; /* Apple blue */
+  --footer-accent: #2997ff;
 
   --font-display: 'Bodoni Moda', Didot, 'Bodoni MT', Georgia, serif;
   --font-prose: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
@@ -83,8 +83,8 @@
     --ink: light-dark(#000, #fff);
     --on-ink: light-dark(#fff, #000);
     --rule: light-dark(#d8dbe2, #333);
-    --accent: light-dark(#1f3bff, #ff4d5e);
-    --footer-accent: light-dark(#7c92ff, #ff4d5e);
+    --accent: light-dark(#0071e3, #ff4d5e);
+    --footer-accent: light-dark(#2997ff, #ff4d5e);
   }
 }
 
@@ -209,7 +209,8 @@ a:hover {
   padding-block: 1.5rem;
 }
 
-.wordmark {
+.wordmark,
+.intro-mark {
   font-family: var(--font-display);
   font-size: 2.1rem;
   font-weight: 700;
@@ -218,7 +219,8 @@ a:hover {
   text-decoration: none;
 }
 
-.wordmark span {
+.wordmark span,
+.intro-mark span {
   color: var(--accent);
 }
 
@@ -1250,6 +1252,50 @@ button:focus-visible > .roll .roll__face + .roll__face {
   mix-blend-mode: normal;
 }
 
+/* Opening animation (js/intro.js): a large "n." on a page-coloured cover. */
+.intro-cover,
+.intro-mark {
+  display: none;
+}
+
+.js-intro {
+  overflow: hidden;
+}
+
+.js-intro .intro-cover,
+.js-intro .intro-mark {
+  display: block;
+  position: fixed;
+}
+
+.js-intro .intro-cover {
+  inset: 0;
+  z-index: 100;
+  background: var(--paper);
+}
+
+.js-intro .intro-mark {
+  top: 50%;
+  left: 50%;
+  z-index: 101;
+  font-size: clamp(6rem, 3rem + 11vw, 9.5rem);
+  text-decoration: none;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  animation: intro-mark-in 1s var(--ease-out) backwards;
+}
+
+.js-intro .wordmark {
+  visibility: hidden; /* the large mark lands here, then this takes over */
+}
+
+@keyframes intro-mark-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
+
 /* Smooth cross-fade between pages where the browser supports it. */
 @view-transition {
   navigation: auto;
@@ -1367,6 +1413,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
     transform: none !important;
   }
 
+  .intro-cover,
+  .intro-mark,
   .cursor-label,
   .theme-toggle {
     display: none !important;

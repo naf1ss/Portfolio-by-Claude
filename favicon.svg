@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <style>
-    .dot { fill: #1f3bff; }
-    @media (prefers-color-scheme: dark) { .dot { fill: #ff4d5e; } }
+    .n { fill: #000; }
+    .dot { fill: #0071e3; }
+    @media (prefers-color-scheme: dark) { .n { fill: #fff; } .dot { fill: #ff4d5e; } }
   </style>
-  <rect width="32" height="32" rx="7" fill="#000"/>
-  <text x="14" y="24" text-anchor="middle" font-family="Didot, 'Bodoni MT', Georgia, serif" font-size="25" font-weight="700" fill="#fff">n</text>
-  <circle class="dot" cx="24.5" cy="22" r="2.4"/>
+  <path class="n" d="M19.87 17.68V45.1H23.12V46.31H7V45.1H11.23V18.89H7V17.68ZM38.85 26.42V45.1H43.07V46.31H26.93V45.1H30.2V27.2Q30.2 24.58 29.98 22.97Q29.77 21.35 29.12 20.6Q28.48 19.85 27.18 19.85Q25.43 19.85 24.06 20.99Q22.7 22.13 21.77 23.99Q20.83 25.85 20.35 28.05Q19.87 30.25 19.87 32.4L18.94 32.47Q18.94 30.25 19.45 27.6Q19.96 24.94 21.2 22.55Q22.44 20.15 24.6 18.61Q26.76 17.07 30.08 17.07Q33.61 17.07 35.5 18.27Q37.39 19.48 38.12 21.6Q38.85 23.71 38.85 26.42Z"/>
+  <path class="dot" d="M51.4 46.93Q49.85 46.93 48.59 46.18Q47.32 45.42 46.56 44.14Q45.8 42.86 45.8 41.33Q45.8 39.79 46.56 38.52Q47.32 37.24 48.59 36.47Q49.85 35.71 51.4 35.71Q52.93 35.71 54.21 36.47Q55.49 37.24 56.25 38.52Q57 39.79 57 41.33Q57 42.86 56.25 44.14Q55.49 45.42 54.21 46.18Q52.93 46.93 51.4 46.93Z"/>
 </svg>

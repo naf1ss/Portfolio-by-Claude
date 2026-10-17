@@ -123,8 +123,19 @@
       const action = event.target.closest('[data-action]');
       if (action && action.dataset.action === 'prev') step(-1);
       else if (action && action.dataset.action === 'next') step(1);
-      else if ((action && action.dataset.action === 'close') || event.target === stage) dialog.close();
+      else if (isOutsideWork(event)) dialog.close();
     });
+
+    /** A click closes the viewer unless it lands on the picture itself or the page counter. */
+    function isOutsideWork(event) {
+      if (event.target.closest('.viewer__count')) return false;
+      if (event.target !== image) return true;
+      const onPicture = U.isPointOnContainedPicture(image.getBoundingClientRect(), works[index], {
+        x: event.clientX,
+        y: event.clientY,
+      });
+      return !onPicture;
+    }
 
     dialog.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowLeft') step(-1);

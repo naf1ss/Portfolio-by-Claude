@@ -216,3 +216,37 @@ test('every page loads the theme script before first paint', () => {
     assert.match(html, /<script src="js\/theme-utils\.js"><\/script>\s*<script src="js\/theme\.js"><\/script>/, page);
   });
 });
+
+const IntroUtils = require('../js/intro-utils.js');
+
+test('viewer: only the visible picture counts, not the empty margin of its box', () => {
+  // A 2:1 picture inside a square 1000x1000 box is drawn 1000x500, centred vertically.
+  const box = { left: 0, top: 0, width: 1000, height: 1000 };
+  const wide = { w: 2000, h: 1000 };
+  assert.equal(U.isPointOnContainedPicture(box, wide, { x: 500, y: 500 }), true);
+  assert.equal(U.isPointOnContainedPicture(box, wide, { x: 500, y: 100 }), false);
+  assert.equal(U.isPointOnContainedPicture(box, wide, { x: 500, y: 900 }), false);
+  const tall = { w: 1000, h: 2000 };
+  assert.equal(U.isPointOnContainedPicture(box, tall, { x: 100, y: 500 }), false);
+  assert.equal(U.isPointOnContainedPicture(box, tall, { x: 500, y: 100 }), true);
+});
+
+test('intro: plays on arrival and reload of the home page only', () => {
+  const base = { pathname: '/', referrer: '', origin: 'https://site.test', navigationType: 'navigate' };
+  assert.equal(IntroUtils.shouldPlayIntro(base), true);
+  assert.equal(IntroUtils.shouldPlayIntro({ ...base, navigationType: 'reload', referrer: 'https://site.test/work.html' }), true);
+  assert.equal(IntroUtils.shouldPlayIntro({ ...base, referrer: 'https://elsewhere.test/' }), true);
+});
+
+test('intro: skipped when clicking through from inside the site, on Back, and off the home page', () => {
+  const base = { pathname: '/', referrer: '', origin: 'https://site.test', navigationType: 'navigate' };
+  assert.equal(IntroUtils.shouldPlayIntro({ ...base, referrer: 'https://site.test/work.html' }), false);
+  assert.equal(IntroUtils.shouldPlayIntro({ ...base, navigationType: 'back_forward' }), false);
+  assert.equal(IntroUtils.shouldPlayIntro({ ...base, pathname: '/work.html' }), false);
+});
+
+test('intro: recognises the home page under a sub-folder host', () => {
+  assert.equal(IntroUtils.isHomePath('/Portfolio-by-Claude/'), true);
+  assert.equal(IntroUtils.isHomePath('/Portfolio-by-Claude/index.html'), true);
+  assert.equal(IntroUtils.isHomePath('/Portfolio-by-Claude/about.html'), false);
+});
