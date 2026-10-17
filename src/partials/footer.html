@@ -1,5 +1,19 @@
-  <footer class="site-footer" data-site-footer>
+  <footer class="site-footer">
+    <div class="wrap footer__top" data-reveal-group>
+      <div>
+        <a class="footer__brand" href="index.html" aria-label="nuances by Nafis, home"><span class="footer__name">nuances<span class="footer__dot">.</span></span><span class="footer__by">by nafis</span></a>
+        <p class="footer__tagline">{{tagline}}</p>
+      </div>
+      <nav aria-label="Explore">
+        <h2 class="footer__heading">Explore</h2>
+        <ul class="footer__list">
+{{exploreLinks}}
+        </ul>
+      </nav>
+{{elsewhere}}
+    </div>
     <div class="wrap footer__bottom">
-      <p>&copy; 2026 Nafis. All images &copy; the artist.</p>
+      <p>&copy; {{year}} Nafis. All images &copy; the artist.</p>
+      <a class="footer__top-link" href="#">Back to top &uarr;</a>
     </div>
   </footer>

@@ -133,6 +133,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-split]').forEach(splitLetters);
     reveal(document.querySelectorAll('[data-reveal-on-load]'));
+    // A group staggers its own children, independent of the rest of the page.
+    document.querySelectorAll('[data-reveal-group]').forEach((group) => reveal(group.children));
     initParallax();
 
     // Start once the fonts are in, so the headline does not animate and then jump.

@@ -8,18 +8,22 @@ const site = {
   nav: [{ label: 'Work', href: 'work.html' }, { label: 'About', href: 'about.html' }],
   scripts: [
     { file: 'theme', defer: false },
-    { file: 'footer' },
+    { file: 'config' },
+    { file: 'interactions' },
     { file: 'lightbox' },
+    { file: 'pages', requires: ['config'] },
   ],
-  baseScripts: ['theme', 'footer'],
+  baseScripts: ['theme', 'interactions'],
   fonts: ['a.woff2'],
+  copyrightYear: 2026,
+  tagline: 'A tagline.',
 };
 const parts = {
   layout: '<head>\n{{head}}\n</head>\n<body data-page="{{page}}">\n{{intro}}\n\n{{header}}\n\n{{main}}\n\n{{footer}}\n{{viewer}}\n</body>\n',
   partials: {
     head: '  <title>{{title}}</title>\n  <meta content="{{ogTitle}}">\n{{fontPreloads}}\n{{scripts}}\n',
     header: '  <nav>\n{{nav}}\n  </nav>\n',
-    footer: '  <footer></footer>\n',
+    footer: '  <footer>\n{{exploreLinks}}\n{{elsewhere}}\n(c) {{year}} {{tagline}}\n  </footer>\n',
     viewer: '  <dialog></dialog>\n',
   },
   site,
@@ -71,7 +75,7 @@ test('scripts follow site.json order and respect defer', () => {
   const tags = html.match(/<script src="js\/[^"]+"[^>]*>/g);
   assert.deepEqual(tags, [
     '<script src="js/theme.js">',
-    '<script src="js/footer.js" defer>',
+    '<script src="js/interactions.js" defer>',
     '<script src="js/lightbox.js" defer>',
   ]);
 });
@@ -88,4 +92,25 @@ test('renderPage rejects unknown scripts and unsafe attribute values', () => {
   assert.throws(() => renderPage('x', page('title: t\ndescription: d\nscripts: nope'), parts), /Unknown script/);
   assert.throws(() => renderPage('x', page('title: t\ndescription: say "hi"'), parts), /quotes/);
   assert.throws(() => renderPage('x', page('title: t'), parts), /description/);
+});
+
+test('a script pulls in the scripts it requires, in site.json order', () => {
+  const html = renderPage('work', page('title: t\ndescription: d\nscripts: pages'), parts);
+  const files = html.match(/js\/(\w+)\.js/g);
+  assert.deepEqual(files, ['js/theme.js', 'js/config.js', 'js/interactions.js', 'js/pages.js']);
+});
+
+test('the footer lists the nav, the year and the contact links', () => {
+  const contactLinks = [{ label: 'Email', href: 'mailto:a@b.c?x=1&y="2"' }];
+  const html = renderPage('about', page('title: t\ndescription: d'), { ...parts, contactLinks });
+  assert.match(html, /<li><a href="work\.html">Work<\/a><\/li>/);
+  assert.match(html, /aria-label="Elsewhere"/);
+  assert.match(html, /href="mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;">Email/, 'attribute values are escaped');
+  assert.match(html, /\(c\) 2026 A tagline\./);
+});
+
+test('the footer omits the Elsewhere column when no contact details are set', () => {
+  const html = renderPage('about', page('title: t\ndescription: d'), parts);
+  assert.doesNotMatch(html, /Elsewhere/);
+  assert.doesNotMatch(html, /\n\n\(c\)/, 'no blank line is left behind');
 });

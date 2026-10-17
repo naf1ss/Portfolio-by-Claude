@@ -13,11 +13,20 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
+const { contactEntries } = require('../js/contact-utils.js');
 const { renderPage } = require('./page-builder.js');
 const { stampHtml } = require('./stamp-assets.js');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
+
+/** Reads js/site-config.js (a browser script) so contact details have one source of truth. */
+function readContactLinks() {
+  const sandbox = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8'), sandbox);
+  return contactEntries(sandbox.window.SITE_CONFIG.contact).map(({ label, href }) => ({ label, href }));
+}
 
 function readSources() {
   const read = (...parts) => fs.readFileSync(path.join(SRC, ...parts), 'utf8');
@@ -29,6 +38,7 @@ function readSources() {
     layout: read('layout.html'),
     partials,
     site: JSON.parse(read('site.json')),
+    contactLinks: readContactLinks(),
   };
 }
 

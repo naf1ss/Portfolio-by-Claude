@@ -9,13 +9,13 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | --- | --- |
 | `src/pages/*.html` | **Edit pages here.** One file per page: a short front matter block (title, description, extra scripts) followed by that page's own content |
 | `src/layout.html`, `src/partials/` | The shared page skeleton, head, header, footer and image viewer |
-| `src/site.json` | The nav links, the script order and the font preloads |
+| `src/site.json` | The nav links, script order and dependencies, font preloads, footer tagline and copyright year |
 | `index.html`, `work.html`, `series.html`, `about.html`, `resume.html`, `contact.html` | **Generated** from `src/` by `npm run build`; do not edit by hand |
 | `tools/build-pages.js`, `tools/page-builder.js` | The build script and its unit-tested template logic |
 | `css/styles.css` | All styling: tokens, layout, gallery, viewer |
 | `js/works-data.js` | **The catalogue.** One record per work (title, year, medium, category, image info) |
 | `js/works-photography.js` | The photographs: one compact row each (year, real widths, height). Untitled for now |
-| `js/site-config.js` | Hero works, featured works, public contact details (email, Instagram, LinkedIn) |
+| `js/site-config.js` | Hero works, featured works, public contact details (email, Instagram, LinkedIn). The build also reads the contact details for the footer |
 | `js/contact-utils.js` | Turns the contact details into links; unit tested |
 | `js/works-utils.js` | Pure helpers (srcset, filtering, captions); unit tested |
 | `js/theme-utils.js` | Pure light/dark rules (saved choice beats the device setting); unit tested |
@@ -26,7 +26,6 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/magnifier-utils.js`, `js/magnifier.js` | Round hover magnifier: geometry (unit tested) and the lens itself |
 | `js/motion.js` | Hero entrance, scroll reveals and parallax; does nothing when reduced motion is requested |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
-| `js/footer.js` | Builds the footer on every page, so its markup lives in one place |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
 | `fonts/` | Self-hosted Bodoni Moda (headings), Cormorant Garamond (reading text) and Manrope (labels), all SIL OFL |
@@ -88,4 +87,5 @@ Run `npm run build`. It regenerates the six HTML pages from `src/` and adds a sh
 
 - **Change the nav, footer or viewer:** edit `src/site.json` or the file in `src/partials/`, then build. All pages follow.
 - **Add a page:** create `src/pages/<name>.html` (copy `contact.html`'s front matter), add it to `nav` in `src/site.json` if it should be linked, build.
-- **Add a script:** put it in `js/`, list it in `scripts` in `src/site.json` (the order there is the load order), and name it in the `scripts:` line of each page that needs it.
+- **Add a script:** put it in `js/`, list it in `scripts` in `src/site.json` (the order there is the load order; add `"requires"` for scripts it depends on), and name it in the `scripts:` line of each page that needs it.
+- **Change the copyright year:** `copyrightYear` in `src/site.json`.

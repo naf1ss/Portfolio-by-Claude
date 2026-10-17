@@ -73,13 +73,56 @@ function renderFontPreloads(fonts) {
     .join('\n');
 }
 
+function escapeAttribute(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function renderLinkItems(links) {
+  return links
+    .map(({ label, href }) => `          <li><a href="${escapeAttribute(href)}">${label}</a></li>`)
+    .join('\n');
+}
+
+/** The footer's optional "Elsewhere" column (email, social links); empty when none are set. */
+function renderElsewhere(links) {
+  if (links.length === 0) return '';
+  return [
+    '      <nav aria-label="Elsewhere">',
+    '        <h2 class="footer__heading">Elsewhere</h2>',
+    '        <ul class="footer__list">',
+    renderLinkItems(links),
+    '        </ul>',
+    '      </nav>',
+  ].join('\n');
+}
+
+function renderFooter(template, site, contactLinks) {
+  return fillTemplate(template.replace(/\n$/, ''), {
+    tagline: site.tagline,
+    exploreLinks: renderLinkItems(site.nav),
+    elsewhere: renderElsewhere(contactLinks),
+    year: String(site.copyrightYear),
+  });
+}
+
+/** Adds each script's declared dependencies (transitively) to the requested set. */
+function withDependencies(known, files) {
+  const wanted = new Set();
+  const visit = (file) => {
+    const script = known.get(file);
+    if (!script) throw new Error(`Unknown script "${file}" (not listed in site.json).`);
+    if (wanted.has(file)) return;
+    wanted.add(file);
+    (script.requires || []).forEach(visit);
+  };
+  files.forEach(visit);
+  return wanted;
+}
+
 /** Orders the page's scripts as declared in site.json; render-blocking ones first. */
 function renderScripts(site, requested) {
   const known = new Map(site.scripts.map((script) => [script.file, script]));
-  const wanted = new Set([...site.baseScripts, ...requested]);
-  wanted.forEach((file) => {
-    if (!known.has(file)) throw new Error(`Unknown script "${file}" (not listed in site.json).`);
-  });
+  const wanted = withDependencies(known, [...site.baseScripts, ...requested]);
   return site.scripts
     .filter((script) => wanted.has(script.file))
     .map(({ file, defer = true }) => `  <script src="js/${file}.js"${defer ? ' defer' : ''}></script>`)
@@ -93,9 +136,10 @@ function splitList(value) {
 /**
  * @param {string} name     page file name without extension ("about")
  * @param {string} source   contents of src/pages/<name>.html
- * @param {{layout: string, partials: Record<string, string>, site: object}} parts
+ * @param {{layout: string, partials: Record<string, string>, site: object,
+ *          contactLinks?: {label: string, href: string}[]}} parts
  */
-function renderPage(name, source, { layout, partials, site }) {
+function renderPage(name, source, { layout, partials, site, contactLinks = [] }) {
   const { meta, slots } = parsePage(source);
   ['title', 'description'].forEach((key) => {
     if (!meta[key]) throw new Error(`${name}: front matter "${key}" is required.`);
@@ -117,7 +161,7 @@ function renderPage(name, source, { layout, partials, site }) {
     intro: slots.intro || '',
     header: fillTemplate(partials.header, { nav: renderNav(site.nav, `${name}.html`) }).replace(/\n$/, ''),
     main: slots.main,
-    footer: partials.footer.replace(/\n$/, ''),
+    footer: renderFooter(partials.footer, site, contactLinks),
     // The image viewer is only needed on pages that load the lightbox script.
     viewer: scripts.includes('lightbox') ? `\n${partials.viewer.replace(/\n$/, '')}` : '',
   });

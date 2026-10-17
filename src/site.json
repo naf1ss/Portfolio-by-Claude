@@ -1,35 +1,36 @@
 {
   "nav": [
-    { "label": "Work", "href": "work.html" },
-    { "label": "Series", "href": "series.html" },
-    { "label": "About", "href": "about.html" },
-    { "label": "Resume", "href": "resume.html" },
-    { "label": "Contact", "href": "contact.html" }
+    {"label": "Work", "href": "work.html"},
+    {"label": "Series", "href": "series.html"},
+    {"label": "About", "href": "about.html"},
+    {"label": "Resume", "href": "resume.html"},
+    {"label": "Contact", "href": "contact.html"}
   ],
   "scripts": [
-    { "file": "theme-utils", "defer": false },
-    { "file": "theme", "defer": false },
-    { "file": "intro-utils", "defer": false },
-    { "file": "motion", "defer": false },
-    { "file": "works-utils" },
-    { "file": "works-data" },
-    { "file": "works-photography" },
-    { "file": "series-data" },
-    { "file": "site-config" },
-    { "file": "gallery" },
-    { "file": "lightbox" },
-    { "file": "contact-utils" },
-    { "file": "pages" },
-    { "file": "footer" },
-    { "file": "interactions" },
-    { "file": "magnifier-utils" },
-    { "file": "magnifier" },
-    { "file": "intro" }
+    {"file": "theme-utils", "defer": false},
+    {"file": "theme", "defer": false},
+    {"file": "intro-utils", "defer": false},
+    {"file": "motion", "defer": false},
+    {"file": "works-utils"},
+    {"file": "works-data"},
+    {"file": "works-photography"},
+    {"file": "series-data"},
+    {"file": "site-config"},
+    {"file": "gallery"},
+    {"file": "lightbox"},
+    {"file": "contact-utils"},
+    {"file": "pages", "requires": ["site-config", "contact-utils"]},
+    {"file": "interactions"},
+    {"file": "magnifier-utils"},
+    {"file": "magnifier"},
+    {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "motion", "site-config", "contact-utils", "footer", "interactions"],
+  "baseScripts": ["theme-utils", "theme", "motion", "interactions"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",
     "cormorant-garamond-latin-wght-normal.woff2"
-  ]
+  ],
+  "copyrightYear": 2026,
+  "tagline": "Paintings, prints, ceramics and photographs by Nafis."
 }
