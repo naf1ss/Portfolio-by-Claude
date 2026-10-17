@@ -16,14 +16,13 @@ const site = {
   baseScripts: ['theme', 'interactions'],
   fonts: ['a.woff2'],
   copyrightYear: 2026,
-  tagline: 'A tagline.',
 };
 const parts = {
   layout: '<head>\n{{head}}\n</head>\n<body data-page="{{page}}">\n{{intro}}\n\n{{header}}\n\n{{main}}\n\n{{footer}}\n{{viewer}}\n</body>\n',
   partials: {
     head: '  <title>{{title}}</title>\n  <meta content="{{ogTitle}}">\n{{fontPreloads}}\n{{scripts}}\n',
     header: '  <nav>\n{{nav}}\n  </nav>\n',
-    footer: '  <footer>\n{{exploreLinks}}\n{{elsewhere}}\n(c) {{year}} {{tagline}}\n  </footer>\n',
+    footer: '  <footer>\n{{exploreLinks}}\n{{elsewhere}}\n(c) {{year}} {{helloHref}}\n  </footer>\n',
     viewer: '  <dialog></dialog>\n',
   },
   site,
@@ -106,11 +105,12 @@ test('the footer lists the nav, the year and the contact links', () => {
   assert.match(html, /<li><a href="work\.html">Work<\/a><\/li>/);
   assert.match(html, /aria-label="Elsewhere"/);
   assert.match(html, /href="mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;">Email/, 'attribute values are escaped');
-  assert.match(html, /\(c\) 2026 A tagline\./);
+  assert.match(html, /\(c\) 2026 mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;/, 'the hello link points at the email address');
 });
 
 test('the footer omits the Elsewhere column when no contact details are set', () => {
   const html = renderPage('about', page('title: t\ndescription: d'), parts);
   assert.doesNotMatch(html, /Elsewhere/);
   assert.doesNotMatch(html, /\n\n\(c\)/, 'no blank line is left behind');
+  assert.match(html, /\(c\) 2026 contact\.html/, 'without an email, hello goes to the contact page');
 });

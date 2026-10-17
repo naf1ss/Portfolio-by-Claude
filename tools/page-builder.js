@@ -87,7 +87,7 @@ function renderLinkItems(links) {
 function renderElsewhere(links) {
   if (links.length === 0) return '';
   return [
-    '      <nav aria-label="Elsewhere">',
+    '      <nav class="footer__elsewhere" aria-label="Elsewhere">',
     '        <h2 class="footer__heading">Elsewhere</h2>',
     '        <ul class="footer__list">',
     renderLinkItems(links),
@@ -97,8 +97,9 @@ function renderElsewhere(links) {
 }
 
 function renderFooter(template, site, contactLinks) {
+  const email = contactLinks.find((link) => link.label === 'Email');
   return fillTemplate(template.replace(/\n$/, ''), {
-    tagline: site.tagline,
+    helloHref: escapeAttribute(email ? email.href : 'contact.html'),
     exploreLinks: renderLinkItems(site.nav),
     elsewhere: renderElsewhere(contactLinks),
     year: String(site.copyrightYear),

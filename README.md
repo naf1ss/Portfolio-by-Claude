@@ -9,7 +9,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | --- | --- |
 | `src/pages/*.html` | **Edit pages here.** One file per page: a short front matter block (title, description, extra scripts) followed by that page's own content |
 | `src/layout.html`, `src/partials/` | The shared page skeleton, head, header, footer and image viewer |
-| `src/site.json` | The nav links, script order and dependencies, font preloads, footer tagline and copyright year |
+| `src/site.json` | The nav links, script order and dependencies, font preloads and the footer's copyright year |
 | `index.html`, `work.html`, `series.html`, `about.html`, `resume.html`, `contact.html` | **Generated** from `src/` by `npm run build`; do not edit by hand |
 | `tools/build-pages.js`, `tools/page-builder.js` | The build script and its unit-tested template logic |
 | `css/styles.css` | All styling: tokens, layout, gallery, viewer |
