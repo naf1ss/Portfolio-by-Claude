@@ -24,7 +24,8 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/intro.js` | Opening animation: large "n." that travels into the header logo while the cover closes onto it |
 | `js/series-data.js` | Named groups of works for the Series pages (edit here to regroup) |
 | `js/magnifier-utils.js`, `js/magnifier.js` | Round hover magnifier: geometry (unit tested) and the lens itself |
-| `js/motion.js` | Hero entrance, scroll reveals and parallax; does nothing when reduced motion is requested |
+| `js/motion.js` | The page-ready signal that starts entrances, and scroll reveals; does nothing when reduced motion is requested |
+| `js/hero-window-utils.js`, `js/hero-window.js` | Home hero: the name is cut out of a slideshow of paintings on a canvas. Geometry and timing (unit tested) and the canvas itself |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
@@ -58,8 +59,7 @@ The catalogue checks also confirm every image referenced in `works-data.js` and 
 1. Export the photo and run `python3 tools/optimize_images.py <folder-with-new-photos> images/artwork`.
 2. Paste the printed record into `js/works-data.js` and fill in `id`, `title`, `year`, `medium`, `dimensions` and `category`
    (`painting`, `mixed`, `drawing`, `print`, `digital`, `photography` or `ceramics`).
-3. To feature it on the home page, add its `id` to `featuredIds` in `js/site-config.js`. The three hero images are `heroIds`
-   (large image first, then the two stacked on the right).
+3. To feature it on the home page, add its `id` to `featuredIds` in `js/site-config.js`. The works that scan through the hero's "nuances." are `heroSlides` (in this order).
 4. Run `npm test`, then commit and push.
 
 Each work gets a shareable link: `work.html#a012` opens that piece, and `work.html?c=print` opens a filtered view.

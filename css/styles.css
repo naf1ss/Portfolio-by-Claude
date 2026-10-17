@@ -538,36 +538,110 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 /* ---------- Page sections ---------- */
+/* Home hero: fills the first screen. The canvas (js/hero-window.js) draws the name as a window onto
+   the paintings inside .hero__stage; the lede and button sit below it. */
 .hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-inline: var(--gutter);
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.hero__stage {
+  flex: 1 1 auto;
   display: grid;
-  gap: clamp(2rem, 5vw, 4rem) clamp(2rem, 5vw, 5rem);
-  align-items: center;
-  padding-block: clamp(1.5rem, 4vw, 4rem) clamp(1rem, 3vw, 2rem);
+  place-items: center;
+  min-height: 45vh;
+  padding-top: 6rem; /* the header sits over the top of the hero */
 }
 
-@media (min-width: 60rem) {
-  .hero {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  }
+.hero__foot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+  padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  text-align: center;
 }
 
-.hero__title {
-  width: fit-content; /* shrink to the wordmark so the by-line can sit under its right edge */
-  line-height: 1;
+.hero__lede {
+  max-width: 30rem;
+  font-family: var(--font-prose);
+  font-size: clamp(1.45rem, 1.25rem + 0.7vw, 1.8rem);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: balance;
 }
 
-.hero__name {
-  display: block;
-  padding-bottom: 0.08em; /* room for descenders inside the clipped line */
-  overflow: hidden;
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+}
+
+/* Which work is showing, with a link to it and a way to move on. */
+.hero__credit {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  padding-block: 1rem 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero__count {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero__title-link {
+  text-decoration: none;
+}
+
+.hero__next {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.hero__title-link:hover,
+.hero__title-link:focus-visible,
+.hero__next:hover,
+.hero__next:focus-visible {
+  color: var(--accent);
+}
+
+/* Shown only when scripts are off: the name as plain type. */
+.hero__fallback {
   font-family: var(--font-display);
-  font-size: clamp(4.5rem, 0.5rem + 7vw, 7rem);
+  font-size: clamp(4rem, 18vw, 12rem);
   font-weight: 500;
   letter-spacing: -0.035em;
-}
-
-.hero__name .letter {
-  display: inline-block;
+  line-height: 1;
 }
 
 .hero__dot {
@@ -576,33 +650,34 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .hero__by {
   display: block;
-  margin-top: -0.3rem;
-  margin-right: 0.05em;
   text-align: right;
   color: var(--accent);
   font-family: var(--font-script);
-  font-size: clamp(2rem, 0.8rem + 3vw, 3.3rem);
+  font-size: 0.3em;
   font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.2;
   rotate: -3deg;
-  transform-origin: right center;
 }
 
-.hero__lede {
-  max-width: 27rem;
-  margin-top: clamp(1.75rem, 3vw, 2.5rem);
-  font-family: var(--font-prose);
-  font-size: clamp(1.35rem, 1.2rem + 0.6vw, 1.6rem);
+/* If the canvas cannot start, the visually hidden heading becomes the visible name. */
+.hero--static .hero__title {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: auto;
+  overflow: visible;
+  clip: auto;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 12vw, 8rem);
   font-weight: 500;
-  line-height: 1.35;
+  white-space: normal;
 }
 
-.hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+/* The header floats over the top of the home page's hero. */
+[data-page='home'] .site-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 5;
 }
 
 .button {
@@ -636,48 +711,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .button--solid:hover,
 .button--solid:focus-visible {
   border-color: var(--accent);
-}
-
-/* Hero mosaic: columns are weighted in JS (--grow-*) so both end at one height. */
-.mosaic {
-  --mosaic-gap: clamp(0.5rem, 1.2vw, 1rem);
-  display: flex;
-  gap: var(--mosaic-gap);
-  align-items: stretch;
-}
-
-.mosaic__column {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mosaic-gap);
-  min-width: 0;
-}
-
-.mosaic__column--large {
-  flex: var(--grow-large, 1) 1 0;
-}
-
-.mosaic__column--stack {
-  flex: var(--grow-stack, 1) 1 0;
-  justify-content: space-between;
-}
-
-.mosaic__item {
-  display: block;
-  text-decoration: none;
-}
-
-.mosaic__column--large .mosaic__item {
-  flex: 1;
-}
-
-.mosaic__column--large .tile__frame,
-.mosaic__column--large .tile__image {
-  height: 100%;
-}
-
-.mosaic__column--large .tile__image {
-  object-fit: cover;
 }
 
 .section {
@@ -1333,78 +1366,24 @@ button:focus-visible > .roll .roll__face + .roll__face {
   transform: none;
 }
 
-/* Hero headline: letters rise out of a mask, then the rest settles in. */
-.js-motion .hero__name .letter {
-  transform: translateY(110%);
-  transition: transform 1.2s var(--ease-out) calc(var(--i) * 70ms + 120ms);
-}
-
+/* Hero text and button settle in after the name is written. */
 .js-motion .hero__lede,
-.js-motion .hero__actions {
+.js-motion .hero__actions,
+.js-motion .hero__credit {
   opacity: 0;
   transform: translateY(1rem);
   transition: opacity 1s var(--ease-out) var(--enter-delay), transform 1.1s var(--ease-out) var(--enter-delay);
 }
 
-/* The script signature is written on from left to right. */
-.js-motion .hero__by {
-  clip-path: inset(-25% 100% -25% -5%);
-  transition: clip-path 1.5s var(--ease-out) var(--enter-delay);
-}
-
-.hero__by { --enter-delay: 0.85s; }
 .hero__lede { --enter-delay: 1.05s; }
 .hero__actions { --enter-delay: 1.2s; }
+.hero__credit { --enter-delay: 1.5s; }
 
-.js-motion.is-ready .hero__by {
-  clip-path: inset(-25% -10% -25% -5%);
-}
-
-.js-motion.is-ready .hero__name .letter,
 .js-motion.is-ready .hero__lede,
-.js-motion.is-ready .hero__actions {
+.js-motion.is-ready .hero__actions,
+.js-motion.is-ready .hero__credit {
   opacity: 1;
   transform: none;
-}
-
-/* Hero images: each wipes open from the bottom while its picture settles. */
-.js-motion:not(.is-ready) .mosaic__item {
-  clip-path: inset(100% 0 0 0);
-}
-
-.js-motion:not(.is-ready) .mosaic__item .tile__image {
-  transform: scale(1.2);
-}
-
-.js-motion.is-ready .mosaic__item {
-  animation: wipe-up 1.4s var(--ease-out) var(--enter-delay) backwards;
-}
-
-.js-motion.is-ready .mosaic__item .tile__image {
-  animation: settle 2s var(--ease-out) var(--enter-delay) backwards;
-}
-
-.mosaic__column--large .mosaic__item { --enter-delay: 0.2s; }
-.mosaic__column--stack .mosaic__item:nth-child(1) { --enter-delay: 0.45s; }
-.mosaic__column--stack .mosaic__item:nth-child(2) { --enter-delay: 0.65s; }
-
-.mosaic__column--stack {
-  transform: translateY(var(--parallax-shift, 0));
-}
-
-@keyframes wipe-up {
-  from {
-    clip-path: inset(100% 0 0 0);
-  }
-  to {
-    clip-path: inset(0);
-  }
-}
-
-@keyframes settle {
-  from {
-    transform: scale(1.2);
-  }
 }
 
 /* Gallery pictures settle from slightly enlarged as their tile scrolls in. */
@@ -1428,16 +1407,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
   transform: scaleX(var(--progress, 0));
   transform-origin: left;
   pointer-events: none;
-}
-
-/* Once the entrance has played, letters respond to the pointer. */
-.js-motion.is-settled .hero__name .letter {
-  transition: transform 0.6s var(--ease-out), color 0.3s var(--ease);
-}
-
-.js-motion.is-settled .hero__name .letter:hover {
-  color: var(--accent);
-  transform: translateY(-0.07em);
 }
 
 /* Round magnifier that follows the pointer over pictures (js/magnifier.js). */
@@ -1733,10 +1702,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
   .marquee__group + .marquee__group {
     display: none;
-  }
-
-  .mosaic__column--stack {
-    transform: none;
   }
 
   @view-transition {

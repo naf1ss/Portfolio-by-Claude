@@ -160,7 +160,7 @@ test('catalogue: ids are unique and every record is well formed', () => {
   }
 });
 
-test('catalogue: hero and featured works in the config exist', () => {
+test('catalogue: hero slides and featured works in the config exist', () => {
   const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
   const ids = new Set(WORKS.map((record) => record.id));
   const listFor = (key) => {
@@ -168,8 +168,8 @@ test('catalogue: hero and featured works in the config exist', () => {
     assert.ok(block, `${key} not found`);
     return [...block[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
   };
-  assert.equal(listFor('heroIds').length, 3, 'the hero needs exactly three works');
-  [...listFor('heroIds'), ...listFor('featuredIds')].forEach((id) =>
+  assert.ok(listFor('heroSlides').length >= 3, 'the hero slideshow needs a few works');
+  [...listFor('heroSlides'), ...listFor('featuredIds')].forEach((id) =>
     assert.ok(ids.has(id), `configured id ${id} is not in the catalogue`)
   );
 });

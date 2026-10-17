@@ -3,7 +3,7 @@ title: nuances by nafis — painting, ceramics, prints, photography &amp; digita
 description: Portfolio of Nafis, an art student working across painting, ceramics, prints, photography, digital art and drawing.
 og-title: nuances by nafis
 og-description: Painting, ceramics, prints, photography and digital work by Nafis, an art student.
-scripts: intro-utils, works-utils, works-data, works-photography, gallery, pages, magnifier-utils, magnifier, intro
+scripts: intro-utils, works-utils, works-data, works-photography, hero-window-utils, hero-window, gallery, pages, magnifier-utils, magnifier, intro
 ---
 <!-- @slot intro -->
   <!-- Opening animation: shown only when js-intro is set (see js/intro.js) -->
@@ -11,20 +11,25 @@ scripts: intro-utils, works-utils, works-data, works-photography, gallery, pages
   <div class="intro-mark" aria-hidden="true">n<span>.</span></div>
 <!-- @slot main -->
   <main id="main">
-    <section class="wrap hero" aria-labelledby="hero-title">
-      <div class="hero__text">
-        <h1 class="hero__title" id="hero-title">
-          <span class="visually-hidden">nuances by nafis</span>
-          <span class="hero__name" aria-hidden="true" data-split>nuances<span class="hero__dot">.</span></span>
-          <span class="hero__by" aria-hidden="true">by nafis</span>
-        </h1>
-        <p class="hero__lede">Paintings, prints, ceramics and photographs. Raised in Bangladesh, studying art and mathematics in Gettysburg, Pennsylvania.</p>
+    <section class="hero" aria-labelledby="hero-title" data-hero>
+      <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
+      <h1 class="hero__title visually-hidden" id="hero-title">nuances by nafis</h1>
+      <div class="hero__stage" data-hero-stage>
+        <noscript>
+          <p class="hero__fallback">nuances<span class="hero__dot">.</span><span class="hero__by">by nafis</span></p>
+        </noscript>
+      </div>
+      <div class="hero__foot">
+        <p class="hero__lede">I take photos, paint things, and occasionally create something worth looking at.</p>
         <div class="hero__actions">
           <a class="button button--solid" href="work.html">View the work</a>
-          <a class="button" href="about.html">Artist statement</a>
         </div>
       </div>
-      <div class="mosaic" id="hero-mosaic" aria-label="Selected works"></div>
+      <p class="hero__credit">
+        <span class="hero__count" data-hero-count>01 / 01</span>
+        <a class="hero__title-link" data-hero-title href="work.html">Selected work</a>
+        <button class="hero__next" type="button" data-hero-next aria-label="Show the next work">Next &rarr;</button>
+      </p>
     </section>
 
     <div class="marquee" aria-hidden="true">

@@ -15,18 +15,21 @@
   <link rel="preload" href="fonts/bodoni-moda-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=1a2156fa">
+  <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css?v=64f66b82">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/intro-utils.js?v=77dd466a"></script>
-  <script src="js/motion.js?v=6697d8c0"></script>
+  <script src="js/motion.js?v=f83564ed"></script>
   <script src="js/works-utils.js?v=13c1a0c0" defer></script>
   <script src="js/works-data.js?v=fe44a4e3" defer></script>
   <script src="js/works-photography.js?v=88451a81" defer></script>
-  <script src="js/site-config.js?v=c3af310b" defer></script>
-  <script src="js/gallery.js?v=b99e8209" defer></script>
+  <script src="js/site-config.js?v=5abc4c63" defer></script>
+  <script src="js/hero-window-utils.js?v=cca6b0fd" defer></script>
+  <script src="js/hero-window.js?v=ac867a72" defer></script>
+  <script src="js/gallery.js?v=17990579" defer></script>
   <script src="js/contact-utils.js?v=453205ea" defer></script>
-  <script src="js/pages.js?v=a999641b" defer></script>
+  <script src="js/pages.js?v=40e4270a" defer></script>
   <script src="js/interactions.js?v=d4be9dee" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -53,20 +56,25 @@
   </header>
 
   <main id="main">
-    <section class="wrap hero" aria-labelledby="hero-title">
-      <div class="hero__text">
-        <h1 class="hero__title" id="hero-title">
-          <span class="visually-hidden">nuances by nafis</span>
-          <span class="hero__name" aria-hidden="true" data-split>nuances<span class="hero__dot">.</span></span>
-          <span class="hero__by" aria-hidden="true">by nafis</span>
-        </h1>
-        <p class="hero__lede">Paintings, prints, ceramics and photographs. Raised in Bangladesh, studying art and mathematics in Gettysburg, Pennsylvania.</p>
+    <section class="hero" aria-labelledby="hero-title" data-hero>
+      <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
+      <h1 class="hero__title visually-hidden" id="hero-title">nuances by nafis</h1>
+      <div class="hero__stage" data-hero-stage>
+        <noscript>
+          <p class="hero__fallback">nuances<span class="hero__dot">.</span><span class="hero__by">by nafis</span></p>
+        </noscript>
+      </div>
+      <div class="hero__foot">
+        <p class="hero__lede">I take photos, paint things, and occasionally create something worth looking at.</p>
         <div class="hero__actions">
           <a class="button button--solid" href="work.html">View the work</a>
-          <a class="button" href="about.html">Artist statement</a>
         </div>
       </div>
-      <div class="mosaic" id="hero-mosaic" aria-label="Selected works"></div>
+      <p class="hero__credit">
+        <span class="hero__count" data-hero-count>01 / 01</span>
+        <a class="hero__title-link" data-hero-title href="work.html">Selected work</a>
+        <button class="hero__next" type="button" data-hero-next aria-label="Show the next work">Next &rarr;</button>
+      </p>
     </section>
 
     <div class="marquee" aria-hidden="true">

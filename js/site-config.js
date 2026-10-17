@@ -3,8 +3,11 @@
  * and works-photography.js.
  */
 window.SITE_CONFIG = {
-  // The three works in the home page hero: [large, top-right, bottom-right].
-  heroIds: ['A012', 'A027', 'ceramics-11'],
+  // Works that scan through the letters of "nuances." in the home page hero, in this order.
+  heroSlides: [
+    'A012', 'A002', 'A003', 'A030', 'A037', 'A025', 'A004', 'A010',
+    'A034', 'A005', 'A038', 'A029', 'A011', 'A014', 'A017',
+  ],
 
   // Works shown under "Selected work" on the home page, in this order.
   featuredIds: [

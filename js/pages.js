@@ -37,11 +37,6 @@
     const pick = (ids) => (ids || []).map((id) => byId.get(id)).filter(Boolean);
     const hrefFor = (work) => `work.html${U.hashForWork(work)}`;
 
-    const hero = pick(config.heroIds);
-    const mosaic = document.getElementById('hero-mosaic');
-    if (hero.length === 3) window.Gallery.renderMosaic(mosaic, hero, { hrefFor });
-    else mosaic.hidden = true;
-
     window.Gallery.renderGallery(document.getElementById('featured-gallery'), pick(config.featuredIds), {
       hrefFor,
       eagerCount: 4,

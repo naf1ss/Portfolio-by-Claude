@@ -30,14 +30,13 @@
     img.addEventListener('error', reveal, { once: true });
   }
 
-  function createImage(work, { eager = false, sizes = TILE_SIZES, priority = false } = {}) {
+  function createImage(work, { eager = false, sizes = TILE_SIZES } = {}) {
     const img = new Image();
     img.className = 'tile__image';
     img.alt = ''; // the caption and link name already describe the work
     img.width = work.w;
     img.height = work.h;
     img.loading = eager ? 'eager' : 'lazy';
-    if (priority) img.fetchPriority = 'high';
     img.decoding = 'async';
     img.dataset.zoomSrc = U.largestUrl(work); // full-size file for the hover magnifier
     img.sizes = sizes;
@@ -106,41 +105,6 @@
     list.replaceChildren(...cards);
   }
 
-  // Width of each mosaic image relative to the viewport, for choosing a file size.
-  const MOSAIC_SIZES = '(min-width: 60rem) 38vw, 60vw';
-
-  function createMosaicItem(work, { hrefFor, priority }) {
-    const link = element('a', 'mosaic__item');
-    link.href = hrefFor(work);
-    link.setAttribute('aria-label', U.accessibleName(work, 1));
-    const frame = element('span', 'tile__frame');
-    frame.append(createImage(work, { eager: true, sizes: MOSAIC_SIZES, priority }));
-    link.append(frame);
-    return link;
-  }
-
-  /**
-   * Hero composition from exactly three works: one large image on the left and
-   * two stacked on the right. Column widths are weighted by each image's
-   * height-to-width ratio, so both columns end at the same height with no
-   * cropping:  width(large) : width(stack) = (r2 + r3) : r1.
-   */
-  function renderMosaic(container, [large, top, bottom], { hrefFor }) {
-    const ratio = (work) => work.h / work.w;
-    container.style.setProperty('--grow-large', ratio(top) + ratio(bottom));
-    container.style.setProperty('--grow-stack', ratio(large));
-
-    const largeColumn = element('div', 'mosaic__column mosaic__column--large');
-    largeColumn.append(createMosaicItem(large, { hrefFor, priority: true }));
-    const stackColumn = element('div', 'mosaic__column mosaic__column--stack');
-    stackColumn.dataset.parallax = '1'; // lags a little when scrolling (see motion.js)
-    stackColumn.append(
-      createMosaicItem(top, { hrefFor, priority: false }),
-      createMosaicItem(bottom, { hrefFor, priority: false })
-    );
-    container.replaceChildren(largeColumn, stackColumn);
-  }
-
   /**
    * Builds the medium filter buttons (categories with no works are omitted).
    * Returns { setActive(id) } to reflect the current selection.
@@ -179,5 +143,5 @@
     };
   }
 
-  window.Gallery = { renderGallery, renderMosaic, renderSeriesList, createFilters };
+  window.Gallery = { renderGallery, renderSeriesList, createFilters };
 })();
