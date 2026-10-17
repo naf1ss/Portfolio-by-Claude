@@ -3,6 +3,8 @@
   "private": true,
   "description": "Static portfolio site for Nafis. No build step.",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "stamp": "node tools/stamp-assets.js",
+    "pretest": "node tools/stamp-assets.js --check"
   }
 }

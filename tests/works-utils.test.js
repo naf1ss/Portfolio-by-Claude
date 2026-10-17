@@ -214,7 +214,7 @@ test('theme: opposite flips between the two themes', () => {
 test('every page loads the theme script before first paint', () => {
   ['index', 'work', 'about', 'contact', 'resume'].forEach((page) => {
     const html = fs.readFileSync(path.join(ROOT, `${page}.html`), 'utf8');
-    assert.match(html, /<script src="js\/theme-utils\.js"><\/script>\s*<script src="js\/theme\.js"><\/script>/, page);
+    assert.match(html, /<script src="js\/theme-utils\.js(\?v=[0-9a-f]+)?"><\/script>\s*<script src="js\/theme\.js(\?v=[0-9a-f]+)?"><\/script>/, page);
   });
 });
 
@@ -272,4 +272,15 @@ test('series: every page links to the Series page and series.html exists', () =>
     const html = fs.readFileSync(path.join(ROOT, `${page}.html`), 'utf8');
     assert.match(html, /<li><a href="series\.html"/, page);
   });
+});
+
+const { stampHtml } = require('../tools/stamp-assets.js');
+
+test('asset stamps: local css and js get a content hash, other links are untouched', () => {
+  const html = '<link rel="stylesheet" href="css/styles.css"><script src="js/theme.js" defer></script><link rel="icon" href="favicon.svg">';
+  const out = stampHtml(html);
+  assert.match(out, /href="css\/styles\.css\?v=[0-9a-f]{8}"/);
+  assert.match(out, /src="js\/theme\.js\?v=[0-9a-f]{8}" defer/);
+  assert.match(out, /href="favicon\.svg"/);
+  assert.equal(stampHtml(out), out, 'stamping twice changes nothing');
 });

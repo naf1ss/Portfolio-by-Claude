@@ -75,3 +75,7 @@ Phone number and school email are deliberately left off the public page.
 Repository **Settings → Pages → Build and deployment → Deploy from a branch**, then choose `main` and `/ (root)`.
 The site is then served at `https://<username>.github.io/<repository>/`. All paths are relative, so it works under that sub-path
 and on a custom domain without changes.
+
+## After changing any CSS or JS
+
+Run `npm run stamp`. It adds a short content hash to every stylesheet and script address in the HTML (`css/styles.css?v=1a2b3c4d`), so browsers re-download a file the moment it changes instead of showing an old cached copy. `npm test` fails if a stamp is out of date.
