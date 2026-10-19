@@ -37,14 +37,37 @@
     return lightbox;
   }
 
+  /**
+   * True the first time the home page is shown in a browser session, so a visitor opens on the best works;
+   * later visits (a refresh, coming back from another page) get a fresh random pick. Without storage
+   * (private windows) it is always true, which simply keeps the best works showing.
+   */
+  function isFirstHomeVisit() {
+    const key = 'nuances.homeSeen';
+    try {
+      if (sessionStorage.getItem(key)) return false;
+      sessionStorage.setItem(key, '1');
+    } catch (error) {
+      // storage unavailable: treat every visit as the first
+    }
+    return true;
+  }
+
   function initHome() {
     const { U, all, byId } = loadWorks();
-    const pick = (ids) => (ids || []).map((id) => byId.get(id)).filter(Boolean);
     const hrefFor = (work) => `gallery.html${U.hashForWork(work)}`;
 
-    window.Gallery.renderGallery(document.getElementById('featured-gallery'), pick(config.featuredIds), {
+    const latest = byId.get(config.latestId);
+    const latestSection = document.getElementById('latest-section');
+    if (latest) window.Gallery.renderLatest(document.getElementById('latest'), latest, { href: hrefFor(latest) });
+    else latestSection.hidden = true;
+
+    const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
+    const picks = U.pickMediumWorks(all, config.mediumPicks || [], { showBest: isFirstHomeVisit() });
+    window.Gallery.renderGallery(document.getElementById('medium-picks'), picks, {
       hrefFor,
       eagerCount: 4,
+      kickerFor: (work) => labels.get(work.category),
     });
 
     const counts = U.countByCategory(all);
@@ -64,7 +87,7 @@
     });
     document.getElementById('medium-list').replaceChildren(...rows);
 
-    window.Motion.reveal(document.querySelectorAll('#featured-gallery .gallery__item'));
+    window.Motion.reveal(document.querySelectorAll('#latest > *, #medium-picks .gallery__item'));
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
   }
 

@@ -180,7 +180,7 @@ test('catalogue: ids are unique and every record is well formed', () => {
   }
 });
 
-test('catalogue: hero slides and featured works in the config exist', () => {
+test('catalogue: hero lead works in the config exist', () => {
   const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
   const ids = new Set(WORKS.map((record) => record.id));
   const listFor = (key) => {
@@ -189,7 +189,7 @@ test('catalogue: hero slides and featured works in the config exist', () => {
     return [...block[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
   };
   assert.ok(listFor('heroLead').length >= 1, 'the hero slideshow needs a lead work');
-  [...listFor('heroLead'), ...listFor('featuredIds')].forEach((id) =>
+  [...listFor('heroLead')].forEach((id) =>
     assert.ok(ids.has(id), `configured id ${id} is not in the catalogue`)
   );
 });
@@ -341,4 +341,35 @@ test('clockAt gives the local time in a place and whether it is daytime there', 
 
 test('NOTE_TOPICS starts with the friendliest default', () => {
   assert.equal(ContactUtils.NOTE_TOPICS[0], 'Just saying hello');
+});
+
+test('catalogue: the latest work and every medium pick in the config exist and match their medium', () => {
+  const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
+  const byId = new Map(WORKS.map((record) => [record.id, record]));
+  const latest = /latestId:\s*'([^']+)'/.exec(source);
+  assert.ok(latest && byId.has(latest[1]), 'latestId is not in the catalogue');
+  const picks = [...source.matchAll(/\{\s*category:\s*'([^']+)',\s*best:\s*'([^']+)'\s*\}/g)];
+  assert.ok(picks.length >= 1, 'mediumPicks not found');
+  picks.forEach(([, category, best]) => {
+    assert.ok(byId.has(best), `mediumPicks: ${best} is not in the catalogue`);
+    assert.equal(byId.get(best).category, category, `${best} is not in ${category}`);
+  });
+});
+
+test('pickMediumWorks shows the best work first, then a random one from the same medium', () => {
+  const works = [
+    { id: 'P1', category: 'painting' },
+    { id: 'P2', category: 'painting' },
+    { id: 'P3', category: 'painting', hidden: true },
+    { id: 'C1', category: 'ceramics' },
+  ];
+  const picks = [
+    { category: 'painting', best: 'P2' },
+    { category: 'ceramics', best: 'C1' },
+    { category: 'drawing', best: 'D1' },
+  ];
+  const ids = (options) => U.pickMediumWorks(works, picks, options).map((work) => work.id);
+  assert.deepEqual(ids({ showBest: true }), ['P2', 'C1']);
+  assert.deepEqual(ids({ showBest: false, random: () => 0 }), ['P1', 'C1']);
+  assert.deepEqual(ids({ showBest: false, random: () => 0.99 }), ['P2', 'C1']); // hidden P3 is never picked
 });

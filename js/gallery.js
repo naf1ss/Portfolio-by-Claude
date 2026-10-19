@@ -46,8 +46,11 @@
     return img;
   }
 
-  function createCaption(work) {
+  /** `kicker` is a small label above the title, such as the medium a work stands for. */
+  function createCaption(work, kicker) {
     const caption = element('span', 'tile__caption');
+    if (kicker) caption.append(element('span', 'tile__kicker', kicker));
+    if (kicker && !work.title) return caption; // an untitled work's detail line would only repeat the label
     if (work.title) caption.append(element('span', 'tile__title', work.title));
     const meta = U.metaLine(work);
     if (meta) caption.append(element('span', 'tile__meta', meta));
@@ -55,13 +58,13 @@
   }
 
   /** Photographs are shown as a clean contact sheet, with captions only in the viewer. */
-  function createTileChildren(work, eager) {
+  function createTileChildren(work, eager, kicker) {
     const frame = element('span', 'tile__frame');
     frame.append(createImage(work, { eager }));
-    return U.isBulk(work) ? [frame] : [frame, createCaption(work)];
+    return U.isBulk(work) ? [frame] : [frame, createCaption(work, kicker)];
   }
 
-  function createTile(work, position, { hrefFor, eager }) {
+  function createTile(work, position, { hrefFor, eager, kickerFor }) {
     const item = element('li', 'gallery__item');
     item.style.setProperty('--ar', U.aspectRatio(work));
 
@@ -70,7 +73,7 @@
     link.dataset.workId = work.id;
     link.setAttribute('aria-label', U.accessibleName(work, position));
 
-    link.append(...createTileChildren(work, eager));
+    link.append(...createTileChildren(work, eager, kickerFor && kickerFor(work)));
     item.append(link);
     return item;
   }
@@ -79,11 +82,43 @@
    * Replaces the contents of `list` (a <ul>) with one tile per work.
    * The first `eagerCount` images load immediately; the rest are lazy.
    */
-  function renderGallery(list, works, { hrefFor, eagerCount = 4 }) {
+  function renderGallery(list, works, { hrefFor, eagerCount = 4, kickerFor }) {
     const tiles = works.map((work, i) =>
-      createTile(work, i + 1, { hrefFor, eager: i < eagerCount })
+      createTile(work, i + 1, { hrefFor, eager: i < eagerCount, kickerFor })
     );
     list.replaceChildren(...tiles);
+  }
+
+  const LATEST_SIZES = '(min-width: 56rem) 56vw, 92vw';
+
+  /** The large "latest work" feature: a big picture beside its title and details. */
+  function renderLatest(container, work, { href }) {
+    const link = element('a', 'tile latest__media');
+    link.href = href;
+    link.dataset.workId = work.id;
+    link.setAttribute('aria-label', `${work.title}, open in the gallery`);
+    const frame = element('span', 'tile__frame');
+    frame.append(createImage(work, { eager: true, sizes: LATEST_SIZES }));
+    link.append(frame);
+
+    const details = [
+      ['Year', work.year],
+      ['Medium', work.medium],
+      ['Size', U.formatDimensions(work.dimensions)],
+    ].filter(([, value]) => value);
+    const list = element('dl', 'latest__details');
+    details.forEach(([label, value]) => {
+      const row = element('div');
+      row.append(element('dt', undefined, label), element('dd', undefined, String(value)));
+      list.append(row);
+    });
+
+    const more = element('a', 'text-link', 'View in the gallery \u2192');
+    more.href = href;
+    const body = element('div', 'latest__body');
+    body.append(element('h3', 'latest__title', work.title), list, more);
+
+    container.replaceChildren(link, body);
   }
 
   const SERIES_SIZES = '(min-width: 60rem) 30vw, (min-width: 40rem) 45vw, 92vw';
@@ -143,5 +178,5 @@
     };
   }
 
-  window.Gallery = { renderGallery, renderSeriesList, createFilters };
+  window.Gallery = { renderGallery, renderLatest, renderSeriesList, createFilters };
 })();

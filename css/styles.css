@@ -1617,6 +1617,14 @@ button:focus-visible > .roll .roll__face + .roll__face {
   padding-top: 0.65rem;
 }
 
+.tile__kicker {
+  font-family: var(--font-text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .tile__title {
   font-family: var(--font-prose);
   font-size: 1.35rem;
@@ -1631,6 +1639,127 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .tile__meta {
   color: var(--ink-muted);
   font-size: var(--step--1);
+}
+
+/* ---------- Home: one work per medium ----------
+   Five equal mounts, so a random pick of any shape sits in the same slot. Six columns let the
+   rows break 3 + 2 on tablets, and 5 across on desktop. */
+.picks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem) clamp(0.75rem, 1.6vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.picks > :last-child {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 40rem) {
+  .picks {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .picks > li {
+    grid-column: span 2;
+  }
+
+  .picks > :nth-child(n + 4) {
+    grid-column: span 3;
+  }
+}
+
+@media (min-width: 64rem) {
+  .picks {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .picks > li,
+  .picks > :nth-child(n + 4),
+  .picks > :last-child {
+    grid-column: auto;
+  }
+}
+
+.picks .tile__frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  padding: clamp(0.5rem, 1.2vw, 1rem);
+}
+
+/* Wider slots keep the same frame height as the narrow ones beside them. */
+.picks > :last-child .tile__frame {
+  aspect-ratio: 8 / 5;
+}
+
+@media (min-width: 40rem) {
+  .picks > :nth-child(n + 4) .tile__frame {
+    aspect-ratio: 6 / 5;
+  }
+}
+
+@media (min-width: 64rem) {
+  .picks > li .tile__frame {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+.picks .tile__image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ---------- Home: latest work ---------- */
+.latest {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+@media (min-width: 56rem) {
+  .latest {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+.latest__body {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+}
+
+.latest__title {
+  font-size: var(--step-3);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.latest__details {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.latest__details dt {
+  font-family: var(--font-text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.latest__details dd {
+  margin: 0.1rem 0 0;
+  font-family: var(--font-prose);
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 /* ---------- Viewer ---------- */

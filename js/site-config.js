@@ -8,10 +8,17 @@ window.SITE_CONFIG = {
   heroLead: ['A012', 'A002', 'A003', 'A030'],
   heroCategories: ['painting', 'print'],
 
-  // Works shown under "Selected work" on the home page, in this order.
-  featuredIds: [
-    'A030', 'A010', 'ceramics-44', 'A031',
-    'A019', 'A036', 'ceramics-59', 'A002',
+  // The big "Latest work" feature on the home page.
+  latestId: 'A041',
+
+  // One work per medium on the home page. A visitor's first home page in a session shows each `best`;
+  // after that every visit shows a random work from the same medium.
+  mediumPicks: [
+    { category: 'painting', best: 'A043' },
+    { category: 'print', best: 'A027' },
+    { category: 'ceramics', best: 'ceramics9' },
+    { category: 'digital', best: 'A031' },
+    { category: 'drawing', best: 'A007' },
   ],
 
   // Shown as live clocks on the contact page; timeZone is an IANA name.

@@ -214,6 +214,22 @@
     return picked;
   }
 
+  /**
+   * One work per medium for the home page. Each pick names its category and a `best` work. With `showBest`
+   * the best works are returned; otherwise a random visible work of that medium (the best one included).
+   * Picks whose category has no visible works are skipped.
+   */
+  function pickMediumWorks(works, picks, { showBest, random = Math.random }) {
+    const chosen = [];
+    picks.forEach(({ category, best }) => {
+      const pool = works.filter((work) => work.category === category && !work.hidden);
+      const bestWork = pool.find((work) => work.id === best);
+      const work = showBest && bestWork ? bestWork : pickRandom(pool, 1, random)[0];
+      if (work) chosen.push(work);
+    });
+    return chosen;
+  }
+
   return {
     IMAGE_ROOT,
     SIZE_SUFFIXES,
@@ -239,5 +255,6 @@
     worksInSeries,
     seriesMeta,
     pickRandom,
+    pickMediumWorks,
   };
 });
