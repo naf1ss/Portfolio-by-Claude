@@ -24,6 +24,7 @@
     {"file": "contact-utils"},
     {"file": "pages", "requires": ["site-config", "contact-utils"]},
     {"file": "contact", "requires": ["contact-utils", "site-config"]},
+    {"file": "resume-ledger"},
     {"file": "interactions"},
     {"file": "magnifier-utils"},
     {"file": "magnifier"},

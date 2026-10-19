@@ -1,7 +1,7 @@
 ---
 title: Resume — nuances by nafis
 description: Resume of Md Nafisul Hasan Sami (Nafis): education, skills and experience in art, design and data.
-scripts: pages
+scripts: pages, resume-ledger
 ---
   <main id="main" class="wrap">
     <header class="resume-head">
@@ -13,113 +13,139 @@ scripts: pages
       <button class="button no-print" type="button" data-print>Print or save as PDF</button>
     </header>
 
-    <section class="resume-section" aria-labelledby="education-heading">
-      <h2 class="resume-section__title" id="education-heading">Education</h2>
-      <div>
-        <article class="resume-entry">
-          <div class="resume-entry__head"><h3 class="resume-entry__title">Gettysburg College</h3><span class="resume-entry__date">Expected May 2027</span></div>
-          <p class="resume-entry__org">Gettysburg, PA</p>
-          <ul>
-            <li>BA in Mathematics and Art Studio, with a Data Science minor.</li>
-            <li>Presidential Scholar.</li>
-          </ul>
+    <dl class="resume-glance">
+      <div><dt>Studying</dt><dd>BA Mathematics and Art Studio, Data Science minor</dd></div>
+      <div><dt>At</dt><dd>Gettysburg College, expected May 2027</dd></div>
+      <div><dt>Works in</dt><dd>Painting, ceramics, prints, photography, digital media</dd></div>
+    </dl>
+
+    <div data-ledger>
+    <section class="resume-block" aria-labelledby="education-heading">
+      <h2 class="resume-block__title" id="education-heading">Education</h2>
+      <div class="ledger-rows">
+        <article class="ledger-row" data-open>
+          <button class="ledger-btn" type="button" aria-expanded="true">
+            <span class="resume-row__date">Expected May 2027</span>
+            <span class="resume-row__main"><span class="resume-row__title">Gettysburg College</span><span class="resume-row__org">Gettysburg, PA</span></span>
+            <span class="ledger-plus" aria-hidden="true"></span>
+          </button>
+          <div class="ledger-more"><div>
+            <ul>
+              <li>BA in Mathematics and Art Studio, with a Data Science minor.</li>
+              <li>Presidential Scholar.</li>
+            </ul>
+          </div></div>
         </article>
-        <div class="resume-courses">
-          <h3 class="resume-courses__title">Coursework</h3>
-          <p class="resume-courses__group">Studio art</p>
-          <ul class="resume-tags">
-            <li>Painting</li>
-            <li>Intermediate Painting</li>
-            <li>Drawing</li>
-            <li>Printmaking</li>
-            <li>Ceramics</li>
-            <li>Digital Media</li>
-            <li>Intro to Photography</li>
-            <li>Intermediate Photography</li>
-          </ul>
-          <p class="resume-courses__group">Mathematics, data &amp; economics</p>
-          <ul class="resume-tags">
-            <li>Data Science Programming</li>
-            <li>Applied Data Science</li>
-            <li>Visual Communication of Data</li>
-            <li>Spreadsheet Modelling for Management</li>
-            <li>Multivariable Calculus</li>
-            <li>Linear Algebra</li>
-            <li>Abstract Mathematics</li>
-            <li>Probability and Statistics</li>
-            <li>Complex Analysis</li>
-            <li>Microeconomics</li>
-            <li>Macroeconomics</li>
-          </ul>
+      </div>
+    </section>
+
+    <section class="resume-block" aria-labelledby="experience-heading">
+      <div class="resume-block__bar">
+        <h2 class="resume-block__title" id="experience-heading">Experience</h2>
+        <button class="resume-toggle no-print" type="button" data-ledger-toggle hidden>Close all</button>
+      </div>
+      <div class="ledger-year">
+        <h3 class="ledger-year__label">2026</h3>
+        <div class="ledger-year__rows">
+        <article class="ledger-row" data-open>
+          <button class="ledger-btn" type="button" aria-expanded="true">
+            <span class="resume-row__date is-now">Sept 2026 &ndash; Present</span>
+            <span class="resume-row__main"><span class="resume-row__title">Photography &amp; Digital Media Peer Learning Associate</span><span class="resume-row__org">Gettysburg College</span></span>
+            <span class="ledger-plus" aria-hidden="true"></span>
+          </button>
+          <div class="ledger-more"><div>
+            <ul>
+              <li>Support students through in-class assistance, weekly studio hours and tutorials.</li>
+              <li>Demonstrate digital imaging and camera workflows and troubleshoot technical issues.</li>
+              <li>Foster an inclusive studio environment through peer mentorship, course logistics and respect for student confidentiality.</li>
+            </ul>
+          </div></div>
+        </article>
+        <article class="ledger-row">
+          <button class="ledger-btn" type="button" aria-expanded="true">
+            <span class="resume-row__date">June 2026 &ndash; July 2026</span>
+            <span class="resume-row__main"><span class="resume-row__title">Kolbe Summer Research Fellow</span><span class="resume-row__org">Gettysburg College</span></span>
+            <span class="ledger-plus" aria-hidden="true"></span>
+          </button>
+          <div class="ledger-more"><div>
+            <ul>
+              <li>Designed a campus Planet Walk, a scaled solar system route running from the Planetarium to the Observatory.</li>
+              <li>Developed a public-art system of ceramic planetary markers and a large Observatory mural, produced as a vinyl installation after testing of materials, glazes and durability.</li>
+              <li>Built an interactive digital companion with a campus map, planet pages and a walk tracker.</li>
+            </ul>
+          </div></div>
+        </article>
+        <article class="ledger-row">
+          <button class="ledger-btn" type="button" aria-expanded="true">
+            <span class="resume-row__date is-now">Jan 2026 &ndash; Present</span>
+            <span class="resume-row__main"><span class="resume-row__title">Design &amp; Social Media Chair</span><span class="resume-row__org">Center for Religious and Spiritual Life, Gettysburg College</span></span>
+            <span class="ledger-plus" aria-hidden="true"></span>
+          </button>
+          <div class="ledger-more"><div>
+            <ul>
+              <li>Lead the visual identity and social media presence, creating cohesive digital and print content for interfaith programming.</li>
+            </ul>
+          </div></div>
+        </article>
+        </div>
+      </div>
+      <div class="ledger-year">
+        <h3 class="ledger-year__label">2025</h3>
+        <div class="ledger-year__rows">
+        <article class="ledger-row">
+          <button class="ledger-btn" type="button" aria-expanded="true">
+            <span class="resume-row__date">June 2025 &ndash; July 2025</span>
+            <span class="resume-row__main"><span class="resume-row__title">Art History Summer Digital Fellow</span><span class="resume-row__org">Gettysburg College</span></span>
+            <span class="ledger-plus" aria-hidden="true"></span>
+          </button>
+          <div class="ledger-more"><div>
+            <ul>
+              <li>Designed and deployed &ldquo;A Digital Moving Mountain,&rdquo; an interactive web platform for the exhibition <em>Footprints Across the Ocean</em> featuring artist Dr. Gan Yu.</li>
+              <li>Engineered the site architecture to visualize complex artistic themes.</li>
+              <li>Authored a catalogue essay on the project&rsquo;s technical methodology with faculty mentors.</li>
+            </ul>
+          </div></div>
+        </article>
+        </div>
+      </div>
+      <div class="ledger-year">
+        <h3 class="ledger-year__label">2024</h3>
+        <div class="ledger-year__rows">
+        <article class="ledger-row">
+          <button class="ledger-btn" type="button" aria-expanded="true">
+            <span class="resume-row__date is-now">Aug 2024 &ndash; Present</span>
+            <span class="resume-row__main"><span class="resume-row__title">Program Coordinator</span><span class="resume-row__org">Office of Campus Life, Gettysburg College</span></span>
+            <span class="ledger-plus" aria-hidden="true"></span>
+          </button>
+          <div class="ledger-more"><div>
+            <ul>
+              <li>Organized campus events on cultural exchange and inclusivity, leading teams of student staff.</li>
+              <li>Developed leadership skills working with diverse student groups to foster a sense of belonging.</li>
+            </ul>
+          </div></div>
+        </article>
         </div>
       </div>
     </section>
+    </div>
 
-    <section class="resume-section" aria-labelledby="experience-heading">
-      <h2 class="resume-section__title" id="experience-heading">Experience</h2>
-      <div>
-          <article class="resume-entry">
-            <div class="resume-entry__head"><h3 class="resume-entry__title">Kolbe Summer Research Fellow</h3><span class="resume-entry__date">June 2026 &ndash; July 2026</span></div>
-            <p class="resume-entry__org">Gettysburg College</p>
-            <ul>
-            <li>Designed a campus Planet Walk, a scaled solar system route running from the Planetarium to the Observatory.</li>
-            <li>Developed a public-art system of ceramic planetary markers and a large Observatory mural, produced as a vinyl installation after testing of materials, glazes and durability.</li>
-            <li>Built an interactive digital companion with a campus map, planet pages and a walk tracker.</li>
-            </ul>
-          </article>
-          <article class="resume-entry">
-            <div class="resume-entry__head"><h3 class="resume-entry__title">Photography &amp; Digital Media Peer Learning Associate</h3><span class="resume-entry__date">Sept 2026 &ndash; Present</span></div>
-            <p class="resume-entry__org">Gettysburg College</p>
-            <ul>
-            <li>Support students through in-class assistance, weekly studio hours and tutorials.</li>
-            <li>Demonstrate digital imaging and camera workflows and troubleshoot technical issues.</li>
-            <li>Foster an inclusive studio environment through peer mentorship, course logistics and respect for student confidentiality.</li>
-            </ul>
-          </article>
-          <article class="resume-entry">
-            <div class="resume-entry__head"><h3 class="resume-entry__title">Design &amp; Social Media Chair</h3><span class="resume-entry__date">Jan 2026 &ndash; Present</span></div>
-            <p class="resume-entry__org">Center for Religious and Spiritual Life, Gettysburg College</p>
-            <ul>
-            <li>Lead the visual identity and social media presence, creating cohesive digital and print content for interfaith programming.</li>
-            </ul>
-          </article>
-          <article class="resume-entry">
-            <div class="resume-entry__head"><h3 class="resume-entry__title">Art History Summer Digital Fellow</h3><span class="resume-entry__date">June 2025 &ndash; July 2025</span></div>
-            <p class="resume-entry__org">Gettysburg College</p>
-            <ul>
-            <li>Designed and deployed &ldquo;A Digital Moving Mountain,&rdquo; an interactive web platform for the exhibition <em>Footprints Across the Ocean</em> featuring artist Dr. Gan Yu.</li>
-            <li>Engineered the site architecture to visualize complex artistic themes.</li>
-            <li>Authored a catalogue essay on the project&rsquo;s technical methodology with faculty mentors.</li>
-            </ul>
-          </article>
-          <article class="resume-entry">
-            <div class="resume-entry__head"><h3 class="resume-entry__title">Program Coordinator</h3><span class="resume-entry__date">Aug 2024 &ndash; Present</span></div>
-            <p class="resume-entry__org">Office of Campus Life, Gettysburg College</p>
-            <ul>
-            <li>Organized campus events on cultural exchange and inclusivity, leading teams of student staff.</li>
-            <li>Developed leadership skills working with diverse student groups to foster a sense of belonging.</li>
-            </ul>
-          </article>
+    <section class="resume-block" aria-labelledby="coursework-heading">
+      <h2 class="resume-block__title" id="coursework-heading">Coursework</h2>
+      <div class="resume-plain">
+        <p class="resume-plain__label">Studio art</p>
+        <p>Painting, Intermediate Painting, Drawing, Printmaking, Ceramics, Digital Media, Intro to Photography, Intermediate Photography</p>
+        <p class="resume-plain__label">Mathematics, data &amp; economics</p>
+        <p>Data Science Programming, Applied Data Science, Visual Communication of Data, Spreadsheet Modelling for Management, Multivariable Calculus, Linear Algebra, Abstract Mathematics, Probability and Statistics, Complex Analysis, Microeconomics, Macroeconomics</p>
       </div>
     </section>
 
-    <section class="resume-section" aria-labelledby="skills-heading">
-      <h2 class="resume-section__title" id="skills-heading">Skills</h2>
-      <div class="resume-courses">
-        <p class="resume-courses__group">Data &amp; programming</p>
-        <ul class="resume-tags">
-          <li>Python (NumPy, Matplotlib)</li>
-          <li>Java</li>
-          <li>Advanced Excel (VBA, modeling)</li>
-        </ul>
-        <p class="resume-courses__group">Design &amp; media</p>
-        <ul class="resume-tags">
-          <li>Adobe Photoshop</li>
-          <li>Procreate</li>
-          <li>Typography</li>
-          <li>Animation</li>
-          <li>Digital art</li>
-        </ul>
+    <section class="resume-block" aria-labelledby="skills-heading">
+      <h2 class="resume-block__title" id="skills-heading">Skills</h2>
+      <div class="resume-plain">
+        <p class="resume-plain__label">Data &amp; programming</p>
+        <p>Python (NumPy, Matplotlib), Java, Advanced Excel (VBA, modeling)</p>
+        <p class="resume-plain__label">Design &amp; media</p>
+        <p>Adobe Photoshop, Procreate, typography, animation, digital art</p>
       </div>
     </section>
   </main>
