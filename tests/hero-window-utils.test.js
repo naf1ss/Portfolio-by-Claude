@@ -9,9 +9,8 @@ const Geometry = U;
 const measure = (text) => text.length * 50;
 const region = { x: 0, y: 100, w: 1000, h: 600 };
 
-test('splitName stacks the name on portrait screens only', () => {
-  assert.deepEqual(U.splitName(false), ['nuances']);
-  assert.deepEqual(U.splitName(true), ['nuan', 'ces']);
+test('the name is a single line on every screen shape', () => {
+  assert.deepEqual(U.NAME_LINES, ['nuances']);
 });
 
 test('fitLines is limited by width on a wide, short region', () => {

@@ -23,10 +23,8 @@
   const lerp = (from, to, t) => from + (to - from) * t;
   const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-  /** One line on landscape screens; two stacked lines on portrait ones, so the letters stay large. */
-  function splitName(isPortrait) {
-    return isPortrait ? ['nuan', 'ces'] : ['nuances'];
-  }
+  /** The name is always a single line, on phones too. */
+  const NAME_LINES = Object.freeze(['nuances']);
 
   /**
    * Fits centred lines of text, plus a trailing dot on the last line, into a region.
@@ -112,5 +110,5 @@
     };
   }
 
-  return { once, splitName, fitLines, slideAt, skipAhead, scanPosition, pickSizeIndex, easeInOut, clamp, lerp };
+  return { once, NAME_LINES, fitLines, slideAt, skipAhead, scanPosition, pickSizeIndex, easeInOut, clamp, lerp };
 });

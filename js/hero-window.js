@@ -118,7 +118,7 @@
     const gutter = parseFloat(getComputedStyle(hero).paddingLeft) || 16;
     const top = Math.max(stageBox.top, header ? header.getBoundingClientRect().bottom : 0) - heroBox.top;
     const region = { x: gutter, y: top, w: heroBox.width - gutter * 2, h: stageBox.bottom - heroBox.top - top };
-    const lines = Geometry.splitName(heroBox.width / heroBox.height < 0.8);
+    const lines = Geometry.NAME_LINES;
 
     // Fit once, then again with room reserved for the by-line that hangs below the name.
     let fit = Geometry.fitLines({ lines, dot: '.', measure: measureAt100, region });
