@@ -110,5 +110,26 @@
     };
   }
 
-  return { once, NAME_LINES, fitLines, slideAt, skipAhead, scanPosition, pickSizeIndex, easeInOut, clamp, lerp };
+  /**
+   * The works behind the letters: the `lead` ids first, in that order, then every other visible work in
+   * `categories`, taking one from each category in turn so a run of similar pieces (a print series, say)
+   * is spread through the slideshow instead of playing back to back.
+   */
+  function pickHeroSlides(works, { lead = [], categories = [] }) {
+    const byId = new Map(works.map((work) => [work.id, work]));
+    const chosen = lead.map((id) => byId.get(id)).filter(Boolean);
+    const taken = new Set(chosen.map((work) => work.id));
+    const queues = categories.map((category) =>
+      works.filter((work) => work.category === category && !work.hidden && !taken.has(work.id))
+    );
+    const rounds = Math.max(0, ...queues.map((queue) => queue.length));
+    for (let round = 0; round < rounds; round += 1) {
+      queues.forEach((queue) => {
+        if (queue[round]) chosen.push(queue[round]);
+      });
+    }
+    return chosen;
+  }
+
+  return { once, pickHeroSlides, NAME_LINES, fitLines, slideAt, skipAhead, scanPosition, pickSizeIndex, easeInOut, clamp, lerp };
 });

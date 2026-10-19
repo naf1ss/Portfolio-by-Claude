@@ -84,3 +84,17 @@ test('once runs the callback a single time and keeps its first result', () => {
   assert.equal(run(5), undefined);
   assert.equal(calls, 1);
 });
+
+test('pickHeroSlides leads with the chosen works, then alternates categories and skips hidden ones', () => {
+  const works = [
+    { id: 'P1', category: 'painting' },
+    { id: 'P2', category: 'painting' },
+    { id: 'P3', category: 'painting' },
+    { id: 'R1', category: 'print' },
+    { id: 'R2', category: 'print', hidden: true },
+    { id: 'R3', category: 'print' },
+    { id: 'D1', category: 'digital' },
+  ];
+  const ids = U.pickHeroSlides(works, { lead: ['P2', 'nope'], categories: ['painting', 'print'] }).map((work) => work.id);
+  assert.deepEqual(ids, ['P2', 'P1', 'R1', 'P3', 'R3']);
+});

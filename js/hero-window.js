@@ -1,6 +1,6 @@
 /**
  * Home-page hero: the name "nuances." is a window onto the paintings. Each work
- * in SITE_CONFIG.heroSlides slowly scans through the letters, then dissolves
+ * in SITE_CONFIG.heroLead / heroCategories slowly scans through the letters, then dissolves
  * into the next. The pointer nudges the scan; a click (or the Next button)
  * moves on. Geometry and timing live in hero-window-utils.js.
  *
@@ -37,14 +37,13 @@
 
   /** The configured works, each with its picture once loaded. */
   function loadSlides() {
-    const all = window.PORTFOLIO_WORKS.concat(window.PORTFOLIO_PHOTOS || []);
-    const byId = new Map(all.map((work) => [work.id, work]));
-    const ids = (window.SITE_CONFIG && window.SITE_CONFIG.heroSlides) || [];
-    return ids.map((id) => byId.get(id)).filter(Boolean).map((work) => ({ work, image: null, status: 'idle', readyAt: 0 }));
+    const config = window.SITE_CONFIG || {};
+    return Geometry.pickHeroSlides(window.PORTFOLIO_WORKS, { lead: config.heroLead, categories: config.heroCategories })
+      .map((work) => ({ work, image: null, status: 'idle', readyAt: 0 }));
   }
 
   const slides = loadSlides();
-  if (slides.length === 0) throw new Error('hero-window: SITE_CONFIG.heroSlides lists no known works.');
+  if (slides.length === 0) throw new Error('hero-window: SITE_CONFIG.heroLead and heroCategories select no works.');
 
   const state = {
     dpr: 1,

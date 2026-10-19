@@ -3,11 +3,10 @@
  * and works-photography.js.
  */
 window.SITE_CONFIG = {
-  // Works that scan through the letters of "nuances." in the home page hero, in this order.
-  heroSlides: [
-    'A012', 'A002', 'A003', 'A030', 'A037', 'A025', 'A004', 'A010',
-    'A034', 'A005', 'A038', 'A029', 'A011', 'A014', 'A017',
-  ],
+  // The home page hero cuts "nuances." out of a slideshow: these works open it, in this order,
+  // and then every other visible work in these categories follows.
+  heroLead: ['A012', 'A002', 'A003', 'A030'],
+  heroCategories: ['painting', 'print'],
 
   // Works shown under "Selected work" on the home page, in this order.
   featuredIds: [

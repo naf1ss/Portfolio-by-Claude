@@ -188,8 +188,8 @@ test('catalogue: hero slides and featured works in the config exist', () => {
     assert.ok(block, `${key} not found`);
     return [...block[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
   };
-  assert.ok(listFor('heroSlides').length >= 3, 'the hero slideshow needs a few works');
-  [...listFor('heroSlides'), ...listFor('featuredIds')].forEach((id) =>
+  assert.ok(listFor('heroLead').length >= 1, 'the hero slideshow needs a lead work');
+  [...listFor('heroLead'), ...listFor('featuredIds')].forEach((id) =>
     assert.ok(ids.has(id), `configured id ${id} is not in the catalogue`)
   );
 });
