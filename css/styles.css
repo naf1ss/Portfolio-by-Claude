@@ -2068,43 +2068,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
   display: none;
 }
 
-/* Experience is grouped by year: a large muted year on the left, ledger rows beside it. */
-.ledger-year {
-  display: grid;
-  gap: 0.25rem 1.5rem;
-}
-
-.ledger-year__label {
-  margin: 0;
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--rule);
-  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.4rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: var(--ink-muted);
-}
-
-@media (min-width: 56rem) {
-  .ledger-year {
-    grid-template-columns: 11rem minmax(0, 1fr);
-  }
-
-  /* The year stays in view while its roles scroll past. */
-  .ledger-year__label {
-    position: sticky;
-    top: 2rem;
-    align-self: start;
-    border-top: 0;
-  }
-}
-
 .ledger-row {
   border-top: 1px solid var(--rule);
 }
 
-.ledger-rows > .ledger-row:last-child,
-.ledger-year__rows > .ledger-row:last-child {
+.ledger-rows > .ledger-row:last-child {
   border-bottom: 1px solid var(--rule);
 }
 
@@ -2112,15 +2080,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
   all: unset;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr) 2rem;
+  grid-template-columns: 12rem minmax(0, 1fr) 2rem;
   gap: 0.25rem 1.5rem;
   align-items: baseline;
   width: 100%;
   padding: 1.15rem 0;
-}
-
-.ledger-year__rows .ledger-btn {
-  grid-template-columns: 12rem minmax(0, 1fr) 2rem;
 }
 
 .is-collapsible .ledger-btn {
@@ -2222,13 +2186,9 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .ledger-more ul {
   margin: 0;
-  padding: 0 2rem 1.4rem calc(11rem + 1.5rem);
+  padding: 0 2rem 1.4rem calc(12rem + 1.5rem);
   max-width: 54rem;
   list-style: none;
-}
-
-.ledger-year__rows .ledger-more ul {
-  padding-left: calc(12rem + 1.5rem);
 }
 
 /* An en dash instead of a bullet, in the accent colour. */
@@ -2268,8 +2228,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 @media (max-width: 55.99rem) {
-  .ledger-btn,
-  .ledger-year__rows .ledger-btn {
+  .ledger-btn {
     grid-template-columns: minmax(0, 1fr) 2rem;
   }
 
@@ -2277,15 +2236,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
     grid-column: 1 / -1;
   }
 
-  .ledger-more ul,
-  .ledger-year__rows .ledger-more ul {
+  .ledger-more ul {
     padding: 0 0 1.4rem;
-  }
-
-  .ledger-year__label {
-    margin-top: 1.5rem;
-    border-top: 0;
-    padding-top: 0;
   }
 }
 
@@ -2348,13 +2300,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
     line-height: 1.35;
   }
 
-  .ledger-row,
-  .ledger-year__label {
+  .ledger-row {
     break-inside: avoid;
-  }
-
-  .ledger-year__label {
-    break-after: avoid;
   }
 
   .resume-glance {
@@ -2374,11 +2321,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
     font-size: 12pt;
   }
 
-  .ledger-year__label {
-    position: static;
-    font-size: 16pt;
-  }
-
   /* Print always shows every role in full. */
   .is-collapsible .ledger-more {
     display: block;
@@ -2388,13 +2330,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
     display: none !important;
   }
 
-  .ledger-btn,
-  .ledger-year__rows .ledger-btn {
+  .ledger-btn {
     padding-block: 0.2cm 0.05cm;
   }
 
-  .ledger-more ul,
-  .ledger-year__rows .ledger-more ul {
+  .ledger-more ul {
     padding-bottom: 0.2cm;
   }
 

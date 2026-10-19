@@ -76,7 +76,7 @@ To give a photo a title, or move a group into a series, edit its row or move it 
 
 ## Resume
 
-`src/pages/resume.html` is plain HTML (edit it, then `npm run build`). Each role is a `.ledger-row`; `js/resume-ledger.js` makes rows collapsible (no script = everything open), and print always shows every row in full. Add a role by copying a row into the right year group; add `is-now` to its date for the pulsing "present" dot.
+`src/pages/resume.html` is plain HTML (edit it, then `npm run build`). Each role is a `.ledger-row`; `js/resume-ledger.js` makes rows collapsible (no script = everything open), and print always shows every row in full. Add a role by copying a row into the list (newest first); add `is-now` to its date for the pulsing "present" dot.
 Phone number and school email are deliberately left off the public page.
 
 ## Publishing with GitHub Pages
