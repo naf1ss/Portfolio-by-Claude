@@ -70,6 +70,8 @@
     const lightbox = mountViewer(list);
     const counts = U.countByCategory(all);
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
+    // The photographer only appears alongside the photography work.
+    const photographer = document.querySelector('.gallery-peek');
 
     let category = U.categoryFromSearch(location.search);
 
@@ -93,6 +95,7 @@
       });
       lightbox.setWorks(visible);
       filters.setActive(category);
+      if (photographer) photographer.classList.toggle('is-shown', category === 'photography');
 
       const noun = visible.length === 1 ? 'work' : 'works';
       status.textContent =

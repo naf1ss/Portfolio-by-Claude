@@ -861,8 +861,9 @@ button:focus-visible > .roll .roll__face + .roll__face {
   font-size: var(--step-3);
 }
 
-/* Gallery: a photographer leaning in from the bottom-right corner of the screen. The picture is already
-   cropped at the bag and the legs, so those edges sit exactly on the screen's edges. */
+/* Gallery: a photographer leaning in from the bottom-right corner of the screen, shown only while the
+   Photography filter is active. The picture is already cropped at the bag and the legs, so those edges sit
+   exactly on the screen's edges. */
 .gallery-peek {
   position: fixed;
   right: 0;
@@ -872,23 +873,28 @@ button:focus-visible > .roll .roll__face + .roll__face {
   height: auto;
   pointer-events: none;
   user-select: none;
+  opacity: 0;
+  transform: translate(25%, 25%);
+  transition: opacity 0.4s var(--ease-out), transform 0.7s var(--ease-out);
 }
 
-.js-motion .gallery-peek {
+.gallery-peek.is-shown {
+  opacity: 1;
+  transform: none;
+  transition: opacity 1s var(--ease-out) 0.25s, transform 1.5s var(--ease-out) 0.25s;
+}
+
+/* On first load, wait for the page entrance before the photographer arrives. */
+.js-motion:not(.is-ready) .gallery-peek.is-shown {
   opacity: 0;
   transform: translate(25%, 25%);
 }
 
-.js-motion.is-ready .gallery-peek {
-  opacity: 1;
-  transform: none;
-  transition: opacity 1s var(--ease-out) 0.4s, transform 1.5s var(--ease-out) 0.4s;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .js-motion .gallery-peek {
-    opacity: 1;
+  .gallery-peek,
+  .gallery-peek.is-shown {
     transform: none;
+    transition: opacity 0.3s linear;
   }
 }
 
