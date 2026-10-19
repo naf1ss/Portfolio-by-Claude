@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=297c5ca0">
+  <link rel="stylesheet" href="css/styles.css?v=e3fffb99">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/motion.js?v=f83564ed"></script>
@@ -47,7 +47,7 @@
   <main id="main" class="wrap">
     <header class="resume-head">
       <div>
-        <h1 class="page-title">Md Nafisul Hasan Sami</h1>
+        <h1 class="resume-head__name">Md Nafisul Hasan Sami<span class="about__dot">.</span></h1>
         <p class="resume-head__sub">Nafis &middot; Artist and student, Gettysburg College</p>
         <ul class="resume-links" id="resume-links" hidden></ul>
       </div>
@@ -55,7 +55,7 @@
     </header>
 
     <section class="resume-section" aria-labelledby="education-heading">
-      <h2 class="eyebrow" id="education-heading">Education</h2>
+      <h2 class="resume-section__title" id="education-heading">Education</h2>
       <div>
         <article class="resume-entry">
           <div class="resume-entry__head"><h3 class="resume-entry__title">Gettysburg College</h3><span class="resume-entry__date">Expected May 2027</span></div>
@@ -65,12 +65,39 @@
             <li>Presidential Scholar.</li>
           </ul>
         </article>
-        <p class="resume-entry__org"><strong>Coursework:</strong> Data Science Programming, Applied Data Science, Visual Communication of Data, Spreadsheet Modelling for Management, Multivariable Calculus, Linear Algebra, Abstract Mathematics, Probability and Statistics, Complex Analysis, Microeconomics, Macroeconomics.</p>
+        <div class="resume-courses">
+          <h3 class="resume-courses__title">Coursework</h3>
+          <p class="resume-courses__group">Studio art</p>
+          <ul class="resume-tags">
+            <li>Painting</li>
+            <li>Intermediate Painting</li>
+            <li>Drawing</li>
+            <li>Printmaking</li>
+            <li>Ceramics</li>
+            <li>Digital Media</li>
+            <li>Intro to Photography</li>
+            <li>Intermediate Photography</li>
+          </ul>
+          <p class="resume-courses__group">Mathematics, data &amp; economics</p>
+          <ul class="resume-tags">
+            <li>Data Science Programming</li>
+            <li>Applied Data Science</li>
+            <li>Visual Communication of Data</li>
+            <li>Spreadsheet Modelling for Management</li>
+            <li>Multivariable Calculus</li>
+            <li>Linear Algebra</li>
+            <li>Abstract Mathematics</li>
+            <li>Probability and Statistics</li>
+            <li>Complex Analysis</li>
+            <li>Microeconomics</li>
+            <li>Macroeconomics</li>
+          </ul>
+        </div>
       </div>
     </section>
 
     <section class="resume-section" aria-labelledby="experience-heading">
-      <h2 class="eyebrow" id="experience-heading">Experience</h2>
+      <h2 class="resume-section__title" id="experience-heading">Experience</h2>
       <div>
           <article class="resume-entry">
             <div class="resume-entry__head"><h3 class="resume-entry__title">Kolbe Summer Research Fellow</h3><span class="resume-entry__date">June 2026 &ndash; July 2026</span></div>
@@ -118,11 +145,23 @@
     </section>
 
     <section class="resume-section" aria-labelledby="skills-heading">
-      <h2 class="eyebrow" id="skills-heading">Skills</h2>
-      <ul class="resume-facts">
-        <li><strong>Data &amp; programming:</strong> Python (NumPy, Matplotlib), Java, Advanced Excel (VBA, modeling)</li>
-        <li><strong>Design &amp; media:</strong> Adobe Photoshop, Procreate, typography, animation, digital art</li>
-      </ul>
+      <h2 class="resume-section__title" id="skills-heading">Skills</h2>
+      <div class="resume-courses">
+        <p class="resume-courses__group">Data &amp; programming</p>
+        <ul class="resume-tags">
+          <li>Python (NumPy, Matplotlib)</li>
+          <li>Java</li>
+          <li>Advanced Excel (VBA, modeling)</li>
+        </ul>
+        <p class="resume-courses__group">Design &amp; media</p>
+        <ul class="resume-tags">
+          <li>Adobe Photoshop</li>
+          <li>Procreate</li>
+          <li>Typography</li>
+          <li>Animation</li>
+          <li>Digital art</li>
+        </ul>
+      </div>
     </section>
   </main>
 
