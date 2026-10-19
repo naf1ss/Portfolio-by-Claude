@@ -61,7 +61,7 @@ The catalogue checks also confirm every image referenced in `works-data.js` and 
 
 1. Export the photo and run `python3 tools/optimize_images.py <folder-with-new-photos> images/artwork`.
 2. Paste the printed record into `js/works-data.js` and fill in `id`, `title`, `year`, `medium`, `dimensions` and `category`
-   (`painting`, `mixed`, `drawing`, `print`, `digital`, `photography` or `ceramics`).
+   (`painting`, `drawing`, `print`, `digital`, `photography`, `ceramics` or `wall-magazine`).
 3. To feature it on the home page, add its `id` to `featuredIds` in `js/site-config.js`. The works that scan through the hero's "nuances." are `heroSlides` (in this order).
 4. Run `npm test`, then commit and push.
 

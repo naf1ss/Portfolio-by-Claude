@@ -7,11 +7,16 @@
 
   const config = window.SITE_CONFIG || {};
 
-  /** Every work (artwork + photography) in display order, plus a lookup by id. */
+  /**
+   * Every work (artwork + photography) in display order, plus a lookup by id.
+   * `all` is what the gallery lists; works marked `hidden` stay in `catalogue` (so a series can still
+   * include them) but are left out of the gallery, its filters and its counts.
+   */
   function loadWorks() {
     const U = window.WorksUtils;
-    const all = U.sortWorks(window.PORTFOLIO_WORKS.concat(window.PORTFOLIO_PHOTOS || []));
-    return { U, all, byId: new Map(all.map((work) => [work.id, work])) };
+    const catalogue = U.sortWorks(window.PORTFOLIO_WORKS.concat(window.PORTFOLIO_PHOTOS || []));
+    const all = catalogue.filter((work) => !work.hidden);
+    return { U, all, catalogue, byId: new Map(catalogue.map((work) => [work.id, work])) };
   }
 
   /** The gallery <img> for a work, so the viewer can glide to and from it. */
@@ -116,10 +121,10 @@
 
   /** Lists every series, or (with ?s=<id>) shows one series as a gallery. */
   function initSeries() {
-    const { U, all, byId } = loadWorks();
+    const { U, catalogue, byId } = loadWorks();
     const entries = (window.PORTFOLIO_SERIES || [])
       .map((series) => {
-        const works = U.worksInSeries(series, all);
+        const works = U.worksInSeries(series, catalogue);
         return { series, works, cover: byId.get(series.cover) || works[0] };
       })
       .filter((entry) => entry.works.length > 0);

@@ -27,6 +27,11 @@ const work = (overrides = {}) => ({
   ...overrides,
 });
 
+test('an old ?c=mixed link opens the Painting filter', () => {
+  assert.equal(U.categoryFromSearch('?c=mixed'), 'painting');
+  assert.equal(U.categoryFromSearch('?c=wall-magazine'), 'wall-magazine');
+});
+
 test('buildSrcset lists each size with its real pixel width', () => {
   assert.equal(
     U.buildSrcset(work()),

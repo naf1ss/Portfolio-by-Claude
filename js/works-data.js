@@ -3,10 +3,11 @@
  * "Artwork Catalogue.xlsx" and the optimised images in /images.
  *
  *   id        catalogue id (also the URL hash, lower-cased)
- *   category  painting | mixed | drawing | print | digital | ceramics
+ *   category  painting | drawing | print | digital | ceramics | wall-magazine (photography lives in works-photography.js)
  *   base      image path without size suffix, relative to /images
  *   ws        real pixel widths of the -600, -1200 and -1800 files
  *   w, h      pixel size of the largest file (drives layout before load)
+ *   hidden    optional: true keeps the work out of the gallery (filters, counts, "All") but lets a series still include it
  *   rev       optional: bump it (rev: 2, 3, ...) when a photo is replaced under the same name, so browsers refetch it
  *
  * Edit titles, years and categories here; nothing else needs to change.
@@ -28,12 +29,12 @@
   { id: 'A008', title: 'Still Life Study', year: 2024, medium: 'Charcoal on paper', dimensions: '12x18 inches', category: 'drawing', base: 'artwork/a008-still-life-study', ws: [600, 1200, 1800], w: 1800, h: 1185 },
   { id: 'A009', title: 'Still Life Blind Study', year: 2024, medium: 'Charcoal on paper', dimensions: '12x18 inches', category: 'drawing', base: 'artwork/a009-still-life-blind-study', ws: [600, 1200, 1800], w: 1800, h: 1188 },
   { id: 'A010', title: 'Still Life: Statue on Call', year: 2025, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a010-still-life-statue-on-call', ws: [600, 1200, 1800], w: 1800, h: 1417 },
-  { id: 'A011', title: 'Abstract Collage: Nostalgia', year: 2025, medium: 'Acrylic on wood panel', dimensions: '18x18 inches', category: 'mixed', base: 'artwork/a011-abstract-collage-nostalgia', ws: [600, 1200, 1800], w: 1800, h: 1781 },
-  { id: 'A012', title: 'Eiffel Tower', year: 2025, medium: 'Mixed media on canvas', dimensions: '32x28 inches', category: 'mixed', base: 'artwork/a012-eiffel-tower', ws: [600, 1200, 1800], w: 1800, h: 2028 },
+  { id: 'A011', title: 'Abstract Collage: Nostalgia', year: 2025, medium: 'Acrylic on wood panel', dimensions: '18x18 inches', category: 'painting', base: 'artwork/a011-abstract-collage-nostalgia', ws: [600, 1200, 1800], w: 1800, h: 1781 },
+  { id: 'A012', title: 'Eiffel Tower', year: 2025, medium: 'Mixed media on canvas', dimensions: '32x28 inches', category: 'painting', base: 'artwork/a012-eiffel-tower', ws: [600, 1200, 1800], w: 1800, h: 2028 },
   { id: 'A013', title: 'Tumi', year: 2025, medium: 'Acrylic on canvas panel', dimensions: '5x7 inches', category: 'painting', base: 'artwork/a013-tumi', ws: [600, 1200, 1800], w: 1800, h: 2418, rev: 2 },
   { id: 'A014', title: 'All for you, You for me', year: 2025, medium: 'Digital gouache painting', dimensions: '1526x2048 px', category: 'digital', base: 'artwork/a014-all-for-you-you-for-me', ws: [600, 1200, 1526], w: 1526, h: 2048 },
   { id: 'A015', title: 'Cat', year: 2025, medium: 'Digital Art', dimensions: '1593x2179 px', category: 'digital', base: 'artwork/a015-cat', ws: [600, 1200, 1593], w: 1593, h: 2179 },
-  { id: 'A016', title: 'Monoprint Series: Horizon', year: null, medium: null, dimensions: null, category: 'print', base: 'artwork/a016-monoprint-series-horizon', ws: [600, 1200, 1800], w: 1800, h: 1220 },
+  { id: 'A016', title: 'Monoprint Series: Horizon', year: null, medium: null, dimensions: null, category: 'print', hidden: true, base: 'artwork/a016-monoprint-series-horizon', ws: [600, 1200, 1800], w: 1800, h: 1220 },
   { id: 'A017', title: 'View from room', year: 2025, medium: 'Acrylic on canvas', dimensions: '9x12 inches', category: 'painting', base: 'artwork/a017-view-from-room', ws: [600, 1200, 1800], w: 1800, h: 2405 },
   { id: 'A018', title: 'Still Life_Monotone Study', year: 2025, medium: 'Oil on canvas panel', dimensions: '12x9 inches', category: 'painting', base: 'artwork/a018-still-life-monotone-study', ws: [600, 1200, 1800], w: 1800, h: 1302 },
   { id: 'A019', title: 'Monoprint Horizon-1', year: 2026, medium: 'Oil on Paper', dimensions: '12x10 inches', category: 'print', base: 'artwork/a019-monoprint-horizon-1', ws: [600, 1200, 1800], w: 1800, h: 1505 },
@@ -51,13 +52,13 @@
   { id: 'A031', title: 'Heroes', year: 2026, medium: 'Digital', dimensions: '6477x4319 px', category: 'digital', base: 'artwork/a031-heroes', ws: [600, 1200, 1800], w: 1800, h: 1200 },
   { id: 'A032', title: 'Nobanno', year: 2015, medium: 'Acrylic on Paper', dimensions: '24x18 inches', category: 'painting', base: 'artwork/a032-nobanno', ws: [600, 1200, 1800], w: 1800, h: 1208 },
   { id: 'A033', title: 'Hahakar (The Cry of Despair)', year: 2015, medium: 'Poster on paper', dimensions: '12x8 inches', category: 'painting', base: 'artwork/a033-hahakar-the-cry-of-despair', ws: [600, 1200, 1800], w: 1800, h: 1251 },
-  { id: 'A034', title: 'Mirage', year: 2016, medium: 'Mixed media on paper', dimensions: '12x8 inches', category: 'mixed', base: 'artwork/a034-mirage', ws: [600, 1200, 1487], w: 1487, h: 2114 },
+  { id: 'A034', title: 'Mirage', year: 2016, medium: 'Mixed media on paper', dimensions: '12x8 inches', category: 'painting', base: 'artwork/a034-mirage', ws: [600, 1200, 1487], w: 1487, h: 2114 },
   { id: 'A035', title: 'Man with Flags', year: 2018, medium: 'Acrylic on canvas', dimensions: '24x18 inches', category: 'painting', base: 'artwork/a035-man-with-flags', ws: [600, 1008, 1008], w: 1008, h: 701 },
   { id: 'A036', title: 'Show', year: 2018, medium: 'Acrylic on canvas', dimensions: '24x36 inches', category: 'painting', base: 'artwork/a036-show', ws: [600, 1200, 1800], w: 1800, h: 1210 },
   { id: 'A037', title: 'Rain in Paris', year: 2018, medium: 'Acrylic on canvas', dimensions: '24x36 inches', category: 'painting', base: 'artwork/a037-rain-in-paris', ws: [600, 1200, 1800], w: 1800, h: 1222 },
-  { id: 'A038', title: 'Skyline: Reimagined', year: 2021, medium: 'Mixed media on paper', dimensions: '13x8 inches', category: 'mixed', base: 'artwork/a038-skyline-reimagined', ws: [600, 1200, 1800], w: 1800, h: 1176 },
-  { id: 'A039', title: 'Zebra-crossing', year: 2021, medium: 'Mixed media on paper', dimensions: '13x8 inches', category: 'mixed', base: 'artwork/a039-zebra-crossing', ws: [600, 1200, 1800], w: 1800, h: 1121 },
-  { id: 'A040', title: 'Wall Magazine- Champions', year: 2020, medium: 'Mixed craft', dimensions: null, category: 'mixed', base: 'artwork/a040-wall-magazine-champions', ws: [600, 1200, 1800], w: 1800, h: 1137 },
+  { id: 'A038', title: 'Skyline: Reimagined', year: 2021, medium: 'Mixed media on paper', dimensions: '13x8 inches', category: 'painting', base: 'artwork/a038-skyline-reimagined', ws: [600, 1200, 1800], w: 1800, h: 1176 },
+  { id: 'A039', title: 'Zebra-crossing', year: 2021, medium: 'Mixed media on paper', dimensions: '13x8 inches', category: 'painting', base: 'artwork/a039-zebra-crossing', ws: [600, 1200, 1800], w: 1800, h: 1121 },
+  { id: 'A040', title: 'Wall Magazine- Champions', year: 2020, medium: 'Mixed craft', dimensions: null, category: 'wall-magazine', base: 'artwork/a040-wall-magazine-champions', ws: [600, 1200, 1800], w: 1800, h: 1137 },
   { id: 'A041', title: 'Aggressive Happiness', year: 2026, medium: 'Acrylic on wood panel', dimensions: '24x24 inches', category: 'painting', base: 'artwork/a041-aggressive-happiness', ws: [600, 1200, 1800], w: 1800, h: 1772 },
   { id: 'A042', title: 'Quarry', year: 2026, medium: 'Oil impasto on wood panel', dimensions: '12x9 inches', category: 'painting', base: 'artwork/a042-quarry', ws: [600, 1200, 1800], w: 1800, h: 1449 },
   { id: 'A043', title: 'Old Master Study- The Milkmaid', year: 2026, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a043-old-master-study-the-milkmaid', ws: [600, 1200, 1800], w: 1800, h: 2246 },

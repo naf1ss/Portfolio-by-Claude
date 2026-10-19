@@ -21,12 +21,12 @@
   // Display order of the medium filters.
   const CATEGORIES = Object.freeze([
     { id: 'painting', label: 'Painting' },
-    { id: 'mixed', label: 'Mixed media' },
     { id: 'drawing', label: 'Drawing' },
     { id: 'print', label: 'Prints' },
     { id: 'digital', label: 'Digital' },
     { id: 'photography', label: 'Photography' },
     { id: 'ceramics', label: 'Ceramics' },
+    { id: 'wall-magazine', label: 'Wall magazine' },
   ]);
 
   // Large contact-sheet categories are listed after the artwork in the "All" view
@@ -155,8 +155,12 @@
   }
 
   /** Reads the `?c=` filter from a query string, falling back to "all". */
+  // Categories that were merged into another; keeps old shared links (?c=mixed) working.
+  const RENAMED_CATEGORIES = Object.freeze({ mixed: 'painting' });
+
   function categoryFromSearch(search) {
-    const value = new URLSearchParams(search || '').get('c');
+    const raw = new URLSearchParams(search || '').get('c');
+    const value = RENAMED_CATEGORIES[raw] || raw;
     return isCategory(value) ? value : 'all';
   }
 

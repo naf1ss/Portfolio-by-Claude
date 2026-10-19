@@ -17,7 +17,7 @@
   const PAINTED_CLASS = 'is-painted';
   const SECONDS_PER_PICTURE = 7;
   const PICTURES_PER_VISIT = 12; // a short random sequence, so a long visit does not repeat quickly
-  const PAINTING_CATEGORIES = ['painting', 'mixed'];
+  const PAINTING_CATEGORIES = ['painting'];
 
   const Works = window.WorksUtils;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
