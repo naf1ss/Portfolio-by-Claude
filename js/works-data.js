@@ -57,6 +57,9 @@
   { id: 'A038', title: 'Skyline: Reimagined', year: 2021, medium: 'Mixed media on paper', dimensions: '13x8 inches', category: 'mixed', base: 'artwork/a038-skyline-reimagined', ws: [600, 1200, 1800], w: 1800, h: 1176 },
   { id: 'A039', title: 'Zebra-crossing', year: 2021, medium: 'Mixed media on paper', dimensions: '13x8 inches', category: 'mixed', base: 'artwork/a039-zebra-crossing', ws: [600, 1200, 1800], w: 1800, h: 1121 },
   { id: 'A040', title: 'Wall Magazine- Champions', year: 2020, medium: 'Mixed craft', dimensions: null, category: 'mixed', base: 'artwork/a040-wall-magazine-champions', ws: [600, 1200, 1800], w: 1800, h: 1137 },
+  { id: 'A041', title: 'Aggressive Happiness', year: 2026, medium: 'Acrylic on wood panel', dimensions: '24x24 inches', category: 'painting', base: 'artwork/a041-aggressive-happiness', ws: [600, 1200, 1800], w: 1800, h: 1772 },
+  { id: 'A042', title: 'Quarry', year: 2026, medium: 'Oil impasto on wood panel', dimensions: '12x9 inches', category: 'painting', base: 'artwork/a042-quarry', ws: [600, 1200, 1800], w: 1800, h: 1449 },
+  { id: 'A043', title: 'Old Master Study- The Milkmaid', year: 2026, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a043-old-master-study-the-milkmaid', ws: [600, 1200, 1800], w: 1800, h: 2246 },
 
   // Ceramics are untitled photographs for now; add title/year here when ready.
   { id: 'ceramics8', title: null, year: null, medium: 'Ceramics', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics8', ws: [600, 1200, 1800], w: 1800, h: 1940 },
