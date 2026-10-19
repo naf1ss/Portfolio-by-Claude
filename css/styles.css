@@ -518,6 +518,13 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: #fff;
 }
 
+/* The letter and the dot are taller than the link (their boxes poke up above the letter), so only the link's
+   own box, exactly the letter's height, takes the pointer. Otherwise the empty space above the "n." would
+   steal clicks from whatever sits just over the footer. */
+.footer__logo > * {
+  pointer-events: none;
+}
+
 .footer__n {
   --painted-brightness: 1.25; /* keeps dusk photographs readable on black */
 }
