@@ -34,6 +34,15 @@ test('buildSrcset lists each size with its real pixel width', () => {
   );
 });
 
+test('a work with a revision gets a cache-busting query on every image address', () => {
+  const revised = { ...work(), rev: 2 };
+  assert.equal(U.imageUrl(revised, 600), 'images/artwork/a001-test-600.jpg?v=2');
+  assert.equal(
+    U.buildSrcset(revised),
+    'images/artwork/a001-test-600.jpg?v=2 600w, images/artwork/a001-test-1200.jpg?v=2 1200w, images/artwork/a001-test-1800.jpg?v=2 1800w',
+  );
+});
+
 test('buildSrcset collapses sizes that were not upscaled', () => {
   const small = work({ ws: [600, 1008, 1008] });
   assert.equal(
@@ -185,7 +194,7 @@ test(
       const folder = path.join(ROOT, 'images', record.base.split('/')[0]);
       if (!fs.existsSync(folder)) continue;
       for (const suffix of U.SIZE_SUFFIXES.slice(0, record.ws.length)) {
-        const file = path.join(ROOT, U.imageUrl(record, suffix));
+        const file = path.join(ROOT, U.imageUrl(record, suffix).split('?')[0]);
         if (!fs.existsSync(file)) missing.push(path.relative(ROOT, file));
       }
     }

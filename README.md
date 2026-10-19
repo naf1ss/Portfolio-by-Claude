@@ -65,6 +65,8 @@ The catalogue checks also confirm every image referenced in `works-data.js` and 
 3. To feature it on the home page, add its `id` to `featuredIds` in `js/site-config.js`. The works that scan through the hero's "nuances." are `heroSlides` (in this order).
 4. Run `npm test`, then commit and push.
 
+If you later replace a photo under the same file name (a re-edit), bump that record's `rev` in `js/works-data.js` (`rev: 2`, then `3`, ...) so visitors' browsers fetch the new picture instead of a cached one.
+
 Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gallery.html?c=print` opens a filtered view.
 
 ## Photography

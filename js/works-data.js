@@ -7,6 +7,7 @@
  *   base      image path without size suffix, relative to /images
  *   ws        real pixel widths of the -600, -1200 and -1800 files
  *   w, h      pixel size of the largest file (drives layout before load)
+ *   rev       optional: bump it (rev: 2, 3, ...) when a photo is replaced under the same name, so browsers refetch it
  *
  * Edit titles, years and categories here; nothing else needs to change.
  */
@@ -29,7 +30,7 @@
   { id: 'A010', title: 'Still Life: Statue on Call', year: 2025, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a010-still-life-statue-on-call', ws: [600, 1200, 1800], w: 1800, h: 1417 },
   { id: 'A011', title: 'Abstract Collage: Nostalgia', year: 2025, medium: 'Acrylic on wood panel', dimensions: '18x18 inches', category: 'mixed', base: 'artwork/a011-abstract-collage-nostalgia', ws: [600, 1200, 1800], w: 1800, h: 1781 },
   { id: 'A012', title: 'Eiffel Tower', year: 2025, medium: 'Mixed media on canvas', dimensions: '32x28 inches', category: 'mixed', base: 'artwork/a012-eiffel-tower', ws: [600, 1200, 1800], w: 1800, h: 2028 },
-  { id: 'A013', title: 'Tumi', year: 2025, medium: 'Acrylic on canvas panel', dimensions: '5x7 inches', category: 'painting', base: 'artwork/a013-tumi', ws: [600, 1200, 1800], w: 1800, h: 2418 },
+  { id: 'A013', title: 'Tumi', year: 2025, medium: 'Acrylic on canvas panel', dimensions: '5x7 inches', category: 'painting', base: 'artwork/a013-tumi', ws: [600, 1200, 1800], w: 1800, h: 2418, rev: 2 },
   { id: 'A014', title: 'All for you, You for me', year: 2025, medium: 'Digital gouache painting', dimensions: '1526x2048 px', category: 'digital', base: 'artwork/a014-all-for-you-you-for-me', ws: [600, 1200, 1526], w: 1526, h: 2048 },
   { id: 'A015', title: 'Cat', year: 2025, medium: 'Digital Art', dimensions: '1593x2179 px', category: 'digital', base: 'artwork/a015-cat', ws: [600, 1200, 1593], w: 1593, h: 2179 },
   { id: 'A016', title: 'Monoprint Series: Horizon', year: null, medium: null, dimensions: null, category: 'print', base: 'artwork/a016-monoprint-series-horizon', ws: [600, 1200, 1800], w: 1800, h: 1220 },

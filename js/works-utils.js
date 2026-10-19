@@ -41,8 +41,13 @@
     return BULK_CATEGORIES.includes(work.category);
   }
 
+  /**
+   * `work.rev` is bumped whenever a work's photo is replaced under the same file name; the query string makes
+   * browsers and CDNs fetch the new pictures instead of reusing cached ones.
+   */
   function imageUrl(work, suffix, imageRoot = IMAGE_ROOT) {
-    return `${imageRoot}${work.base}-${suffix}.jpg`;
+    const revision = work.rev ? `?v=${work.rev}` : '';
+    return `${imageRoot}${work.base}-${suffix}.jpg${revision}`;
   }
 
   /**
