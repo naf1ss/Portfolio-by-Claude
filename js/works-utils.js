@@ -18,7 +18,8 @@
   // Filename suffixes written by the image-optimisation step, smallest first.
   const SIZE_SUFFIXES = Object.freeze([600, 1200, 1800]);
 
-  // Display order of the medium filters.
+  // Display order of the medium filters. `onHome: false` keeps a category in the gallery filters only,
+  // out of the home page's "Browse by medium" list.
   const CATEGORIES = Object.freeze([
     { id: 'painting', label: 'Painting' },
     { id: 'drawing', label: 'Drawing' },
@@ -26,7 +27,7 @@
     { id: 'digital', label: 'Digital' },
     { id: 'photography', label: 'Photography' },
     { id: 'ceramics', label: 'Ceramics' },
-    { id: 'wall-magazine', label: 'Wall magazine' },
+    { id: 'wall-magazine', label: 'Wall magazine', onHome: false },
   ]);
 
   // Large contact-sheet categories are listed after the artwork in the "All" view

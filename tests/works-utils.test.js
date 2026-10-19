@@ -27,6 +27,12 @@ const work = (overrides = {}) => ({
   ...overrides,
 });
 
+test('Wall magazine is a gallery filter but stays off the home page list', () => {
+  const wall = U.CATEGORIES.find((category) => category.id === 'wall-magazine');
+  assert.ok(wall);
+  assert.equal(wall.onHome, false);
+});
+
 test('an old ?c=mixed link opens the Painting filter', () => {
   assert.equal(U.categoryFromSearch('?c=mixed'), 'painting');
   assert.equal(U.categoryFromSearch('?c=wall-magazine'), 'wall-magazine');

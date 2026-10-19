@@ -48,7 +48,7 @@
     });
 
     const counts = U.countByCategory(all);
-    const rows = U.CATEGORIES.filter((category) => counts[category.id] > 0).map((category) => {
+    const rows = U.CATEGORIES.filter((category) => category.onHome !== false && counts[category.id] > 0).map((category) => {
       const link = document.createElement('a');
       link.href = `gallery.html?c=${category.id}`;
       const name = document.createElement('span');
