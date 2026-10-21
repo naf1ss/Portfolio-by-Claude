@@ -155,14 +155,15 @@
     return work.title || `${work.medium || 'Artwork'}, photograph ${position}`;
   }
 
-  /** Reads the `?c=` filter from a query string, falling back to "all". */
   // Categories that were merged into another; keeps old shared links (?c=mixed) working.
   const RENAMED_CATEGORIES = Object.freeze({ mixed: 'painting' });
 
-  function categoryFromSearch(search) {
+  /** Reads the `?c=` filter from a query string ("all" included), or `fallback` when it is missing or unknown. */
+  function categoryFromSearch(search, fallback = 'all') {
     const raw = new URLSearchParams(search || '').get('c');
     const value = RENAMED_CATEGORIES[raw] || raw;
-    return isCategory(value) ? value : 'all';
+    if (value === 'all') return 'all';
+    return isCategory(value) ? value : fallback;
   }
 
   /** Resolves a "#a012"-style hash to a work id, or null if none matches. */

@@ -7,6 +7,7 @@
  *   cover     optional work id for the card image; defaults to the first work
  *   workIds   the works, in the order to show them, OR
  *   category / year   a rule that collects matching works instead
+ *   hangTogether      optional: true hangs the series' works side by side on one stretch of the gallery wall
  *
  * These are a starting point: regroup, rename and add notes here as the
  * photographs and artwork are sorted into projects. Nothing else needs to change.
@@ -18,7 +19,7 @@
     root.PORTFOLIO_SERIES = series;
   }
 })(typeof self !== 'undefined' ? self : this, [
-  { id: 'horizon', title: 'Horizon', note: null, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
+  { id: 'horizon', title: 'Horizon', note: null, hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
   { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
   { id: 'ceramics', title: 'Ceramics', note: null, category: 'ceramics' },
   { id: 'photographs-2026', title: 'Photographs, 2026', note: null, category: 'photography', year: 2026 },

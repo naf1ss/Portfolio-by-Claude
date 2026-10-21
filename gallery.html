@@ -16,19 +16,22 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=227cb73d">
+  <link rel="stylesheet" href="css/styles.css?v=49ffc1d2">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/motion.js?v=f83564ed"></script>
-  <script src="js/works-utils.js?v=1e531fab" defer></script>
-  <script src="js/works-data.js?v=0478af47" defer></script>
+  <script src="js/works-utils.js?v=1fcc327f" defer></script>
+  <script src="js/works-data.js?v=ce08a9df" defer></script>
   <script src="js/works-photography.js?v=88451a81" defer></script>
+  <script src="js/series-data.js?v=3404253c" defer></script>
   <script src="js/painted-text.js?v=a1f6ce65" defer></script>
   <script src="js/site-config.js?v=96453704" defer></script>
-  <script src="js/gallery.js?v=ad6e8a38" defer></script>
-  <script src="js/lightbox.js?v=ed3e3cd2" defer></script>
+  <script src="js/gallery.js?v=b9641d48" defer></script>
+  <script src="js/lightbox.js?v=1bd250a9" defer></script>
+  <script src="js/gallery-room-utils.js?v=8302d12e" defer></script>
+  <script src="js/gallery-room.js?v=d2c8ddb7" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
-  <script src="js/pages.js?v=eb92c110" defer></script>
+  <script src="js/pages.js?v=58a16a1b" defer></script>
   <script src="js/interactions.js?v=d4be9dee" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -49,17 +52,28 @@
     </nav>
   </header>
 
-  <main id="main" class="wrap">
+  <main id="main">
+    <div class="wrap">
     <!-- Decorative: the photographer peeks in from the bottom-right corner of the screen. -->
     <img class="gallery-peek"
          src="images/gallery/photographer-640.webp"
          srcset="images/gallery/photographer-640.webp 640w, images/gallery/photographer-1100.webp 1100w"
          sizes="10rem" width="640" height="1115" alt="" aria-hidden="true">
     <h1 class="page-title">Gallery</h1>
-    <nav id="filters" aria-label="Filter by medium"></nav>
+    <div class="gallery-bar">
+      <nav id="filters" aria-label="Filter by medium"></nav>
+      <!-- Paintings and prints can be seen hanging on a wall or as a grid. -->
+      <div class="filters view-toggle" id="view-toggle" role="group" aria-label="View" hidden>
+        <button class="filter" type="button" data-view="wall" aria-pressed="true">Wall</button>
+        <button class="filter" type="button" data-view="grid" aria-pressed="false">Grid</button>
+      </div>
+    </div>
     <p id="result-status" class="visually-hidden" role="status"></p>
     <ul class="gallery" id="gallery"></ul>
     <noscript><p class="muted">Please enable JavaScript to view the gallery.</p></noscript>
+    </div>
+    <!-- The gallery room (js/gallery-room.js) is built here for paintings and prints. -->
+    <section class="room" id="room" aria-label="Gallery wall" hidden></section>
   </main>
 
   <footer class="site-footer">

@@ -25,8 +25,8 @@
   }
 
   /** Creates the viewer for a gallery list and opens it when a tile is clicked. */
-  function mountViewer(list) {
-    const lightbox = window.Lightbox.create(document.getElementById('viewer'), { findOrigin: findTileImage });
+  function mountViewer(list, options = {}) {
+    const lightbox = window.Lightbox.create(document.getElementById('viewer'), { findOrigin: findTileImage, ...options });
     list.addEventListener('click', (event) => {
       const link = event.target.closest('a[data-work-id]');
       const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
@@ -91,56 +91,117 @@
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
   }
 
+  // The gallery opens on paintings; ?c=all (or any other medium) is a click away.
+  const DEFAULT_GALLERY_CATEGORY = 'painting';
+  const GALLERY_VIEW_KEY = 'nuances.galleryView';
+
+  /** "wall" or "grid": how paintings and prints are shown, remembered between visits. */
+  function readGalleryView() {
+    try {
+      return localStorage.getItem(GALLERY_VIEW_KEY) === 'grid' ? 'grid' : 'wall';
+    } catch (error) {
+      return 'wall';
+    }
+  }
+
+  function saveGalleryView(view) {
+    try {
+      localStorage.setItem(GALLERY_VIEW_KEY, view);
+    } catch (error) {
+      // storage unavailable: the choice lasts for this page only
+    }
+  }
+
   function initGallery() {
     const { U, all, byId } = loadWorks();
+    const RoomUtils = window.GalleryRoomUtils;
     const list = document.getElementById('gallery');
     const status = document.getElementById('result-status');
-    const lightbox = mountViewer(list);
+    const viewToggle = document.getElementById('view-toggle');
     const counts = U.countByCategory(all);
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
     // The photographer only appears alongside the photography work.
     const photographer = document.querySelector('.gallery-peek');
 
-    let category = U.categoryFromSearch(location.search);
+    let category = U.categoryFromSearch(location.search, DEFAULT_GALLERY_CATEGORY);
+    let view = readGalleryView();
+    const showingWall = () => view === 'wall' && RoomUtils.isWallCategory(category);
 
-    // A deep-linked work must be in the visible list, so widen the filter if needed.
+    // The close-up glides out of whichever picture was clicked: a wall frame or a grid tile.
+    let room = null;
+    const lightbox = mountViewer(list, {
+      findOrigin: (id) => (showingWall() ? room.pictureFor(id) : findTileImage(id)),
+      // Stepping through works in the close-up also walks the wall, so closing lands on the right frame.
+      onChange: (work) => {
+        if (showingWall()) room.goTo(work.id, { animate: false });
+      },
+    });
+    room = window.GalleryRoom.create(document.getElementById('room'), {
+      series: window.PORTFOLIO_SERIES || [],
+      onOpenWork: (id) => lightbox.open(id, 'user'),
+    });
+
+    // A deep-linked work must be in the visible list, so switch to its medium if needed.
     const linkedId = U.workIdFromHash(location.hash, all);
-    const widenedFilter =
-      linkedId && category !== 'all' && byId.get(linkedId).category !== category;
-    if (widenedFilter) category = 'all';
+    const switchedFilter = linkedId && category !== 'all' && byId.get(linkedId).category !== category;
+    if (switchedFilter) category = byId.get(linkedId).category;
 
     const filters = window.Gallery.createFilters(document.getElementById('filters'), {
       counts,
       onSelect: (next) => show(next, { updateUrl: true }),
     });
 
-    function show(next, { updateUrl }) {
+    function show(next, { updateUrl, focusId } = {}) {
       category = next;
       const visible = U.filterWorks(all, category);
-      window.Gallery.renderGallery(list, visible, {
-        hrefFor: (work) => U.hashForWork(work),
-        eagerCount: 6,
+      const wall = showingWall();
+      viewToggle.hidden = !RoomUtils.isWallCategory(category);
+      viewToggle.querySelectorAll('[data-view]').forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.view === view));
       });
-      lightbox.setWorks(visible);
+      list.hidden = wall;
+
+      if (wall) {
+        list.replaceChildren();
+        room.show(visible, { focusId });
+        lightbox.setWorks(room.order());
+      } else {
+        room.hide();
+        window.Gallery.renderGallery(list, visible, {
+          hrefFor: (work) => U.hashForWork(work),
+          eagerCount: 6,
+        });
+        lightbox.setWorks(visible);
+      }
       filters.setActive(category);
       if (photographer) photographer.classList.toggle('is-shown', category === 'photography');
 
       const noun = visible.length === 1 ? 'work' : 'works';
+      const where = wall ? ' on the wall' : '';
       status.textContent =
         category === 'all'
           ? `Showing all ${visible.length} ${noun}`
-          : `Showing ${visible.length} ${noun}: ${labels.get(category)}`;
+          : `Showing ${visible.length} ${noun}${where}: ${labels.get(category)}`;
 
       if (updateUrl) {
-        const query = category === 'all' ? '' : `?c=${category}`;
+        const query = category === DEFAULT_GALLERY_CATEGORY ? '' : `?c=${category}`;
         history.replaceState(null, '', location.pathname + query);
       }
     }
 
-    // When the filter was widened, rewrite the URL so ?c= matches what is shown.
-    show(category, { updateUrl: widenedFilter });
+    viewToggle.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-view]');
+      if (!button || button.dataset.view === view) return;
+      view = button.dataset.view;
+      saveGalleryView(view);
+      show(category, { updateUrl: false });
+    });
+
+    // When the filter was switched, rewrite the URL so ?c= matches what is shown.
+    show(category, { updateUrl: switchedFilter, focusId: linkedId });
     if (linkedId) lightbox.open(linkedId, 'load');
   }
+
 
   /** Lists every series, or (with ?s=<id>) shows one series as a gallery. */
   function initSeries() {

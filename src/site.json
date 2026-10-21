@@ -21,6 +21,8 @@
     {"file": "hero-window"},
     {"file": "gallery"},
     {"file": "lightbox"},
+    {"file": "gallery-room-utils"},
+    {"file": "gallery-room", "requires": ["works-utils", "gallery-room-utils"]},
     {"file": "contact-utils"},
     {"file": "pages", "requires": ["site-config", "contact-utils"]},
     {"file": "contact", "requires": ["contact-utils", "site-config"]},

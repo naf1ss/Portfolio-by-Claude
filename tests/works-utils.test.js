@@ -134,6 +134,13 @@ test('categoryFromSearch accepts known categories only', () => {
   assert.equal(U.categoryFromSearch(''), 'all');
 });
 
+test('categoryFromSearch uses the fallback only when ?c= is missing or unknown', () => {
+  assert.equal(U.categoryFromSearch('', 'painting'), 'painting');
+  assert.equal(U.categoryFromSearch('?c=nonsense', 'painting'), 'painting');
+  assert.equal(U.categoryFromSearch('?c=all', 'painting'), 'all');
+  assert.equal(U.categoryFromSearch('?c=print', 'painting'), 'print');
+});
+
 test('workIdFromHash is case-insensitive and rejects unknown ids', () => {
   const works = [work({ id: 'A012' }), work({ id: 'ceramics-44' })];
   assert.equal(U.workIdFromHash('#a012', works), 'A012');

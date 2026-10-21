@@ -9,6 +9,7 @@
  *   w, h      pixel size of the largest file (drives layout before load)
  *   hidden    optional: true keeps the work out of the gallery (filters, counts, "All") but lets a series still include it
  *   rev       optional: bump it (rev: 2, 3, ...) when a photo is replaced under the same name, so browsers refetch it
+ *   notes     optional: the artist's thought process, hung beside the work on the gallery wall
  *
  * Edit titles, years and categories here; nothing else needs to change.
  */

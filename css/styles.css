@@ -1733,6 +1733,533 @@ button:focus-visible > .roll .roll__face + .roll__face {
   line-height: 1.3;
 }
 
+/* ---------- Gallery room ----------
+   Paintings and prints hang along one long wall (js/gallery-room.js). The wall, floor and frames are drawn to
+   true relative scale; walking slides the whole wall. Picture lights are on by default (--room-lights: 1);
+   the lights button turns them off. Light theme: deep slate wall. Dark theme: deep red. */
+.gallery-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0 1.5rem;
+}
+
+.view-toggle[hidden] {
+  display: none;
+}
+
+.room {
+  --room-wall: #1d2433;
+  --room-ink: #f1ece1;
+  --room-muted: #b5bccb;
+  --room-floor-tint: rgb(8 10 18 / 0.5);
+  --room-lights: 0;
+  --room-walk: 1.5s cubic-bezier(0.5, 0.05, 0.2, 1);
+  --room-floor-h: clamp(4.5rem, 16svh, 9rem);
+  position: relative;
+  overflow: hidden;
+  height: clamp(32rem, calc(100svh - 4rem), 60rem);
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+  background: var(--room-wall);
+  color: var(--room-ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@supports (color: light-dark(#000, #fff)) {
+  .room {
+    --room-wall: light-dark(#1d2433, #2e0f13);
+    --room-muted: light-dark(#b5bccb, #d7b2ad);
+  }
+}
+
+.room.is-lit {
+  --room-lights: 1;
+}
+
+.room__view {
+  position: absolute;
+  inset: 0;
+}
+
+/* The wall: every work on one strip; walking moves the strip. */
+.room__track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: var(--room-floor-h);
+  display: flex;
+  isolation: isolate;
+  background: var(--room-wall);
+  will-change: transform;
+}
+
+/* Plaster, laid over the light so the light rakes across it. */
+.room__track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: url('../images/room/plaster.jpg') 0 0 / 640px 640px;
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+}
+
+.room__track.is-moving,
+.room__glints.is-moving {
+  transition: transform var(--room-walk);
+}
+
+.room__segment {
+  position: relative;
+  flex: none;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  width: var(--room-segment, 100vw);
+  height: 100%;
+  padding: 4.25rem var(--gutter) 1.5rem;
+}
+
+@media (min-width: 62rem) {
+  .room__segment {
+    grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr) minmax(12rem, 18rem);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.5rem, 3vw, 3.5rem);
+    padding-top: 3.5rem;
+  }
+}
+
+.room__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  height: 100%;
+}
+
+@media (min-width: 62rem) {
+  .room__art {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 61.99rem) {
+  .room__art {
+    order: -1;
+  }
+}
+
+.room__hang {
+  position: relative;
+  z-index: 2;
+}
+
+.room__frames {
+  display: grid;
+  grid-template-columns: repeat(var(--room-columns, 1), auto);
+  align-items: center;
+  justify-items: center;
+  gap: var(--room-spacing, 0);
+}
+
+/* Picture light: a wall plate, an arm and a brass shade whose slit glows when the lights are on. */
+.room__lamp,
+.room__pool {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.room__lamp {
+  top: calc(-1 * var(--room-lamp-gap));
+  z-index: 3;
+  width: clamp(4.5rem, 44%, 13rem);
+  height: 0;
+}
+
+.room__lamp-plate {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--room-lamp-gap) * 0.62);
+  width: 14px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 3px;
+  background: linear-gradient(#e9cf96, #a9833e 60%, #6c5021);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.35);
+}
+
+.room__lamp-arm {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 3px;
+  height: calc(var(--room-lamp-gap) * 0.62 - 6px);
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #6d5122, #e8cd94 45%, #8a6a2e);
+  box-shadow: 2px 3px 3px rgb(0 0 0 / 0.25);
+}
+
+.room__lamp-shade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 13px;
+  border-radius: 7px;
+  background: linear-gradient(#fbe9c0, #d9b46b 26%, #a47d37 58%, #5e4419);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 4px 6px rgb(0 0 0 / 0.4);
+}
+
+.room__lamp-shade::after {
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px;
+  background: #fff4dc;
+  opacity: var(--room-lights);
+  filter: blur(0.5px);
+  box-shadow: 0 0 6px 2px rgb(255 226 170 / 0.9), 0 0 22px 6px rgb(255 205 140 / 0.55), 0 4px 40px 14px rgb(255 200 130 / 0.35);
+  transition: opacity 1.2s ease;
+}
+
+/* The pool of light: a hot spot under the shade, a cone opening over the work, a faint spill past the frame
+   and a little bounce above the shade. Screened over the wall. */
+.room__pool {
+  top: calc(50% - var(--room-fh) / 2 - var(--room-lamp-gap) - 2.5rem);
+  z-index: 0;
+  width: calc(var(--room-fw) * 2.3 + 6rem);
+  height: calc(var(--room-fh) * 1.7 + var(--room-lamp-gap));
+  mix-blend-mode: screen;
+  opacity: var(--room-lights);
+  transition: opacity 1.4s ease;
+  background:
+    radial-gradient(ellipse 14% 8% at 50% 2.5rem, rgb(255 238 205 / 0.8), transparent 100%),
+    radial-gradient(ellipse 22% 36% at 50% 2.6rem, rgb(255 216 160 / 0.62), rgb(255 206 146 / 0.26) 55%, transparent 100%),
+    radial-gradient(ellipse 34% 64% at 50% 2.5rem, rgb(255 206 144 / 0.34), rgb(255 200 136 / 0.13) 60%, transparent 100%),
+    radial-gradient(ellipse 50% 82% at 50% 3rem, rgb(250 196 130 / 0.13), transparent 100%),
+    radial-gradient(ellipse 18% 5% at 50% 2.3rem, rgb(255 225 175 / 0.3), transparent 100%);
+  -webkit-mask-image: linear-gradient(transparent 0, #000 2.1rem);
+  mask-image: linear-gradient(transparent 0, #000 2.1rem);
+}
+
+/* Frames: black moulding, mitred by giving each side its own tone; a dark float gap around canvases, a mat
+   around prints. */
+.room__frame {
+  position: relative;
+  display: block;
+  padding: 0;
+  border-style: solid;
+  border-width: var(--room-moulding);
+  border-color: #2f2f31 #19191b #070708 #232325;
+  background: none;
+  cursor: zoom-in;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    0 calc(var(--room-frame-h) * (0.015 + 0.03 * var(--room-lights))) calc(var(--room-frame-h) * (0.04 + 0.04 * var(--room-lights))) rgb(0 0 0 / calc(0.35 + 0.3 * var(--room-lights))),
+    0 1px 2px rgb(0 0 0 / 0.35);
+  transition: box-shadow 1.4s ease;
+}
+
+.room__frame:focus-visible {
+  outline: 2px solid var(--room-ink);
+  outline-offset: 4px;
+}
+
+/* The lamp's falloff across moulding and mat, top to bottom. */
+.room__frame::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--room-moulding));
+  pointer-events: none;
+  background: linear-gradient(rgb(255 238 210 / calc(0.07 * var(--room-lights))), transparent 30%, rgb(0 0 0 / calc(0.24 * var(--room-lights))));
+  transition: background 1.4s ease;
+}
+
+.room__inner {
+  display: block;
+  border: var(--room-inner) solid #0b0b0c;
+  box-shadow: inset 0 0 calc(var(--room-inner) * 1.2) rgb(0 0 0 / 0.9);
+}
+
+.room__frame--print .room__inner {
+  border-color: #f5f3ee;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.14);
+}
+
+.room__picture {
+  position: relative;
+  display: block;
+  width: var(--room-pw);
+  height: var(--room-ph);
+}
+
+.room__frame--print .room__picture {
+  box-shadow: 0 0 0 1px #fffefa, 0 0 0 2px rgb(0 0 0 / 0.1);
+}
+
+.room__picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.room__picture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(rgb(255 240 215 / calc(0.09 * var(--room-lights))), transparent 32%, rgb(0 0 0 / calc(0.03 + 0.2 * var(--room-lights))));
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3);
+}
+
+/* Wall text, hung beside each work. */
+.room__label,
+.room__notes {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.room__kicker {
+  margin: 0;
+  color: var(--room-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.room__title {
+  margin-top: 0.8rem;
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3.1rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.03;
+  text-wrap: balance;
+}
+
+.room__rule {
+  display: block;
+  width: 2.25rem;
+  height: 1px;
+  margin: 1.25rem 0;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.room__facts {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.room__facts dd {
+  margin: 0;
+}
+
+.room__notes-text {
+  max-width: 21rem;
+  margin-top: 0.8rem;
+  color: var(--room-muted);
+  font-family: var(--font-prose);
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@media (min-width: 62rem) {
+  .room__notes {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 61.99rem) {
+  .room__title {
+    font-size: 1.6rem;
+  }
+
+  .room__rule {
+    margin: 0.8rem 0;
+  }
+
+  .room__notes {
+    display: none;
+  }
+}
+
+/* Floor: oak boards on a plane tipped away from you, so nearer boards move faster as you walk. */
+.room__floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--room-floor-h);
+  overflow: hidden;
+  perspective: 560px;
+  perspective-origin: 50% -190%;
+}
+
+.room__plane {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 400%;
+  height: 700%;
+  transform-origin: 50% 0;
+  transform: rotateX(80deg);
+  background: url('../images/room/wood.jpg') var(--room-floor-x, 0px) 0 / 1100px 330px;
+}
+
+.room__plane.is-moving {
+  transition: background-position var(--room-walk);
+}
+
+.room__floor-light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgb(0 0 0 / 0.34), transparent 22%),
+    linear-gradient(rgb(255 255 255 / 0.07), transparent 55%),
+    linear-gradient(transparent 60%, rgb(0 0 0 / 0.18)),
+    linear-gradient(var(--room-floor-tint), var(--room-floor-tint));
+}
+
+/* The lamps' light reflected in the floor, under each work. */
+.room__glints {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  display: flex;
+  mix-blend-mode: screen;
+  opacity: var(--room-lights);
+  transition: opacity 1.4s ease;
+  will-change: transform;
+}
+
+.room__glints.is-moving {
+  transition: transform var(--room-walk), opacity 1.4s ease;
+}
+
+.room__glint {
+  flex: none;
+  width: var(--room-segment, 100vw);
+  height: 100%;
+  background: radial-gradient(ellipse 18% 70% at 50% 0%, rgb(255 205 145 / 0.3), transparent 100%);
+}
+
+.room__glint.is-off {
+  background: none;
+}
+
+.room__skirting {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--room-floor-h);
+  z-index: 2;
+  height: clamp(9px, 1.5svh, 15px);
+  background: color-mix(in srgb, var(--room-wall) 55%, #000);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 3px 6px rgb(0 0 0 / 0.28);
+}
+
+/* Darker corners and a dim ceiling line. */
+.room__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(rgb(0 0 0 / calc(0.12 + 0.24 * var(--room-lights))), transparent 30%),
+    radial-gradient(130% 100% at 50% 45%, transparent 55%, rgb(0 0 0 / calc(0.2 + 0.28 * var(--room-lights))) 100%);
+  transition: background 1.4s ease;
+}
+
+.room__bar {
+  position: absolute;
+  top: 0.9rem;
+  right: var(--gutter);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.room__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.room__button:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.room__button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: none;
+}
+
+.room__button:focus-visible {
+  outline: 2px solid var(--room-ink);
+  outline-offset: 2px;
+}
+
+.room__lights[aria-pressed='true'] {
+  color: #f6d9a0;
+}
+
+.room__lights {
+  margin-right: 0.5rem;
+}
+
+.room__count {
+  padding: 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room__track.is-moving,
+  .room__glints.is-moving,
+  .room__plane.is-moving {
+    transition: none;
+  }
+}
+
 /* ---------- Viewer ---------- */
 .viewer {
   width: 100%;

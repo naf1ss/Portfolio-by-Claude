@@ -26,9 +26,9 @@
 
   /**
    * findOrigin(workId) returns the gallery <img> for a work (or null); the
-   * picture glides to and from it.
+   * picture glides to and from it. onChange(work) runs whenever a work is shown.
    */
-  function create(dialog, { findOrigin = () => null } = {}) {
+  function create(dialog, { findOrigin = () => null, onChange = () => {} } = {}) {
     const stage = dialog.querySelector('.viewer__stage');
     const image = dialog.querySelector('.viewer__image');
     const title = dialog.querySelector('.viewer__title');
@@ -65,6 +65,7 @@
       stepButtons.forEach((button) => {
         button.hidden = works.length < 2;
       });
+      onChange(work);
     }
 
     const canAnimate = () =>

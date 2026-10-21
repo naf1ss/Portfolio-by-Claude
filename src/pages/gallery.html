@@ -1,17 +1,28 @@
 ---
 title: Gallery — nuances by nafis
 description: Paintings, drawings, prints, digital art, photography, ceramics and wall magazines by Nafis.
-scripts: works-utils, works-data, works-photography, gallery, lightbox, pages, magnifier-utils, magnifier
+scripts: works-utils, works-data, works-photography, series-data, gallery, lightbox, gallery-room-utils, gallery-room, pages, magnifier-utils, magnifier
 ---
-  <main id="main" class="wrap">
+  <main id="main">
+    <div class="wrap">
     <!-- Decorative: the photographer peeks in from the bottom-right corner of the screen. -->
     <img class="gallery-peek"
          src="images/gallery/photographer-640.webp"
          srcset="images/gallery/photographer-640.webp 640w, images/gallery/photographer-1100.webp 1100w"
          sizes="10rem" width="640" height="1115" alt="" aria-hidden="true">
     <h1 class="page-title">Gallery</h1>
-    <nav id="filters" aria-label="Filter by medium"></nav>
+    <div class="gallery-bar">
+      <nav id="filters" aria-label="Filter by medium"></nav>
+      <!-- Paintings and prints can be seen hanging on a wall or as a grid. -->
+      <div class="filters view-toggle" id="view-toggle" role="group" aria-label="View" hidden>
+        <button class="filter" type="button" data-view="wall" aria-pressed="true">Wall</button>
+        <button class="filter" type="button" data-view="grid" aria-pressed="false">Grid</button>
+      </div>
+    </div>
     <p id="result-status" class="visually-hidden" role="status"></p>
     <ul class="gallery" id="gallery"></ul>
     <noscript><p class="muted">Please enable JavaScript to view the gallery.</p></noscript>
+    </div>
+    <!-- The gallery room (js/gallery-room.js) is built here for paintings and prints. -->
+    <section class="room" id="room" aria-label="Gallery wall" hidden></section>
   </main>

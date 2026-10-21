@@ -145,9 +145,8 @@
    * Returns { setActive(id) } to reflect the current selection.
    */
   function createFilters(container, { counts, onSelect }) {
-    const options = [{ id: 'all', label: 'All' }].concat(
-      U.CATEGORIES.filter((category) => counts[category.id] > 0)
-    );
+    // The media first, "All" last.
+    const options = U.CATEGORIES.filter((category) => counts[category.id] > 0).concat({ id: 'all', label: 'All' });
     const buttons = new Map();
     const list = element('ul', 'filters');
 

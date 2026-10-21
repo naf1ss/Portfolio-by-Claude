@@ -30,6 +30,8 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/hero-window-utils.js`, `js/hero-window.js` | Home hero: the name is cut out of a slideshow of paintings on a canvas. Geometry and timing (unit tested) and the canvas itself |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
+| `js/gallery-room-utils.js`, `js/gallery-room.js` | The gallery room for paintings and prints: real sizes, grouping and scale (unit tested) and the lit wall itself |
+| `images/room/`, `tools/room-textures.html` | The room's plaster and oak-floor textures, and the seeded generator that drew them (open it in a browser to redraw) |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
 | `fonts/` | Self-hosted Bodoni Moda (headings), Cormorant Garamond (reading text) and Manrope (labels), all SIL OFL |
 | `tools/stamp-assets.js` | Content-hash stamps for css/js addresses (used by the build) |
@@ -67,7 +69,13 @@ The catalogue checks also confirm every image referenced in `works-data.js` and 
 
 If you later replace a photo under the same file name (a re-edit), bump that record's `rev` in `js/works-data.js` (`rev: 2`, then `3`, ...) so visitors' browsers fetch the new picture instead of a cached one.
 
-Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gallery.html?c=print` opens a filtered view.
+Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gallery.html?c=print` opens a filtered view (`?c=all` for everything; with no `?c=` the gallery opens on Painting).
+
+### The gallery room
+
+Paintings and prints open on a wall instead of a grid (a Wall / Grid switch sits beside the filters and is remembered). Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, prints a black frame and a white mat. A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon does). The picture lights are on by default, and the Lights button turns them off. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
+
+To hang a "Thought process" note beside a work, add `notes: '...'` to its record in `js/works-data.js` (for a series hung together, use the series' `note`).
 
 ## Photography
 

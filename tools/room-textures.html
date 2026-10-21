@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Gallery room textures</title>
+<!--
+  Generator for the gallery room's wall and floor textures (images/room/).
+  Open this file in a browser, then right-click each picture and save it over
+  images/room/plaster.jpg and images/room/wood.jpg. Both are seeded, so they come out the same every time;
+  change a seed or a number below to get a different plaster or a different floor.
+-->
+<style>body { font: 14px system-ui, sans-serif; margin: 2rem; } img { display: block; max-width: 100%; margin: .5rem 0 2rem; outline: 1px solid #ccc; }</style>
+<h1>Gallery room textures</h1>
+<p>plaster.jpg (shown over the wall colour with soft-light blending)</p>
+<img id="plaster" alt="Plaster texture">
+<p>wood.jpg (the floor, tipped back in perspective)</p>
+<img id="wood" alt="Wood floor texture">
+<script>
+  function rng(seed) { return () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646; }
+
+  /** Tileable fractal value noise (several octaves), returned as grey pixels around mid-grey for soft-light. */
+  function plasterTexture(size = 512) {
+    const rand = rng(7);
+    const field = new Float32Array(size * size);
+    let amplitude = 1, total = 0;
+    for (let cells = 4; cells <= 128; cells *= 2) {
+      const lattice = Array.from({ length: cells * cells }, rand);
+      const at = (x, y) => lattice[((y + cells) % cells) * cells + ((x + cells) % cells)];
+      const smooth = (t) => t * t * (3 - 2 * t);
+      for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+        const fx = x / size * cells, fy = y / size * cells;
+        const x0 = Math.floor(fx), y0 = Math.floor(fy), tx = smooth(fx - x0), ty = smooth(fy - y0);
+        const top = at(x0, y0) + (at(x0 + 1, y0) - at(x0, y0)) * tx;
+        const bottom = at(x0, y0 + 1) + (at(x0 + 1, y0 + 1) - at(x0, y0 + 1)) * tx;
+        field[y * size + x] += (top + (bottom - top) * ty) * amplitude;
+      }
+      total += amplitude; amplitude *= 0.55;
+    }
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d'); const image = ctx.createImageData(size, size);
+    for (let i = 0; i < field.length; i++) {
+      const value = 128 + (field[i] / total - 0.5) * 34 + (rand() - 0.5) * 14; // faint mottling + fine grain
+      image.data[i * 4] = image.data[i * 4 + 1] = image.data[i * 4 + 2] = value; image.data[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(image, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.88);
+  }
+
+  /** Light oak boards running along the wall, staggered joints, wavy grain. Tiles left to right. */
+  function woodTexture(width = 1600, height = 480, rows = 12) {
+    const rand = rng(42);
+    const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    const rowH = height / rows;
+    function board(x, y, length, tone) {
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, length, rowH); ctx.clip();
+      const light = 60 + tone * 10;
+      const base = ctx.createLinearGradient(0, y, 0, y + rowH);
+      base.addColorStop(0, `hsl(31 34% ${light + 3}%)`); base.addColorStop(.5, `hsl(30 36% ${light}%)`); base.addColorStop(1, `hsl(29 38% ${light - 4}%)`);
+      ctx.fillStyle = base; ctx.fillRect(x, y, length, rowH);
+      for (let g = 0; g < 16; g++) {
+        const y0 = y + rand() * rowH, amp = .5 + rand() * 2.2, freq = 0.004 + rand() * 0.01, phase = rand() * 6.3;
+        ctx.strokeStyle = `rgba(${70 + rand() * 30}, ${42 + rand() * 18}, ${20 + rand() * 10}, ${0.05 + rand() * 0.16})`;
+        ctx.lineWidth = 0.4 + rand() * 0.9;
+        ctx.beginPath();
+        for (let px = x - 4; px <= x + length + 4; px += 8) {
+          const py = y0 + Math.sin(px * freq + phase) * amp + Math.sin(px * freq * 3.1 + phase) * amp * 0.25;
+          px === x - 4 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+      if (rand() < 0.08) { // an occasional knot
+        const kx = x + rand() * length, ky = y + rowH * (0.3 + rand() * 0.4);
+        const knot = ctx.createRadialGradient(kx, ky, 0, kx, ky, 8 + rand() * 5);
+        knot.addColorStop(0, 'rgba(60,35,15,.55)'); knot.addColorStop(1, 'rgba(60,35,15,0)');
+        ctx.fillStyle = knot; ctx.beginPath(); ctx.ellipse(kx, ky, 12, 4, 0, 0, 6.3); ctx.fill();
+      }
+      ctx.restore();
+      ctx.fillStyle = 'rgba(35,20,10,.35)'; ctx.fillRect(x, y, 1, rowH); // end joint
+    }
+    for (let r = 0; r < rows; r++) {
+      const y = r * rowH;
+      let x = -rand() * 500;
+      while (x < width) {
+        const length = 380 + rand() * 520, tone = rand() - 0.5;
+        board(x, y, length, tone);
+        if (x + length > width) board(x - width, y, length, tone); // wrap so the texture tiles
+        x += length;
+      }
+      ctx.fillStyle = 'rgba(30,18,8,.4)'; ctx.fillRect(0, y, width, 1); // seam between rows
+    }
+    return canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  document.getElementById('plaster').src = plasterTexture();
+  document.getElementById('wood').src = woodTexture();
+</script>
