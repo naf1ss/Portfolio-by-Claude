@@ -179,8 +179,43 @@
     return section;
   }
 
+  /** A museum-style caption: the title in italics and the year, then medium and size. */
+  function labelCaption(work) {
+    const caption = element('figcaption', 'story__label');
+    const head = element('span', 'story__label-head');
+    head.append(element('i', undefined, work.title || 'Untitled'));
+    if (work.year) head.append(`, ${work.year}`);
+    caption.append(head);
+    const facts = [work.medium, work.dimensions && U.formatDimensions(work.dimensions)].filter(Boolean).join(', ');
+    if (facts) caption.append(element('span', 'story__label-facts', facts));
+    return caption;
+  }
+
+  /**
+   * The works side by side at one height (each column as wide as its picture's shape), each with its
+   * label and the words about it underneath.
+   */
+  function set(entries, byId) {
+    const section = element('section', 'story__set');
+    const columns = [];
+    entries.forEach((entry) => {
+      const work = byId.get(entry.workId);
+      if (!work) return;
+      const column = element('article', 'story__set-item');
+      column.id = entry.id || work.id.toLowerCase();
+      const figure = picture(work);
+      figure.append(labelCaption(work));
+      column.append(figure, paragraphs('story__prose', entry.text));
+      section.append(column);
+      columns.push(`${U.aspectRatio(work)}fr`);
+    });
+    section.style.setProperty('--set-columns', columns.join(' '));
+    return section;
+  }
+
   function render(container, story, { note, byId }) {
     const blocks = [];
+    if (story.works) blocks.push(set(story.works, byId));
     if (story.intro) blocks.push(intro(story, { note, byId }));
     if (story.process) blocks.push(processBand(story.process));
     (story.chapters || []).forEach((entry, i) => blocks.push(chapter(entry, i % 2 === 0, byId)));

@@ -30,7 +30,7 @@
   {
     id: 'degrees-of-happiness',
     title: 'Degrees of Happiness',
-    note: 'Two abstract paintings that treat happiness as colour. Yellow stands for the feeling: in one it is only beginning to arrive; in the other it has turned to orange and pushes back.',
+    note: 'Abstract paintings that treat happiness as colour. Yellow, and the orange it becomes, is held at a different intensity in each work: in one the feeling is still arriving; in the other it pushes back.',
     hangTogether: true,
     workIds: ['A030', 'A041'],
   },

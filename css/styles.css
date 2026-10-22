@@ -1409,8 +1409,19 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 @media (min-width: 56rem) {
-  .story__closing--single {
-    grid-template-columns: minmax(0, 44rem);
+  /* A closing on its own spans the page, its paragraphs in two columns. */
+  .story__closing.story__closing--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .story__closing--single .story__prose {
+    columns: 2;
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  .story__closing--single .story__prose p {
+    margin: 0 0 0.9rem;
+    break-inside: avoid;
   }
 }
 
@@ -1528,6 +1539,55 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .story__closing .story__prose {
   margin-top: 1.1rem;
+}
+
+/* Works side by side at one height (js/series-story.js sets the columns from their shapes), each labelled,
+   with its words underneath. */
+.story__set {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  padding-block: clamp(0.5rem, 2vw, 1.5rem) clamp(2.5rem, 6vw, 5rem);
+}
+
+@media (min-width: 48rem) {
+  .story__set {
+    grid-template-columns: var(--set-columns, 1fr 1fr);
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+}
+
+.story__set-item {
+  min-width: 0;
+}
+
+.story__set-item .story__media img {
+  width: 100%;
+  max-height: none;
+}
+
+.story__set-item .story__prose {
+  max-width: 34rem;
+  margin-top: 1.4rem;
+}
+
+.story__media .story__label {
+  display: grid;
+  gap: 0.1rem;
+  margin-top: 0.9rem;
+  font-family: var(--font-text);
+  font-size: 0.85rem;
+  font-style: normal;
+  text-align: left;
+}
+
+.story__label-head i {
+  font-family: var(--font-prose);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.story__label-facts {
+  color: var(--ink-muted, inherit);
 }
 
 /* The process as a band between the intro and the works: the steps side by side on wide screens. */
@@ -2753,6 +2813,25 @@ html {
   margin: 1.25rem 0;
   background: currentColor;
   opacity: 0.5;
+}
+
+/* Wide but short screens: a compact label, so a group's titles and link stay on the wall. */
+@media (min-width: 62rem) and (max-height: 56rem) {
+  .room__title {
+    font-size: clamp(1.6rem, 1rem + 1.6vw, 2.4rem);
+  }
+
+  .room__rule {
+    margin: 0.9rem 0;
+  }
+
+  .room__works-heading {
+    margin-top: 0.8rem;
+  }
+
+  .room__series-link {
+    margin-top: 0.7rem;
+  }
 }
 
 .room__facts {

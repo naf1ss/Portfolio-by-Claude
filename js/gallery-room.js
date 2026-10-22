@@ -16,6 +16,7 @@
   const LAMP_ROOM_PX = 64; // space kept above the tallest work for its lamp
   const PHONE_LAMP_PX = 52; // phones: the lamp's gap, kept above and below the frame so it stays centred
   const PHONE_LABEL_GAP_PX = 18; // phones: between the frame and its label
+  const NOTES_MIN_GAP_PX = 48; // wide screens: between the frames and the note beside them
 
   function element(tag, className, text) {
     const node = document.createElement(tag);
@@ -322,7 +323,27 @@
           });
         }
       });
+      centreNotes();
       place(false);
+    }
+
+    /**
+     * Wide screens: each note sits in the middle of the wall between its frames and the right edge, rather than
+     * against the edge, but never closer to a frame than NOTES_MIN_GAP_PX.
+     */
+    function centreNotes() {
+      const wide = window.matchMedia('(min-width: 62rem)').matches;
+      parts.track.querySelectorAll('.room__notes').forEach((notes) => {
+        notes.style.transform = '';
+        if (!wide) return;
+        const segment = notes.closest('.room__segment');
+        const frames = segment.querySelector('.room__frames').getBoundingClientRect();
+        const box = notes.getBoundingClientRect();
+        const wallRight = segment.getBoundingClientRect().right - parseFloat(getComputedStyle(segment).paddingRight);
+        const centredLeft = (frames.right + wallRight) / 2 - box.width / 2;
+        const left = Math.max(frames.right + NOTES_MIN_GAP_PX, centredLeft);
+        if (left < box.left) notes.style.transform = `translateX(${(left - box.left).toFixed(1)}px)`;
+      });
     }
 
     /** Moves the camera to the current section; with `animate` it walks there along the wall. */

@@ -10,6 +10,7 @@
  *                detail: { label, text } }]                     optional
  *                                                 one per work, picture and text side by side, alternating
  *   related   { title, workId, caption, items: [{ title, text }], note }       optional
+ *   works     [{ workId, text: [paragraphs] }]    optional: the works side by side, each labelled, its words beneath
  *   process   [{ title, text }]                   optional: the process as a band after the intro, before the works
  *   closing   { process: [{ title, text }] (optional, beside the reflection), reflectionTitle, reflection: [paragraphs] }
  *
@@ -128,48 +129,29 @@
       ],
     },
   },
-  // From the artist's notes on the two paintings (2026).
+  // From the artist's notes on the two paintings (2026). Told as the two works side by side, then the series.
   'degrees-of-happiness': {
-    intro: {
-      lead: [
-        'I use yellow, and the orange it becomes, as the colour of happiness. These two paintings follow it at two strengths: first as something only beginning to arrive, then as a force that presses against everything around it.',
-        'Neither is a picture of a happy scene. Each tries to hold the feeling itself, in colour, gesture and the weight of the paint.',
-      ],
-      index: true,
-    },
-    chapters: [
+    works: [
       {
-        id: 'almost-happy',
-        label: 'Almost Happy',
-        aside: 'Acrylic on canvas',
-        kicker: 'Almost Happy \u00b7 acrylic on canvas, 18 \u00d7 24 in',
-        title: 'Almost Happy',
         workId: 'A030',
-        caption: 'Yellow gathering in the lower right.',
         text: [
-          'Long diagonal strokes of violet, grey and muted teal sweep across the canvas. In the lower right the colour begins to warm, and yellow starts to gather.',
-          'The painting holds that moment of uncertainty: yellow seems about to take over, yet something else is still pressing back. It is happiness that has not quite arrived.',
+          'In Almost Happy I wanted to paint the moment just before a feeling settles. Long diagonal strokes of violet, grey and muted teal move across the canvas, and in the lower right yellow, my colour for happiness, begins to gather.',
+          'The brushwork keeps everything in motion, so it is never clear whether the yellow will take over or be pushed back. That uncertainty is the subject: a happiness that is close, but not yet here.',
         ],
       },
       {
-        id: 'aggressive-happiness',
-        label: 'Aggressive Happiness',
-        aside: 'Acrylic on wood panel',
-        kicker: 'Aggressive Happiness \u00b7 acrylic on wood panel, 24 \u00d7 24 in',
-        title: 'Aggressive Happiness',
         workId: 'A041',
-        caption: 'A white fault line between orange and teal.',
         text: [
-          'I work with colour the way some people argue: loud, direct and a little stubborn.',
-          'Here yellow has turned aggressive and burned into orange. I pushed thick squares of paint into a hot orange field and a cooler teal one, then let a rough white break cut across the middle like a fault line.',
-          'What you see is less a picture of happiness than the physical push of it, pressing into the surface until it holds.',
+          'I work with colour the way some people argue: loud, direct and a little stubborn. In Aggressive Happiness the yellow has intensified into orange.',
+          'I pushed thick squares of paint into a hot orange field and a cooler teal one, then let a rough white break cut across the middle like a fault line. What you see is less a picture of happiness than the physical push of it, pressing into the surface until it holds.',
         ],
       },
     ],
     closing: {
-      reflectionTitle: 'Between the two',
+      reflectionTitle: 'About the series',
       reflection: [
-        'Side by side, the paintings move from suggestion to insistence. Soft, blended strokes give way to hard edges, built-up squares and a single decisive line. The colour of happiness stays the same; what changes is how hard it pushes.',
+        'Degrees of Happiness treats emotion as colour rather than as a subject to illustrate. Yellow, and the orange it becomes, stands for happiness throughout; each painting holds that colour at a different intensity and lets the handling of the paint carry the feeling.',
+        'When the feeling is still arriving, the strokes are soft and blended. When it insists, the surface turns to hard edges, built-up squares and a single decisive line. Seen together, the paintings follow one emotion from suggestion to insistence: the colour stays the same, and what changes is how hard it pushes.',
       ],
     },
   },
