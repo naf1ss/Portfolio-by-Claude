@@ -145,17 +145,18 @@
 
   const SERIES_SIZES = '(min-width: 60rem) 30vw, (min-width: 40rem) 45vw, 92vw';
 
-  /** One card per series: a cover picture, the title and a "7 works · 2026" line. */
+  /** One card per series: its whole cover picture (never cropped) and its title, in justified rows. */
   function renderSeriesList(list, entries, { hrefFor, eagerCount = 3 }) {
-    const cards = entries.map(({ series, works, cover }, i) => {
+    const cards = entries.map(({ series, cover }, i) => {
       const link = element('a', 'series-card');
       link.href = hrefFor(series);
       const frame = element('span', 'tile__frame');
       frame.append(createImage(cover, { eager: i < eagerCount, sizes: SERIES_SIZES }));
       const caption = element('span', 'tile__caption');
-      caption.append(element('span', 'tile__title', series.title), element('span', 'tile__meta', U.seriesMeta(works)));
+      caption.append(element('span', 'tile__title', series.title));
       link.append(frame, caption);
       const item = element('li');
+      item.style.setProperty('--ar', U.aspectRatio(cover));
       item.append(link);
       return item;
     });

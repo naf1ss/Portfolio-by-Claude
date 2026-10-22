@@ -21,8 +21,8 @@
   }
 })(typeof self !== 'undefined' ? self : this, [
   {
-    id: 'final-trio',
-    title: 'Final Trio',
+    id: 'cross-wired',
+    title: 'Cross-Wired',
     note: 'A ceramic study in form, texture and artistic influence: a plate, a bowl and a mug, each led by a different maker.',
     cover: 'ceramics-41',
     workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],

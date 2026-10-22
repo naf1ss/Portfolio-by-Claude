@@ -214,25 +214,26 @@
     const { series, works } = chosen;
     document.title = `${series.title} — nuances by nafis`;
     title.textContent = series.title;
-    note.textContent = series.note || U.seriesMeta(works);
-    note.classList.toggle('series-note--meta', !series.note);
+    note.textContent = series.note || '';
     back.hidden = false;
     list.hidden = true;
     gallery.hidden = false;
 
-    window.Gallery.renderGallery(gallery, works, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
-
-    // A series with a write-up (js/series-stories.js) tells it under the works.
+    // A series with a write-up (js/series-stories.js) is told through it, pictures beside the words, instead of
+    // a grid of its works; the note becomes the write-up's opening line.
     const story = (window.PORTFOLIO_SERIES_STORIES || {})[series.id];
+    const storyBox = document.getElementById('series-story');
+    let viewerHost = gallery;
     if (story && window.SeriesStory) {
-      const context = document.getElementById('series-context');
-      context.textContent = story.context || '';
-      context.hidden = !story.context;
-      window.SeriesStory.render(document.getElementById('series-story'), story, { byId });
-      window.Motion.reveal(document.querySelectorAll('.story__section'));
+      gallery.hidden = true;
+      note.hidden = true;
+      window.SeriesStory.render(storyBox, story, { note: series.note, byId });
+      viewerHost = storyBox;
+    } else {
+      window.Gallery.renderGallery(gallery, works, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
     }
 
-    const lightbox = mountViewer(gallery);
+    const lightbox = mountViewer(viewerHost);
     lightbox.setWorks(works);
     const linkedId = U.workIdFromHash(location.hash, works);
     if (linkedId) lightbox.open(linkedId, 'load');

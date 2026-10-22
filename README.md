@@ -74,7 +74,7 @@ Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gall
 
 ### Series write-ups
 
-A series can carry a long-form write-up under its works (sources, process, reflection): add it to `js/series-stories.js` under the series' `id` (see the Final Trio entry and the format at the top of that file).
+A series can be told as a write-up instead of a grid: pictures beside their words (an intro, one chapter per work, a closing). Add it to `js/series-stories.js` under the series' `id`; see the Cross-Wired entry and the format at the top of that file.
 
 ### The gallery room
 

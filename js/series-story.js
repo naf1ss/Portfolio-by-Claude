@@ -1,11 +1,14 @@
 /**
- * Renders a series' long-form story (js/series-stories.js) under its works on the series page.
- * Exposes window.SeriesStory.render(container, story, { byId }).
+ * Renders a series' write-up (js/series-stories.js): pictures beside their text, so a reader can look at the
+ * work while reading about it. Exposes window.SeriesStory.render(container, story, { note, byId }).
+ *
+ * Pictures are links with data-work-id, so the page's viewer opens them full screen.
  */
 (function () {
   'use strict';
 
   const U = window.WorksUtils;
+  const PICTURE_SIZES = '(min-width: 56rem) 50vw, 92vw';
 
   function element(tag, className, text) {
     const node = document.createElement(tag);
@@ -14,118 +17,141 @@
     return node;
   }
 
-  /** A small picture of one of the artist's works, at its own proportions. */
-  function thumbnail(work, sizes) {
-    if (!work) return null;
+  /** The whole work, uncropped, as a link the viewer opens. */
+  function picture(work, caption) {
+    const figure = element('figure', 'story__media');
+    if (!work) return figure;
+    const link = element('a');
+    link.href = U.hashForWork(work);
+    link.dataset.workId = work.id;
+    link.setAttribute('aria-label', `View ${work.title || 'this work'} full screen`);
     const img = new Image();
-    img.className = 'story__thumb';
     img.alt = U.altText(work);
     img.width = work.w;
     img.height = work.h;
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.sizes = sizes;
+    img.sizes = PICTURE_SIZES;
     img.srcset = U.buildSrcset(work);
     img.src = U.fallbackUrl(work);
-    return img;
+    link.append(img);
+    figure.append(link);
+    if (caption) figure.append(element('figcaption', undefined, caption));
+    return figure;
   }
 
-  function sectionShell(title, intro) {
-    const section = element('section', 'story__section');
-    const head = element('div', 'section__head');
-    head.append(element('h2', 'eyebrow', title));
-    section.append(head);
-    if (intro) section.append(element('p', 'story__intro', intro));
+  function pair(media, text, { flip = false, className = '' } = {}) {
+    const section = element('section', `story__pair${flip ? ' story__pair--flip' : ''}${className ? ` ${className}` : ''}`);
+    section.append(media, text);
     return section;
   }
 
-  const renderers = {
-    text(section) {
-      const body = element('div', 'story__prose');
-      section.paragraphs.forEach((text) => body.append(element('p', undefined, text)));
-      return body;
-    },
-
-    list(section) {
-      const list = element(section.ordered ? 'ol' : 'ul', 'story__list');
-      section.items.forEach((text) => list.append(element('li', undefined, text)));
-      return list;
-    },
-
-    sources(section) {
-      const grid = element('div', 'story__sources');
-      section.items.forEach((source) => {
-        // The pots themselves are pictured under "How every pot absorbs all three"; a source card stays text.
-        const card = element('article', 'story__source');
-        card.append(
-          element('p', 'story__kicker', source.piece),
-          element('h3', 'story__maker', source.maker),
-          element('p', 'story__listing', source.listing),
-          element('p', 'story__label', source.onMine.label),
-          element('p', 'story__lead', source.onMine.text),
-          element('p', 'story__carries', source.carries)
-        );
-        if (source.url) {
-          const link = element('a', 'text-link', 'See the source at Schaller Gallery ↗');
-          link.href = source.url;
-          link.target = '_blank';
-          link.rel = 'noopener';
-          card.append(link);
-        }
-        grid.append(card);
-      });
-      return grid;
-    },
-
-    compare(section) {
-      const wrap = element('div');
-      const grid = element('div', 'story__compare');
-      section.items.forEach((item) => {
-        const block = element('div', 'story__compare-item');
-        block.append(element('h3', 'story__subtitle', item.title), element('p', undefined, item.text));
-        grid.append(block);
-      });
-      wrap.append(grid);
-      if (section.note) wrap.append(element('p', 'story__note', section.note));
-      return wrap;
-    },
-
-    columns(section, { byId }) {
-      const grid = element('div', 'story__columns');
-      section.columns.forEach((column) => {
-        const block = element('article', 'story__column');
-        const picture = thumbnail(byId.get(column.workId), '(min-width: 56rem) 26vw, 80vw');
-        if (picture) block.append(picture);
-        block.append(element('h3', 'story__subtitle', column.title));
-        if (column.glaze) block.append(element('p', 'story__glaze', `Glazes: ${column.glaze}`));
-        const list = element('ul', 'story__list story__list--plain');
-        column.items.forEach((text) => list.append(element('li', undefined, text)));
-        block.append(list);
-        grid.append(block);
-      });
-      return grid;
-    },
-
-    steps(section) {
-      const list = element('ol', 'story__steps');
-      section.items.forEach((step) => {
+  function intro(story, { note, byId }) {
+    const text = element('div', 'story__text');
+    if (note) text.append(element('p', 'story__lede', note));
+    if (story.intro.lead) text.append(element('p', 'story__prose', story.intro.lead));
+    if (story.intro.chapters) {
+      const list = element('ol', 'story__index');
+      story.chapters.forEach((chapter) => {
+        const link = element('a');
+        link.href = `#${chapter.id}`;
+        link.append(element('span', undefined, chapter.label), element('em', undefined, chapter.maker));
         const item = element('li');
-        item.append(element('h3', 'story__subtitle', step.title), element('p', undefined, step.text));
+        item.append(link);
         list.append(item);
       });
-      return list;
-    },
-  };
+      text.append(list);
+    }
+    return pair(picture(byId.get(story.intro.workId)), text, { className: 'story__pair--intro' });
+  }
 
-  function render(container, story, { byId }) {
-    const blocks = [];
-    story.sections.forEach((section) => {
-      const renderer = renderers[section.kind];
-      if (!renderer) return;
-      const shell = sectionShell(section.title, section.intro);
-      shell.append(renderer(section, { byId }));
-      blocks.push(shell);
+  function chapter(entry, flip, byId) {
+    const text = element('div', 'story__text');
+    text.append(
+      element('p', 'story__kicker', `${entry.label} · led by ${entry.maker}`),
+      element('h2', 'story__title', entry.title),
+      element('p', 'story__prose', entry.lead)
+    );
+    text.lastChild.classList.add('story__lead');
+
+    const source = element('div', 'story__source');
+    source.append(element('p', 'story__source-name', entry.source.name), element('p', 'story__listing', entry.source.listing));
+    if (entry.source.url) {
+      const link = element('a', 'story__link', 'See it at Schaller Gallery ↗');
+      link.href = entry.source.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      source.append(link);
+    }
+    text.append(source);
+
+    const absorbs = element('div', 'story__absorbs');
+    absorbs.append(element('p', 'eyebrow', `All three makers in ${entry.label.toLowerCase()}`));
+    const list = element('ul');
+    entry.absorbs.forEach(({ maker, text: line }) => {
+      const item = element('li');
+      item.append(element('b', undefined, maker), element('span', undefined, line));
+      list.append(item);
     });
+    absorbs.append(list);
+    text.append(absorbs);
+
+    if (entry.glazes) {
+      const glazes = element('p', 'story__glazes');
+      glazes.append(element('b', undefined, 'Glazes: '), entry.glazes);
+      text.append(glazes);
+    }
+
+    const section = pair(picture(byId.get(entry.workId)), text, { flip });
+    section.id = entry.id;
+    section.setAttribute('aria-label', `${entry.label}, led by ${entry.maker}`);
+    return section;
+  }
+
+  function related(entry, byId) {
+    const text = element('div', 'story__text');
+    text.append(element('h2', 'eyebrow', entry.title));
+    const compare = element('div', 'story__compare');
+    entry.items.forEach((item) => {
+      const block = element('div');
+      block.append(element('h3', undefined, item.title), element('p', 'story__prose', item.text));
+      compare.append(block);
+    });
+    text.append(compare);
+    if (entry.note) text.append(element('p', 'story__prose story__note', entry.note));
+    return pair(picture(byId.get(entry.workId), entry.caption), text);
+  }
+
+  function closing(entry) {
+    const section = element('section', 'story__closing');
+    const process = element('div');
+    process.append(element('h2', 'eyebrow', 'Process'));
+    const steps = element('ol', 'story__steps');
+    entry.process.forEach((step) => {
+      const item = element('li');
+      const body = element('div');
+      body.append(element('b', undefined, step.title), element('span', undefined, step.text));
+      item.append(body);
+      steps.append(item);
+    });
+    process.append(steps);
+
+    const reflection = element('div');
+    reflection.append(element('h2', 'eyebrow', 'Reflection'));
+    const prose = element('div', 'story__prose');
+    entry.reflection.forEach((paragraph) => prose.append(element('p', undefined, paragraph)));
+    reflection.append(prose);
+
+    section.append(process, reflection);
+    return section;
+  }
+
+  function render(container, story, { note, byId }) {
+    const blocks = [];
+    if (story.intro) blocks.push(intro(story, { note, byId }));
+    (story.chapters || []).forEach((entry, i) => blocks.push(chapter(entry, i % 2 === 0, byId)));
+    if (story.related) blocks.push(related(story.related, byId));
+    if (story.closing) blocks.push(closing(story.closing));
     container.replaceChildren(...blocks);
     container.hidden = false;
   }

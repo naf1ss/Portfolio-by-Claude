@@ -1159,12 +1159,24 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .series-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-  gap: clamp(1.5rem, 3vw, 2.5rem) clamp(0.75rem, 1.6vw, 1.5rem);
+  /* Whole covers in justified rows: each card grows with its picture's shape, so nothing is cropped. */
+  --row-height: clamp(11rem, 20vw, 17rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.75rem, 3vw, 2.5rem) clamp(0.75rem, 1.6vw, 1.5rem);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.series-list::after {
+  content: '';
+  flex-grow: 1000000;
+}
+
+.series-list > li {
+  flex: calc(var(--ar, 1.25) * 100) 1 calc(var(--ar, 1.25) * var(--row-height));
+  min-width: 0;
 }
 
 .series-list[hidden] {
@@ -1180,227 +1192,313 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: inherit;
 }
 
-.series-card .tile__image {
-  aspect-ratio: 4 / 5;
-  height: auto;
-  object-fit: cover;
-}
-
-/* The context line under a series' note (course, teacher, date). */
-.series-context {
-  margin: calc(-1 * clamp(1rem, 2vw, 1.75rem)) 0 clamp(1.75rem, 3vw, 2.75rem);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 /* ---------- Series story (js/series-story.js) ----------
-   A long-form write-up under a series' works: eyebrow-headed sections in the site's three voices. */
-.story {
-  display: grid;
-  gap: clamp(3rem, 7vw, 5.5rem);
-  margin: clamp(3rem, 7vw, 6rem) 0 clamp(2rem, 5vw, 4rem);
-}
-
+   A series told through pictures beside their words: the picture stays in view while its text scrolls. */
 .story[hidden] {
   display: none;
 }
 
-.story__section .section__head {
-  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+.story__pair {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 4.5rem);
+  align-items: start;
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+  border-top: 1px solid var(--rule);
 }
 
-.story__intro,
+.story__pair--intro {
+  padding-top: clamp(0.5rem, 2vw, 1.5rem);
+  border-top: 0;
+}
+
+@media (min-width: 56rem) {
+  .story__pair {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .story__pair--flip > .story__media {
+    order: 2;
+  }
+
+  .story__media {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .story__pair--intro {
+    align-items: center;
+  }
+
+  .story__pair--intro .story__media {
+    position: static;
+  }
+}
+
+.story__media {
+  margin: 0;
+}
+
+/* Tall pots never outgrow the screen, so the picture can stay in view beside the text. */
+.story__media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100vh - 4rem);
+  margin-inline: auto;
+  cursor: zoom-in;
+}
+
+.story__media figcaption {
+  margin-top: 0.6rem;
+  font-size: var(--step--1);
+}
+
+.story__text {
+  min-width: 0;
+  max-width: 36rem;
+}
+
+.story__text > .eyebrow {
+  margin-bottom: 1.1rem;
+}
+
 .story__prose,
-.story__note,
-.story__list,
-.story__compare p,
-.story__steps p,
-.story__lead,
-.story__carries {
+.story__lede {
   font-family: var(--font-prose);
   font-size: clamp(1.15rem, 1.05rem + 0.35vw, 1.35rem);
   font-weight: 500;
   line-height: 1.5;
 }
 
-.story__intro {
-  max-width: var(--measure);
-  margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
-  font-style: italic;
+.story__prose p + p {
+  margin-top: 0.9rem;
 }
 
-.story__prose {
-  display: grid;
-  gap: 1rem;
-  max-width: 44rem;
+.story__lede {
+  font-size: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  line-height: 1.45;
 }
 
-.story__prose p {
-  margin: 0;
+.story__lede + .story__prose {
+  margin-top: 1.1rem;
 }
 
-.story__list {
-  display: grid;
-  gap: 0.75rem;
-  max-width: 46rem;
-  margin: 0;
-  padding-left: 1.4rem;
-}
-
-.story__list li::marker {
-  color: var(--accent);
-  font-family: var(--font-text);
-  font-size: 0.85em;
-}
-
-.story__list--plain {
-  padding-left: 0;
+/* The three chapters, listed beside the set. */
+.story__index {
+  margin: 1.75rem 0 0;
+  padding: 0;
   list-style: none;
-  font-size: 1.1rem;
-}
-
-.story__list--plain li {
-  padding-top: 0.75rem;
   border-top: 1px solid var(--rule);
 }
 
-.story__subtitle,
-.story__maker {
-  margin: 0;
-  font-size: var(--step-1);
+.story__index a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+}
+
+.story__index span {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.75rem);
   font-weight: 500;
-  letter-spacing: -0.01em;
+  transition: color 0.2s var(--ease), transform 0.5s var(--ease-out);
+}
+
+.story__index em {
+  font-size: var(--step--1);
+  font-style: normal;
+}
+
+.story__index a:hover span,
+.story__index a:focus-visible span {
+  color: var(--accent);
+  font-style: italic;
+  transform: translateX(0.4rem);
+}
+
+.story__kicker {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.story__title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+}
+
+.story__lead {
+  margin-top: 1rem;
+}
+
+.story__source {
+  margin: 1.4rem 0;
+  padding: 1rem 0;
+  border-block: 1px solid var(--rule);
+}
+
+.story__source-name {
+  font-family: var(--font-prose);
+  font-size: 1.35rem;
+  font-weight: 600;
   line-height: 1.2;
 }
 
-.story__maker {
-  font-size: var(--step-2);
+.story__listing {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
 }
 
-.story__kicker,
-.story__label {
-  margin: 0;
+.story__link {
+  display: inline-block;
+  margin-top: 0.6rem;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  text-underline-offset: 0.3em;
 }
 
-.story__label {
-  margin-top: 0.75rem;
-  color: var(--accent);
-}
-
-.story__thumb {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-bottom: 1.1rem;
-}
-
-/* Three sources side by side; each ends with the pot it led. */
-.story__sources,
-.story__columns {
+.story__absorbs ul {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-  gap: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 3vw, 2.5rem);
+  gap: 0.55rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-prose);
+  font-size: 1.12rem;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
-.story__source {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  padding-top: 1rem;
+.story__absorbs li {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding-top: 0.55rem;
   border-top: 1px solid var(--rule);
 }
 
-.story__listing {
-  margin: 0.2rem 0 0;
-  font-size: var(--step--1);
-  line-height: 1.55;
+.story__absorbs b {
+  padding-top: 0.3rem;
+  font-family: var(--font-text);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.story__lead,
-.story__carries {
-  margin: 0;
+@media (max-width: 30rem) {
+  .story__absorbs li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
 }
 
-.story__carries {
-  font-size: 1.05rem;
-  font-style: italic;
+.story__glazes {
+  margin-top: 1.2rem;
+  font-size: 0.85rem;
 }
 
-.story__source .text-link {
-  align-self: flex-start;
-  margin-top: auto;
-  padding-top: 0.75rem;
+.story__glazes b {
+  font-weight: 600;
 }
 
 .story__compare {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: 1.5rem clamp(1.5rem, 4vw, 4rem);
+  gap: 1.25rem;
 }
 
-.story__compare-item {
-  padding-top: 1rem;
+.story__compare > div {
+  padding-top: 0.9rem;
   border-top: 2px solid var(--ink);
 }
 
-.story__compare-item p {
-  margin: 0.6rem 0 0;
+.story__compare h3 {
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+
+.story__compare p {
+  margin-top: 0.35rem;
 }
 
 .story__note {
-  max-width: 46rem;
-  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
-  padding-left: 1.25rem;
+  margin-top: 1.5rem;
+  padding-left: 1.1rem;
   border-left: 2px solid var(--accent);
   font-style: italic;
 }
 
-.story__column .story__thumb {
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
+.story__closing {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+  border-top: 1px solid var(--rule);
 }
 
-.story__glaze {
-  margin: 0.4rem 0 0.9rem;
-  font-size: var(--step--1);
+@media (min-width: 56rem) {
+  .story__closing {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  }
+}
+
+.story__closing .story__prose {
+  margin-top: 1.1rem;
 }
 
 /* The process, numbered because it is a sequence. */
 .story__steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: 1.75rem clamp(1.25rem, 3vw, 2.5rem);
-  margin: 0;
+  gap: 0.9rem;
+  margin: 1.1rem 0 0;
   padding: 0;
   list-style: none;
   counter-reset: story-step;
 }
 
 .story__steps li {
-  counter-increment: story-step;
-  padding-top: 1rem;
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: 0.8rem;
+  padding-top: 0.8rem;
   border-top: 1px solid var(--rule);
+  counter-increment: story-step;
 }
 
 .story__steps li::before {
   content: counter(story-step, decimal-leading-zero);
-  display: block;
-  margin-bottom: 0.6rem;
   color: var(--accent);
   font-family: var(--font-display);
-  font-size: var(--step-2);
+  font-size: 1.5rem;
   line-height: 1;
 }
 
-.story__steps p {
-  margin: 0.45rem 0 0;
-  font-size: 1.1rem;
+.story__steps b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.story__steps span {
+  font-family: var(--font-prose);
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+
+html {
+  scroll-padding-top: 2rem;
 }
 
 /* Medium index on the home page */

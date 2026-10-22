@@ -387,10 +387,7 @@ test('catalogue: every work a series story shows is in the catalogue', () => {
   const seriesIds = new Set(SERIES.map((series) => series.id));
   Object.entries(STORIES).forEach(([seriesId, story]) => {
     assert.ok(seriesIds.has(seriesId), `story for unknown series ${seriesId}`);
-    story.sections.forEach((section) => {
-      [...(section.items || []), ...(section.columns || [])]
-        .filter((item) => item && item.workId)
-        .forEach((item) => assert.ok(ids.has(item.workId), `${seriesId}: ${item.workId} is not in the catalogue`));
-    });
+    const shown = [story.intro, ...(story.chapters || []), story.related].filter((part) => part && part.workId);
+    shown.forEach((part) => assert.ok(ids.has(part.workId), `${seriesId}: ${part.workId} is not in the catalogue`));
   });
 });
