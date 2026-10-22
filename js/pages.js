@@ -194,7 +194,7 @@
     const entries = (window.PORTFOLIO_SERIES || [])
       .map((series) => {
         const works = U.worksInSeries(series, catalogue);
-        return { series, works, cover: byId.get(series.cover) || works[0] };
+        return { series, works, covers: U.seriesCoverWorks(series, works, byId) };
       })
       .filter((entry) => entry.works.length > 0);
 

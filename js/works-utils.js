@@ -205,6 +205,25 @@
     return span ? `${count} · ${span}` : count;
   }
 
+  const COVER_WORK_LIMIT = 3;
+
+  /** The works set on a series card: its coverIds that exist, else its first works. */
+  function seriesCoverWorks(series, works, byId) {
+    const chosen = (series.coverIds || []).map((id) => byId.get(id)).filter(Boolean);
+    return (chosen.length ? chosen : works).slice(0, COVER_WORK_LIMIT);
+  }
+
+  /**
+   * Widths, in % of a row of the given shape (width / height), for pictures of these aspect ratios hung side
+   * by side at one common height with `gap` (a fraction of the row width) between them: as large as fits.
+   */
+  function coverRowWidths(ratios, { rowRatio, gap }) {
+    if (!ratios.length) return [];
+    const totalRatio = ratios.reduce((sum, ratio) => sum + ratio, 0);
+    const height = Math.min(1 / rowRatio, (1 - gap * (ratios.length - 1)) / totalRatio); // in row widths
+    return ratios.map((ratio) => ratio * height * 100);
+  }
+
   /** Up to `count` distinct items in random order; `random` is injectable so tests are deterministic. */
   function pickRandom(items, count, random = Math.random) {
     const pool = items.slice();
@@ -255,6 +274,8 @@
     hashForWork,
     worksInSeries,
     seriesMeta,
+    seriesCoverWorks,
+    coverRowWidths,
     pickRandom,
     pickMediumWorks,
   };

@@ -1159,24 +1159,12 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .series-list {
-  /* Whole covers in justified rows: each card grows with its picture's shape, so nothing is cropped. */
-  --row-height: clamp(11rem, 20vw, 17rem);
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(1.75rem, 3vw, 2.5rem) clamp(0.75rem, 1.6vw, 1.5rem);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: clamp(2rem, 3.5vw, 3rem) clamp(1rem, 2vw, 1.75rem);
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.series-list::after {
-  content: '';
-  flex-grow: 1000000;
-}
-
-.series-list > li {
-  flex: calc(var(--ar, 1.25) * 100) 1 calc(var(--ar, 1.25) * var(--row-height));
-  min-width: 0;
 }
 
 .series-list[hidden] {
@@ -1190,6 +1178,57 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .series-card:hover {
   color: inherit;
+}
+
+/* The cover: the works hung side by side at one height, centred on a plain wall (js/gallery.js sizes them). */
+.series-card__cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 2;
+  background: var(--paper-sunken);
+  overflow: hidden;
+}
+
+.series-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap, 5%);
+  width: 88%;
+  aspect-ratio: var(--row-ratio, 1.9);
+}
+
+.series-card__piece {
+  display: block;
+  flex: none;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 10px 24px -12px rgb(0 0 0 / 0.35);
+  transition: transform 0.6s var(--ease-out);
+}
+
+.series-card__piece .tile__image {
+  display: block;
+}
+
+.series-card:hover .series-card__piece,
+.series-card:focus-visible .series-card__piece {
+  transform: translateY(-3px);
+}
+
+.series-card:hover .series-card__piece:nth-child(2),
+.series-card:focus-visible .series-card__piece:nth-child(2) {
+  transition-delay: 0.05s;
+}
+
+.series-card:hover .series-card__piece:nth-child(3),
+.series-card:focus-visible .series-card__piece:nth-child(3) {
+  transition-delay: 0.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .series-card__piece {
+    transition: none;
+  }
 }
 
 /* ---------- Series story (js/series-story.js) ----------
@@ -2687,6 +2726,45 @@ html {
 
 .room__facts dd {
   margin: 0;
+}
+
+/* A group's label: the titles, left to right, then a link to the series page. */
+.room__works-heading {
+  margin: 1.1rem 0 0.35rem;
+  color: var(--room-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.room__works {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: room-work;
+  font-size: 0.88rem;
+}
+
+.room__works li {
+  counter-increment: room-work;
+}
+
+.room__works li::before {
+  content: counter(room-work) '.';
+  display: inline-block;
+  min-width: 1.4em;
+  color: var(--room-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.room__series-link {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: inherit;
+  text-underline-offset: 0.2em;
 }
 
 /* Phones: inches only, so medium, size and year fit on one line. */

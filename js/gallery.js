@@ -143,20 +143,39 @@
     container.replaceChildren(link, body);
   }
 
-  const SERIES_SIZES = '(min-width: 60rem) 30vw, (min-width: 40rem) 45vw, 92vw';
+  // Each piece is at most about a third of a card.
+  const SERIES_PIECE_SIZES = '(min-width: 60rem) 14vw, (min-width: 40rem) 22vw, 45vw';
 
-  /** One card per series: its whole cover picture (never cropped) and its title, in justified rows. */
+  // The cover row's shape (width / height) and the space between its works, as a fraction of its width.
+  const COVER_ROW_RATIO = 1.9;
+  const COVER_GAP = 0.04;
+
+  /** A series card's cover: a few of its works, whole, hung side by side at one height on a plain wall. */
+  function createSeriesCover(works, eager) {
+    const cover = element('span', 'series-card__cover');
+    const row = element('span', 'series-card__row');
+    row.style.setProperty('--row-ratio', COVER_ROW_RATIO);
+    row.style.setProperty('--gap', `${COVER_GAP * 100}%`);
+    const widths = U.coverRowWidths(works.map(U.aspectRatio), { rowRatio: COVER_ROW_RATIO, gap: COVER_GAP });
+    works.forEach((work, i) => {
+      const piece = element('span', 'series-card__piece');
+      piece.style.width = `${widths[i].toFixed(3)}%`;
+      piece.append(createImage(work, { eager, sizes: SERIES_PIECE_SIZES }));
+      row.append(piece);
+    });
+    cover.append(row);
+    return cover;
+  }
+
+  /** One card per series: a few of its works on a plain wall, and its title. */
   function renderSeriesList(list, entries, { hrefFor, eagerCount = 3 }) {
-    const cards = entries.map(({ series, cover }, i) => {
+    const cards = entries.map(({ series, covers }, i) => {
       const link = element('a', 'series-card');
       link.href = hrefFor(series);
-      const frame = element('span', 'tile__frame');
-      frame.append(createImage(cover, { eager: i < eagerCount, sizes: SERIES_SIZES }));
       const caption = element('span', 'tile__caption');
       caption.append(element('span', 'tile__title', series.title));
-      link.append(frame, caption);
+      link.append(createSeriesCover(covers, i < eagerCount), caption);
       const item = element('li');
-      item.style.setProperty('--ar', U.aspectRatio(cover));
       item.append(link);
       return item;
     });

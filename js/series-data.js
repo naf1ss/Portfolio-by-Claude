@@ -4,7 +4,7 @@
  *   id        URL-safe name
  *   title     shown on the series card and page
  *   note      optional short paragraph shown on the series page (null for none)
- *   cover     optional work id for the card image; defaults to the first work
+ *   coverIds  optional: up to three work ids set side by side on the series card; defaults to the first three works
  *   (a long-form write-up for a series lives in js/series-stories.js under the same id)
  *   workIds   the works, in the order to show them, OR
  *   category / year   a rule that collects matching works instead
@@ -24,18 +24,19 @@
     id: 'cross-wired',
     title: 'Cross-Wired',
     note: 'A ceramic study of form, surface and influence: a plate, a bowl and a mug, each guided by a different maker.',
-    cover: 'ceramics-41',
+    coverIds: ['ceramics-33', 'ceramics-32', 'ceramics-34'],
     workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
   },
   {
     id: 'three-ways-of-seeing',
     title: 'Three Ways of Seeing',
     note: 'One still life drawn three ways: through light and shadow, as a study of structure, and by intuition.',
-    cover: 'A007',
+    hangTogether: true,
+    coverIds: ['A007', 'A008', 'A009'],
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
   { id: 'horizon', title: 'Horizon', note: null, hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
-  { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
+  { id: 'still-life', title: 'Still life', note: null, coverIds: ['A010', 'A018', 'A009'], workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
   { id: 'ceramics', title: 'Ceramics', note: null, category: 'ceramics' },
   { id: 'photographs-2026', title: 'Photographs, 2026', note: null, category: 'photography', year: 2026 },
   { id: 'photographs-2025', title: 'Photographs, 2025', note: null, category: 'photography', year: 2025 },

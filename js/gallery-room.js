@@ -85,7 +85,26 @@
       addFact(lead.year ? String(lead.year) : '');
     }
     label.append(element('span', 'room__rule'), facts);
+    if (section.series) label.append(...seriesDetails(section));
     return label;
+  }
+
+  const MAX_LISTED_TITLES = 4; // larger groups (Horizon's numbered prints) would only repeat their title
+
+  /**
+   * Under a group's label: each work's title, left to right (small groups only), and a link to the series page.
+   */
+  function seriesDetails(section) {
+    const details = [];
+    if (section.works.length <= MAX_LISTED_TITLES) {
+      const list = element('ol', 'room__works');
+      section.works.forEach((work) => list.append(element('li', undefined, work.title || work.medium || 'Untitled')));
+      details.push(element('p', 'room__works-heading', R.groupGrid(section.works.length).rows === 1 ? 'Left to right' : 'In order'), list);
+    }
+    const link = element('a', 'room__series-link', 'About the series →');
+    link.href = `series.html?s=${encodeURIComponent(section.series.id)}`;
+    details.push(link);
+    return details;
   }
 
   /** The artist's notes, hung on the other side of the work when a record has them. */
