@@ -3973,6 +3973,10 @@ body[data-gallery-view='wall'] .medium-capsule {
   z-index: 1;
 }
 
+.is-theme-switching:not(.is-theme-closing)::view-transition-new(root) {
+  clip-path: circle(0px at var(--theme-x, 100%) var(--theme-y, 0px));
+}
+
 /* Opening animation (js/intro.js): a large "n." on a page-coloured cover. */
 .intro-cover,
 .intro-mark {

@@ -92,6 +92,9 @@
     const radius = Math.hypot(Math.max(origin.x, innerWidth - origin.x), Math.max(origin.y, innerHeight - origin.y));
     const small = `circle(0px at ${origin.x}px ${origin.y}px)`;
     const large = `circle(${radius}px at ${origin.x}px ${origin.y}px)`;
+    // Growing: the CSS keeps the new theme clipped to nothing from the first frame, so it never flashes whole.
+    root.style.setProperty('--theme-x', `${origin.x}px`);
+    root.style.setProperty('--theme-y', `${origin.y}px`);
     root.classList.add('is-theme-switching');
     root.classList.toggle('is-theme-closing', goingDark);
     const transition = document.startViewTransition(apply);
