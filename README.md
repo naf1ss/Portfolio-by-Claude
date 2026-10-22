@@ -28,6 +28,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/magnifier-utils.js`, `js/magnifier.js` | Round hover magnifier: geometry (unit tested) and the lens itself |
 | `js/motion.js` | The page-ready signal that starts entrances, and scroll reveals; does nothing when reduced motion is requested |
 | `js/hero-window-utils.js`, `js/hero-window.js` | Home hero: the name is cut out of a slideshow of paintings on a canvas. Geometry and timing (unit tested) and the canvas itself |
+| `js/site-menu.js` | Phone menu: under 40rem the header links fold behind a Menu button and open as a full-screen panel |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
 | `js/gallery-room-utils.js`, `js/gallery-room.js` | The gallery room for paintings and prints: real sizes, grouping and scale (unit tested) and the lit wall itself |

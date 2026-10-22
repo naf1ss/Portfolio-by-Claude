@@ -22,6 +22,7 @@
   "scripts": [
     {"file": "theme-utils", "defer": false},
     {"file": "theme", "defer": false},
+    {"file": "site-menu", "defer": false},
     {"file": "intro-utils", "defer": false},
     {"file": "motion", "defer": false},
     {"file": "works-utils"},
@@ -45,7 +46,7 @@
     {"file": "magnifier"},
     {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "motion", "interactions", "painted-text"],
+  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "interactions", "painted-text"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",

@@ -16,9 +16,10 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=af60899a">
+  <link rel="stylesheet" href="css/styles.css?v=ed49a936">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
+  <script src="js/site-menu.js?v=92fc389c"></script>
   <script src="js/motion.js?v=f83564ed"></script>
   <script src="js/works-utils.js?v=1fcc327f" defer></script>
   <script src="js/works-data.js?v=ce08a9df" defer></script>
@@ -26,10 +27,10 @@
   <script src="js/series-data.js?v=3404253c" defer></script>
   <script src="js/painted-text.js?v=a1f6ce65" defer></script>
   <script src="js/site-config.js?v=96453704" defer></script>
-  <script src="js/gallery.js?v=b9641d48" defer></script>
+  <script src="js/gallery.js?v=bb932e3e" defer></script>
   <script src="js/lightbox.js?v=1bd250a9" defer></script>
   <script src="js/gallery-room-utils.js?v=8302d12e" defer></script>
-  <script src="js/gallery-room.js?v=d9396f83" defer></script>
+  <script src="js/gallery-room.js?v=b6ab606e" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
   <script src="js/pages.js?v=58a16a1b" defer></script>
   <script src="js/interactions.js?v=d4be9dee" defer></script>
@@ -41,7 +42,10 @@
 
   <header class="wrap site-header">
     <a class="wordmark" href="index.html" aria-label="nuances by Nafis, home">n<span>.</span></a>
-    <nav class="site-nav" aria-label="Main">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <span class="menu-toggle__bars" aria-hidden="true"></span>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
       <ul>
         <li class="site-nav__group"><a href="gallery.html" aria-current="page">Gallery</a>
           <ul class="site-nav__menu" aria-label="Gallery by medium">

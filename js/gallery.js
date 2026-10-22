@@ -166,13 +166,26 @@
       if (button) onSelect(button.dataset.category);
     });
 
-    container.replaceChildren(list);
+    // Phones show the same choices as one compact menu (the CSS picks which of the two is visible).
+    const select = element('select');
+    select.setAttribute('aria-label', 'Medium');
+    options.forEach(({ id, label }) => {
+      const option = element('option', undefined, `${label} (${counts[id]})`);
+      option.value = id;
+      select.append(option);
+    });
+    select.addEventListener('change', () => onSelect(select.value));
+    const compact = element('label', 'filters-select');
+    compact.append(select);
+
+    container.replaceChildren(list, compact);
 
     return {
       setActive(activeId) {
         buttons.forEach((button, id) => {
           button.setAttribute('aria-pressed', String(id === activeId));
         });
+        select.value = activeId;
       },
     };
   }

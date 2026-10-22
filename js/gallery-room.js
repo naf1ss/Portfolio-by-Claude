@@ -14,6 +14,8 @@
   const WALK_MS = 1500; // keep in step with --room-walk in the CSS
   const SWIPE_DISTANCE = 50;
   const LAMP_ROOM_PX = 64; // space kept above the tallest work for its lamp
+  const PHONE_LAMP_PX = 52; // phones: the lamp's gap, kept above and below the frame so it stays centred
+  const PHONE_LABEL_GAP_PX = 18; // phones: between the frame and its label
 
   function element(tag, className, text) {
     const node = document.createElement(tag);
@@ -195,26 +197,38 @@
       parts.glints.replaceChildren(...segments.map((_, i) => element('div', i === 0 || i === segments.length - 1 ? 'room__glint is-off' : 'room__glint')));
     }
 
+    /**
+     * The box a framed work may fill. Wide screens: the middle column, less room for the lamp. Phones: the work
+     * and its label are centred together on the wall, so the tallest label and the lamp's gaps come off first.
+     */
+    function availableSpace() {
+      const segments = parts.track.querySelectorAll('.room__segment:not(.room__segment--end)');
+      if (window.matchMedia('(min-width: 62rem)').matches) {
+        const box = segments[0].querySelector('.room__art').getBoundingClientRect();
+        return { w: box.width * 0.94, h: (box.height - LAMP_ROOM_PX) * 0.9 };
+      }
+      const style = getComputedStyle(segments[0]);
+      const innerW = segments[0].clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      const innerH = segments[0].clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+      const labelH = Math.max(...Array.from(segments, (segment) => segment.querySelector('.room__label').offsetHeight));
+      return { w: innerW * 0.9, h: (innerH - labelH - PHONE_LABEL_GAP_PX - 2 * PHONE_LAMP_PX) * 0.95 };
+    }
+
     /** Sizes every frame from one scale (see sectionScales) and keeps the camera on the current section. */
     function layout() {
       if (room.hidden || sections.length === 0) return;
       room.style.setProperty('--room-top', `${Math.round(room.getBoundingClientRect().top + window.scrollY)}px`);
       segmentWidth = room.clientWidth;
       room.style.setProperty('--room-segment', `${segmentWidth}px`);
-      const sample = parts.track.querySelector('.room__segment:not(.room__segment--end) .room__art');
-      const box = sample.getBoundingClientRect();
-      const wide = window.matchMedia('(min-width: 62rem)').matches;
-      const available = { w: box.width * (wide ? 0.94 : 0.86), h: (box.height - LAMP_ROOM_PX) * (wide ? 0.9 : 0.86) };
-      const scales = R.sectionScales(sections, available);
+      const scales = R.sectionScales(sections, availableSpace());
 
       parts.track.querySelectorAll('.room__segment:not(.room__segment--end)').forEach((segment, i) => {
         const section = sections[i];
         const ppi = scales[i];
         const outer = R.sectionInches(section);
-        const art = segment.querySelector('.room__art');
-        art.style.setProperty('--room-fw', `${(outer.w * ppi).toFixed(1)}px`);
-        art.style.setProperty('--room-fh', `${(outer.h * ppi).toFixed(1)}px`);
-        art.style.setProperty('--room-lamp-gap', `${Math.max(44, outer.h * ppi * 0.13).toFixed(1)}px`);
+        segment.style.setProperty('--room-fw', `${(outer.w * ppi).toFixed(1)}px`);
+        segment.style.setProperty('--room-fh', `${(outer.h * ppi).toFixed(1)}px`);
+        segment.style.setProperty('--room-lamp-gap', `${Math.max(44, outer.h * ppi * 0.13).toFixed(1)}px`);
         const grid = R.groupGrid(section.works.length);
         const frames = segment.querySelector('.room__frames');
         frames.style.setProperty('--room-columns', String(section.works.length === 1 ? 1 : grid.columns));

@@ -17,9 +17,10 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=af60899a">
+  <link rel="stylesheet" href="css/styles.css?v=ed49a936">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
+  <script src="js/site-menu.js?v=92fc389c"></script>
   <script src="js/motion.js?v=f83564ed"></script>
   <script src="js/works-utils.js?v=1fcc327f" defer></script>
   <script src="js/works-data.js?v=ce08a9df" defer></script>
@@ -32,7 +33,10 @@
 
   <header class="wrap site-header">
     <a class="wordmark" href="index.html" aria-label="nuances by Nafis, home">n<span>.</span></a>
-    <nav class="site-nav" aria-label="Main">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <span class="menu-toggle__bars" aria-hidden="true"></span>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="Main">
       <ul>
         <li class="site-nav__group"><a href="gallery.html">Gallery</a>
           <ul class="site-nav__menu" aria-label="Gallery by medium">
