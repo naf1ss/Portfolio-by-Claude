@@ -30,7 +30,7 @@
   {
     id: 'three-ways-of-seeing',
     title: 'Three Ways of Seeing',
-    note: 'One still life (a violin case, an apple and a striped cloth) drawn three ways: through light and shadow, as a study of structure, and by intuition.',
+    note: 'One still life drawn three ways: through light and shadow, as a study of structure, and by intuition.',
     cover: 'A007',
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },

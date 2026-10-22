@@ -119,6 +119,7 @@
         { title: 'Execution', text: 'Working through a range of glazes and finishes.' },
         { title: 'Connection', text: 'Building visual and technical relationships among the three pieces.' },
       ],
+      reflectionTitle: 'Looking back',
       reflection: [
         'Studying Shaw’s restrained porcelain, Tao’s luminous reduction palettes and Oesterritter’s wood-fired expressiveness gave me a disciplined technical foundation.',
         'Rather than repeating a single motif, each piece combines these vocabularies: painterly energy on a flat plane, luminous depth, and considered thrown and altered form.',
@@ -178,6 +179,7 @@
       },
     ],
     closing: {
+      reflectionTitle: 'Looking back',
       reflection: [
         'I am pleased with how faithfully the drawings record the arrangement, and with the care given to each.',
         'My professor encouraged me to embrace the unusual angle of my drawing, which gives the scene a distinct perspective.',
