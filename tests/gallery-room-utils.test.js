@@ -44,7 +44,7 @@ test('the six Horizon monoprints hang together; the hidden cover does not', () =
   const horizon = sections.find((section) => section.series && section.series.id === 'horizon');
   assert.deepEqual(horizon.works.map((w) => w.id), ['A019', 'A020', 'A021', 'A022', 'A023', 'A024']);
   assert.equal(sections.filter((section) => section.series).length, 1);
-  assert.deepEqual(R.groupGrid(6), { columns: 3, rows: 2 });
+  assert.deepEqual(R.groupGrid(horizon.works), { columns: 3, rows: 2 }, 'six same-size prints hang as a grid');
 });
 
 test('sectionScales shares one scale between single works and shrinks only a group that would not fit', () => {
@@ -66,4 +66,18 @@ test('paintings, drawings and prints are shown on the wall; other media are not'
   ['painting', 'drawing', 'print'].forEach((category) => assert.ok(R.isWallCategory(category), category));
   ['digital', 'photography', 'ceramics', 'wall-magazine', 'all'].forEach((category) => assert.ok(!R.isWallCategory(category), category));
   assert.deepEqual(R.FRAMING.drawing, R.FRAMING.print, 'drawings are matted like prints');
+});
+
+test('a group of mixed sizes hangs in one row on the centre line, the largest work in the middle', () => {
+  const sized = (id, inches) => work({ id, dimensions: `${inches}x${inches} inches`, w: 1000, h: 1000 });
+  const works = [sized('a', 10), sized('b', 30), sized('c', 14), sized('d', 20)];
+  const row = R.hangGroup(works);
+  assert.deepEqual(row.map((w) => w.id), ['c', 'b', 'd', 'a'], 'anchor in the middle, next largest beside it');
+  assert.deepEqual(R.groupGrid(row), { columns: 4, rows: 1 });
+  const size = R.sectionInches({ works: row });
+  const framed = row.map(R.framedInches);
+  assert.ok(Math.abs(size.w - (framed.reduce((s, f) => s + f.w, 0) + 3 * R.GROUP_SPACING_IN)) < 1e-9);
+  assert.equal(size.h, Math.max(...framed.map((f) => f.h)));
+  // Two works, or works of one size, keep the series' own order.
+  assert.deepEqual(R.hangGroup([sized('x', 10), sized('y', 30)]).map((w) => w.id), ['x', 'y']);
 });

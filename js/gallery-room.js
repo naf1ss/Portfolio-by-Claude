@@ -111,7 +111,7 @@
         }
         list.append(item);
       });
-      details.push(element('p', 'room__works-heading', R.groupGrid(section.works.length).rows === 1 ? 'Left to right' : 'In order'), list);
+      details.push(element('p', 'room__works-heading', R.groupGrid(section.works).rows === 1 ? 'Left to right' : 'In order'), list);
     }
     const link = element('a', 'room__series-link', 'View the series →');
     link.href = `series.html?s=${encodeURIComponent(section.series.id)}`;
@@ -158,7 +158,7 @@
   }
 
   /** Works hung together in one row each get their own picture light; a larger group shares one. */
-  const hasOwnLights = (section) => section.works.length > 1 && R.groupGrid(section.works.length).rows === 1;
+  const hasOwnLights = (section) => section.works.length > 1 && R.groupGrid(section.works).rows === 1;
 
   function createSegment(section, categoryLabel) {
     const segment = element('section', 'room__segment');
@@ -303,7 +303,7 @@
         segment.style.setProperty('--room-fw', `${(outer.w * ppi).toFixed(1)}px`);
         segment.style.setProperty('--room-fh', `${(outer.h * ppi).toFixed(1)}px`);
         segment.style.setProperty('--room-lamp-gap', `${Math.max(44, outer.h * ppi * 0.13).toFixed(1)}px`);
-        const grid = R.groupGrid(section.works.length);
+        const grid = R.groupGrid(section.works);
         const frames = segment.querySelector('.room__frames');
         frames.style.setProperty('--room-columns', String(section.works.length === 1 ? 1 : grid.columns));
         frames.style.setProperty('--room-spacing', `${(R.GROUP_SPACING_IN * ppi).toFixed(1)}px`);
