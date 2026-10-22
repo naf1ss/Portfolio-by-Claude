@@ -72,6 +72,10 @@ If you later replace a photo under the same file name (a re-edit), bump that rec
 
 Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gallery.html?c=print` opens a filtered view (`?c=all` for everything; with no `?c=` the gallery opens on Painting).
 
+### Series write-ups
+
+A series can carry a long-form write-up under its works (sources, process, reflection): add it to `js/series-stories.js` under the series' `id` (see the Final Trio entry and the format at the top of that file).
+
 ### The gallery room
 
 Paintings, drawings and prints open on a wall instead of a grid (a Wall / Grid switch sits beside the filters and is remembered). Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, drawings and prints a black frame and a white mat (the categories and their framing are `FRAMING` in `js/gallery-room-utils.js`). A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon does). The picture lights are on by default, and the Lights button turns them off. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).

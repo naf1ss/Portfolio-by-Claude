@@ -380,3 +380,17 @@ test('pickMediumWorks shows the best work first, then a random one from the same
   assert.deepEqual(ids({ showBest: false, random: () => 0 }), ['P1', 'C1']);
   assert.deepEqual(ids({ showBest: false, random: () => 0.99 }), ['P2', 'C1']); // hidden P3 is never picked
 });
+
+test('catalogue: every work a series story shows is in the catalogue', () => {
+  const STORIES = require('../js/series-stories.js');
+  const ids = new Set(WORKS.map((record) => record.id));
+  const seriesIds = new Set(SERIES.map((series) => series.id));
+  Object.entries(STORIES).forEach(([seriesId, story]) => {
+    assert.ok(seriesIds.has(seriesId), `story for unknown series ${seriesId}`);
+    story.sections.forEach((section) => {
+      [...(section.items || []), ...(section.columns || [])]
+        .filter((item) => item && item.workId)
+        .forEach((item) => assert.ok(ids.has(item.workId), `${seriesId}: ${item.workId} is not in the catalogue`));
+    });
+  });
+});

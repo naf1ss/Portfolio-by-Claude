@@ -221,6 +221,17 @@
     gallery.hidden = false;
 
     window.Gallery.renderGallery(gallery, works, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
+
+    // A series with a write-up (js/series-stories.js) tells it under the works.
+    const story = (window.PORTFOLIO_SERIES_STORIES || {})[series.id];
+    if (story && window.SeriesStory) {
+      const context = document.getElementById('series-context');
+      context.textContent = story.context || '';
+      context.hidden = !story.context;
+      window.SeriesStory.render(document.getElementById('series-story'), story, { byId });
+      window.Motion.reveal(document.querySelectorAll('.story__section'));
+    }
+
     const lightbox = mountViewer(gallery);
     lightbox.setWorks(works);
     const linkedId = U.workIdFromHash(location.hash, works);

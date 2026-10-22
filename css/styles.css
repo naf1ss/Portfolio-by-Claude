@@ -1186,6 +1186,223 @@ button:focus-visible > .roll .roll__face + .roll__face {
   object-fit: cover;
 }
 
+/* The context line under a series' note (course, teacher, date). */
+.series-context {
+  margin: calc(-1 * clamp(1rem, 2vw, 1.75rem)) 0 clamp(1.75rem, 3vw, 2.75rem);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------- Series story (js/series-story.js) ----------
+   A long-form write-up under a series' works: eyebrow-headed sections in the site's three voices. */
+.story {
+  display: grid;
+  gap: clamp(3rem, 7vw, 5.5rem);
+  margin: clamp(3rem, 7vw, 6rem) 0 clamp(2rem, 5vw, 4rem);
+}
+
+.story[hidden] {
+  display: none;
+}
+
+.story__section .section__head {
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.story__intro,
+.story__prose,
+.story__note,
+.story__list,
+.story__compare p,
+.story__steps p,
+.story__lead,
+.story__carries {
+  font-family: var(--font-prose);
+  font-size: clamp(1.15rem, 1.05rem + 0.35vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.story__intro {
+  max-width: var(--measure);
+  margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+  font-style: italic;
+}
+
+.story__prose {
+  display: grid;
+  gap: 1rem;
+  max-width: 44rem;
+}
+
+.story__prose p {
+  margin: 0;
+}
+
+.story__list {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 46rem;
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.story__list li::marker {
+  color: var(--accent);
+  font-family: var(--font-text);
+  font-size: 0.85em;
+}
+
+.story__list--plain {
+  padding-left: 0;
+  list-style: none;
+  font-size: 1.1rem;
+}
+
+.story__list--plain li {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.story__subtitle,
+.story__maker {
+  margin: 0;
+  font-size: var(--step-1);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.story__maker {
+  font-size: var(--step-2);
+}
+
+.story__kicker,
+.story__label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.story__label {
+  margin-top: 0.75rem;
+  color: var(--accent);
+}
+
+.story__thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1.1rem;
+}
+
+/* Three sources side by side; each ends with the pot it led. */
+.story__sources,
+.story__columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.story__source {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.story__listing {
+  margin: 0.2rem 0 0;
+  font-size: var(--step--1);
+  line-height: 1.55;
+}
+
+.story__lead,
+.story__carries {
+  margin: 0;
+}
+
+.story__carries {
+  font-size: 1.05rem;
+  font-style: italic;
+}
+
+.story__source .text-link {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.story__compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem clamp(1.5rem, 4vw, 4rem);
+}
+
+.story__compare-item {
+  padding-top: 1rem;
+  border-top: 2px solid var(--ink);
+}
+
+.story__compare-item p {
+  margin: 0.6rem 0 0;
+}
+
+.story__note {
+  max-width: 46rem;
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--accent);
+  font-style: italic;
+}
+
+.story__column .story__thumb {
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.story__glaze {
+  margin: 0.4rem 0 0.9rem;
+  font-size: var(--step--1);
+}
+
+/* The process, numbered because it is a sequence. */
+.story__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.75rem clamp(1.25rem, 3vw, 2.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: story-step;
+}
+
+.story__steps li {
+  counter-increment: story-step;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.story__steps li::before {
+  content: counter(story-step, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  line-height: 1;
+}
+
+.story__steps p {
+  margin: 0.45rem 0 0;
+  font-size: 1.1rem;
+}
+
 /* Medium index on the home page */
 .medium-list {
   margin: 0;
