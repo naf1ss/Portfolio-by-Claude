@@ -2,9 +2,9 @@
  * Long-form write-ups for a series page (series.html?s=<id>), keyed by series id and rendered by
  * series-story.js. A series with a story shows these pictures and words instead of a grid of its works.
  *
- *   intro     { workId, caption, lead, index }     a picture beside the series' note, a line under it;
+ *   intro     { workId, caption, lead, index }     a picture beside the series' note, a line (or lines) under it;
  *                                                 `index: true` lists the chapters as links
- *   chapters  [{ id, label, aside, kicker, title, workId, text: [paragraphs],
+ *   chapters  [{ id, label, aside, kicker, title, workId, caption, text: [paragraphs],
  *                source: { name, listing, url, linkText },      optional
  *                points: { title, items: [{ label, text }] },   optional (label optional too)
  *                detail: { label, text } }]                     optional
@@ -131,7 +131,10 @@
     intro: {
       workId: 'still-life-setup',
       caption: 'The setup, photographed.',
-      lead: 'Each drawing asks something different of the same arrangement, and each felt different to make.',
+      lead: [
+        'The project asked me to look at a single arrangement from several directions: to sharpen my skills, and to trust my instincts.',
+        'Each drawing asks something different of the same scene, and each felt different to make.',
+      ],
       index: true,
     },
     chapters: [
@@ -142,18 +145,11 @@
         kicker: 'Chiaroscuro · charcoal on paper',
         title: 'Light and shadow',
         workId: 'A007',
+        caption: 'Realism, and the play of light and shadow.',
         text: [
           'This one asked for precision and careful blending to reach realism. The light source is clear, the contrasts between light and dark hold, and the shape of the table reads beneath the cloth.',
           'The violin case was a struggle at first, but it came out convincing, and the many-coloured tablecloth is carried by varied shades of charcoal.',
         ],
-        points: {
-          title: 'Still to develop',
-          items: [
-            { text: 'The violin case could feel more three-dimensional with more refinement.' },
-            { text: 'With more time, the intricate floral pattern on the cloth.' },
-          ],
-        },
-        detail: { label: 'For a viewer', text: 'realism, and the play of light and shadow.' },
       },
       {
         id: 'composition-map',
@@ -162,14 +158,10 @@
         kicker: 'Composition map · charcoal on paper',
         title: 'A map of shapes',
         workId: 'A008',
+        caption: 'The structure and geometry beneath the scene.',
         text: [
           'The composition map pushed me to think in terms of design and abstraction. Geometric blocks stand for the folds of the cloth and the way the light falls across them.',
         ],
-        points: {
-          title: 'Still to develop',
-          items: [{ text: 'Further visual refinement, to make it more compelling.' }],
-        },
-        detail: { label: 'For a viewer', text: 'curiosity about the structure and geometry under the scene.' },
       },
       {
         id: 'input-output',
@@ -178,18 +170,18 @@
         kicker: 'Input-output drawing · charcoal on paper',
         title: 'Drawing by instinct',
         workId: 'A009',
+        caption: 'Playful, imperfect shapes that invite amusement and intrigue.',
         text: [
           'Intuitive and spontaneous, this one was freeing and funny to make, and it produced unexpected, expressive shapes. The handle of the violin case came out looking like a banana next to the apple: unintentional, and a delight.',
-          'If I took one approach further, it would be this one. Its spontaneity felt liberating, and it opens the way to more experimental, expressive work.',
         ],
-        detail: { label: 'For a viewer', text: 'playful, imperfect shapes that invite amusement or intrigue.' },
       },
     ],
     closing: {
+      reflectionTitle: 'Looking back',
       reflection: [
         'I am proud of how closely the trio captures the arrangement, and of how carefully each piece is made.',
-        'My professor encouraged me to embrace the unusual angle of my drawing: different, but a new perspective and room to grow.',
-        'The project asked me to look from several directions, sharpen my skills and trust my instincts, and it deepened my appreciation of still life.',
+        'My professor encouraged me to embrace the unusual angle of my drawing, which gives the scene a perspective of its own.',
+        'If I took one approach further, it would be the input-output drawing: its spontaneity felt liberating, and it opens the way to more experimental, expressive work.',
       ],
     },
   },

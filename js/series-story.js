@@ -56,7 +56,10 @@
   function intro(story, { note, byId }) {
     const text = element('div', 'story__text');
     if (note) text.append(element('p', 'story__lede', note));
-    if (story.intro.lead) text.append(element('p', 'story__prose', story.intro.lead));
+    if (story.intro.lead) {
+      const lines = Array.isArray(story.intro.lead) ? story.intro.lead : [story.intro.lead];
+      text.append(paragraphs('story__prose story__intro-lead', lines));
+    }
     if (story.intro.index) {
       const list = element('ol', 'story__index');
       story.chapters.forEach((chapter) => {
@@ -112,7 +115,7 @@
       text.append(detail);
     }
 
-    const section = pair(picture(byId.get(entry.workId)), text, { flip });
+    const section = pair(picture(byId.get(entry.workId), entry.caption), text, { flip });
     section.id = entry.id;
     section.setAttribute('aria-label', entry.kicker || entry.title);
     return section;
