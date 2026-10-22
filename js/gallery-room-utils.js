@@ -12,10 +12,12 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  // Moulding, then the dark float gap around a canvas or the mat around a print, in inches.
+  // Moulding, then the dark float gap around a canvas or the mat around a work on paper, in inches.
+  // Each category listed here is shown on the wall.
   const FRAMING = Object.freeze({
     painting: Object.freeze({ moulding: 0.82, inner: 0.3 }),
     print: Object.freeze({ moulding: 0.6, inner: 2.8 }),
+    drawing: Object.freeze({ moulding: 0.6, inner: 2.8 }),
   });
 
   const FALLBACK_LONG_SIDE_IN = 16; // for works with no size in the catalogue

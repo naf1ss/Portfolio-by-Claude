@@ -31,7 +31,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/site-menu.js` | Phone menu: under 40rem the header links fold behind a Menu button and open as a full-screen panel |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
 | `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
-| `js/gallery-room-utils.js`, `js/gallery-room.js` | The gallery room for paintings and prints: real sizes, grouping and scale (unit tested) and the lit wall itself |
+| `js/gallery-room-utils.js`, `js/gallery-room.js` | The gallery room for paintings, drawings and prints: real sizes, grouping and scale (unit tested) and the lit wall itself |
 | `images/room/`, `tools/room-textures.html` | The room's plaster and oak-floor textures, and the seeded generator that drew them (open it in a browser to redraw) |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
 | `fonts/` | Self-hosted Bodoni Moda (headings), Cormorant Garamond (reading text) and Manrope (labels), all SIL OFL |
@@ -74,7 +74,7 @@ Each work gets a shareable link: `gallery.html#a012` opens that piece, and `gall
 
 ### The gallery room
 
-Paintings and prints open on a wall instead of a grid (a Wall / Grid switch sits beside the filters and is remembered). Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, prints a black frame and a white mat. A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon does). The picture lights are on by default, and the Lights button turns them off. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
+Paintings, drawings and prints open on a wall instead of a grid (a Wall / Grid switch sits beside the filters and is remembered). Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, drawings and prints a black frame and a white mat (the categories and their framing are `FRAMING` in `js/gallery-room-utils.js`). A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon does). The picture lights are on by default, and the Lights button turns them off. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
 
 To hang a "Thought process" note beside a work, add `notes: '...'` to its record in `js/works-data.js` (for a series hung together, use the series' `note`).
 

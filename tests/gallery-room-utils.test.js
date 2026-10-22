@@ -61,3 +61,9 @@ test('sectionScales shares one scale between single works and shrinks only a gro
   assert.ok(fits(large, b) && fits(group, c));
   assert.ok(c <= a);
 });
+
+test('paintings, drawings and prints are shown on the wall; other media are not', () => {
+  ['painting', 'drawing', 'print'].forEach((category) => assert.ok(R.isWallCategory(category), category));
+  ['digital', 'photography', 'ceramics', 'wall-magazine', 'all'].forEach((category) => assert.ok(!R.isWallCategory(category), category));
+  assert.deepEqual(R.FRAMING.drawing, R.FRAMING.print, 'drawings are matted like prints');
+});

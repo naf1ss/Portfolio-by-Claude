@@ -1,5 +1,5 @@
 /**
- * The gallery room: paintings and prints hung along one long wall under picture lights, at true relative size.
+ * The gallery room: paintings, drawings and prints hung along one long wall under picture lights, at true relative size.
  * Walking (arrows, keys, swipe) slides the whole wall, so the next work was always there. Clicking a work asks
  * the page to open the close-up viewer. Exposes window.GalleryRoom.create(section, options).
  *
@@ -39,12 +39,24 @@
     }
   };
 
-  /** "16 × 20 in (40.6 × 50.8 cm)" from the catalogue's "16x20 inches". */
-  function sizeLine(dimensions) {
-    const match = /^\s*([\d.]+)\s*x\s*([\d.]+)\s*(?:inches|inch|in)\s*$/i.exec(dimensions || '');
-    if (!match) return U.formatDimensions(dimensions);
+  /**
+   * "16 × 20 in" with " (40.6 × 50.8 cm)" in its own span (phones hide it to keep the label on one line),
+   * from the catalogue's "16x20 inches". Returns null when there is no size.
+   */
+  function sizeLine(dimensions, prefix = '') {
+    if (!dimensions) return null;
+    const line = element('dd');
+    const match = /^\s*([\d.]+)\s*x\s*([\d.]+)\s*(?:inches|inch|in)\s*$/i.exec(dimensions);
+    if (!match) {
+      line.textContent = prefix + U.formatDimensions(dimensions);
+      return line;
+    }
     const cm = (inches) => (Number(inches) * 2.54).toFixed(1);
-    return `${match[1]} × ${match[2]} in (${cm(match[1])} × ${cm(match[2])} cm)`;
+    line.append(
+      `${prefix}${match[1]} × ${match[2]} in`,
+      element('span', 'room__metric', ` (${cm(match[1])} × ${cm(match[2])} cm)`)
+    );
+    return line;
   }
 
   /** The wall label: what a gallery prints beside a work (or beside a series hung together). */
@@ -61,13 +73,15 @@
       const media = new Set(works.map((work) => work.medium));
       const sizes = new Set(works.map((work) => work.dimensions));
       addFact(media.size === 1 ? lead.medium : '');
-      addFact(sizes.size === 1 && lead.dimensions ? `Each ${sizeLine(lead.dimensions)}` : '');
+      const size = sizes.size === 1 ? sizeLine(lead.dimensions, 'Each ') : null;
+      if (size) facts.append(size);
       addFact(U.seriesMeta(works).split(' · ')[1] || '');
     } else {
       label.append(element('p', 'room__kicker', categoryLabel));
       label.append(element('h2', 'room__title', lead.title || lead.medium || 'Untitled'));
       addFact(lead.medium);
-      addFact(sizeLine(lead.dimensions));
+      const size = sizeLine(lead.dimensions);
+      if (size) facts.append(size);
       addFact(lead.year ? String(lead.year) : '');
     }
     label.append(element('span', 'room__rule'), facts);

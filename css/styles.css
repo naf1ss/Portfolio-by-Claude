@@ -1954,7 +1954,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 /* ---------- Gallery room ----------
-   Paintings and prints hang along one long wall (js/gallery-room.js). The wall, floor and frames are drawn to
+   Paintings, drawings and prints hang along one long wall (js/gallery-room.js). The wall, floor and frames are drawn to
    true relative scale; walking slides the whole wall. Picture lights are on by default (--room-lights: 1);
    the lights button turns them off. Light theme: deep slate wall. Dark theme: deep red. */
 .gallery-bar {
@@ -2303,7 +2303,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
   box-shadow: inset 0 0 calc(var(--room-inner) * 1.2) rgb(0 0 0 / 0.9);
 }
 
-.room__frame--print .room__inner {
+.room__frame--print .room__inner,
+.room__frame--drawing .room__inner {
   border-color: #f5f3ee;
   box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.14);
 }
@@ -2315,7 +2316,8 @@ button:focus-visible > .roll .roll__face + .roll__face {
   height: var(--room-ph);
 }
 
-.room__frame--print .room__picture {
+.room__frame--print .room__picture,
+.room__frame--drawing .room__picture {
   box-shadow: 0 0 0 1px #fffefa, 0 0 0 2px rgb(0 0 0 / 0.1);
 }
 
@@ -2379,6 +2381,13 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .room__facts dd {
   margin: 0;
+}
+
+/* Phones: inches only, so medium, size and year fit on one line. */
+@media (max-width: 40rem) {
+  .room__metric {
+    display: none;
+  }
 }
 
 .room__notes-text {

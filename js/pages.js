@@ -95,7 +95,7 @@
   const DEFAULT_GALLERY_CATEGORY = 'painting';
   const GALLERY_VIEW_KEY = 'nuances.galleryView';
 
-  /** "wall" or "grid": how paintings and prints are shown, remembered between visits. */
+  /** "wall" or "grid": how paintings, drawings and prints are shown, remembered between visits. */
   function readGalleryView() {
     try {
       return localStorage.getItem(GALLERY_VIEW_KEY) === 'grid' ? 'grid' : 'wall';
