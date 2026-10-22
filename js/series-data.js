@@ -23,14 +23,14 @@
   {
     id: 'cross-wired',
     title: 'Cross-Wired',
-    note: 'A ceramic study in form, texture and artistic influence: a plate, a bowl and a mug, each led by a different maker.',
+    note: 'A ceramic study of form, surface and influence: a plate, a bowl and a mug, each guided by a different maker.',
     cover: 'ceramics-41',
     workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
   },
   {
     id: 'three-ways-of-seeing',
     title: 'Three Ways of Seeing',
-    note: 'One still life (a violin case, an apple and a striped cloth) drawn three ways: in light and shadow, as a map of shapes, and by instinct.',
+    note: 'One still life (a violin case, an apple and a striped cloth) drawn three ways: through light and shadow, as a study of structure, and by intuition.',
     cover: 'A007',
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
