@@ -191,13 +191,9 @@
     return caption;
   }
 
-  /**
-   * The works side by side at one height (each column as wide as its picture's shape), each with its
-   * label and the words about it underneath.
-   */
+  /** The works side by side, each with its label and the words about it underneath. */
   function set(entries, byId) {
     const section = element('section', 'story__set');
-    const columns = [];
     entries.forEach((entry) => {
       const work = byId.get(entry.workId);
       if (!work) return;
@@ -207,9 +203,7 @@
       figure.append(labelCaption(work));
       column.append(figure, paragraphs('story__prose', entry.text));
       section.append(column);
-      columns.push(`${U.aspectRatio(work)}fr`);
     });
-    section.style.setProperty('--set-columns', columns.join(' '));
     return section;
   }
 

@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { parsePage, fillTemplate, renderPage, renderNav } = require('../tools/page-builder.js');
+const { parsePage, fillTemplate, renderPage, resolveNav, renderNav } = require('../tools/page-builder.js');
 
 const site = {
   nav: [{ label: 'Work', href: 'work.html' }, { label: 'About', href: 'about.html' }],
@@ -59,7 +59,7 @@ test('renderNav marks only the current page', () => {
 
 test('renderNav gives an entry with children a menu of links', () => {
   const html = renderNav(
-    [{ label: 'Gallery', href: 'gallery.html', children: [{ label: 'Prints', href: 'gallery.html?c=print' }] }],
+    [{ label: 'Gallery', href: 'gallery.html', menuLabel: 'Gallery by medium', children: [{ label: 'Prints', href: 'gallery.html?c=print' }] }],
     'gallery.html'
   );
   assert.match(html, /<li class="site-nav__group"><a href="gallery\.html" aria-current="page">Gallery<\/a>/);
@@ -131,4 +131,21 @@ test('a page with a base front matter key gets a <base> tag, and others do not',
   const without = renderPage('about', page('title: t\ndescription: d'), headParts);
   assert.match(withBase, /<title>t<\/title>\n  <base href="\/">\n  <meta/);
   assert.doesNotMatch(without, /<base/);
+});
+
+test('resolveNav lists every series under an entry with childrenFrom: "series"', () => {
+  const nav = resolveNav(
+    [{ label: 'Gallery', href: 'gallery.html' }, { label: 'Series', href: 'series.html', childrenFrom: 'series' }],
+    { series: [{ id: 'horizon', title: 'Horizon' }, { id: 'three ways', title: 'Three Ways' }] }
+  );
+  assert.deepEqual(nav[0], { label: 'Gallery', href: 'gallery.html' });
+  assert.deepEqual(nav[1], {
+    label: 'Series',
+    href: 'series.html',
+    children: [
+      { label: 'Horizon', href: 'series.html?s=horizon' },
+      { label: 'Three Ways', href: 'series.html?s=three%20ways' },
+    ],
+  });
+  assert.throws(() => resolveNav([{ label: 'X', href: 'x.html', childrenFrom: 'nope' }]), /unknown childrenFrom/);
 });

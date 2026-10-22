@@ -207,10 +207,13 @@
     view.append(track, skirting, floor, shade);
 
     const bar = element('div', 'room__bar');
-    const lights = element('button', 'room__button room__lights');
+    // The picture lights hang on a brass pull cord, dropped from the top of the wall.
+    const lights = element('button', 'room__cord');
     lights.type = 'button';
-    lights.innerHTML =
-      '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lights</span>';
+    const hint = element('span', 'room__cord-hint');
+    hint.setAttribute('aria-hidden', 'true');
+    lights.append(element('span', 'room__cord-line'), element('span', 'room__cord-bead'), hint);
+    lights.addEventListener('animationend', () => lights.classList.remove('is-pulled'));
     const prev = element('button', 'room__button', '←');
     prev.type = 'button';
     prev.setAttribute('aria-label', 'Previous work on the wall');
@@ -222,7 +225,7 @@
     bar.append(lights, prev, count, next);
 
     room.replaceChildren(view, bar);
-    return { view, track, plane, glints, lights, prev, count, next };
+    return { view, track, plane, glints, lights, hint, prev, count, next };
   }
 
   /**
@@ -242,9 +245,13 @@
       room.classList.toggle('is-lit', on);
       parts.lights.setAttribute('aria-pressed', String(on));
       parts.lights.setAttribute('aria-label', on ? 'Turn the picture lights off' : 'Turn the picture lights on');
+      parts.hint.textContent = on ? 'pull to dim' : 'pull for light';
     }
     setLights(readLights());
     parts.lights.addEventListener('click', () => {
+      parts.lights.classList.remove('is-pulled');
+      void parts.lights.offsetWidth; // restart the tug when pulled again quickly
+      parts.lights.classList.add('is-pulled');
       const on = !room.classList.contains('is-lit');
       setLights(on);
       saveLights(on);

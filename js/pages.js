@@ -149,7 +149,7 @@
     bar.append(picker.letters, picker.lettersViews, picker.capsule);
     const roomElement = document.getElementById('room');
     roomElement.append(picker.placard);
-    roomElement.querySelector('.room__bar').prepend(picker.roomViews);
+    roomElement.querySelector('.room__bar').append(picker.roomViews);
 
     function show(next, { updateUrl, focusId } = {}) {
       category = next;

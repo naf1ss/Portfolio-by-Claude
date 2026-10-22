@@ -62,16 +62,34 @@ function assertAttributeSafe(name, value) {
  * Header links. An entry with `children` gets a small menu that opens on hover or keyboard focus
  * (Gallery lists its media, so a visitor can go straight to Prints or Photography).
  */
+/**
+ * Fills the children of nav entries that name a list instead of spelling one out:
+ * `"childrenFrom": "series"` lists every series (js/series-data.js), so a new series joins the menu on the
+ * next build.
+ */
+function resolveNav(nav, { series = [] } = {}) {
+  const lists = {
+    series: series.map(({ id, title }) => ({ label: title, href: `series.html?s=${encodeURIComponent(id)}` })),
+  };
+  return nav.map((entry) => {
+    if (!entry.childrenFrom) return entry;
+    const children = lists[entry.childrenFrom];
+    if (!children) throw new Error(`nav: unknown childrenFrom "${entry.childrenFrom}".`);
+    const { childrenFrom, ...rest } = entry;
+    return { ...rest, children };
+  });
+}
+
 function renderNav(nav, currentHref) {
   return nav
-    .map(({ label, href, children }) => {
+    .map(({ label, href, children, menuLabel }) => {
       const current = href === currentHref ? ' aria-current="page"' : '';
       const link = `<a href="${href}"${current}>${label}</a>`;
       if (!children || children.length === 0) return `        <li>${link}</li>`;
       const items = children.map((child) => `            <li><a href="${child.href}">${child.label}</a></li>`).join('\n');
       return [
         `        <li class="site-nav__group">${link}`,
-        `          <ul class="site-nav__menu" aria-label="${label} by medium">`,
+        `          <ul class="site-nav__menu" aria-label="${menuLabel || label}">`,
         items,
         '          </ul>',
         '        </li>',
@@ -208,4 +226,4 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] })
   });
 }
 
-module.exports = { parsePage, fillTemplate, renderPage, renderNav, renderRedirect };
+module.exports = { parsePage, fillTemplate, renderPage, resolveNav, renderNav, renderRedirect };

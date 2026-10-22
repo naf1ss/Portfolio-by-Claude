@@ -6,7 +6,7 @@
  *             menu of every medium with a small picture of each
  *   capsule   phones: a frosted-glass capsule whose bright pill slides to the current medium
  *
- * Each form carries its own Wall / Grid switch. The CSS decides which form is visible (see "Medium picker"
+ * Each form carries its own Wall / Grid switch (icons; on wide screens at the top right in both views). The CSS decides which form is visible (see "Medium picker"
  * in styles.css); this file builds them and keeps them in step. Exposes window.MediumPicker.
  */
 (function () {
@@ -39,20 +39,15 @@
 
   const worksLabel = (count) => `${count} ${count === 1 ? 'work' : 'works'}`;
 
-  /** A Wall / Grid switch: words for the lettered row, icons elsewhere. */
-  function createViewSwitch(className, { icons }) {
+  /** A Wall / Grid switch, as two icons. */
+  function createViewSwitch(className) {
     const group = element('div', `view-switch ${className}`);
     group.setAttribute('role', 'group');
     group.setAttribute('aria-label', 'View');
     VIEWS.forEach(({ id, label }) => {
-      const choice = button('view-switch__button', { 'data-view': id, 'aria-pressed': 'false' });
-      if (icons) {
-        choice.innerHTML = ICONS[id];
-        choice.setAttribute('aria-label', label);
-        choice.title = label;
-      } else {
-        choice.textContent = label;
-      }
+      const choice = button('view-switch__button', { 'data-view': id, 'aria-pressed': 'false', 'aria-label': label });
+      choice.innerHTML = ICONS[id];
+      choice.title = label;
       group.append(choice);
     });
     return group;
@@ -117,7 +112,7 @@
       choice.append(label, element('small', undefined, String(counts[id])));
       track.append(choice);
     });
-    const capsuleViews = createViewSwitch('view-switch--glass', { icons: true });
+    const capsuleViews = createViewSwitch('view-switch--glass');
     capsule.append(track, element('span', 'medium-capsule__divider'), capsuleViews);
 
     // Placard
@@ -139,9 +134,9 @@
     });
     placard.append(eyebrow, opener, menu);
 
-    // Wall / Grid beside the lettered row, and on the wall beside the Lights button.
-    const lettersViews = createViewSwitch('view-switch--words', { icons: false });
-    const roomViews = createViewSwitch('view-switch--room', { icons: true });
+    // Wide screens: Wall / Grid at the top right, in the same place over the grid and on the wall.
+    const lettersViews = createViewSwitch('view-switch--corner view-switch--page');
+    const roomViews = createViewSwitch('view-switch--corner view-switch--room');
     const viewSwitches = [lettersViews, capsuleViews, roomViews];
 
     function setMenu(open) {

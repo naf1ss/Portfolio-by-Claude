@@ -15,7 +15,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { contactEntries } = require('../js/contact-utils.js');
-const { renderPage, renderRedirect } = require('./page-builder.js');
+const { renderPage, renderRedirect, resolveNav } = require('./page-builder.js');
+const SERIES = require('../js/series-data.js');
 const { stampHtml } = require('./stamp-assets.js');
 
 const ROOT = path.join(__dirname, '..');
@@ -28,6 +29,11 @@ function readContactLinks() {
   return contactEntries(sandbox.window.SITE_CONFIG.contact).map(({ label, href }) => ({ label, href }));
 }
 
+/** site.json's nav, with menus that list something (the series) filled in. */
+function withResolvedNav(site) {
+  return { ...site, nav: resolveNav(site.nav, { series: SERIES }) };
+}
+
 function readSources() {
   const read = (...parts) => fs.readFileSync(path.join(SRC, ...parts), 'utf8');
   const partials = {};
@@ -37,7 +43,7 @@ function readSources() {
   return {
     layout: read('layout.html'),
     partials,
-    site: JSON.parse(read('site.json')),
+    site: withResolvedNav(JSON.parse(read('site.json'))),
     contactLinks: readContactLinks(),
   };
 }

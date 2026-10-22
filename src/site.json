@@ -3,6 +3,7 @@
     {
       "label": "Gallery",
       "href": "gallery.html",
+      "menuLabel": "Gallery by medium",
       "children": [
         {"label": "Painting", "href": "gallery.html?c=painting"},
         {"label": "Drawing", "href": "gallery.html?c=drawing"},
@@ -12,7 +13,7 @@
         {"label": "Ceramics", "href": "gallery.html?c=ceramics"}
       ]
     },
-    {"label": "Series", "href": "series.html"},
+    {"label": "Series", "href": "series.html", "menuLabel": "Series", "childrenFrom": "series"},
     {"label": "Artist statement", "href": "artist-statement.html"},
     {"label": "Resume", "href": "resume.html"},
     {"label": "Contact", "href": "contact.html"}
