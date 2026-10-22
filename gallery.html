@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=b799473d">
+  <link rel="stylesheet" href="css/styles.css?v=6343c316">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/site-menu.js?v=92fc389c"></script>
@@ -27,12 +27,13 @@
   <script src="js/series-data.js?v=a655c962" defer></script>
   <script src="js/painted-text.js?v=a1f6ce65" defer></script>
   <script src="js/site-config.js?v=5f672721" defer></script>
-  <script src="js/gallery.js?v=c071818e" defer></script>
+  <script src="js/gallery.js?v=b0e39109" defer></script>
+  <script src="js/medium-picker.js?v=f80aba42" defer></script>
   <script src="js/lightbox.js?v=1bd250a9" defer></script>
   <script src="js/gallery-room-utils.js?v=3d3a4e38" defer></script>
   <script src="js/gallery-room.js?v=7b0c31fc" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
-  <script src="js/pages.js?v=4ddccb76" defer></script>
+  <script src="js/pages.js?v=44e3f999" defer></script>
   <script src="js/interactions.js?v=d4be9dee" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -74,14 +75,9 @@
          sizes="10rem" width="640" height="1115" alt="" aria-hidden="true">
     <!-- The header already says "Gallery", so the page title is for screen readers only; the medium filters lead. -->
     <h1 class="visually-hidden">Gallery</h1>
-    <div class="gallery-bar">
-      <nav id="filters" aria-label="Filter by medium"></nav>
-      <!-- Paintings, drawings and prints can be seen hanging on a wall or as a grid. -->
-      <div class="filters view-toggle" id="view-toggle" role="group" aria-label="View" hidden>
-        <button class="filter" type="button" data-view="wall" aria-pressed="true">Wall</button>
-        <button class="filter" type="button" data-view="grid" aria-pressed="false">Grid</button>
-      </div>
-    </div>
+    <!-- The medium picker (js/medium-picker.js): lettered here on wide screens in grid view, a glass capsule on
+         phones; in wall view on wide screens it moves onto the wall as a placard. -->
+    <div class="gallery-bar" id="gallery-bar"></div>
     <p id="result-status" class="visually-hidden" role="status"></p>
     <ul class="gallery" id="gallery"></ul>
     <noscript><p class="muted">Please enable JavaScript to view the gallery.</p></noscript>

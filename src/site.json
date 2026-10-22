@@ -33,6 +33,7 @@
     {"file": "hero-window-utils"},
     {"file": "hero-window"},
     {"file": "gallery"},
+    {"file": "medium-picker", "requires": ["works-utils"]},
     {"file": "series-story", "requires": ["works-utils"]},
     {"file": "lightbox"},
     {"file": "gallery-room-utils"},

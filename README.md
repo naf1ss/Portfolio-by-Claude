@@ -30,7 +30,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/hero-window-utils.js`, `js/hero-window.js` | Home hero: the name is cut out of a slideshow of paintings on a canvas. Geometry and timing (unit tested) and the canvas itself |
 | `js/site-menu.js` | Phone menu: under 40rem the header links fold behind a Menu button and open as a full-screen panel |
 | `js/interactions.js` | Pill hover fill, label roll, magnetic buttons, scroll progress line, "View" label that follows the pointer over pictures |
-| `js/gallery.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles and filters, full-screen viewer, per-page wiring |
+| `js/gallery.js`, `js/medium-picker.js`, `js/lightbox.js`, `js/pages.js` | Gallery tiles, the medium picker, full-screen viewer, per-page wiring |
 | `js/gallery-room-utils.js`, `js/gallery-room.js` | The gallery room for paintings, drawings and prints: real sizes, grouping and scale (unit tested) and the lit wall itself |
 | `images/room/`, `tools/room-textures.html` | The room's plaster and oak-floor textures, and the seeded generator that drew them (open it in a browser to redraw) |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
@@ -78,7 +78,7 @@ A series can be told as a write-up instead of a grid: pictures beside their word
 
 ### The gallery room
 
-Paintings, drawings and prints open on a wall instead of a grid (a Wall / Grid switch sits beside the filters and is remembered). Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, drawings and prints a black frame and a white mat (the categories and their framing are `FRAMING` in `js/gallery-room-utils.js`). A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon and Three Ways of Seeing do); its label lists the titles left to right (groups of up to four) and links to the series page.
+Paintings, drawings and prints open on a wall instead of a grid (the Wall / Grid choice is remembered). The medium picker (`js/medium-picker.js`) takes three forms that share one state: on wide screens, small lettered media above the grid, or a "You are in Prints" placard in the corner of the wall whose menu pictures each medium; on phones, a frosted-glass capsule that floats over the wall or the grid. Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, drawings and prints a black frame and a white mat (the categories and their framing are `FRAMING` in `js/gallery-room-utils.js`). A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon and Three Ways of Seeing do); its label lists the titles left to right (groups of up to four) and links to the series page.
 
 A write-up's top-level `process` (Horizon) sits as a band between the intro and the works; short text is centred beside its picture.
 

@@ -102,7 +102,7 @@
     const RoomUtils = window.GalleryRoomUtils;
     const list = document.getElementById('gallery');
     const status = document.getElementById('result-status');
-    const viewToggle = document.getElementById('view-toggle');
+    const bar = document.getElementById('gallery-bar');
     const counts = U.countByCategory(all);
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
     // The photographer only appears alongside the photography work.
@@ -131,20 +131,33 @@
     const switchedFilter = linkedId && category !== 'all' && byId.get(linkedId).category !== category;
     if (switchedFilter) category = byId.get(linkedId).category;
 
-    const filters = window.Gallery.createFilters(document.getElementById('filters'), {
+    // The media first, "All" last; each pictured in the placard's menu by its chosen work, else its first.
+    const options = U.CATEGORIES.filter((entry) => counts[entry.id] > 0).concat({ id: 'all', label: 'All' });
+    const picks = new Map((config.mediumPicks || []).map((pick) => [pick.category, pick.best]));
+    const picker = window.MediumPicker.create({
+      options,
       counts,
+      thumbFor: (id) => (id === 'all' ? null : byId.get(picks.get(id)) || all.find((work) => work.category === id)),
       onSelect: (next) => show(next, { updateUrl: true }),
+      onView: (next) => {
+        if (next === view) return;
+        view = next;
+        saveGalleryView(view);
+        show(category, { updateUrl: false });
+      },
     });
+    bar.append(picker.letters, picker.lettersViews, picker.capsule);
+    const roomElement = document.getElementById('room');
+    roomElement.append(picker.placard);
+    roomElement.querySelector('.room__bar').prepend(picker.roomViews);
 
     function show(next, { updateUrl, focusId } = {}) {
       category = next;
       const visible = U.filterWorks(all, category);
       const wall = showingWall();
-      viewToggle.hidden = !RoomUtils.isWallCategory(category);
-      viewToggle.querySelectorAll('[data-view]').forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.dataset.view === view));
-      });
       list.hidden = wall;
+      // The CSS places the picker by this: on the wall, or above the grid.
+      document.body.dataset.galleryView = wall ? 'wall' : 'grid';
 
       if (wall) {
         list.replaceChildren();
@@ -158,7 +171,8 @@
         });
         lightbox.setWorks(visible);
       }
-      filters.setActive(category);
+      picker.setActive(category);
+      picker.setView(view, { available: RoomUtils.isWallCategory(category) });
       if (photographer) photographer.classList.toggle('is-shown', category === 'photography');
 
       const noun = visible.length === 1 ? 'work' : 'works';
@@ -173,14 +187,6 @@
         history.replaceState(null, '', location.pathname + query);
       }
     }
-
-    viewToggle.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-view]');
-      if (!button || button.dataset.view === view) return;
-      view = button.dataset.view;
-      saveGalleryView(view);
-      show(category, { updateUrl: false });
-    });
 
     // When the filter was switched, rewrite the URL so ?c= matches what is shown.
     show(category, { updateUrl: switchedFilter, focusId: linkedId });

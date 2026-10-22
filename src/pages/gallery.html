@@ -1,7 +1,7 @@
 ---
 title: Gallery — nuances by nafis
 description: Paintings, drawings, prints, digital art, photography, ceramics and wall magazines by Nafis.
-scripts: works-utils, works-data, works-photography, series-data, gallery, lightbox, gallery-room-utils, gallery-room, pages, magnifier-utils, magnifier
+scripts: works-utils, works-data, works-photography, series-data, gallery, medium-picker, lightbox, gallery-room-utils, gallery-room, pages, magnifier-utils, magnifier
 ---
   <main id="main">
     <div class="wrap">
@@ -12,14 +12,9 @@ scripts: works-utils, works-data, works-photography, series-data, gallery, light
          sizes="10rem" width="640" height="1115" alt="" aria-hidden="true">
     <!-- The header already says "Gallery", so the page title is for screen readers only; the medium filters lead. -->
     <h1 class="visually-hidden">Gallery</h1>
-    <div class="gallery-bar">
-      <nav id="filters" aria-label="Filter by medium"></nav>
-      <!-- Paintings, drawings and prints can be seen hanging on a wall or as a grid. -->
-      <div class="filters view-toggle" id="view-toggle" role="group" aria-label="View" hidden>
-        <button class="filter" type="button" data-view="wall" aria-pressed="true">Wall</button>
-        <button class="filter" type="button" data-view="grid" aria-pressed="false">Grid</button>
-      </div>
-    </div>
+    <!-- The medium picker (js/medium-picker.js): lettered here on wide screens in grid view, a glass capsule on
+         phones; in wall view on wide screens it moves onto the wall as a placard. -->
+    <div class="gallery-bar" id="gallery-bar"></div>
     <p id="result-status" class="visually-hidden" role="status"></p>
     <ul class="gallery" id="gallery"></ul>
     <noscript><p class="muted">Please enable JavaScript to view the gallery.</p></noscript>

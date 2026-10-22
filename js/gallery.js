@@ -1,5 +1,6 @@
 /**
- * Gallery rendering: justified rows of tiles and the medium filter buttons.
+ * Gallery rendering: justified rows of tiles, the home page's lists and the series cards (the medium picker
+ * is js/medium-picker.js).
  * Exposes window.Gallery. Layout itself is CSS (see .gallery in styles.css);
  * this file only builds the markup.
  */
@@ -182,55 +183,5 @@
     list.replaceChildren(...cards);
   }
 
-  /**
-   * Builds the medium filter buttons (categories with no works are omitted).
-   * Returns { setActive(id) } to reflect the current selection.
-   */
-  function createFilters(container, { counts, onSelect }) {
-    // The media first, "All" last.
-    const options = U.CATEGORIES.filter((category) => counts[category.id] > 0).concat({ id: 'all', label: 'All' });
-    const buttons = new Map();
-    const list = element('ul', 'filters');
-
-    options.forEach(({ id, label }) => {
-      const button = element('button', 'filter');
-      button.type = 'button';
-      button.dataset.category = id;
-      button.append(label, element('span', 'filter__count', String(counts[id])));
-      buttons.set(id, button);
-      const item = element('li');
-      item.append(button);
-      list.append(item);
-    });
-
-    list.addEventListener('click', (event) => {
-      const button = event.target.closest('button[data-category]');
-      if (button) onSelect(button.dataset.category);
-    });
-
-    // Phones show the same choices as one compact menu (the CSS picks which of the two is visible).
-    const select = element('select');
-    select.setAttribute('aria-label', 'Medium');
-    options.forEach(({ id, label }) => {
-      const option = element('option', undefined, `${label} (${counts[id]})`);
-      option.value = id;
-      select.append(option);
-    });
-    select.addEventListener('change', () => onSelect(select.value));
-    const compact = element('label', 'filters-select');
-    compact.append(select);
-
-    container.replaceChildren(list, compact);
-
-    return {
-      setActive(activeId) {
-        buttons.forEach((button, id) => {
-          button.setAttribute('aria-pressed', String(id === activeId));
-        });
-        select.value = activeId;
-      },
-    };
-  }
-
-  window.Gallery = { renderGallery, renderLatest, renderMediumList, renderSeriesList, createFilters };
+  window.Gallery = { renderGallery, renderLatest, renderMediumList, renderSeriesList };
 })();
