@@ -387,7 +387,10 @@ test('catalogue: every work a series story shows is in the catalogue', () => {
   const seriesIds = new Set(SERIES.map((series) => series.id));
   Object.entries(STORIES).forEach(([seriesId, story]) => {
     assert.ok(seriesIds.has(seriesId), `story for unknown series ${seriesId}`);
-    const shown = [story.intro, ...(story.chapters || []), story.related].filter((part) => part && part.workId);
+    const strips = (story.chapters || []).flatMap((part) => (part.strip ? part.strip.items : []));
+    const shown = [story.intro, ...(story.chapters || []), story.related, ...strips, ...(story.works || [])].filter(
+      (part) => part && part.workId
+    );
     shown.forEach((part) => assert.ok(ids.has(part.workId), `${seriesId}: ${part.workId} is not in the catalogue`));
   });
 });

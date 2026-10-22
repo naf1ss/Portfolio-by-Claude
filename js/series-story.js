@@ -70,6 +70,16 @@
       const lines = Array.isArray(story.intro.lead) ? story.intro.lead : [story.intro.lead];
       text.append(paragraphs('story__prose story__intro-lead', lines));
     }
+    if (story.intro.facts) {
+      // The project's particulars (programme, mentor, role...) as a short list of label and value.
+      const facts = element('dl', 'story__facts');
+      story.intro.facts.forEach(({ label, text: value }) => {
+        const row = element('div');
+        row.append(element('dt', undefined, label), element('dd', undefined, value));
+        facts.append(row);
+      });
+      text.append(facts);
+    }
     if (story.intro.index) {
       const list = element('ol', 'story__index');
       story.chapters.forEach((chapter) => {
@@ -137,6 +147,28 @@
     return section;
   }
 
+  /** A row of small photographs under an eyebrow, each with a bold label and a caption (a chapter's `strip`). */
+  function strip(entry, byId) {
+    const section = element('section', 'story__strip');
+    section.append(element('h3', 'eyebrow', entry.title));
+    const list = element('ol');
+    entry.items.forEach(({ workId, label, caption }) => {
+      const work = byId.get(workId);
+      if (!work) return;
+      const item = element('li');
+      const figure = picture(work);
+      figure.classList.add('story__strip-item');
+      const text = element('figcaption');
+      if (label) text.append(element('b', undefined, label));
+      if (caption) text.append(element('span', undefined, caption));
+      figure.append(text);
+      item.append(figure);
+      list.append(item);
+    });
+    section.append(list);
+    return section;
+  }
+
   function related(entry, byId) {
     const text = element('div', 'story__text');
     text.append(element('h2', 'eyebrow', entry.title));
@@ -152,9 +184,9 @@
   }
 
   /** Numbered process steps under a "Process" eyebrow. */
-  function processSteps(steps) {
+  function processSteps(steps, title = 'Process') {
     const block = element('div');
-    block.append(element('h2', 'eyebrow', 'Process'));
+    block.append(element('h2', 'eyebrow', title));
     const list = element('ol', 'story__steps');
     steps.forEach((step) => {
       const item = element('li');
@@ -168,9 +200,9 @@
   }
 
   /** The process as a band across the page, read before the works (a story's top-level `process`). */
-  function processBand(steps) {
+  function processBand(steps, title) {
     const section = element('section', 'story__process');
-    section.append(processSteps(steps));
+    section.append(processSteps(steps, title));
     return section;
   }
 
@@ -178,13 +210,14 @@
   function closing(entry) {
     const section = element('section', 'story__closing');
     if (entry.process) {
-      section.append(processSteps(entry.process));
+      section.append(processSteps(entry.process, entry.processTitle));
     } else {
       section.classList.add('story__closing--single');
     }
 
     const reflection = element('div');
     reflection.append(element('h2', 'eyebrow', entry.reflectionTitle || 'Reflection'), paragraphs('story__prose', entry.reflection));
+    if (entry.credits) reflection.append(element('p', 'story__credits', entry.credits));
     section.append(reflection);
     return section;
   }
@@ -221,8 +254,11 @@
     const blocks = [];
     if (story.works) blocks.push(set(story.works, byId));
     if (story.intro) blocks.push(intro(story, { note, byId }));
-    if (story.process) blocks.push(processBand(story.process));
-    (story.chapters || []).forEach((entry, i) => blocks.push(chapter(entry, i % 2 === 0, byId)));
+    if (story.process) blocks.push(processBand(story.process, story.processTitle));
+    (story.chapters || []).forEach((entry, i) => {
+      blocks.push(chapter(entry, i % 2 === 0, byId));
+      if (entry.strip) blocks.push(strip(entry.strip, byId));
+    });
     if (story.related) blocks.push(related(story.related, byId));
     if (story.closing) blocks.push(closing(story.closing));
     container.replaceChildren(...blocks);

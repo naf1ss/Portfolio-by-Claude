@@ -1712,6 +1712,84 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: var(--ink-muted, inherit);
 }
 
+/* A project's particulars beside its opening: label and value in two columns. */
+.story__facts {
+  display: grid;
+  gap: 0;
+  margin: 1.5rem 0 0;
+  border-top: 1px solid var(--rule);
+}
+
+.story__facts > div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.story__facts dt {
+  padding-top: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.story__facts dd {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: 1.12rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* A row of small photographs after a chapter (the stations, the stages of the tiles). */
+.story__strip {
+  padding-block: 0 clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.story__strip ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr));
+  gap: 1.5rem 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.story__media.story__strip-item img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  max-height: none;
+  object-fit: cover;
+}
+
+.story__media.story__strip-item figcaption {
+  display: grid;
+  gap: 0.05rem;
+  margin-top: 0.55rem;
+  font-family: var(--font-text);
+  font-size: 0.78rem;
+  font-style: normal;
+  text-align: left;
+}
+
+.story__strip-item figcaption b {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+}
+
+.story__credits {
+  margin-top: 1.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
 /* The process as a band between the intro and the works: the steps side by side on wide screens. */
 .story__process {
   padding-block: clamp(2rem, 5vw, 3.5rem);
