@@ -422,3 +422,16 @@ test('catalogue: every series coverId is in the series', () => {
     });
   });
 });
+
+test('applyCuratedOrder puts listed works first within their medium and keeps the media where they were', () => {
+  const works = [
+    { id: 'p1', category: 'painting' },
+    { id: 'x1', category: 'print' },
+    { id: 'p2', category: 'painting' },
+    { id: 'x2', category: 'print' },
+    { id: 'x3', category: 'print' },
+  ];
+  const ids = U.applyCuratedOrder(works, { print: ['x3', 'x1'] }).map((work) => work.id);
+  assert.deepEqual(ids, ['p1', 'x3', 'p2', 'x1', 'x2']);
+  assert.deepEqual(U.applyCuratedOrder(works).map((work) => work.id), works.map((work) => work.id));
+});

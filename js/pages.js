@@ -14,7 +14,10 @@
    */
   function loadWorks() {
     const U = window.WorksUtils;
-    const catalogue = U.sortWorks(window.PORTFOLIO_WORKS.concat(window.PORTFOLIO_PHOTOS || []));
+    const catalogue = U.applyCuratedOrder(
+      U.sortWorks(window.PORTFOLIO_WORKS.concat(window.PORTFOLIO_PHOTOS || [])),
+      config.galleryOrder
+    );
     const all = catalogue.filter((work) => !work.hidden);
     return { U, all, catalogue, byId: new Map(catalogue.map((work) => [work.id, work])) };
   }

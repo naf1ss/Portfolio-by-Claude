@@ -43,6 +43,13 @@
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
   { id: 'horizon', title: 'Horizon', note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
+  {
+    id: 'eiffel-tower',
+    title: 'Eiffel Tower',
+    note: 'Paintings of the Eiffel Tower made over nearly a decade: a study of its structure that became a practice I keep returning to.',
+    hangTogether: true,
+    workIds: ['A001', 'A034', 'A038', 'A012'],
+  },
   { id: 'still-life', title: 'Still life', note: null, coverIds: ['A010', 'A018', 'A009'], workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
   {
     id: 'mugs',

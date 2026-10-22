@@ -156,6 +156,23 @@
       ],
     },
   },
+  // From the artist's own account of why he keeps painting the tower (2026).
+  'eiffel-tower': {
+    works: [
+      { workId: 'A001', text: [] },
+      { workId: 'A034', text: [] },
+      { workId: 'A038', text: [] },
+      { workId: 'A012', text: [] },
+    ],
+    closing: {
+      reflectionTitle: 'About the series',
+      reflection: [
+        'The Eiffel Tower began as a test. Long before it became a recurring subject, I set out to see whether I could render every part of its structure: the lattice of wrought iron, the arches at its base, the way its four legs gather into a single line.',
+        'Working through that structure, I came to admire it, both as engineering and as history: a tower built as the entrance to the 1889 World’s Fair that became the image of a city. Paris has stayed close to me ever since.',
+        'I have returned to the tower across nearly a decade and several mediums, from poster colour to mixed media. Each return is a practice: the same silhouette set against a different sky, colour field or reflection, and a way of measuring how my hand and my eye have changed.',
+      ],
+    },
+  },
   // From the Final Written Critique (drawing, 2024).
   'three-ways-of-seeing': {
     intro: {

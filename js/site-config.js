@@ -8,6 +8,12 @@ window.SITE_CONFIG = {
   heroLead: ['A012', 'A002', 'A003', 'A030'],
   heroCategories: ['painting', 'print'],
 
+  // The gallery's order within a medium, best first: listed works lead in this order, the rest follow
+  // (newest first). Horizon's prints hang together on the wall wherever the first of them falls.
+  galleryOrder: {
+    print: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A027', 'A025', 'A026'],
+  },
+
   // The big "Latest work" feature on the home page.
   latestId: 'A041',
 

@@ -117,6 +117,34 @@
       .map(({ work }) => work);
   }
 
+  /**
+   * Puts the works of a category in a hand-picked order (`order`: { category: [ids] }), best first. Listed works
+   * come first in the order given and the rest follow as they were; each category keeps the places it held in
+   * the list, so "All" still interleaves the media as before.
+   */
+  function applyCuratedOrder(works, order = {}) {
+    const result = works.slice();
+    Object.entries(order).forEach(([category, ids]) => {
+      const places = [];
+      result.forEach((work, i) => {
+        if (work.category === category) places.push(i);
+      });
+      const inCategory = places.map((i) => result[i]);
+      const rank = (work) => {
+        const at = ids.indexOf(work.id);
+        return at === -1 ? ids.length : at;
+      };
+      const ordered = inCategory
+        .map((work, i) => ({ work, i }))
+        .sort((a, b) => rank(a.work) - rank(b.work) || a.i - b.i)
+        .map(({ work }) => work);
+      places.forEach((place, k) => {
+        result[place] = ordered[k];
+      });
+    });
+    return result;
+  }
+
   /** "12x9 inches" -> "12 × 9 in"; "1526x2048 px" -> "1526 × 2048 px". */
   function formatDimensions(dimensions) {
     if (!dimensions) return '';
@@ -264,6 +292,7 @@
     filterWorks,
     countByCategory,
     sortWorks,
+    applyCuratedOrder,
     formatDimensions,
     metaLine,
     altText,
