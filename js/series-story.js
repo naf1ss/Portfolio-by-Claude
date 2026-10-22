@@ -72,6 +72,12 @@
       });
       text.append(list);
     }
+    if (!story.intro.workId) {
+      // No picture: the opening reads on its own, at a comfortable measure.
+      const section = element('section', 'story__pair story__pair--intro story__pair--text');
+      section.append(text);
+      return section;
+    }
     return pair(picture(byId.get(story.intro.workId), story.intro.caption), text, { className: 'story__pair--intro' });
   }
 

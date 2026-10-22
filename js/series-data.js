@@ -28,6 +28,13 @@
     workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
   },
   {
+    id: 'degrees-of-happiness',
+    title: 'Degrees of Happiness',
+    note: 'Two abstract paintings that treat happiness as colour. Yellow stands for the feeling: in one it is only beginning to arrive; in the other it has turned to orange and pushes back.',
+    hangTogether: true,
+    workIds: ['A030', 'A041'],
+  },
+  {
     id: 'three-ways-of-seeing',
     title: 'Three Ways of Seeing',
     note: 'One still life drawn three ways: through light and shadow, as a study of structure, and by intuition.',
@@ -50,9 +57,4 @@
     coverIds: ['ceramics-6', 'ceramics-44', 'ceramics-47'],
     workIds: ['ceramics-6', 'ceramics-44', 'ceramics-45', 'ceramics-47', 'ceramics-59', 'ceramics-7', 'ceramics8', 'ceramics-4', 'ceramics-11', 'ceramics-52'],
   },
-  { id: 'photographs-2026', title: 'Photographs, 2026', note: null, category: 'photography', year: 2026 },
-  { id: 'photographs-2025', title: 'Photographs, 2025', note: null, category: 'photography', year: 2025 },
-  { id: 'photographs-2024', title: 'Photographs, 2024', note: null, category: 'photography', year: 2024 },
-  { id: 'photographs-2023', title: 'Photographs, 2023', note: null, category: 'photography', year: 2023 },
-  { id: 'photographs-2022', title: 'Photographs, 2022', note: null, category: 'photography', year: 2022 },
 ]);

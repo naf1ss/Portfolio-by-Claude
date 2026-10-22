@@ -2,7 +2,7 @@
  * Long-form write-ups for a series page (series.html?s=<id>), keyed by series id and rendered by
  * series-story.js. A series with a story shows these pictures and words instead of a grid of its works.
  *
- *   intro     { workId, caption, lead, index }     a picture beside the series' note, a line (or lines) under it;
+ *   intro     { workId, caption, lead, index }     a picture (optional) beside the series' note, a line (or lines) under it;
  *                                                 `index: true` lists the chapters as links
  *   chapters  [{ id, label, aside, kicker, title, workId, caption, text: [paragraphs],
  *                source: { name, listing, url, linkText },      optional
@@ -29,6 +29,12 @@
       lead: 'Each vessel is guided by one maker and informed by the other two.',
       index: true,
     },
+    process: [
+      { title: 'Research', text: 'Close study of three ceramic artists: their forms, surfaces and finishes.' },
+      { title: 'Development', text: 'Translating that study into a cohesive set of three original pieces.' },
+      { title: 'Execution', text: 'Working through a range of glazes and finishes.' },
+      { title: 'Connection', text: 'Building visual and technical relationships among the three pieces.' },
+    ],
     chapters: [
       {
         id: 'plate',
@@ -114,17 +120,56 @@
       note: 'Repeating a single motif across three identical volumes would have reduced cohesion to decoration. Here, unity comes from deliberate relationships between the forms and a shared technical language.',
     },
     closing: {
-      process: [
-        { title: 'Research', text: 'Close study of three ceramic artists: their forms, surfaces and finishes.' },
-        { title: 'Development', text: 'Translating that study into a cohesive set of three original pieces.' },
-        { title: 'Execution', text: 'Working through a range of glazes and finishes.' },
-        { title: 'Connection', text: 'Building visual and technical relationships among the three pieces.' },
-      ],
       reflectionTitle: 'Looking back',
       reflection: [
         'Studying Shaw’s restrained porcelain, Tao’s luminous reduction palettes and Oesterritter’s wood-fired expressiveness gave me a disciplined technical foundation.',
         'Rather than repeating a single motif, each piece combines these vocabularies: painterly energy on a flat plane, luminous depth, and considered thrown and altered form.',
         'The set is deliberately small. I would extend the same approach to larger groups, such as stacking bowls with lids, provided the forms remain equally disciplined.',
+      ],
+    },
+  },
+  // From the artist's notes on the two paintings (2026).
+  'degrees-of-happiness': {
+    intro: {
+      lead: [
+        'I use yellow, and the orange it becomes, as the colour of happiness. These two paintings follow it at two strengths: first as something only beginning to arrive, then as a force that presses against everything around it.',
+        'Neither is a picture of a happy scene. Each tries to hold the feeling itself, in colour, gesture and the weight of the paint.',
+      ],
+      index: true,
+    },
+    chapters: [
+      {
+        id: 'almost-happy',
+        label: 'Almost Happy',
+        aside: 'Acrylic on canvas',
+        kicker: 'Almost Happy \u00b7 acrylic on canvas, 18 \u00d7 24 in',
+        title: 'Almost Happy',
+        workId: 'A030',
+        caption: 'Yellow gathering in the lower right.',
+        text: [
+          'Long diagonal strokes of violet, grey and muted teal sweep across the canvas. In the lower right the colour begins to warm, and yellow starts to gather.',
+          'The painting holds that moment of uncertainty: yellow seems about to take over, yet something else is still pressing back. It is happiness that has not quite arrived.',
+        ],
+      },
+      {
+        id: 'aggressive-happiness',
+        label: 'Aggressive Happiness',
+        aside: 'Acrylic on wood panel',
+        kicker: 'Aggressive Happiness \u00b7 acrylic on wood panel, 24 \u00d7 24 in',
+        title: 'Aggressive Happiness',
+        workId: 'A041',
+        caption: 'A white fault line between orange and teal.',
+        text: [
+          'I work with colour the way some people argue: loud, direct and a little stubborn.',
+          'Here yellow has turned aggressive and burned into orange. I pushed thick squares of paint into a hot orange field and a cooler teal one, then let a rough white break cut across the middle like a fault line.',
+          'What you see is less a picture of happiness than the physical push of it, pressing into the surface until it holds.',
+        ],
+      },
+    ],
+    closing: {
+      reflectionTitle: 'Between the two',
+      reflection: [
+        'Side by side, the paintings move from suggestion to insistence. Soft, blended strokes give way to hard edges, built-up squares and a single decisive line. The colour of happiness stays the same; what changes is how hard it pushes.',
       ],
     },
   },

@@ -1277,6 +1277,10 @@ button:focus-visible > .roll .roll__face + .roll__face {
   .story__pair--intro .story__media {
     position: static;
   }
+
+  .story__pair--text {
+    grid-template-columns: minmax(0, 44rem);
+  }
 }
 
 .story__media {
@@ -2783,6 +2787,13 @@ html {
 
 .room__works li {
   counter-increment: room-work;
+}
+
+.room__works-meta {
+  display: block;
+  padding-left: 1.4em;
+  color: var(--room-muted);
+  font-size: 0.8rem;
 }
 
 .room__works li::before {

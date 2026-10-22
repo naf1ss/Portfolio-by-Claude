@@ -98,7 +98,18 @@
     const details = [];
     if (section.works.length <= MAX_LISTED_TITLES) {
       const list = element('ol', 'room__works');
-      section.works.forEach((work) => list.append(element('li', undefined, work.title || work.medium || 'Untitled')));
+      // When the works differ in medium or size, each title carries its own (the shared facts sit above).
+      const varies = (key) => new Set(section.works.map((work) => work[key])).size > 1;
+      const ownFacts = varies('medium') || varies('dimensions');
+      section.works.forEach((work) => {
+        const item = element('li');
+        item.append(element('span', 'room__works-title', work.title || work.medium || 'Untitled'));
+        if (ownFacts) {
+          const facts = [work.medium, work.dimensions && U.formatDimensions(work.dimensions)].filter(Boolean).join(' · ');
+          if (facts) item.append(element('span', 'room__works-meta', facts));
+        }
+        list.append(item);
+      });
       details.push(element('p', 'room__works-heading', R.groupGrid(section.works.length).rows === 1 ? 'Left to right' : 'In order'), list);
     }
     const link = element('a', 'room__series-link', 'View the series →');
