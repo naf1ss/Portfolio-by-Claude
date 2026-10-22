@@ -10,7 +10,8 @@ scripts: works-utils, works-data, works-photography, series-data, gallery, light
          src="images/gallery/photographer-640.webp"
          srcset="images/gallery/photographer-640.webp 640w, images/gallery/photographer-1100.webp 1100w"
          sizes="10rem" width="640" height="1115" alt="" aria-hidden="true">
-    <h1 class="page-title">Gallery</h1>
+    <!-- The header already says "Gallery", so the page title is for screen readers only; the medium filters lead. -->
+    <h1 class="visually-hidden">Gallery</h1>
     <div class="gallery-bar">
       <nav id="filters" aria-label="Filter by medium"></nav>
       <!-- Paintings and prints can be seen hanging on a wall or as a grid. -->

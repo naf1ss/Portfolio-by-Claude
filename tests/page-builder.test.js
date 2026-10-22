@@ -57,6 +57,16 @@ test('renderNav marks only the current page', () => {
   assert.doesNotMatch(html, /work\.html" aria-current/);
 });
 
+test('renderNav gives an entry with children a menu of links', () => {
+  const html = renderNav(
+    [{ label: 'Gallery', href: 'gallery.html', children: [{ label: 'Prints', href: 'gallery.html?c=print' }] }],
+    'gallery.html'
+  );
+  assert.match(html, /<li class="site-nav__group"><a href="gallery\.html" aria-current="page">Gallery<\/a>/);
+  assert.match(html, /<ul class="site-nav__menu" aria-label="Gallery by medium">/);
+  assert.match(html, /<li><a href="gallery\.html\?c=print">Prints<\/a><\/li>/);
+});
+
 test('renderPage fills metadata, defaults the social tags and marks the nav', () => {
   const html = renderPage('about', page('title: About\ndescription: Desc'), parts);
   assert.match(html, /<title>About<\/title>/);

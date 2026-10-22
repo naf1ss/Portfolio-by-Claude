@@ -351,6 +351,63 @@ a:hover {
   border-color: var(--ink);
 }
 
+/* Gallery's media menu: opens under the link on hover or keyboard focus. Touch screens go straight to the
+   gallery, where the same media are the filters. */
+.site-nav__group {
+  position: relative;
+}
+
+.site-nav .site-nav__menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  z-index: 30;
+  display: grid;
+  gap: 0.1rem;
+  min-width: 12.5rem;
+  margin: 0;
+  padding: 0.45rem;
+  border: 1px solid var(--rule);
+  border-radius: 1.4rem;
+  background: var(--paper);
+  box-shadow: 0 22px 44px -22px rgb(0 0 0 / 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -0.4rem);
+  transition: opacity 0.2s var(--ease), transform 0.35s var(--ease-out), visibility 0s linear 0.35s;
+}
+
+/* Keeps the menu open while the pointer crosses the gap below the link. */
+.site-nav__menu::before {
+  content: '';
+  position: absolute;
+  inset: -0.6rem 0 auto;
+  height: 0.6rem;
+}
+
+.site-nav .site-nav__menu a {
+  display: block;
+  padding: 0.6rem 1rem;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .site-nav__group:hover .site-nav__menu,
+  .site-nav__group:focus-within .site-nav__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition: opacity 0.2s var(--ease), transform 0.35s var(--ease-out), visibility 0s;
+  }
+}
+
+@media (hover: none) {
+  .site-nav .site-nav__menu {
+    display: none;
+  }
+}
+
 /* Interactive pills. A circle of colour grows from wherever the pointer entered
    (js/interactions.js sets --mx / --my) and shrinks back toward where it left. */
 .site-nav a,
@@ -1743,6 +1800,46 @@ button:focus-visible > .roll .roll__face + .roll__face {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0 1.5rem;
+  padding-top: clamp(0.25rem, 1.5vw, 1rem);
+}
+
+.gallery-bar .filters {
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* On phones the media scroll sideways in one row, so the wall is not pushed off the screen. */
+@media (max-width: 40rem) {
+  .gallery-bar {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+
+  .gallery-bar #filters {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .gallery-bar .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-bottom: 0.9rem;
+    -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+
+  .gallery-bar .filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery-bar .filters li {
+    flex: none;
+  }
+
+  .gallery-bar .view-toggle {
+    flex: none;
+    flex-wrap: nowrap;
+  }
 }
 
 .view-toggle[hidden] {
@@ -1759,8 +1856,9 @@ button:focus-visible > .roll .roll__face + .roll__face {
   --room-floor-h: clamp(4.5rem, 16svh, 9rem);
   position: relative;
   overflow: hidden;
-  height: clamp(32rem, calc(100svh - 4rem), 60rem);
-  margin-bottom: clamp(2rem, 5vw, 4rem);
+  /* Fills the screen below the header and filters (gallery-room.js measures --room-top), so the work sits
+     in the middle of the screen. */
+  height: max(26rem, calc(100svh - var(--room-top, 8rem)));
   background: var(--room-wall);
   color: var(--room-ink);
   user-select: none;
@@ -1842,6 +1940,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 @media (min-width: 62rem) {
+  .room__label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .room__art {
     grid-column: 2;
     grid-row: 1;
@@ -2089,12 +2192,33 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 @media (max-width: 61.99rem) {
-  .room__title {
-    font-size: 1.6rem;
+  .room {
+    --room-floor-h: clamp(3.5rem, 10svh, 6rem);
+    height: max(34rem, calc(100svh - var(--room-top, 8rem)));
   }
 
+  /* A compact label under the work: title, then medium, size and year on one line. */
+  .room__kicker,
   .room__rule {
-    margin: 0.8rem 0;
+    display: none;
+  }
+
+  .room__title {
+    margin-top: 0;
+    font-size: 1.4rem;
+  }
+
+  .room__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .room__facts dd + dd::before {
+    content: '\00b7';
+    margin-right: 0.5rem;
   }
 
   .room__notes {

@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=49ffc1d2">
+  <link rel="stylesheet" href="css/styles.css?v=af60899a">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=805378a4"></script>
   <script src="js/motion.js?v=f83564ed"></script>
@@ -36,7 +36,18 @@
     <a class="wordmark" href="index.html" aria-label="nuances by Nafis, home">n<span>.</span></a>
     <nav class="site-nav" aria-label="Main">
       <ul>
-        <li><a href="gallery.html">Gallery</a></li>
+        <li class="site-nav__group"><a href="gallery.html">Gallery</a>
+          <ul class="site-nav__menu" aria-label="Gallery by medium">
+            <li><a href="gallery.html?c=painting">Painting</a></li>
+            <li><a href="gallery.html?c=drawing">Drawing</a></li>
+            <li><a href="gallery.html?c=print">Prints</a></li>
+            <li><a href="gallery.html?c=digital">Digital</a></li>
+            <li><a href="gallery.html?c=photography">Photography</a></li>
+            <li><a href="gallery.html?c=ceramics">Ceramics</a></li>
+            <li><a href="gallery.html?c=wall-magazine">Wall magazine</a></li>
+            <li><a href="gallery.html?c=all">All</a></li>
+          </ul>
+        </li>
         <li><a href="series.html">Series</a></li>
         <li><a href="artist-statement.html">Artist statement</a></li>
         <li><a href="resume.html" aria-current="page">Resume</a></li>

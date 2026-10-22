@@ -198,6 +198,7 @@
     /** Sizes every frame from one scale (see sectionScales) and keeps the camera on the current section. */
     function layout() {
       if (room.hidden || sections.length === 0) return;
+      room.style.setProperty('--room-top', `${Math.round(room.getBoundingClientRect().top + window.scrollY)}px`);
       segmentWidth = room.clientWidth;
       room.style.setProperty('--room-segment', `${segmentWidth}px`);
       const sample = parts.track.querySelector('.room__segment:not(.room__segment--end) .room__art');

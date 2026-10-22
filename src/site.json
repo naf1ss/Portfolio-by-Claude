@@ -1,6 +1,19 @@
 {
   "nav": [
-    {"label": "Gallery", "href": "gallery.html"},
+    {
+      "label": "Gallery",
+      "href": "gallery.html",
+      "children": [
+        {"label": "Painting", "href": "gallery.html?c=painting"},
+        {"label": "Drawing", "href": "gallery.html?c=drawing"},
+        {"label": "Prints", "href": "gallery.html?c=print"},
+        {"label": "Digital", "href": "gallery.html?c=digital"},
+        {"label": "Photography", "href": "gallery.html?c=photography"},
+        {"label": "Ceramics", "href": "gallery.html?c=ceramics"},
+        {"label": "Wall magazine", "href": "gallery.html?c=wall-magazine"},
+        {"label": "All", "href": "gallery.html?c=all"}
+      ]
+    },
     {"label": "Series", "href": "series.html"},
     {"label": "Artist statement", "href": "artist-statement.html"},
     {"label": "Resume", "href": "resume.html"},

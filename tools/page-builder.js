@@ -58,11 +58,24 @@ function assertAttributeSafe(name, value) {
   return value;
 }
 
+/**
+ * Header links. An entry with `children` gets a small menu that opens on hover or keyboard focus
+ * (Gallery lists its media, so a visitor can go straight to Prints or Photography).
+ */
 function renderNav(nav, currentHref) {
   return nav
-    .map(({ label, href }) => {
+    .map(({ label, href, children }) => {
       const current = href === currentHref ? ' aria-current="page"' : '';
-      return `        <li><a href="${href}"${current}>${label}</a></li>`;
+      const link = `<a href="${href}"${current}>${label}</a>`;
+      if (!children || children.length === 0) return `        <li>${link}</li>`;
+      const items = children.map((child) => `            <li><a href="${child.href}">${child.label}</a></li>`).join('\n');
+      return [
+        `        <li class="site-nav__group">${link}`,
+        `          <ul class="site-nav__menu" aria-label="${label} by medium">`,
+        items,
+        '          </ul>',
+        '        </li>',
+      ].join('\n');
     })
     .join('\n');
 }
