@@ -6,7 +6,6 @@
  *   cover                          work id for the projects list (shown whole, never cropped)
  *   hero    { workId, caption }    the opening picture
  *   glance  [{ label, text }]      the project at a glance (role, timeline, disciplines...)
- *   link    { text, url }          optional: the project's own site
  *   sections [{ id, label, number?, title, blocks }]   in reading order; `label` names it in the contents
  *
  * Blocks, rendered by js/project-page.js:
@@ -14,7 +13,7 @@
  *   { type: 'question', text }                         the research question, set large
  *   { type: 'criteria', items: [{ title, text }] }
  *   { type: 'stats', items: [{ value, label }] }
- *   { type: 'figure', workId, caption }                one picture, whole
+ *   { type: 'figure', workId, caption, size? }         one picture, whole; size 'medium' keeps it narrower
  *   { type: 'row', items: [{ workId, caption }] }      pictures side by side at one height, none cropped
  *   { type: 'grid', items: [{ workId, label, caption }] }   same-shape pictures in an even grid
  *   { type: 'compare', items: [{ workId, label, caption }] } two stages of a design, side by side
@@ -34,22 +33,21 @@
   }
 })(typeof self !== 'undefined' ? self : this, [
   {
-    // From the Kolbe final presentation and poster (2026); the proposal only for how the plan changed.
+    // From the final presentation and poster (2026); the proposal only for how the plan changed.
     id: 'planet-walk',
     title: 'Planet Walk & Observatory Mural',
-    kicker: 'Kolbe Summer Research Fellowship · 2026',
+    kicker: 'Case study · 2026',
     summary:
       'A walkable scale model of the solar system across Gettysburg College, from the planetarium to the Observatory: a measured route, eleven ceramic station markers, a four-panel mural and a companion website.',
     cover: 'pw-mural-mockup',
     hero: { workId: 'pw-mural-mockup', caption: 'The mural mocked up on the College Observatory, where the walk ends.' },
     glance: [
       { label: 'Role', text: 'Researcher and designer: route planning, ceramic markers, mural and website' },
-      { label: 'Mentor', text: 'Dr. Ryan E. Johnson' },
+      { label: 'Mentor', text: 'Dr. Ryan E. Johnson, Associate Professor of Physics' },
       { label: 'Timeline', text: 'Eight weeks, summer 2026' },
       { label: 'Disciplines', text: 'Astronomy, mathematics, site planning, ceramics, illustration, web design' },
       { label: 'Deliverables', text: 'Route and station plan, eleven markers, a four-panel mural, a website' },
     ],
-    link: { text: 'Visit the companion website', url: 'https://planet-walk.vercel.app/' },
     sections: [
       {
         id: 'overview',
@@ -98,7 +96,7 @@
               { value: '11', label: 'Stations: the Sun, the eight planets, Ceres and Pluto' },
             ],
           },
-          { type: 'figure', workId: 'pw-route-map', caption: 'The route, from the planetarium at Masters Hall (the Sun) to the College Observatory (Pluto).' },
+          { type: 'figure', size: 'medium', workId: 'pw-route-map', caption: 'The route, from the planetarium at Masters Hall (the Sun) to the College Observatory (Pluto).' },
           {
             type: 'decision',
             title: 'Scale and route kept apart',
@@ -116,7 +114,7 @@
             type: 'text',
             paragraphs: [
               'Each station needed a marker that could live outdoors, be touched, and age well. I chose ceramic tile, and a research trip to Baltimore to study glazes shaped the final look.',
-              'I prepared the clay and carved planetary surfaces into it: craters, cloud bands, a canyon system.',
+              'I prepared the clay and carved planetary surfaces into it: craters, the rings of Saturn, a canyon system. On the Saturn tile, depth stands for tone: the deeper a groove, the darker its ring, and the shallower, the lighter.',
             ],
           },
           {
@@ -130,7 +128,7 @@
           {
             type: 'row',
             items: [
-              { workId: 'pw-carved-bands', caption: 'Bands' },
+              { workId: 'pw-carved-bands', caption: 'Saturn’s rings: deeper grooves for darker rings' },
               { workId: 'pw-carved-canyon', caption: 'A canyon' },
             ],
           },
@@ -145,7 +143,7 @@
               { workId: 'pw-tiles-table', caption: 'Tests compared side by side' },
             ],
           },
-          { type: 'figure', workId: 'pw-tile-wall', caption: 'The marker set, from the Sun to Neptune.' },
+          { type: 'figure', workId: 'pw-tile-wall', caption: 'Mockup: the marker set, from the Sun to Neptune, shown together on a brick wall.' },
           {
             type: 'decision',
             title: 'One format, many surfaces',
@@ -192,17 +190,11 @@
           {
             type: 'text',
             paragraphs: [
-              'The walk needed an ending that could be seen from across the field. My first study filled the Observatory wall with a single map of the Martian surface: accurate, but quiet from a distance, and it spoke only to science.',
-              'The final design pairs science with story. Each of four panels, for Mars, Earth, Jupiter and Saturn, sets a stylised figure from the planet’s mythology against the planet itself, tied together by orbital lines.',
+              'The walk needed an ending that could be seen from across the field: a landmark that tells visitors they have arrived.',
+              'The design pairs science with story. Each of four panels, for Mars, Earth, Jupiter and Saturn, sets a stylised figure from the planet’s mythology against the planet itself, tied together by orbital lines.',
             ],
           },
-          {
-            type: 'compare',
-            items: [
-              { workId: 'pw-mural-study', label: 'Early study', caption: 'A single panel of the Martian surface' },
-              { workId: 'pw-mural-panels', label: 'Final design', caption: 'Myth and science in four panels' },
-            ],
-          },
+          { type: 'figure', workId: 'pw-mural-panels', caption: 'The four panels: Mars, Earth, Jupiter and Saturn.' },
           {
             type: 'decision',
             title: 'Print, not paint',
@@ -219,8 +211,8 @@
           {
             type: 'text',
             paragraphs: [
-              'The website was not in the original plan; it grew out of the walk itself. A visitor needs to find the next station, and to know what they are looking at once they arrive.',
-              'I built an interactive companion with a map of the stops, a page for each planet with key facts, and a tracker that follows a visitor from the Sun to Pluto. It links the physical installation to a digital one for visitors, campus tours and future outreach.',
+              'The website was not in the original plan; it grew out of the walk itself. A walk this long needs something to keep visitors going from one station to the next.',
+              'At its centre is a walk tracker. Visitors mark each station as they reach it and follow their progress outward from the Sun; when they finish, the site greets them with facts about the journey they have just made. Around the tracker sit a map of the stops and a page for each planet, so the walk carries on for visitors, campus tours and future outreach.',
             ],
           },
           { type: 'link', text: 'Open the Planet Walk website', url: 'https://planet-walk.vercel.app/' },
@@ -236,8 +228,8 @@
             items: [
               { title: 'Route and station plan', text: 'A finalised, measured route on a scientifically consistent scale.', status: 'Complete' },
               { title: 'Station markers', text: 'A marker system backed by 66 material tests; production tiles made.', status: 'Ready to glaze and fire' },
-              { title: 'Observatory mural', text: 'Four panels, designed for vinyl, with an on-site mockup.', status: 'Print-ready' },
-              { title: 'Companion website', text: 'Map, planet pages and a walk tracker.', status: 'Live' },
+              { title: 'Observatory mural', text: 'Four panels, printed on vinyl, with an on-site mockup.', status: 'Printed' },
+              { title: 'Companion website', text: 'A walk tracker, a map of the stops and planet pages.', status: 'Live' },
               { title: 'Documentation', text: 'A package for installation coordination and future use.', status: 'Complete' },
             ],
           },
@@ -266,7 +258,7 @@
           },
           {
             type: 'credits',
-            text: 'With thanks to Dr. Ryan E. Johnson, my mentor; Professor Tina Gebhart, for guidance in ceramics; Sarah Jacobs, MFA, for advice on mural materials and installation; and the Kolbe Fellowship Committee.',
+            text: 'With thanks to my mentor, Dr. Ryan E. Johnson; Professor Tina Gebhart, for guidance in ceramics; and Sarah Jacobs, MFA, for advice on mural materials and installation.',
           },
         ],
       },

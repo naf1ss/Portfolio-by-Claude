@@ -1469,6 +1469,29 @@ button:focus-visible > .roll .roll__face + .roll__face {
   cursor: zoom-in;
 }
 
+.pcase__figure--medium {
+  max-width: 40rem;
+}
+
+/* A station: the planet's name, then where its marker sits. */
+.pcase__figure.pcase__figure--station figcaption {
+  display: grid;
+  gap: 0.1rem;
+  margin-top: 0.7rem;
+}
+
+.pcase__figure.pcase__figure--station figcaption b {
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+
+.pcase__figure.pcase__figure--station figcaption span {
+  font-family: var(--font-prose);
+  font-size: 1.02rem;
+  font-style: italic;
+  font-weight: 500;
+}
+
 .pcase__figure--hero {
   margin-top: clamp(1rem, 3vw, 2rem);
 }
@@ -1517,19 +1540,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
   line-height: 1.35;
 }
 
-.pcase__glance-link {
-  display: flex;
-  align-items: end;
-}
-
-.pcase__glance-link a {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-underline-offset: 0.3em;
-}
-
 /* Contents rail and sections */
 .pcase__layout {
   display: grid;
@@ -1548,44 +1558,72 @@ button:focus-visible > .roll .roll__face + .roll__face {
   .pcase__contents {
     display: block;
     position: sticky;
-    top: 2rem;
+    top: calc(50vh - var(--wheel-row) * var(--wheel-rows) / 2);
     align-self: start;
-    padding-top: clamp(3rem, 6vw, 5rem);
+  }
+}
+
+.pcase__contents {
+  --wheel-row: 2.1rem;
+  --wheel-rows: 9; /* rows visible in the window; the current one sits in the middle */
+}
+
+@media (min-width: 64rem) {
+  .pcase__contents {
+    height: calc(var(--wheel-row) * var(--wheel-rows));
+    overflow: hidden;
+    perspective: 32rem;
+    -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+    mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
   }
 }
 
 .pcase__contents ol {
-  display: grid;
-  gap: 0.15rem;
   margin: 0;
-  padding: 0;
+  padding: calc(var(--wheel-row) * (var(--wheel-rows) - 1) / 2) 0;
   list-style: none;
+  transform: translateY(calc(var(--wheel, 0) * -1 * var(--wheel-row)));
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pcase__contents li {
+  height: var(--wheel-row);
 }
 
 .pcase__contents a {
   display: flex;
+  align-items: center;
   gap: 0.6rem;
-  padding: 0.35rem 0;
-  font-size: 0.78rem;
+  height: 100%;
+  font-size: 0.82rem;
   font-weight: 500;
   text-decoration: none;
-  opacity: 0.55;
-  transition: opacity 0.25s var(--ease), transform 0.4s var(--ease-out);
+  transform-origin: left center;
+  opacity: clamp(0.12, calc(1 - var(--d, 0) * 0.3), 1);
+  transform: rotateX(calc(var(--s, 0) * var(--d, 0) * -14deg)) scale(calc(1 - min(var(--d, 0), 3) * 0.06));
+  transition: opacity 0.5s var(--ease), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s;
 }
 
-.pcase__contents a span {
+.pcase__contents-number {
   min-width: 1.4rem;
   font-variant-numeric: tabular-nums;
 }
 
-.pcase__contents a:hover,
-.pcase__contents a[aria-current] {
+.pcase__contents a:hover {
   opacity: 1;
 }
 
 .pcase__contents a[aria-current] {
-  transform: translateX(0.3rem);
   color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pcase__contents ol,
+  .pcase__contents a {
+    transition: none;
+  }
 }
 
 .pcase__body {

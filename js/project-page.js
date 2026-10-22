@@ -91,9 +91,11 @@
       return list;
     },
 
-    figure: ({ workId, caption }, byId) => {
+    figure: ({ workId, caption, size }, byId) => {
       const work = byId.get(workId);
-      return work ? figure(work, { caption }) : null;
+      if (!work) return null;
+      const className = size ? `pcase__figure pcase__figure--${size}` : 'pcase__figure';
+      return figure(work, { caption, className });
     },
 
     // Side by side at one height: each picture's share of the row follows its shape, so none is cropped.
@@ -113,7 +115,7 @@
       const grid = element('div', 'pcase__grid');
       items.forEach(({ workId, label, caption }) => {
         const work = byId.get(workId);
-        if (work) grid.append(figure(work, { label, caption, sizes: '(min-width: 64rem) 20vw, 46vw' }));
+        if (work) grid.append(figure(work, { label, caption, sizes: '(min-width: 64rem) 20vw, 46vw', className: 'pcase__figure pcase__figure--station' }));
       });
       return grid;
     },
@@ -195,7 +197,10 @@
     return node;
   }
 
-  /** The contents rail: one link per section, the one in view marked as the reader scrolls. */
+  /**
+   * The contents rail, turning like a wheel: the section in view sits in the middle at full strength, and the
+   * others fade and tilt away the further they are from it (CSS reads --wheel and each link's --d).
+   */
   function contents(sections) {
     const nav = element('nav', 'pcase__contents');
     nav.setAttribute('aria-label', 'Contents');
@@ -204,8 +209,7 @@
     sections.forEach(({ id, label, number }) => {
       const link = element('a');
       link.href = `#${id}`;
-      if (number) link.append(element('span', undefined, number));
-      link.append(label);
+      link.append(element('span', 'pcase__contents-number', number || ''), label);
       links.set(id, link);
       const item = element('li');
       item.append(link);
@@ -215,19 +219,30 @@
     return { nav, links };
   }
 
-  function watchContents(container, links) {
+  function setCurrent(nav, links, currentId) {
+    const ids = [...links.keys()];
+    const current = Math.max(0, ids.indexOf(currentId));
+    nav.style.setProperty('--wheel', current);
+    ids.forEach((id, i) => {
+      const link = links.get(id);
+      link.style.setProperty('--d', Math.abs(i - current));
+      link.style.setProperty('--s', Math.sign(i - current));
+      link.toggleAttribute('aria-current', i === current);
+    });
+  }
+
+  function watchContents(container, nav, links) {
+    setCurrent(nav, links, links.keys().next().value);
     if (!('IntersectionObserver' in window)) return;
     const visible = new Set();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => (entry.isIntersecting ? visible.add(entry.target.id) : visible.delete(entry.target.id)));
         const current = [...links.keys()].find((id) => visible.has(id));
-        if (current) links.forEach((link, id) => link.toggleAttribute('aria-current', id === current));
+        if (current) setCurrent(nav, links, current);
       },
       { rootMargin: '-35% 0px -55% 0px' }
     );
-    const first = links.values().next().value;
-    if (first) first.setAttribute('aria-current', '');
     container.querySelectorAll('.pcase__section').forEach((node) => observer.observe(node));
   }
 
@@ -247,15 +262,6 @@
       item.append(element('dt', undefined, label), element('dd', undefined, text));
       glance.append(item);
     });
-    if (project.link) {
-      const item = element('div', 'pcase__glance-link');
-      const link = element('a', undefined, `${project.link.text} ↗`);
-      link.href = project.link.url;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      item.append(link);
-      glance.append(item);
-    }
 
     const { nav, links } = contents(project.sections);
     const body = element('div', 'pcase__body');
@@ -265,7 +271,7 @@
 
     container.replaceChildren(hero, glance, layout);
     container.hidden = false;
-    watchContents(container, links);
+    watchContents(container, nav, links);
   }
 
   /** The projects list: each project's cover, whole, beside its title and summary. */
