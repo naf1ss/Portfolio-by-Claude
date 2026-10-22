@@ -14,6 +14,7 @@
       ]
     },
     {"label": "Series", "href": "series.html", "menuLabel": "Series", "childrenFrom": "series"},
+    {"label": "Projects", "href": "projects.html", "menuLabel": "Projects", "childrenFrom": "projects"},
     {"label": "Artist statement", "href": "artist-statement.html"},
     {"label": "Resume", "href": "resume.html"},
     {"label": "Contact", "href": "contact.html"}
@@ -29,6 +30,8 @@
     {"file": "works-photography"},
     {"file": "series-data"},
     {"file": "series-stories"},
+    {"file": "projects-data"},
+    {"file": "project-page", "requires": ["works-utils"]},
     {"file": "painted-text", "requires": ["works-utils", "works-photography"]},
     {"file": "site-config"},
     {"file": "hero-window-utils"},

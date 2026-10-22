@@ -149,3 +149,10 @@ test('resolveNav lists every series under an entry with childrenFrom: "series"',
   });
   assert.throws(() => resolveNav([{ label: 'X', href: 'x.html', childrenFrom: 'nope' }]), /unknown childrenFrom/);
 });
+
+test('resolveNav lists every project under an entry with childrenFrom: "projects"', () => {
+  const nav = resolveNav([{ label: 'Projects', href: 'projects.html', childrenFrom: 'projects' }], {
+    projects: [{ id: 'planet-walk', title: 'Planet Walk' }],
+  });
+  assert.deepEqual(nav[0].children, [{ label: 'Planet Walk', href: 'projects.html?p=planet-walk' }]);
+});

@@ -438,3 +438,19 @@ test('applyCuratedOrder puts listed works first within their medium and keeps th
   assert.deepEqual(ids, ['p1', 'x3', 'p2', 'x1', 'x2']);
   assert.deepEqual(U.applyCuratedOrder(works).map((work) => work.id), works.map((work) => work.id));
 });
+
+test('catalogue: every picture a project shows is in the catalogue', () => {
+  const PROJECTS = require('../js/projects-data.js');
+  const ids = new Set(WORKS.map((record) => record.id));
+  PROJECTS.forEach((project) => {
+    const used = [project.cover, project.hero.workId];
+    project.sections.forEach((section) =>
+      section.blocks.forEach((block) => {
+        if (block.workId) used.push(block.workId);
+        (block.items || []).forEach((item) => item.workId && used.push(item.workId));
+      })
+    );
+    used.forEach((id) => assert.ok(ids.has(id), `${project.id}: ${id} is not in the catalogue`));
+    assert.equal(new Set(project.sections.map((s) => s.id)).size, project.sections.length, `${project.id}: section ids repeat`);
+  });
+});

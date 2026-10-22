@@ -255,6 +255,38 @@
     if (linkedId) lightbox.open(linkedId, 'load');
   }
 
+  /** Lists every project, or (with ?p=<id>) shows one project's case study. */
+  function initProjects() {
+    const { byId } = loadWorks();
+    const projects = window.PORTFOLIO_PROJECTS || [];
+    const chosen = projects.find((project) => project.id === new URLSearchParams(location.search).get('p'));
+    const index = document.getElementById('projects-index');
+    const article = document.getElementById('project-case');
+
+    if (!chosen) {
+      window.ProjectPage.renderList(document.getElementById('project-list'), projects, {
+        byId,
+        hrefFor: (project) => `projects.html?p=${project.id}`,
+      });
+      return;
+    }
+
+    document.title = `${chosen.title} — nuances by nafis`;
+    index.hidden = true;
+    document.getElementById('project-back').hidden = false;
+    window.ProjectPage.renderCase(article, chosen, { byId });
+
+    // The viewer steps through the case study's pictures in reading order.
+    const ids = [...new Set([...article.querySelectorAll('[data-work-id]')].map((link) => link.dataset.workId))];
+    const works = ids.map((id) => byId.get(id)).filter(Boolean);
+    const lightbox = mountViewer(article, {
+      findOrigin: (id) => article.querySelector(`a[data-work-id="${id}"] img`),
+    });
+    lightbox.setWorks(works);
+    const linkedId = window.WorksUtils.workIdFromHash(location.hash, works);
+    if (linkedId) lightbox.open(linkedId, 'load');
+  }
+
   /** Fills a <ul> with contact links; `showValue` also prints the address or handle. */
   function renderContactLinks(list, { showValue }) {
     const entries = window.ContactUtils.contactEntries(config.contact);
@@ -290,7 +322,7 @@
     document.querySelector('[data-print]').addEventListener('click', () => window.print());
   }
 
-  const pages = { home: initHome, gallery: initGallery, series: initSeries, contact: initContact, resume: initResume };
+  const pages = { home: initHome, gallery: initGallery, series: initSeries, projects: initProjects, contact: initContact, resume: initResume };
   const init = pages[document.body.dataset.page];
   if (init) init();
 })();

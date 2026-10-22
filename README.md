@@ -84,7 +84,7 @@ A write-up's top-level `process` (Horizon) sits as a band between the intro and 
 
 The header's Series menu lists every series in `js/series-data.js` (`"childrenFrom": "series"` in `src/site.json`), so a new series appears there on the next `npm run build`.
 
-Planet Walk & Observatory Mural is a case study written the same way (`js/series-stories.js`), with a facts list, titled design criteria, photo strips after chapters and acknowledgements; its images are in `images/planet-walk/`.
+Projects (`projects.html`, after Series in the header) are case studies rather than series of artworks. Each is an entry in `js/projects-data.js` (hero, at a glance, then sections built from typed blocks), rendered by `js/project-page.js` with a contents rail that follows the reader; pictures are always shown whole. A new project joins the header's Projects menu on the next build. Planet Walk & Observatory Mural's images are in `images/planet-walk/`.
 
 On the Series page each card shows up to three works side by side at one height on a plain wall: the series' `coverIds`, or its first three works. The picture lights are on by default; a brass pull cord hanging from the top of the wall turns them off and on: click it, or grab the bead and pull it down or to the side (`js/pull-cord.js`, a damped spring, so it wobbles back to rest). The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
 

@@ -1340,6 +1340,549 @@ button:focus-visible > .roll .roll__face + .roll__face {
   }
 }
 
+/* ---------- Projects (js/project-page.js) ----------
+   A case study reads top to bottom: hero, the project at a glance, then numbered sections beside a contents rail
+   that marks where the reader is. Every picture is shown whole. */
+.projects-intro {
+  max-width: 36rem;
+  margin: 0.5rem 0 clamp(2rem, 4vw, 3rem);
+  font-family: var(--font-prose);
+  font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem);
+  font-weight: 500;
+}
+
+.project-list {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-card {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: center;
+  text-decoration: none;
+}
+
+@media (min-width: 56rem) {
+  .project-card {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+}
+
+.project-card__image img {
+  width: 100%;
+  height: auto;
+  transition: transform 1.2s var(--ease-out);
+}
+
+.project-card__image {
+  display: block;
+  overflow: hidden;
+}
+
+.project-card:hover .project-card__image img {
+  transform: scale(1.02);
+}
+
+.project-card__text {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.project-card__kicker,
+.pcase__kicker,
+.pcase__eyebrow {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.project-card__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.4rem + 2vw, 3.2rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+.project-card__summary {
+  font-family: var(--font-prose);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.project-card__more {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.project-card:hover .project-card__more {
+  color: var(--accent);
+}
+
+.pcase[hidden] {
+  display: none;
+}
+
+/* Hero */
+.pcase__hero {
+  display: grid;
+  gap: 1rem;
+  padding-top: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.pcase__name {
+  max-width: 18ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 1.4rem + 5vw, 5.8rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.pcase__summary {
+  max-width: 44rem;
+  font-family: var(--font-prose);
+  font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.pcase__figure {
+  margin: 0;
+}
+
+.pcase__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: zoom-in;
+}
+
+.pcase__figure--hero {
+  margin-top: clamp(1rem, 3vw, 2rem);
+}
+
+.pcase__figure figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.5rem;
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.pcase__figure figcaption b {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.pcase__figure figcaption span {
+  color: var(--ink-muted);
+}
+
+/* At a glance */
+.pcase__glance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 1.25rem clamp(1rem, 2.5vw, 2rem);
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--rule);
+}
+
+.pcase__glance dt {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pcase__glance dd {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-prose);
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.pcase__glance-link {
+  display: flex;
+  align-items: end;
+}
+
+.pcase__glance-link a {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-underline-offset: 0.3em;
+}
+
+/* Contents rail and sections */
+.pcase__layout {
+  display: grid;
+  gap: 0 clamp(2rem, 5vw, 5rem);
+}
+
+.pcase__contents {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .pcase__layout {
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+
+  .pcase__contents {
+    display: block;
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    padding-top: clamp(3rem, 6vw, 5rem);
+  }
+}
+
+.pcase__contents ol {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pcase__contents a {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  opacity: 0.55;
+  transition: opacity 0.25s var(--ease), transform 0.4s var(--ease-out);
+}
+
+.pcase__contents a span {
+  min-width: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pcase__contents a:hover,
+.pcase__contents a[aria-current] {
+  opacity: 1;
+}
+
+.pcase__contents a[aria-current] {
+  transform: translateX(0.3rem);
+  color: var(--accent);
+}
+
+.pcase__body {
+  min-width: 0;
+}
+
+.pcase__section {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  padding-block: clamp(3rem, 6vw, 5rem);
+  border-bottom: 1px solid var(--rule);
+  scroll-margin-top: 1.5rem;
+}
+
+.pcase__section:last-child {
+  border-bottom: 0;
+}
+
+.pcase__head {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pcase__number {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 1.8rem + 2vw, 3.6rem);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.pcase__title {
+  max-width: 22ch;
+  font-size: clamp(1.9rem, 1.3rem + 2vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.pcase__prose {
+  display: grid;
+  gap: 1rem;
+  max-width: 40rem;
+  font-family: var(--font-prose);
+  font-size: clamp(1.15rem, 1.05rem + 0.35vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.pcase__question {
+  max-width: 46rem;
+  margin: 0;
+  padding: clamp(1.25rem, 3vw, 2rem) 0 clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem);
+  border-left: 2px solid var(--accent);
+}
+
+.pcase__question p:last-child {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2.1rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.pcase__criteria ul,
+.pcase__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem clamp(1rem, 2.5vw, 2rem);
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pcase__criteria li {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--ink);
+}
+
+.pcase__criteria b {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.pcase__criteria span {
+  font-family: var(--font-prose);
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.pcase__stats div {
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rule);
+}
+
+.pcase__stats dt {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.pcase__stats dd {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+/* Pictures side by side at one height: flex-grow follows each picture's shape, so all are whole. */
+.pcase__row,
+.pcase__compare {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.pcase__row > .pcase__figure,
+.pcase__compare > .pcase__figure {
+  flex: var(--ar, 1) 1 0;
+  min-width: 0;
+}
+
+.pcase__arrow {
+  flex: none;
+  align-self: center;
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+
+@media (max-width: 40rem) {
+  .pcase__row {
+    flex-wrap: wrap;
+  }
+
+  .pcase__row > .pcase__figure {
+    flex: var(--ar, 1) 1 calc(var(--ar, 1) * 9rem);
+  }
+
+  .pcase__compare {
+    flex-direction: column;
+  }
+
+  .pcase__compare > .pcase__figure {
+    flex: none;
+    width: 100%;
+  }
+
+  .pcase__arrow {
+    transform: rotate(90deg);
+  }
+}
+
+.pcase__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 1.5rem 1rem;
+}
+
+@media (max-width: 40rem) {
+  .pcase__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pcase__decision {
+  max-width: 46rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--paper-sunken);
+}
+
+.pcase__decision h3 {
+  margin: 0.45rem 0 0.5rem;
+  font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.7rem);
+  font-weight: 500;
+}
+
+.pcase__decision p:last-child {
+  font-family: var(--font-prose);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.pcase__outcomes {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.pcase__outcomes li {
+  display: grid;
+  gap: 0.2rem 2rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+@media (min-width: 48rem) {
+  .pcase__outcomes li {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    align-items: baseline;
+  }
+}
+
+.pcase__outcomes li > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+}
+
+.pcase__outcomes b {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.pcase__outcomes p {
+  font-family: var(--font-prose);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.pcase__status {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pcase__changes dl {
+  display: grid;
+  margin: 0.9rem 0 0;
+}
+
+.pcase__changes dl > div {
+  display: grid;
+  gap: 0.25rem 2rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 48rem) {
+  .pcase__changes dl > div {
+    grid-template-columns: 9rem minmax(0, 1fr);
+  }
+}
+
+.pcase__changes dt {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.pcase__changes dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.pcase__changes s {
+  opacity: 0.55;
+}
+
+.pcase__to::before {
+  content: '→ ';
+  color: var(--accent);
+}
+
+.pcase__link {
+  justify-self: start;
+}
+
+.pcase__credits {
+  max-width: 40rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
 /* ---------- Series story (js/series-story.js) ----------
    A series told through pictures beside their words: the picture stays in view while its text scrolls. */
 .story[hidden] {

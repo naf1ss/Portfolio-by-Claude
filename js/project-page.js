@@ -1,0 +1,305 @@
+/**
+ * Renders a project's case study (js/projects-data.js): a hero, the project at a glance, a contents rail that
+ * follows the reader, and the sections in order, each built from typed blocks. Pictures are always shown whole
+ * and link to the page's viewer (data-work-id). Exposes window.ProjectPage.{ renderList, renderCase }.
+ */
+(function () {
+  'use strict';
+
+  const U = window.WorksUtils;
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  /** A paragraph in which *asterisks* mark a title, set in italics. */
+  function paragraph(text, className) {
+    const node = element('p', className);
+    text.split(/\*([^*]+)\*/).forEach((part, i) => {
+      if (part) node.append(i % 2 === 1 ? element('i', undefined, part) : part);
+    });
+    return node;
+  }
+
+  /** The whole picture (never cropped), as a link the viewer opens. */
+  function image(work, sizes) {
+    const link = element('a', 'pcase__image');
+    link.href = U.hashForWork(work);
+    link.dataset.workId = work.id;
+    link.setAttribute('aria-label', `View ${work.title || 'this image'} full screen`);
+    const img = new Image();
+    img.alt = U.altText(work);
+    img.width = work.w;
+    img.height = work.h;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.sizes = sizes;
+    img.srcset = U.buildSrcset(work);
+    img.src = U.fallbackUrl(work);
+    link.append(img);
+    return link;
+  }
+
+  function figure(work, { caption, label, sizes = '(min-width: 64rem) 60vw, 92vw', className = 'pcase__figure' } = {}) {
+    const node = element('figure', className);
+    node.append(image(work, sizes));
+    if (caption || label) {
+      const text = element('figcaption');
+      if (label) text.append(element('b', undefined, label));
+      if (caption) text.append(element('span', undefined, caption));
+      node.append(text);
+    }
+    return node;
+  }
+
+  const BLOCKS = {
+    text: ({ paragraphs }) => {
+      const prose = element('div', 'pcase__prose');
+      paragraphs.forEach((text) => prose.append(paragraph(text)));
+      return prose;
+    },
+
+    question: ({ text }) => {
+      const block = element('blockquote', 'pcase__question');
+      block.append(element('p', 'pcase__eyebrow', 'Research question'), element('p', undefined, text));
+      return block;
+    },
+
+    criteria: ({ items }) => {
+      const block = element('div', 'pcase__criteria');
+      block.append(element('p', 'pcase__eyebrow', 'Design criteria'));
+      const list = element('ul');
+      items.forEach(({ title, text }) => {
+        const item = element('li');
+        item.append(element('b', undefined, title), element('span', undefined, text));
+        list.append(item);
+      });
+      block.append(list);
+      return block;
+    },
+
+    stats: ({ items }) => {
+      const list = element('dl', 'pcase__stats');
+      items.forEach(({ value, label }) => {
+        const item = element('div');
+        item.append(element('dt', undefined, value), element('dd', undefined, label));
+        list.append(item);
+      });
+      return list;
+    },
+
+    figure: ({ workId, caption }, byId) => {
+      const work = byId.get(workId);
+      return work ? figure(work, { caption }) : null;
+    },
+
+    // Side by side at one height: each picture's share of the row follows its shape, so none is cropped.
+    row: ({ items }, byId) => {
+      const row = element('div', 'pcase__row');
+      items.forEach(({ workId, caption, label }) => {
+        const work = byId.get(workId);
+        if (!work) return;
+        const item = figure(work, { caption, label, sizes: '(min-width: 64rem) 30vw, 92vw' });
+        item.style.setProperty('--ar', U.aspectRatio(work));
+        row.append(item);
+      });
+      return row;
+    },
+
+    grid: ({ items }, byId) => {
+      const grid = element('div', 'pcase__grid');
+      items.forEach(({ workId, label, caption }) => {
+        const work = byId.get(workId);
+        if (work) grid.append(figure(work, { label, caption, sizes: '(min-width: 64rem) 20vw, 46vw' }));
+      });
+      return grid;
+    },
+
+    compare: ({ items }, byId) => {
+      const pair = element('div', 'pcase__compare');
+      items.forEach(({ workId, label, caption }, i) => {
+        const work = byId.get(workId);
+        if (!work) return;
+        const item = figure(work, { label, caption, sizes: '(min-width: 64rem) 30vw, 92vw' });
+        item.style.setProperty('--ar', U.aspectRatio(work));
+        pair.append(item);
+        if (i === 0 && items.length > 1) {
+          const arrow = element('span', 'pcase__arrow', '→');
+          arrow.setAttribute('aria-hidden', 'true');
+          pair.append(arrow);
+        }
+      });
+      return pair;
+    },
+
+    decision: ({ title, text }) => {
+      const block = element('aside', 'pcase__decision');
+      block.append(element('p', 'pcase__eyebrow', 'Key decision'), element('h3', undefined, title), paragraph(text));
+      return block;
+    },
+
+    outcomes: ({ items }) => {
+      const list = element('ul', 'pcase__outcomes');
+      items.forEach(({ title, text, status }) => {
+        const item = element('li');
+        const head = element('div');
+        head.append(element('b', undefined, title));
+        if (status) head.append(element('span', 'pcase__status', status));
+        item.append(head, element('p', undefined, text));
+        list.append(item);
+      });
+      return list;
+    },
+
+    changes: ({ items }) => {
+      const block = element('div', 'pcase__changes');
+      block.append(element('p', 'pcase__eyebrow', 'From proposal to practice'));
+      const table = element('dl');
+      items.forEach(({ title, from, to }) => {
+        const row = element('div');
+        const change = element('dd');
+        change.append(element('s', undefined, from), element('span', 'pcase__to', to));
+        row.append(element('dt', undefined, title), change);
+        table.append(row);
+      });
+      block.append(table);
+      return block;
+    },
+
+    link: ({ text, url }) => {
+      const link = element('a', 'button pcase__link', `${text} ↗`);
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      return link;
+    },
+
+    credits: ({ text }) => element('p', 'pcase__credits', text),
+  };
+
+  function section(entry, byId) {
+    const node = element('section', 'pcase__section');
+    node.id = entry.id;
+    const head = element('header', 'pcase__head');
+    if (entry.number) head.append(element('span', 'pcase__number', entry.number));
+    head.append(element('p', 'pcase__eyebrow', entry.label), element('h2', 'pcase__title', entry.title));
+    node.append(head);
+    entry.blocks.forEach((block) => {
+      const build = BLOCKS[block.type];
+      const built = build ? build(block, byId) : null;
+      if (built) node.append(built);
+    });
+    return node;
+  }
+
+  /** The contents rail: one link per section, the one in view marked as the reader scrolls. */
+  function contents(sections) {
+    const nav = element('nav', 'pcase__contents');
+    nav.setAttribute('aria-label', 'Contents');
+    const list = element('ol');
+    const links = new Map();
+    sections.forEach(({ id, label, number }) => {
+      const link = element('a');
+      link.href = `#${id}`;
+      if (number) link.append(element('span', undefined, number));
+      link.append(label);
+      links.set(id, link);
+      const item = element('li');
+      item.append(link);
+      list.append(item);
+    });
+    nav.append(list);
+    return { nav, links };
+  }
+
+  function watchContents(container, links) {
+    if (!('IntersectionObserver' in window)) return;
+    const visible = new Set();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => (entry.isIntersecting ? visible.add(entry.target.id) : visible.delete(entry.target.id)));
+        const current = [...links.keys()].find((id) => visible.has(id));
+        if (current) links.forEach((link, id) => link.toggleAttribute('aria-current', id === current));
+      },
+      { rootMargin: '-35% 0px -55% 0px' }
+    );
+    const first = links.values().next().value;
+    if (first) first.setAttribute('aria-current', '');
+    container.querySelectorAll('.pcase__section').forEach((node) => observer.observe(node));
+  }
+
+  function renderCase(container, project, { byId }) {
+    const hero = element('header', 'pcase__hero');
+    hero.append(
+      element('p', 'pcase__kicker', project.kicker),
+      element('h1', 'pcase__name', project.title),
+      paragraph(project.summary, 'pcase__summary')
+    );
+    const heroWork = byId.get(project.hero.workId);
+    if (heroWork) hero.append(figure(heroWork, { caption: project.hero.caption, sizes: '96vw', className: 'pcase__figure pcase__figure--hero' }));
+
+    const glance = element('dl', 'pcase__glance');
+    project.glance.forEach(({ label, text }) => {
+      const item = element('div');
+      item.append(element('dt', undefined, label), element('dd', undefined, text));
+      glance.append(item);
+    });
+    if (project.link) {
+      const item = element('div', 'pcase__glance-link');
+      const link = element('a', undefined, `${project.link.text} ↗`);
+      link.href = project.link.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      item.append(link);
+      glance.append(item);
+    }
+
+    const { nav, links } = contents(project.sections);
+    const body = element('div', 'pcase__body');
+    project.sections.forEach((entry) => body.append(section(entry, byId)));
+    const layout = element('div', 'pcase__layout');
+    layout.append(nav, body);
+
+    container.replaceChildren(hero, glance, layout);
+    container.hidden = false;
+    watchContents(container, links);
+  }
+
+  /** The projects list: each project's cover, whole, beside its title and summary. */
+  function renderList(list, projects, { byId, hrefFor }) {
+    const items = projects.map((project) => {
+      const item = element('li');
+      const link = element('a', 'project-card');
+      link.href = hrefFor(project);
+      const cover = byId.get(project.cover);
+      if (cover) {
+        const img = new Image();
+        img.alt = '';
+        img.width = cover.w;
+        img.height = cover.h;
+        img.sizes = '(min-width: 64rem) 55vw, 92vw';
+        img.srcset = U.buildSrcset(cover);
+        img.src = U.fallbackUrl(cover);
+        const frame = element('span', 'project-card__image');
+        frame.append(img);
+        link.append(frame);
+      }
+      const text = element('span', 'project-card__text');
+      text.append(
+        element('span', 'project-card__kicker', project.kicker),
+        element('span', 'project-card__title', project.title),
+        element('span', 'project-card__summary', project.summary),
+        element('span', 'project-card__more', 'Read the case study →')
+      );
+      link.append(text);
+      item.append(link);
+      return item;
+    });
+    list.replaceChildren(...items);
+  }
+
+  window.ProjectPage = { renderCase, renderList };
+})();
