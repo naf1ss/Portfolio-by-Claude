@@ -273,88 +273,54 @@ a:hover {
   transform: translate(-50%, 0);
 }
 
-/* The theme switch: a small arched window onto a sunny landscape (js/theme.js). Two velvet curtains slide
-   shut for the dark theme and open again for the light; the sun sinks as they close. Its own view-transition
-   name keeps it out of the page's circle reveal, so the curtains are seen moving. */
+/* The theme switch: a small white-framed window onto a sunset sea, with sand sheer curtains on a brass rod
+   (js/theme.js draws it). Open for the light theme; drawn for the dark, when the view behind them dims. Its own
+   view-transition name keeps it out of the page's circle reveal, so the curtains are seen moving. */
 .theme-toggle {
-  --window-frame: currentColor;
   position: relative;
   display: inline-block;
   flex: none;
-  width: 2.3rem;
-  height: 2.75rem;
+  width: 2.5rem;
   padding: 0;
   border: 0;
-  border-radius: 1.15rem 1.15rem 0.2rem 0.2rem;
-  background: #1b2433;
+  background: none;
   color: inherit;
   cursor: pointer;
-  overflow: hidden;
-  isolation: isolate;
   view-transition-name: theme-window;
-  box-shadow: inset 0 0 0 2px var(--window-frame);
 }
 
-.theme-window__view,
-.theme-window__view svg {
-  position: absolute;
-  inset: 0;
+.theme-window {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  overflow: visible;
 }
 
 .theme-window__view {
   transition: filter 0.9s var(--ease);
 }
 
-.theme-window__sun {
-  transition: transform 0.9s var(--ease-out);
-}
-
-/* Curtains: deep red velvet with soft folds, gathered at the sides when open. */
 .theme-window__curtain {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  z-index: 1;
-  width: 54%;
-  background:
-    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.28) 0 1px, transparent 1px 3px, rgb(255 255 255 / 0.12) 3px 4px, transparent 4px 6px),
-    linear-gradient(#a8323a, #6e1d24);
-  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  opacity: 0.74; /* sheer: the view shows faintly through */
+  transform-box: view-box;
+  transform: scaleX(0.24);
+  transition: transform 0.85s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .theme-window__curtain--left {
-  left: 0;
-  transform-origin: left center;
-  transform: scaleX(0.2);
+  transform-origin: 3px 0;
 }
 
 .theme-window__curtain--right {
-  right: 0;
-  transform-origin: right center;
-  transform: scaleX(0.2);
+  transform-origin: 57px 0;
 }
 
-/* The frame: arched outline and a thin mullion, drawn over the view and the curtains. */
-.theme-window__frame {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 2px var(--window-frame);
-  background: linear-gradient(var(--window-frame), var(--window-frame)) 50% 0 / 1.5px 100% no-repeat;
-  pointer-events: none;
+.theme-window__ties {
+  transition: opacity 0.4s var(--ease) 0.45s;
 }
 
-.theme-toggle:hover .theme-window__curtain--left,
-.theme-toggle:focus-visible .theme-window__curtain--left {
-  transform: scaleX(0.3);
-}
-
-.theme-toggle:hover .theme-window__curtain--right,
-.theme-toggle:focus-visible .theme-window__curtain--right {
+.theme-toggle:hover .theme-window__curtain,
+.theme-toggle:focus-visible .theme-window__curtain {
   transform: scaleX(0.3);
 }
 
@@ -362,15 +328,16 @@ a:hover {
   transform: scaleX(1);
 }
 
+.theme-toggle[aria-pressed='true'] .theme-window__ties {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
 .theme-toggle[aria-pressed='true'] .theme-window__view {
-  filter: brightness(0.35) saturate(0.6);
+  filter: brightness(0.4) saturate(0.7);
 }
 
-.theme-toggle[aria-pressed='true'] .theme-window__sun {
-  transform: translateY(12px);
-}
-
-/* A drawn curtain twitches open a little under the pointer. */
+/* A drawn curtain parts a little under the pointer. */
 .theme-toggle[aria-pressed='true']:hover .theme-window__curtain,
 .theme-toggle[aria-pressed='true']:focus-visible .theme-window__curtain {
   transform: scaleX(0.88);
@@ -379,12 +346,13 @@ a:hover {
 .theme-toggle:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 3px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .theme-window__curtain,
   .theme-window__view,
-  .theme-window__sun {
+  .theme-window__ties {
     transition: none;
   }
 }

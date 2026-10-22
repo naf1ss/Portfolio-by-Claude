@@ -21,7 +21,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `js/painted-text.js` | Fills lettering marked `data-painted` with random photographs or paintings from the catalogue (footer "n.", contact headline) |
 | `js/works-utils.js` | Pure helpers (srcset, filtering, captions); unit tested |
 | `js/theme-utils.js` | Pure light/dark rules (saved choice beats the device setting); unit tested |
-| `js/theme.js` | The header window (curtains open: light, drawn: dark), remembered choice, and the circular reveal: light grows out of the window, dark closes back into it; loads in `<head>` to avoid a flash |
+| `js/theme.js` | The header window (a crop of photo-0195 in `images/theme/`; sand sheer curtains open: light, drawn: dark), remembered choice, and the circular reveal: light grows out of the window, dark closes back into it; loads in `<head>` to avoid a flash |
 | `js/intro-utils.js` | Pure rule for when the opening animation plays (arrival or reload of the home page); unit tested |
 | `js/intro.js` | Opening animation: large "n." that travels into the header logo while the cover closes onto it |
 | `js/series-data.js` | Named groups of works for the Series pages (edit here to regroup) |
