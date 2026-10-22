@@ -1268,6 +1268,12 @@ button:focus-visible > .roll .roll__face + .roll__face {
     align-items: center;
   }
 
+  /* Short text sits level with the middle of its picture rather than leaving a gap beneath it; long text
+     still runs beside the sticky picture. */
+  .story__pair > .story__text {
+    align-self: center;
+  }
+
   .story__pair--intro .story__media {
     position: static;
   }
@@ -1518,6 +1524,25 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .story__closing .story__prose {
   margin-top: 1.1rem;
+}
+
+/* The process as a band between the intro and the works: the steps side by side on wide screens. */
+.story__process {
+  padding-block: clamp(2rem, 5vw, 3.5rem);
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 56rem) {
+  .story__process .story__steps {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  }
+
+  .story__process .story__steps li {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start; /* steps share a row height; keep each title right under its number */
+    gap: 0.6rem;
+  }
 }
 
 /* The process, numbered because it is a sequence. */

@@ -135,22 +135,34 @@
     return pair(picture(byId.get(entry.workId), entry.caption), text);
   }
 
+  /** Numbered process steps under a "Process" eyebrow. */
+  function processSteps(steps) {
+    const block = element('div');
+    block.append(element('h2', 'eyebrow', 'Process'));
+    const list = element('ol', 'story__steps');
+    steps.forEach((step) => {
+      const item = element('li');
+      const body = element('div');
+      body.append(element('b', undefined, step.title), element('span', undefined, step.text));
+      item.append(body);
+      list.append(item);
+    });
+    block.append(list);
+    return block;
+  }
+
+  /** The process as a band across the page, read before the works (a story's top-level `process`). */
+  function processBand(steps) {
+    const section = element('section', 'story__process');
+    section.append(processSteps(steps));
+    return section;
+  }
+
   /** Process steps (optional) beside the reflection. */
   function closing(entry) {
     const section = element('section', 'story__closing');
     if (entry.process) {
-      const process = element('div');
-      process.append(element('h2', 'eyebrow', 'Process'));
-      const steps = element('ol', 'story__steps');
-      entry.process.forEach((step) => {
-        const item = element('li');
-        const body = element('div');
-        body.append(element('b', undefined, step.title), element('span', undefined, step.text));
-        item.append(body);
-        steps.append(item);
-      });
-      process.append(steps);
-      section.append(process);
+      section.append(processSteps(entry.process));
     } else {
       section.classList.add('story__closing--single');
     }
@@ -164,6 +176,7 @@
   function render(container, story, { note, byId }) {
     const blocks = [];
     if (story.intro) blocks.push(intro(story, { note, byId }));
+    if (story.process) blocks.push(processBand(story.process));
     (story.chapters || []).forEach((entry, i) => blocks.push(chapter(entry, i % 2 === 0, byId)));
     if (story.related) blocks.push(related(story.related, byId));
     if (story.closing) blocks.push(closing(story.closing));

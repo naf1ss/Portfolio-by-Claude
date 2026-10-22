@@ -10,7 +10,8 @@
  *                detail: { label, text } }]                     optional
  *                                                 one per work, picture and text side by side, alternating
  *   related   { title, workId, caption, items: [{ title, text }], note }       optional
- *   closing   { process: [{ title, text }] (optional), reflectionTitle, reflection: [paragraphs] }
+ *   process   [{ title, text }]                   optional: the process as a band after the intro, before the works
+ *   closing   { process: [{ title, text }] (optional, beside the reflection), reflectionTitle, reflection: [paragraphs] }
  *
  * Every workId must be in the catalogue (the tests check).
  */
@@ -198,6 +199,12 @@
       ],
       index: true,
     },
+    process: [
+      { title: 'Concept', text: 'One fixed view, told as a sequence of times of day.' },
+      { title: 'Palette', text: 'A colour plan for the whole series, moving from warm light through cool night to clear blue.' },
+      { title: 'Format', text: 'The same size and landscape orientation for all six prints, with the horizon held at a consistent height.' },
+      { title: 'Technique', text: 'Each image painted onto a smooth plexiglass plate with no fixed image and printed once, so every print is unique.' },
+    ],
     chapters: [
       {
         id: 'golden-hour',
@@ -261,12 +268,6 @@
       },
     ],
     closing: {
-      process: [
-        { title: 'Concept', text: 'One fixed view, told as a sequence of times of day.' },
-        { title: 'Palette', text: 'A colour plan for the whole series, moving from warm light through cool night to clear blue.' },
-        { title: 'Format', text: 'The same size and landscape orientation for all six prints, with the horizon held at a consistent height.' },
-        { title: 'Technique', text: 'Each image painted onto a smooth plexiglass plate with no fixed image and printed once, so every print is unique.' },
-      ],
       reflectionTitle: 'Looking back',
       reflection: [
         'Holding the composition constant allowed colour and mark-making to do the narrative work: time passes, yet nothing else in the scene moves.',

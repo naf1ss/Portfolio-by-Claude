@@ -80,6 +80,8 @@ A series can be told as a write-up instead of a grid: pictures beside their word
 
 Paintings, drawings and prints open on a wall instead of a grid (a Wall / Grid switch sits beside the filters and is remembered). Works hang in gallery order at true relative size, read from `dimensions` (either order, e.g. `12x9 inches`); paintings get a black frame with a dark float gap, drawings and prints a black frame and a white mat (the categories and their framing are `FRAMING` in `js/gallery-room-utils.js`). A series with `hangTogether: true` in `js/series-data.js` hangs on one stretch of wall (Horizon and Three Ways of Seeing do); its label lists the titles left to right (groups of up to four) and links to the series page.
 
+A write-up's top-level `process` (Horizon) sits as a band between the intro and the works; short text is centred beside its picture.
+
 On the Series page each card shows up to three works side by side at one height on a plain wall: the series' `coverIds`, or its first three works. The picture lights are on by default, and the Lights button turns them off. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
 
 To hang an "About the work" note beside a work, add `notes: '...'` to its record in `js/works-data.js` (for a series hung together, the series' `note` appears under "About the series"). Works hung together in one row each get their own picture light.
