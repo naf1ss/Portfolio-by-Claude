@@ -213,7 +213,6 @@
     const hint = element('span', 'room__cord-hint');
     hint.setAttribute('aria-hidden', 'true');
     lights.append(element('span', 'room__cord-line'), element('span', 'room__cord-bead'), hint);
-    lights.addEventListener('animationend', () => lights.classList.remove('is-pulled'));
     const prev = element('button', 'room__button', '←');
     prev.type = 'button';
     prev.setAttribute('aria-label', 'Previous work on the wall');
@@ -252,13 +251,13 @@
       parts.hint.textContent = on ? 'pull to dim' : 'pull for light';
     }
     setLights(readLights());
-    parts.lights.addEventListener('click', () => {
-      parts.lights.classList.remove('is-pulled');
-      void parts.lights.offsetWidth; // restart the tug when pulled again quickly
-      parts.lights.classList.add('is-pulled');
-      const on = !room.classList.contains('is-lit');
-      setLights(on);
-      saveLights(on);
+    // Click it, or grab the bead and pull it down or to the side (js/pull-cord.js).
+    window.PullCord.attach(parts.lights, {
+      onPull: () => {
+        const on = !room.classList.contains('is-lit');
+        setLights(on);
+        saveLights(on);
+      },
     });
 
     function buildWall(works) {

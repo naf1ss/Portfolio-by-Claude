@@ -13,7 +13,6 @@
 
   const { parseTheme, resolveTheme, oppositeTheme } = window.ThemeUtils;
   const STORAGE_KEY = 'theme';
-  const SWITCH_DURATION_MS = 1400;
   const HOLD_TO_RESET_MS = 650;
   const STATUS_VISIBLE_MS = 2200;
 
@@ -118,29 +117,16 @@
       return;
     }
 
+    // The reveal itself is CSS keyframes on the view-transition snapshots (see "theme reveal" in styles.css):
+    // they apply from the transition's very first frame, so the new theme can never flash in whole first.
     const goingDark = resolveTheme({ chosen: theme, systemPrefersDark: systemDark.matches }) === 'dark';
     const radius = Math.hypot(Math.max(origin.x, innerWidth - origin.x), Math.max(origin.y, innerHeight - origin.y));
-    const small = `circle(0px at ${origin.x}px ${origin.y}px)`;
-    const large = `circle(${radius}px at ${origin.x}px ${origin.y}px)`;
-    // Growing: the CSS keeps the new theme clipped to nothing from the first frame, so it never flashes whole.
     root.style.setProperty('--theme-x', `${origin.x}px`);
     root.style.setProperty('--theme-y', `${origin.y}px`);
+    root.style.setProperty('--theme-r', `${Math.ceil(radius)}px`);
     root.classList.add('is-theme-switching');
     root.classList.toggle('is-theme-closing', goingDark);
     const transition = document.startViewTransition(apply);
-    transition.ready
-      .then(() =>
-        root.animate(
-          { clipPath: goingDark ? [large, small] : [small, large] },
-          {
-            duration: SWITCH_DURATION_MS,
-            easing: goingDark ? 'cubic-bezier(0.64, 0, 0.78, 0)' : 'cubic-bezier(0.22, 1, 0.36, 1)',
-            fill: 'forwards',
-            pseudoElement: goingDark ? '::view-transition-old(root)' : '::view-transition-new(root)',
-          }
-        )
-      )
-      .catch(() => {});
     transition.finished.finally(() => root.classList.remove('is-theme-switching', 'is-theme-closing'));
   }
 

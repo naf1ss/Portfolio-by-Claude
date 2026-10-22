@@ -84,7 +84,7 @@ A write-up's top-level `process` (Horizon) sits as a band between the intro and 
 
 The header's Series menu lists every series in `js/series-data.js` (`"childrenFrom": "series"` in `src/site.json`), so a new series appears there on the next `npm run build`.
 
-On the Series page each card shows up to three works side by side at one height on a plain wall: the series' `coverIds`, or its first three works. The picture lights are on by default; a brass pull cord hanging from the top of the wall turns them off and on. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
+On the Series page each card shows up to three works side by side at one height on a plain wall: the series' `coverIds`, or its first three works. The picture lights are on by default; a brass pull cord hanging from the top of the wall turns them off and on: click it, or grab the bead and pull it down or to the side (`js/pull-cord.js`, a damped spring, so it wobbles back to rest). The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
 
 To hang an "About the work" note beside a work, add `notes: '...'` to its record in `js/works-data.js` (for a series hung together, the series' `note` appears under "About the series"). Works hung together in one row each get their own picture light.
 
