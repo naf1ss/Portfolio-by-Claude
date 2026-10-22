@@ -43,7 +43,7 @@
   const savedChoice = readChoice();
   if (savedChoice) root.dataset.theme = savedChoice;
 
-  // The switch is a small white-framed window onto a sunset sea (a crop of photo-0195), with sand sheer curtains
+  // The switch is a small white-framed window onto sunlit green hills under a blue sky, with sand sheer curtains
   // on a brass rod: open for the light theme, drawn for the dark. Drawn in SVG, 60 x 76 units.
   const CURTAIN_RINGS = (x) =>
     Array.from({ length: 6 }, (_, i) => `<circle cx="${x + 2 + i * 4.6}" cy="9" r="1.05" fill="none" stroke="url(#tw-brass)" stroke-width="0.6"/>`).join('');
@@ -72,7 +72,7 @@
     '<ellipse cx="30" cy="64.5" rx="25" ry="1.6" fill="#000" opacity="0.18"/>' +
     `<path d="${GLASS}" fill="none" stroke="#cfc6b6" stroke-width="7.5" stroke-linejoin="round" transform="translate(0.6 0.9)"/>` +
     '<g clip-path="url(#tw-glass)">' +
-    '<image class="theme-window__view" href="images/theme/window-view.jpg" x="12" y="15" width="36" height="43" preserveAspectRatio="xMidYMid slice"/>' +
+    '<image class="theme-window__view" href="images/theme/window-view.jpg?v=2" x="12" y="15" width="36" height="43" preserveAspectRatio="xMidYMid slice"/>' +
     '<rect x="12" y="15" width="36" height="43" fill="url(#tw-shine)"/>' +
     `<path d="${GLASS}" fill="none" stroke="#000" stroke-opacity="0.22" stroke-width="2.4"/>` +
     '</g>' +

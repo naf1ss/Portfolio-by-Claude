@@ -273,7 +273,7 @@ a:hover {
   transform: translate(-50%, 0);
 }
 
-/* The theme switch: a small white-framed window onto a sunset sea, with sand sheer curtains on a brass rod
+/* The theme switch: a small white-framed window onto sunlit hills, with sand sheer curtains on a brass rod
    (js/theme.js draws it). Open for the light theme; drawn for the dark, when the view behind them dims. Its own
    view-transition name keeps it out of the page's circle reveal, so the curtains are seen moving. */
 .theme-toggle {
