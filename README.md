@@ -65,7 +65,7 @@ The catalogue checks also confirm every image referenced in `works-data.js` and 
 1. Export the photo and run `python3 tools/optimize_images.py <folder-with-new-photos> images/artwork`.
 2. Paste the printed record into `js/works-data.js` and fill in `id`, `title`, `year`, `medium`, `dimensions` and `category`
    (`painting`, `drawing`, `print`, `digital`, `photography`, `ceramics` or `wall-magazine`).
-3. The home page's big "Latest work" is `latestId` in `js/site-config.js`; "From each medium" shows one work per medium (`mediumPicks`): the `best` work on a visitor's first home page of a session, a random work of that medium after that. The hero's "nuances." scans through every visible painting and print automatically (`heroCategories`), opening with the works in `heroLead`; hide a work from it with `hidden: true` in its record.
+3. The home page's big "Latest work" is `latestId` in `js/site-config.js`; "Browse by medium" shows a small picture beside each medium (`mediumPicks`): the `best` work on a visitor's first home page of a session, a random work of that medium after that. The hero's "nuances." scans through every visible painting and print automatically (`heroCategories`), opening with the works in `heroLead`; hide a work from it with `hidden: true` in its record.
 4. Run `npm test`, then commit and push.
 
 If you later replace a photo under the same file name (a re-edit), bump that record's `rev` in `js/works-data.js` (`rev: 2`, then `3`, ...) so visitors' browsers fetch the new picture instead of a cached one.

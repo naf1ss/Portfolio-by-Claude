@@ -46,11 +46,8 @@
     return img;
   }
 
-  /** `kicker` is a small label above the title, such as the medium a work stands for. */
-  function createCaption(work, kicker) {
+  function createCaption(work) {
     const caption = element('span', 'tile__caption');
-    if (kicker) caption.append(element('span', 'tile__kicker', kicker));
-    if (kicker && !work.title) return caption; // an untitled work's detail line would only repeat the label
     if (work.title) caption.append(element('span', 'tile__title', work.title));
     const meta = U.metaLine(work);
     if (meta) caption.append(element('span', 'tile__meta', meta));
@@ -58,13 +55,13 @@
   }
 
   /** Photographs are shown as a clean contact sheet, with captions only in the viewer. */
-  function createTileChildren(work, eager, kicker) {
+  function createTileChildren(work, eager) {
     const frame = element('span', 'tile__frame');
     frame.append(createImage(work, { eager }));
-    return U.isBulk(work) ? [frame] : [frame, createCaption(work, kicker)];
+    return U.isBulk(work) ? [frame] : [frame, createCaption(work)];
   }
 
-  function createTile(work, position, { hrefFor, eager, kickerFor }) {
+  function createTile(work, position, { hrefFor, eager }) {
     const item = element('li', 'gallery__item');
     item.style.setProperty('--ar', U.aspectRatio(work));
 
@@ -73,7 +70,7 @@
     link.dataset.workId = work.id;
     link.setAttribute('aria-label', U.accessibleName(work, position));
 
-    link.append(...createTileChildren(work, eager, kickerFor && kickerFor(work)));
+    link.append(...createTileChildren(work, eager));
     item.append(link);
     return item;
   }
@@ -82,11 +79,36 @@
    * Replaces the contents of `list` (a <ul>) with one tile per work.
    * The first `eagerCount` images load immediately; the rest are lazy.
    */
-  function renderGallery(list, works, { hrefFor, eagerCount = 4, kickerFor }) {
+  function renderGallery(list, works, { hrefFor, eagerCount = 4 }) {
     const tiles = works.map((work, i) =>
-      createTile(work, i + 1, { hrefFor, eager: i < eagerCount, kickerFor })
+      createTile(work, i + 1, { hrefFor, eager: i < eagerCount })
     );
     list.replaceChildren(...tiles);
+  }
+
+  /**
+   * "Browse by medium" on the home page: one row per medium with its name, a small picture of one of its works
+   * and how many works it holds. `pickFor(categoryId)` returns that work (or null for a row without one).
+   */
+  function renderMediumList(list, categories, { counts, pickFor }) {
+    const rows = categories.map((category) => {
+      const link = element('a');
+      link.href = `gallery.html?c=${category.id}`;
+      const count = counts[category.id];
+      link.append(element('span', 'medium-list__name', category.label));
+      const work = pickFor(category.id);
+      if (work) {
+        const thumb = createImage(work, { sizes: '10rem' });
+        thumb.classList.replace('tile__image', 'medium-list__thumb'); // keeps is-loaded if it already loaded
+        thumb.alt = '';
+        link.append(thumb);
+      }
+      link.append(element('span', 'medium-list__count', `${count} ${count === 1 ? 'work' : 'works'}`));
+      const item = element('li');
+      item.append(link);
+      return item;
+    });
+    list.replaceChildren(...rows);
   }
 
   const LATEST_SIZES = '(min-width: 56rem) 56vw, 92vw';
@@ -190,5 +212,5 @@
     };
   }
 
-  window.Gallery = { renderGallery, renderLatest, renderSeriesList, createFilters };
+  window.Gallery = { renderGallery, renderLatest, renderMediumList, renderSeriesList, createFilters };
 })();

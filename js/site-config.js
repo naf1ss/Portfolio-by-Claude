@@ -11,14 +11,16 @@ window.SITE_CONFIG = {
   // The big "Latest work" feature on the home page.
   latestId: 'A041',
 
-  // One work per medium on the home page. A visitor's first home page in a session shows each `best`;
-  // after that every visit shows a random work from the same medium.
+  // "Browse by medium" on the home page shows one work beside each medium. A visitor's first home page in a
+  // session shows each `best`; after that every visit shows a random work from the same medium. A medium
+  // without a `best` (photography) always shows a random one.
   mediumPicks: [
     { category: 'painting', best: 'A043' },
     { category: 'print', best: 'A027' },
     { category: 'ceramics', best: 'ceramics9' },
     { category: 'digital', best: 'A031' },
     { category: 'drawing', best: 'A007' },
+    { category: 'photography' },
   ],
 
   // Shown as live clocks on the contact page; timeZone is an IANA name.

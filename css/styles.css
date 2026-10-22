@@ -1195,13 +1195,32 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .medium-list a {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 1.1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto clamp(4.5rem, 9vw, 7rem);
+  align-items: center;
+  gap: 1rem clamp(1rem, 3vw, 2.5rem);
+  padding-block: 0.9rem;
   border-bottom: 1px solid var(--rule);
   text-decoration: none;
+}
+
+/* One of the medium's works, at its own proportions; it lifts a little when the row is hovered. */
+.medium-list__thumb {
+  width: auto;
+  max-width: clamp(5rem, 14vw, 12rem);
+  height: clamp(3.25rem, 7.5vw, 7.5rem);
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease), transform 0.6s var(--ease-out);
+}
+
+.medium-list__thumb.is-loaded {
+  opacity: 1;
+}
+
+.medium-list a:hover .medium-list__thumb,
+.medium-list a:focus-visible .medium-list__thumb {
+  transform: scale(1.06) rotate(-1.5deg);
 }
 
 .medium-list__name {
@@ -1226,6 +1245,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .medium-list__count {
+  justify-self: end;
   color: var(--ink-muted);
   font-size: var(--step--1);
   font-variant-numeric: tabular-nums;
@@ -1837,14 +1857,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
   padding-top: 0.65rem;
 }
 
-.tile__kicker {
-  font-family: var(--font-text);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 .tile__title {
   font-family: var(--font-prose);
   font-size: 1.35rem;
@@ -1859,51 +1871,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .tile__meta {
   color: var(--ink-muted);
   font-size: var(--step--1);
-}
-
-/* ---------- Home: one work per medium ----------
-   Every picture keeps its own shape, so there is no mat and no cropping. On a wide screen the five sit in one
-   justified row (each item grows with its aspect ratio, so they all share one height and fill the width);
-   on narrower screens they stack as natural-height columns, the odd one out spanning the full width. */
-.picks {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: clamp(1.25rem, 2.5vw, 2rem) clamp(0.75rem, 1.6vw, 1.5rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.picks > :last-child {
-  grid-column: 1 / -1;
-}
-
-@media (min-width: 40rem) {
-  .picks {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
-  .picks > li {
-    grid-column: span 2;
-  }
-
-  .picks > :nth-child(n + 4) {
-    grid-column: span 3;
-  }
-}
-
-@media (min-width: 64rem) {
-  .picks {
-    display: flex;
-  }
-
-  .picks > li,
-  .picks > :nth-child(n + 4),
-  .picks > :last-child {
-    flex: var(--ar) 1 0;
-    min-width: 8rem;
-  }
 }
 
 /* ---------- Home: latest work ---------- */

@@ -62,32 +62,17 @@
     if (latest) window.Gallery.renderLatest(document.getElementById('latest'), latest, { href: hrefFor(latest) });
     else latestSection.hidden = true;
 
-    const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
+    // Each medium's row shows one of its works: the chosen best on a first visit, a random one after that.
     const picks = U.pickMediumWorks(all, config.mediumPicks || [], { showBest: isFirstHomeVisit() });
-    window.Gallery.renderGallery(document.getElementById('medium-picks'), picks, {
-      hrefFor,
-      eagerCount: 4,
-      kickerFor: (work) => labels.get(work.category),
-    });
-
+    const pickByCategory = new Map(picks.map((work) => [work.category, work]));
     const counts = U.countByCategory(all);
-    const rows = U.CATEGORIES.filter((category) => category.onHome !== false && counts[category.id] > 0).map((category) => {
-      const link = document.createElement('a');
-      link.href = `gallery.html?c=${category.id}`;
-      const name = document.createElement('span');
-      name.className = 'medium-list__name';
-      name.textContent = category.label;
-      const count = document.createElement('span');
-      count.className = 'medium-list__count';
-      count.textContent = `${counts[category.id]} ${counts[category.id] === 1 ? 'work' : 'works'}`;
-      link.append(name, count);
-      const item = document.createElement('li');
-      item.append(link);
-      return item;
-    });
-    document.getElementById('medium-list').replaceChildren(...rows);
+    window.Gallery.renderMediumList(
+      document.getElementById('medium-list'),
+      U.CATEGORIES.filter((category) => category.onHome !== false && counts[category.id] > 0),
+      { counts, pickFor: (id) => pickByCategory.get(id) || null }
+    );
 
-    window.Motion.reveal(document.querySelectorAll('#latest > *, #medium-picks .gallery__item'));
+    window.Motion.reveal(document.querySelectorAll('#latest > *'));
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
   }
 
