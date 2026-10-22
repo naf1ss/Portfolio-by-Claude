@@ -132,8 +132,8 @@
       workId: 'still-life-setup',
       caption: 'The setup, photographed.',
       lead: [
-        'The project asked me to look at a single arrangement from several directions: to sharpen my skills, and to trust my instincts.',
-        'Each drawing asks something different of the same scene, and each felt different to make.',
+        'I kept the subject still and changed the way I looked at it.',
+        'Each drawing asks something different of the same scene: precision, structure, or trust in my own hand.',
       ],
       index: true,
     },
@@ -172,7 +172,8 @@
         workId: 'A009',
         caption: 'Playful, imperfect shapes that invite amusement and intrigue.',
         text: [
-          'Intuitive and spontaneous, this one was freeing and funny to make, and it produced unexpected, expressive shapes. The handle of the violin case came out looking like a banana next to the apple: unintentional, and a delight.',
+          'I drew this one without looking at the paper. My eyes stayed on the still life the whole time and my hand followed, which is what made it intuitive, spontaneous and fun to make.',
+          'The shapes came out unexpected and expressive. The handle of the violin case even turned into a banana next to the apple: unintentional, and a delight.',
         ],
       },
     ],
