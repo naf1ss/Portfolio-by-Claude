@@ -35,7 +35,7 @@
     coverIds: ['A007', 'A008', 'A009'],
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
-  { id: 'horizon', title: 'Horizon', note: null, hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
+  { id: 'horizon', title: 'Horizon', note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
   { id: 'still-life', title: 'Still life', note: null, coverIds: ['A010', 'A018', 'A009'], workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
   { id: 'ceramics', title: 'Ceramics', note: null, category: 'ceramics' },
   { id: 'photographs-2026', title: 'Photographs, 2026', note: null, category: 'photography', year: 2026 },

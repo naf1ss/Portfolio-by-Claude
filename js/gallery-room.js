@@ -101,18 +101,19 @@
       section.works.forEach((work) => list.append(element('li', undefined, work.title || work.medium || 'Untitled')));
       details.push(element('p', 'room__works-heading', R.groupGrid(section.works.length).rows === 1 ? 'Left to right' : 'In order'), list);
     }
-    const link = element('a', 'room__series-link', 'About the series →');
+    const link = element('a', 'room__series-link', 'View the series →');
     link.href = `series.html?s=${encodeURIComponent(section.series.id)}`;
     details.push(link);
     return details;
   }
 
-  /** The artist's notes, hung on the other side of the work when a record has them. */
+  /** The artist's notes (or a series' note), hung on the other side of the work. */
   function createNotes(section) {
-    const notes = section.works.length === 1 ? section.works[0].notes : section.series.note;
+    const single = section.works.length === 1;
+    const notes = single ? section.works[0].notes : section.series.note;
     if (!notes) return null;
     const block = element('div', 'room__notes');
-    block.append(element('p', 'room__kicker', 'Thought process'), element('p', 'room__notes-text', notes));
+    block.append(element('p', 'room__kicker', single ? 'About the work' : 'About the series'), element('p', 'room__notes-text', notes));
     return block;
   }
 
@@ -144,17 +145,35 @@
     return lamp;
   }
 
+  /** Works hung together in one row each get their own picture light; a larger group shares one. */
+  const hasOwnLights = (section) => section.works.length > 1 && R.groupGrid(section.works.length).rows === 1;
+
   function createSegment(section, categoryLabel) {
     const segment = element('section', 'room__segment');
     segment.setAttribute('aria-label', section.series ? section.series.title : section.works[0].title || 'Work');
     const art = element('div', 'room__art');
-    const pool = element('div', 'room__pool');
-    pool.setAttribute('aria-hidden', 'true');
     const hang = element('div', 'room__hang');
     const frames = element('div', 'room__frames');
-    section.works.forEach((work) => frames.append(createFrame(work)));
-    hang.append(createLamp(), frames);
-    art.append(pool, hang);
+    const createPool = (className = 'room__pool') => {
+      const pool = element('div', className);
+      pool.setAttribute('aria-hidden', 'true');
+      return pool;
+    };
+    if (hasOwnLights(section)) {
+      // A light over each work: every frame hangs in a bay with its own lamp and pool of light.
+      section.works.forEach((work) => {
+        const bay = element('div', 'room__bay');
+        bay.append(createLamp(), createFrame(work));
+        frames.append(bay);
+        art.append(createPool('room__pool room__pool--bay'));
+      });
+      hang.append(frames);
+    } else {
+      section.works.forEach((work) => frames.append(createFrame(work)));
+      hang.append(createLamp(), frames);
+      art.append(createPool());
+    }
+    art.append(hang);
     segment.append(createLabel(section, categoryLabel), art);
     const notes = createNotes(section);
     if (notes) segment.append(notes);
@@ -276,6 +295,21 @@
           frame.style.setProperty('--room-frame-h', `${(size.h * ppi).toFixed(1)}px`);
           frame.querySelector('img').sizes = `${Math.ceil(size.picture.w * ppi)}px`;
         });
+
+        // Each bay's pool of light sits over its own frame: offsets from the centre of the row.
+        const pools = segment.querySelectorAll('.room__pool--bay');
+        if (pools.length) {
+          const widths = section.works.map((work) => R.framedInches(work).w * ppi);
+          const spacing = R.GROUP_SPACING_IN * ppi;
+          let left = -(widths.reduce((sum, w) => sum + w, 0) + spacing * (widths.length - 1)) / 2;
+          pools.forEach((pool, j) => {
+            const size = R.framedInches(section.works[j]);
+            pool.style.setProperty('--pool-x', `${(left + widths[j] / 2).toFixed(1)}px`);
+            pool.style.setProperty('--room-fw', `${(size.w * ppi).toFixed(1)}px`);
+            pool.style.setProperty('--room-fh', `${(size.h * ppi).toFixed(1)}px`);
+            left += widths[j] + spacing;
+          });
+        }
       });
       place(false);
     }

@@ -82,7 +82,7 @@ Paintings, drawings and prints open on a wall instead of a grid (a Wall / Grid s
 
 On the Series page each card shows up to three works side by side at one height on a plain wall: the series' `coverIds`, or its first three works. The picture lights are on by default, and the Lights button turns them off. The wall is deep slate in the light theme and deep red in the dark theme (`.room` in `css/styles.css`).
 
-To hang a "Thought process" note beside a work, add `notes: '...'` to its record in `js/works-data.js` (for a series hung together, use the series' `note`).
+To hang an "About the work" note beside a work, add `notes: '...'` to its record in `js/works-data.js` (for a series hung together, the series' `note` appears under "About the series"). Works hung together in one row each get their own picture light.
 
 ## Photography
 

@@ -2528,7 +2528,7 @@ html {
 .room__lamp,
 .room__pool {
   position: absolute;
-  left: 50%;
+  left: calc(50% + var(--pool-x, 0px));
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -2591,6 +2591,11 @@ html {
 
 /* The pool of light: a hot spot under the shade, a cone opening over the work, a faint spill past the frame
    and a little bounce above the shade. Screened over the wall. */
+/* A frame with its own light (js/gallery-room.js: works hung in one row): the lamp is centred over it. */
+.room__bay {
+  position: relative;
+}
+
 .room__pool {
   top: calc(50% - var(--room-fh) / 2 - var(--room-lamp-gap) - 2.5rem);
   z-index: 0;
@@ -2607,6 +2612,10 @@ html {
     radial-gradient(ellipse 18% 5% at 50% 2.3rem, rgb(255 225 175 / 0.3), transparent 100%);
   -webkit-mask-image: linear-gradient(transparent 0, #000 2.1rem);
   mask-image: linear-gradient(transparent 0, #000 2.1rem);
+}
+
+.room__pool--bay {
+  width: calc(var(--room-fw) * 1.7 + 3rem);
 }
 
 /* Frames: black moulding, mitred by giving each side its own tone; a dark float gap around canvases, a mat
@@ -2778,11 +2787,8 @@ html {
   max-width: 21rem;
   margin-top: 0.8rem;
   color: var(--room-muted);
-  font-family: var(--font-prose);
-  font-size: 1.2rem;
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
 @media (min-width: 62rem) {
