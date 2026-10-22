@@ -2,13 +2,15 @@
  * Long-form write-ups for a series page (series.html?s=<id>), keyed by series id and rendered by
  * series-story.js. A series with a story shows these pictures and words instead of a grid of its works.
  *
- *   intro     { workId, lead, chapters: true }   the picture beside the series' note, plus a line under it;
- *                                               `chapters` lists the chapters as links
- *   chapters  [{ id, label, maker, title, workId, lead, source: { name, listing, url },
- *                absorbs: [{ maker, text }], glazes }]
- *                                               one per work, picture and text side by side, alternating
- *   related   { title, workId, caption, items: [{ title, text }], note }
- *   closing   { process: [{ title, text }], reflection: [paragraphs] }
+ *   intro     { workId, caption, lead, index }     a picture beside the series' note, a line under it;
+ *                                                 `index: true` lists the chapters as links
+ *   chapters  [{ id, label, aside, kicker, title, workId, text: [paragraphs],
+ *                source: { name, listing, url, linkText },      optional
+ *                points: { title, items: [{ label, text }] },   optional (label optional too)
+ *                detail: { label, text } }]                     optional
+ *                                                 one per work, picture and text side by side, alternating
+ *   related   { title, workId, caption, items: [{ title, text }], note }       optional
+ *   closing   { process: [{ title, text }] (optional), reflectionTitle, reflection: [paragraphs] }
  *
  * Every workId must be in the catalogue (the tests check).
  */
@@ -24,65 +26,80 @@
     intro: {
       workId: 'ceramics-41',
       lead: 'Each pot takes its lead from one maker, then borrows from the other two.',
-      chapters: true,
+      index: true,
     },
     chapters: [
       {
         id: 'plate',
         label: 'The plate',
-        maker: 'Lindsay Oesterritter',
+        aside: 'Lindsay Oesterritter',
+        kicker: 'The plate \u00b7 led by Lindsay Oesterritter',
         title: 'A painterly tabletop',
         workId: 'ceramics-33',
-        lead: 'The circular plane becomes an atmospheric field: brushy dark marks skim across a matte, speckled light ground.',
+        text: ['The circular plane becomes an atmospheric field: brushy dark marks skim across a matte, speckled light ground.'],
         source: {
           name: 'Lindsay Oesterritter, Dinner Plate',
           listing: 'Iron-rich stoneware; wood-fired with a cool reduction profile; wheel-thrown. About ¾ in. high and 9 in. wide.',
+          linkText: 'See it at Schaller Gallery',
           url: 'https://schallergallery.com/collections/plates/products/dinner-plate-33',
         },
-        absorbs: [
-          { maker: 'Oesterritter', text: 'Atmospheric contrast across the plane; directional dark marks skim a speckled light glaze.' },
-          { maker: 'Tao', text: 'Warm kiln logic keeps the browns restrained, so the marks feel intentional, not muddy.' },
-          { maker: 'Shaw', text: 'The circular geometry of the wheel stays legible beneath the gestures.' },
-        ],
-        glazes: 'black slip, chun and GEB white',
+        points: {
+          title: 'All three makers in the plate',
+          items: [
+            { label: 'Oesterritter', text: 'Atmospheric contrast across the plane; directional dark marks skim a speckled light glaze.' },
+            { label: 'Tao', text: 'Warm kiln logic keeps the browns restrained, so the marks feel intentional, not muddy.' },
+            { label: 'Shaw', text: 'The circular geometry of the wheel stays legible beneath the gestures.' },
+          ],
+        },
+        detail: { label: 'Glazes', text: 'black slip, chun and GEB white' },
       },
       {
         id: 'mug',
         label: 'The mug',
-        maker: 'Akiko Tao',
+        aside: 'Akiko Tao',
+        kicker: 'The mug \u00b7 led by Akiko Tao',
         title: 'An upright vessel for the hand',
         workId: 'ceramics-32',
-        lead: 'The proportions of the handle and the flare of the rim, and the wish for luminous depth from reduction firing, even though my glaze turns a richer brown.',
+        text: ['The proportions of the handle and the flare of the rim, and the wish for luminous depth from reduction firing, even though my glaze turns a richer brown.'],
         source: {
           name: 'Akiko Tao, Mug',
           listing: 'Stoneware with black slip, chun and celadon glaze; gas-fired reduction. About 3¾ in. high, 5¼ in. wide and 4 in. deep.',
+          linkText: 'See it at Schaller Gallery',
           url: 'https://schallergallery.com/collections/mugs/products/mug-418',
         },
-        absorbs: [
-          { maker: 'Oesterritter', text: 'Clay breaks and rim accents echo iron stoneware, even at this compact height.' },
-          { maker: 'Tao', text: 'The main scaffold for the wall, the flare and the rhythm of the handle.' },
-          { maker: 'Shaw', text: 'The flared foot and clean throwing tie the mug back to the refinement of the bowl.' },
-        ],
-        glazes: 'Korean celadon, then raspberry in two coats',
+        points: {
+          title: 'All three makers in the mug',
+          items: [
+            { label: 'Oesterritter', text: 'Clay breaks and rim accents echo iron stoneware, even at this compact height.' },
+            { label: 'Tao', text: 'The main scaffold for the wall, the flare and the rhythm of the handle.' },
+            { label: 'Shaw', text: 'The flared foot and clean throwing tie the mug back to the refinement of the bowl.' },
+          ],
+        },
+        detail: { label: 'Glazes', text: 'Korean celadon, then raspberry in two coats' },
       },
       {
         id: 'bowl',
         label: 'The bowl',
-        maker: 'Andy Shaw',
+        aside: 'Andy Shaw',
+        kicker: 'The bowl \u00b7 led by Andy Shaw',
         title: 'An open, pooled interior',
         workId: 'ceramics-34',
-        lead: 'An expanded cereal-bowl silhouette, a subtle flare at the foot, and translucent glaze that pools like layered celadon: a cool pool of teal, with the same moving logic.',
+        text: ['An expanded cereal-bowl silhouette, a subtle flare at the foot, and translucent glaze that pools like layered celadon: a cool pool of teal, with the same moving logic.'],
         source: {
           name: 'Andy Shaw, Cereal Bowl',
           listing: 'Wheel-thrown and altered porcelain with Mamo lavender and Korean celadon glaze; electric-fired. About 2¾ in. high and 6½ in. wide.',
+          linkText: 'See it at Schaller Gallery',
           url: 'https://schallergallery.com/collections/bowls/products/cereal-bowl-5',
         },
-        absorbs: [
-          { maker: 'Shaw', text: 'The open form, the subtle foot and celadon-like glaze movement, adapted into pooled teal gloss.' },
-          { maker: 'Oesterritter', text: 'The unpredictable tones of wood firing, reinterpreted through pooling and thinner breaks.' },
-          { maker: 'Tao', text: 'Glossy, pooled depth that echoes the luminous surfaces of reduction firing.' },
-        ],
-        glazes: 'Mamo lavender and Korean celadon',
+        points: {
+          title: 'All three makers in the bowl',
+          items: [
+            { label: 'Shaw', text: 'The open form, the subtle foot and celadon-like glaze movement, adapted into pooled teal gloss.' },
+            { label: 'Oesterritter', text: 'The unpredictable tones of wood firing, reinterpreted through pooling and thinner breaks.' },
+            { label: 'Tao', text: 'Glossy, pooled depth that echoes the luminous surfaces of reduction firing.' },
+          ],
+        },
+        detail: { label: 'Glazes', text: 'Mamo lavender and Korean celadon' },
       },
     ],
     related: {
@@ -106,6 +123,73 @@
         'Working across Shaw’s restrained porcelain, Tao’s shimmering reduction palettes and Oesterritter’s wood-fired expressiveness built a disciplined foundation.',
         'Instead of stamping one repeatable motif, each pot cross-wires those vocabularies: painterly energy on a plane, luminous depth, and nuanced thrown and altered geometry.',
         'The set stays deliberately small, but the same loop is how I would grow toward larger sets, such as stacking bowls with lids, once the forms stay this disciplined.',
+      ],
+    },
+  },
+  // From the Final Written Critique (drawing, 2024).
+  'three-ways-of-seeing': {
+    intro: {
+      workId: 'still-life-setup',
+      caption: 'The setup, photographed.',
+      lead: 'Each drawing asks something different of the same arrangement, and each felt different to make.',
+      index: true,
+    },
+    chapters: [
+      {
+        id: 'chiaroscuro',
+        label: 'Light and shadow',
+        aside: 'Chiaroscuro',
+        kicker: 'Chiaroscuro · charcoal on paper',
+        title: 'Light and shadow',
+        workId: 'A007',
+        text: [
+          'This one asked for precision and careful blending to reach realism. The light source is clear, the contrasts between light and dark hold, and the shape of the table reads beneath the cloth.',
+          'The violin case was a struggle at first, but it came out convincing, and the many-coloured tablecloth is carried by varied shades of charcoal.',
+        ],
+        points: {
+          title: 'Still to develop',
+          items: [
+            { text: 'The violin case could feel more three-dimensional with more refinement.' },
+            { text: 'With more time, the intricate floral pattern on the cloth.' },
+          ],
+        },
+        detail: { label: 'For a viewer', text: 'realism, and the play of light and shadow.' },
+      },
+      {
+        id: 'composition-map',
+        label: 'A map of shapes',
+        aside: 'Composition map',
+        kicker: 'Composition map · charcoal on paper',
+        title: 'A map of shapes',
+        workId: 'A008',
+        text: [
+          'The composition map pushed me to think in terms of design and abstraction. Geometric blocks stand for the folds of the cloth and the way the light falls across them.',
+        ],
+        points: {
+          title: 'Still to develop',
+          items: [{ text: 'Further visual refinement, to make it more compelling.' }],
+        },
+        detail: { label: 'For a viewer', text: 'curiosity about the structure and geometry under the scene.' },
+      },
+      {
+        id: 'input-output',
+        label: 'Drawing by instinct',
+        aside: 'Input-output',
+        kicker: 'Input-output drawing · charcoal on paper',
+        title: 'Drawing by instinct',
+        workId: 'A009',
+        text: [
+          'Intuitive and spontaneous, this one was freeing and funny to make, and it produced unexpected, expressive shapes. The handle of the violin case came out looking like a banana next to the apple: unintentional, and a delight.',
+          'If I took one approach further, it would be this one. Its spontaneity felt liberating, and it opens the way to more experimental, expressive work.',
+        ],
+        detail: { label: 'For a viewer', text: 'playful, imperfect shapes that invite amusement or intrigue.' },
+      },
+    ],
+    closing: {
+      reflection: [
+        'I am proud of how closely the trio captures the arrangement, and of how carefully each piece is made.',
+        'My professor encouraged me to embrace the unusual angle of my drawing: different, but a new perspective and room to grow.',
+        'The project asked me to look from several directions, sharpen my skills and trust my instincts, and it deepened my appreciation of still life.',
       ],
     },
   },

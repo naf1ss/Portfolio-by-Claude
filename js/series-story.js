@@ -46,65 +46,75 @@
     return section;
   }
 
+  function paragraphs(className, list) {
+    const prose = element('div', className);
+    list.forEach((text) => prose.append(element('p', undefined, text)));
+    return prose;
+  }
+
+  /** The opening: a picture beside the series' note, a line under it, and the chapters as links. */
   function intro(story, { note, byId }) {
     const text = element('div', 'story__text');
     if (note) text.append(element('p', 'story__lede', note));
     if (story.intro.lead) text.append(element('p', 'story__prose', story.intro.lead));
-    if (story.intro.chapters) {
+    if (story.intro.index) {
       const list = element('ol', 'story__index');
       story.chapters.forEach((chapter) => {
         const link = element('a');
         link.href = `#${chapter.id}`;
-        link.append(element('span', undefined, chapter.label), element('em', undefined, chapter.maker));
+        link.append(element('span', undefined, chapter.label), element('em', undefined, chapter.aside || ''));
         const item = element('li');
         item.append(link);
         list.append(item);
       });
       text.append(list);
     }
-    return pair(picture(byId.get(story.intro.workId)), text, { className: 'story__pair--intro' });
+    return pair(picture(byId.get(story.intro.workId), story.intro.caption), text, { className: 'story__pair--intro' });
   }
 
   function chapter(entry, flip, byId) {
     const text = element('div', 'story__text');
-    text.append(
-      element('p', 'story__kicker', `${entry.label} · led by ${entry.maker}`),
-      element('h2', 'story__title', entry.title),
-      element('p', 'story__prose', entry.lead)
-    );
-    text.lastChild.classList.add('story__lead');
+    if (entry.kicker) text.append(element('p', 'story__kicker', entry.kicker));
+    text.append(element('h2', 'story__title', entry.title), paragraphs('story__prose story__lead', entry.text));
 
-    const source = element('div', 'story__source');
-    source.append(element('p', 'story__source-name', entry.source.name), element('p', 'story__listing', entry.source.listing));
-    if (entry.source.url) {
-      const link = element('a', 'story__link', 'See it at Schaller Gallery ↗');
-      link.href = entry.source.url;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      source.append(link);
+    if (entry.source) {
+      const source = element('div', 'story__source');
+      source.append(element('p', 'story__source-name', entry.source.name), element('p', 'story__listing', entry.source.listing));
+      if (entry.source.url) {
+        const link = element('a', 'story__link', `${entry.source.linkText || 'See the source'} ↗`);
+        link.href = entry.source.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        source.append(link);
+      }
+      text.append(source);
     }
-    text.append(source);
 
-    const absorbs = element('div', 'story__absorbs');
-    absorbs.append(element('p', 'eyebrow', `All three makers in ${entry.label.toLowerCase()}`));
-    const list = element('ul');
-    entry.absorbs.forEach(({ maker, text: line }) => {
-      const item = element('li');
-      item.append(element('b', undefined, maker), element('span', undefined, line));
-      list.append(item);
-    });
-    absorbs.append(list);
-    text.append(absorbs);
+    // A short list under an eyebrow: "All three makers in the plate", "Still to develop", ...
+    if (entry.points) {
+      const points = element('div', 'story__points');
+      points.append(element('p', 'eyebrow', entry.points.title));
+      const list = element('ul');
+      entry.points.items.forEach(({ label, text: line }) => {
+        const item = element('li');
+        if (label) item.append(element('b', undefined, label));
+        else item.classList.add('is-unlabelled');
+        item.append(element('span', undefined, line));
+        list.append(item);
+      });
+      points.append(list);
+      text.append(points);
+    }
 
-    if (entry.glazes) {
-      const glazes = element('p', 'story__glazes');
-      glazes.append(element('b', undefined, 'Glazes: '), entry.glazes);
-      text.append(glazes);
+    if (entry.detail) {
+      const detail = element('p', 'story__detail');
+      detail.append(element('b', undefined, `${entry.detail.label}: `), entry.detail.text);
+      text.append(detail);
     }
 
     const section = pair(picture(byId.get(entry.workId)), text, { flip });
     section.id = entry.id;
-    section.setAttribute('aria-label', `${entry.label}, led by ${entry.maker}`);
+    section.setAttribute('aria-label', entry.kicker || entry.title);
     return section;
   }
 
@@ -122,27 +132,29 @@
     return pair(picture(byId.get(entry.workId), entry.caption), text);
   }
 
+  /** Process steps (optional) beside the reflection. */
   function closing(entry) {
     const section = element('section', 'story__closing');
-    const process = element('div');
-    process.append(element('h2', 'eyebrow', 'Process'));
-    const steps = element('ol', 'story__steps');
-    entry.process.forEach((step) => {
-      const item = element('li');
-      const body = element('div');
-      body.append(element('b', undefined, step.title), element('span', undefined, step.text));
-      item.append(body);
-      steps.append(item);
-    });
-    process.append(steps);
+    if (entry.process) {
+      const process = element('div');
+      process.append(element('h2', 'eyebrow', 'Process'));
+      const steps = element('ol', 'story__steps');
+      entry.process.forEach((step) => {
+        const item = element('li');
+        const body = element('div');
+        body.append(element('b', undefined, step.title), element('span', undefined, step.text));
+        item.append(body);
+        steps.append(item);
+      });
+      process.append(steps);
+      section.append(process);
+    } else {
+      section.classList.add('story__closing--single');
+    }
 
     const reflection = element('div');
-    reflection.append(element('h2', 'eyebrow', 'Reflection'));
-    const prose = element('div', 'story__prose');
-    entry.reflection.forEach((paragraph) => prose.append(element('p', undefined, paragraph)));
-    reflection.append(prose);
-
-    section.append(process, reflection);
+    reflection.append(element('h2', 'eyebrow', entry.reflectionTitle || 'Reflection'), paragraphs('story__prose', entry.reflection));
+    section.append(reflection);
     return section;
   }
 

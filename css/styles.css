@@ -1341,6 +1341,21 @@ button:focus-visible > .roll .roll__face + .roll__face {
   margin-top: 1rem;
 }
 
+.story__points {
+  margin-top: 1.4rem;
+}
+
+/* Items without a label take the full width. */
+.story__points li.is-unlabelled {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 56rem) {
+  .story__closing--single {
+    grid-template-columns: minmax(0, 44rem);
+  }
+}
+
 .story__source {
   margin: 1.4rem 0;
   padding: 1rem 0;
@@ -1369,7 +1384,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
   text-underline-offset: 0.3em;
 }
 
-.story__absorbs ul {
+.story__points ul {
   display: grid;
   gap: 0.55rem;
   margin: 0.7rem 0 0;
@@ -1381,7 +1396,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
   line-height: 1.45;
 }
 
-.story__absorbs li {
+.story__points li {
   display: grid;
   grid-template-columns: 7.5rem minmax(0, 1fr);
   gap: 0.75rem;
@@ -1389,7 +1404,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
   border-top: 1px solid var(--rule);
 }
 
-.story__absorbs b {
+.story__points b {
   padding-top: 0.3rem;
   font-family: var(--font-text);
   font-size: 0.72rem;
@@ -1399,18 +1414,18 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 @media (max-width: 30rem) {
-  .story__absorbs li {
+  .story__points li {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.15rem;
   }
 }
 
-.story__glazes {
+.story__detail {
   margin-top: 1.2rem;
   font-size: 0.85rem;
 }
 
-.story__glazes b {
+.story__detail b {
   font-weight: 600;
 }
 

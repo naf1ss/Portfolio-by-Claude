@@ -27,6 +27,13 @@
     cover: 'ceramics-41',
     workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
   },
+  {
+    id: 'three-ways-of-seeing',
+    title: 'Three Ways of Seeing',
+    note: 'One still life (a violin case, an apple and a striped cloth) drawn three ways: in light and shadow, as a map of shapes, and by instinct.',
+    cover: 'A007',
+    workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
+  },
   { id: 'horizon', title: 'Horizon', note: null, hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
   { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
   { id: 'ceramics', title: 'Ceramics', note: null, category: 'ceramics' },
