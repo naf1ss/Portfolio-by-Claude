@@ -239,21 +239,8 @@ a:hover {
   margin-left: auto;
 }
 
-.theme-toggle {
-  display: inline-grid;
-  place-items: center;
-  width: 2.6rem;
-  height: 2.6rem;
-  padding: 0;
-  border: 1px solid var(--rule);
-  background: none;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.theme-toggle:hover,
-.theme-toggle:focus-visible {
-  color: var(--on-ink);
+.site-header > .theme-toggle {
+  margin-left: clamp(0.5rem, 1.5vw, 1.25rem);
 }
 
 .theme-toggle {
@@ -286,12 +273,133 @@ a:hover {
   transform: translate(-50%, 0);
 }
 
-.theme-toggle svg {
-  transition: transform 0.7s var(--ease-out);
+/* The theme switch: a small arched window onto a sunny landscape (js/theme.js). Two velvet curtains slide
+   shut for the dark theme and open again for the light; the sun sinks as they close. Its own view-transition
+   name keeps it out of the page's circle reveal, so the curtains are seen moving. */
+.theme-toggle {
+  --window-frame: currentColor;
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 2.3rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 1.15rem 1.15rem 0.2rem 0.2rem;
+  background: #1b2433;
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  view-transition-name: theme-window;
+  box-shadow: inset 0 0 0 2px var(--window-frame);
 }
 
-.theme-toggle[aria-pressed='true'] svg {
-  transform: rotate(180deg);
+.theme-window__view,
+.theme-window__view svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.theme-window__view {
+  transition: filter 0.9s var(--ease);
+}
+
+.theme-window__sun {
+  transition: transform 0.9s var(--ease-out);
+}
+
+/* Curtains: deep red velvet with soft folds, gathered at the sides when open. */
+.theme-window__curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 54%;
+  background:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.28) 0 1px, transparent 1px 3px, rgb(255 255 255 / 0.12) 3px 4px, transparent 4px 6px),
+    linear-gradient(#a8323a, #6e1d24);
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.theme-window__curtain--left {
+  left: 0;
+  transform-origin: left center;
+  transform: scaleX(0.2);
+}
+
+.theme-window__curtain--right {
+  right: 0;
+  transform-origin: right center;
+  transform: scaleX(0.2);
+}
+
+/* The frame: arched outline and a thin mullion, drawn over the view and the curtains. */
+.theme-window__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px var(--window-frame);
+  background: linear-gradient(var(--window-frame), var(--window-frame)) 50% 0 / 1.5px 100% no-repeat;
+  pointer-events: none;
+}
+
+.theme-toggle:hover .theme-window__curtain--left,
+.theme-toggle:focus-visible .theme-window__curtain--left {
+  transform: scaleX(0.3);
+}
+
+.theme-toggle:hover .theme-window__curtain--right,
+.theme-toggle:focus-visible .theme-window__curtain--right {
+  transform: scaleX(0.3);
+}
+
+.theme-toggle[aria-pressed='true'] .theme-window__curtain {
+  transform: scaleX(1);
+}
+
+.theme-toggle[aria-pressed='true'] .theme-window__view {
+  filter: brightness(0.35) saturate(0.6);
+}
+
+.theme-toggle[aria-pressed='true'] .theme-window__sun {
+  transform: translateY(12px);
+}
+
+/* A drawn curtain twitches open a little under the pointer. */
+.theme-toggle[aria-pressed='true']:hover .theme-window__curtain,
+.theme-toggle[aria-pressed='true']:focus-visible .theme-window__curtain {
+  transform: scaleX(0.88);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-window__curtain,
+  .theme-window__view,
+  .theme-window__sun {
+    transition: none;
+  }
+}
+
+/* The window is its own layer in the theme reveal: the live window (curtains moving) shows throughout. */
+::view-transition-group(theme-window) {
+  animation: none;
+}
+
+::view-transition-old(theme-window) {
+  display: none;
+}
+
+::view-transition-new(theme-window) {
+  animation: none;
 }
 
 @media (max-width: 40rem) {
@@ -328,10 +436,10 @@ a:hover {
     width: 2.6rem;
     height: 2.6rem;
     padding: 0;
-    border: 1px solid var(--rule);
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
     border-radius: 999px;
     background: none;
-    color: var(--ink);
+    color: inherit;
     cursor: pointer;
   }
 
@@ -371,7 +479,9 @@ a:hover {
     justify-content: center;
     overflow-y: auto;
     padding: 6rem var(--gutter) 3rem;
-    background: var(--paper);
+    background: color-mix(in srgb, var(--paper) 84%, transparent);
+    -webkit-backdrop-filter: blur(26px) saturate(1.3);
+    backdrop-filter: blur(26px) saturate(1.3);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s var(--ease), visibility 0s linear 0.3s;
@@ -440,13 +550,14 @@ a:hover {
     color: var(--accent);
   }
 
+  /* Under Gallery and Series, their media and series as a line of small italics. */
   .has-menu .site-nav .site-nav__menu {
     position: static;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.1rem 1.1rem;
     min-width: 0;
-    margin: 0.6rem 0 1.1rem;
+    margin: 0.2rem 0 1rem;
     padding: 0;
     border: 0;
     background: none;
@@ -457,9 +568,36 @@ a:hover {
   }
 
   .has-menu .site-nav .site-nav__menu a {
-    padding: 0.5rem 0.9rem;
-    border: 1px solid var(--rule);
-    font-size: 0.7rem;
+    padding: 0.15rem 0;
+    font-family: var(--font-prose);
+    font-size: 1.2rem;
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: normal;
+  }
+
+  .has-menu .site-nav .site-nav__menu a::before {
+    display: none;
+  }
+
+  /* The panel lists them in place: the wide-screen hover menu's centring must not apply here. */
+  .has-menu .site-nav__group:hover .site-nav__menu,
+  .has-menu .site-nav__group:focus-within .site-nav__menu {
+    transform: none;
+  }
+
+  .site-header > .theme-toggle {
+    margin-left: auto;
+  }
+
+  .has-menu .site-nav > ul > li > a {
+    opacity: 1;
+  }
+
+  .has-menu .site-nav > ul > li > a[aria-current='page']::after {
+    display: none;
   }
 }
 
@@ -478,41 +616,48 @@ a:hover {
   list-style: none;
 }
 
+/* The header has no band of its own: it sits on whatever is under it (on the gallery, the wall). Pages are
+   small spaced capitals; the current one is marked by a dot of the accent colour. */
 .site-nav a {
+  position: relative;
   display: inline-block;
-  padding: 0.65rem 1.1rem;
-  border: 1px solid transparent;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  padding: 0.65rem 0.95rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-decoration: none;
   text-transform: uppercase;
 }
 
-.site-nav a:hover {
+.site-nav > ul > li > a {
+  opacity: 0.68;
+  transition: opacity 0.25s var(--ease);
+}
+
+.site-nav > ul > li > a:hover,
+.site-nav > ul > li > a:focus-visible,
+.site-nav > ul > li > a[aria-current='page'],
+.site-nav__group:hover > a {
+  opacity: 1;
+}
+
+.site-nav > ul > li > a[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0.1rem;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.site-nav .site-nav__menu a:hover {
   color: var(--on-ink);
 }
 
-@media (max-width: 30rem) {
-  .site-nav ul {
-    flex-wrap: wrap;
-    gap: 0;
-  }
 
-  .site-nav a {
-    padding: 0.6rem 0.7rem;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-  }
-}
-
-.site-nav a[aria-current='page'] {
-  border-color: var(--ink);
-}
-
-.site-nav a[aria-current='page']:hover {
-  border-color: var(--ink);
-}
 
 /* Gallery's media menu: opens under the link on hover or keyboard focus. Touch screens go straight to the
    gallery, where the same media are the filters. */
@@ -573,20 +718,18 @@ a:hover {
 
 /* Interactive pills. A circle of colour grows from wherever the pointer entered
    (js/interactions.js sets --mx / --my) and shrinks back toward where it left. */
-.site-nav a,
+.site-nav .site-nav__menu a,
 .button,
-.filter,
-.theme-toggle {
+.filter {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   border-radius: 999px;
 }
 
-.site-nav a::before,
+.site-nav .site-nav__menu a::before,
 .button::before,
-.filter::before,
-.theme-toggle::before {
+.filter::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -596,14 +739,12 @@ a:hover {
   transition: clip-path 0.6s var(--ease-out);
 }
 
-.site-nav a:hover::before,
-.site-nav a:focus-visible::before,
+.site-nav .site-nav__menu a:hover::before,
+.site-nav .site-nav__menu a:focus-visible::before,
 .button:hover::before,
 .button:focus-visible::before,
 .filter:hover::before,
-.filter:focus-visible::before,
-.theme-toggle:hover::before,
-.theme-toggle:focus-visible::before {
+.filter:focus-visible::before {
   clip-path: circle(150% at var(--mx, 50%) var(--my, 50%));
 }
 
@@ -3820,11 +3961,16 @@ body[data-gallery-view='wall'] .medium-capsule {
   cursor: none;
 }
 
-/* The new theme grows out of the toggle as a circle (js/theme.js animates it). */
+/* The theme reveal (js/theme.js): going light, the new theme grows out of the window as a circle; going
+   dark, the old (light) theme lies on top and shrinks back into the window. */
 .is-theme-switching::view-transition-old(root),
 .is-theme-switching::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+.is-theme-closing::view-transition-old(root) {
+  z-index: 1;
 }
 
 /* Opening animation (js/intro.js): a large "n." on a page-coloured cover. */
@@ -4346,5 +4492,62 @@ body[data-gallery-view='wall'] .medium-capsule {
 
   .view-switch--room {
     display: none;
+  }
+}
+
+/* The gallery's wall view: the header sits on the wall itself. The room runs to the top of the screen under a
+   header with no band of its own; --header-h (js/pages.js) keeps the wall's own controls below it. */
+:root {
+  --wall-ink: #f1ece1;
+}
+
+body[data-gallery-view='wall'] .site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  color: var(--wall-ink);
+}
+
+/* An open phone menu is page-coloured, so the header goes back to the page's ink over it. */
+body[data-gallery-view='wall'] .is-menu-open .site-header,
+.is-menu-open body[data-gallery-view='wall'] .site-header {
+  color: var(--ink);
+}
+
+body[data-gallery-view='wall'] .room {
+  --room-head: var(--header-h, 5.75rem);
+}
+
+body[data-gallery-view='wall'] .room__bar {
+  top: calc(var(--room-head) + 0.9rem);
+}
+
+body[data-gallery-view='wall'] .placard {
+  top: calc(var(--room-head) + 0.95rem);
+}
+
+body[data-gallery-view='wall'] .room__segment {
+  padding-top: calc(var(--room-head) + 4.25rem);
+}
+
+@media (min-width: 62rem) {
+  body[data-gallery-view='wall'] .room__segment {
+    padding-top: calc(var(--room-head) + 3.5rem);
+  }
+}
+
+@media (max-width: 40rem) {
+  body[data-gallery-view='wall'] .medium-capsule {
+    top: calc(var(--header-h, 5.25rem) + 0.15rem);
+  }
+
+  body[data-gallery-view='wall'] .room__bar {
+    top: calc(var(--room-head) + 4.4rem);
+  }
+
+  body[data-gallery-view='wall'] .room__segment {
+    padding-top: calc(var(--room-head) + 7.25rem);
   }
 }

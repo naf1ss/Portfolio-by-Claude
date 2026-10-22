@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  const PILL_SELECTOR = '.button, .site-nav a, .filter, .theme-toggle';
+  const PILL_SELECTOR = '.button, .site-nav .site-nav__menu a, .filter';
   const ROLL_SELECTOR = '.button, .site-nav a';
   const MAGNET_PULL = 0.25; // fraction of the pointer's offset from the button centre
   const MAGNET_MAX_PX = 7;

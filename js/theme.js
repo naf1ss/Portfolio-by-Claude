@@ -1,6 +1,6 @@
 /**
  * Light / dark theme. Follows the device setting until the visitor uses the
- * toggle in the header; that choice is remembered in this browser. Holding the
+ * window in the header (curtains open: light; drawn: dark); that choice is remembered in this browser. Holding the
  * toggle down (or Shift + click / Shift + Enter) forgets the choice and goes
  * back to following the device.
  *
@@ -44,18 +44,28 @@
   const savedChoice = readChoice();
   if (savedChoice) root.dataset.theme = savedChoice;
 
-  const ICON =
-    '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">' +
-    '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
-    '<path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>';
+  // The switch is a small window onto a sunny landscape. In the dark theme its curtains are drawn.
+  const WINDOW =
+    '<span class="theme-window__view" aria-hidden="true">' +
+    '<svg viewBox="0 0 40 40" focusable="false">' +
+    '<defs><linearGradient id="theme-window-sky" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0" stop-color="#8ec9f2"/><stop offset="0.7" stop-color="#ffe4b0"/></linearGradient></defs>' +
+    '<rect width="40" height="40" fill="url(#theme-window-sky)"/>' +
+    '<circle class="theme-window__sun" cx="25" cy="17" r="5.5" fill="#ffc94a"/>' +
+    '<path d="M0 29 C8 23 14 25 21 28 S33 24 40 26 V40 H0z" fill="#7fae63"/>' +
+    '<path d="M0 34 C10 29 20 33 28 31 S36 30 40 32 V40 H0z" fill="#4f8a4b"/>' +
+    '</svg></span>' +
+    '<span class="theme-window__curtain theme-window__curtain--left" aria-hidden="true"></span>' +
+    '<span class="theme-window__curtain theme-window__curtain--right" aria-hidden="true"></span>' +
+    '<span class="theme-window__frame" aria-hidden="true"></span>';
 
   function createToggle() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'theme-toggle';
     button.setAttribute('aria-label', 'Dark mode');
-    button.title = 'Switch theme. Hold to follow your device.';
-    button.innerHTML = ICON;
+    button.title = 'Draw or open the curtains. Hold to follow your device.';
+    button.innerHTML = WINDOW;
     return button;
   }
 
@@ -64,8 +74,9 @@
   }
 
   /**
-   * Sets the theme (null = follow the device), revealing it as a circle growing from the button.
-   * Falls back to an instant change without view transitions or with reduced motion.
+   * Sets the theme (null = follow the device). Going light, the new theme grows out of the window as a circle;
+   * going dark, the light theme shrinks back into the window. Falls back to an instant change without view
+   * transitions or with reduced motion.
    */
   function applyTheme(theme, origin) {
     const apply = () => {
@@ -77,18 +88,27 @@
       return;
     }
 
+    const goingDark = resolveTheme({ chosen: theme, systemPrefersDark: systemDark.matches }) === 'dark';
     const radius = Math.hypot(Math.max(origin.x, innerWidth - origin.x), Math.max(origin.y, innerHeight - origin.y));
+    const small = `circle(0px at ${origin.x}px ${origin.y}px)`;
+    const large = `circle(${radius}px at ${origin.x}px ${origin.y}px)`;
     root.classList.add('is-theme-switching');
+    root.classList.toggle('is-theme-closing', goingDark);
     const transition = document.startViewTransition(apply);
     transition.ready
       .then(() =>
         root.animate(
-          { clipPath: [`circle(0px at ${origin.x}px ${origin.y}px)`, `circle(${radius}px at ${origin.x}px ${origin.y}px)`] },
-          { duration: SWITCH_DURATION_MS, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' }
+          { clipPath: goingDark ? [large, small] : [small, large] },
+          {
+            duration: SWITCH_DURATION_MS,
+            easing: goingDark ? 'cubic-bezier(0.64, 0, 0.78, 0)' : 'cubic-bezier(0.22, 1, 0.36, 1)',
+            fill: 'forwards',
+            pseudoElement: goingDark ? '::view-transition-old(root)' : '::view-transition-new(root)',
+          }
         )
       )
       .catch(() => {});
-    transition.finished.finally(() => root.classList.remove('is-theme-switching'));
+    transition.finished.finally(() => root.classList.remove('is-theme-switching', 'is-theme-closing'));
   }
 
   document.addEventListener('DOMContentLoaded', () => {

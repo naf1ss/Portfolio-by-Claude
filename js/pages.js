@@ -103,6 +103,13 @@
     const list = document.getElementById('gallery');
     const status = document.getElementById('result-status');
     const bar = document.getElementById('gallery-bar');
+    // On the wall the header lies over the room, so the wall's controls are placed below its height.
+    const header = document.querySelector('.site-header');
+    const measureHeader = () => document.documentElement.style.setProperty('--header-h', `${header.offsetHeight}px`);
+    if (header) {
+      measureHeader();
+      new ResizeObserver(measureHeader).observe(header);
+    }
     const counts = U.countByCategory(all);
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
     // The photographer only appears alongside the photography work.
