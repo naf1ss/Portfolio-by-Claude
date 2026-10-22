@@ -3543,12 +3543,19 @@ body[data-gallery-view='wall'] .medium-capsule {
   }
 }
 
-.room__count {
-  padding: 0 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  font-variant-numeric: tabular-nums;
+/* The arrows that walk along the wall, in its bottom-right corner just above the floor. */
+.room__walk {
+  position: absolute;
+  z-index: 4;
+  right: var(--room-edge);
+  bottom: calc(var(--room-floor-h) + 0.75rem);
+  display: flex;
+  gap: 0.25rem;
+}
+
+.room__walk .room__button {
+  font-size: 1rem;
+  letter-spacing: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

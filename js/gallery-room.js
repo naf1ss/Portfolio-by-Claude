@@ -217,14 +217,18 @@
     const prev = element('button', 'room__button', '←');
     prev.type = 'button';
     prev.setAttribute('aria-label', 'Previous work on the wall');
-    const count = element('span', 'room__count');
+    // Where you are along the wall, for screen readers only: on screen the arrows say enough.
+    const count = element('span', 'visually-hidden');
     count.setAttribute('aria-live', 'polite');
     const next = element('button', 'room__button', '→');
     next.type = 'button';
     next.setAttribute('aria-label', 'Next work on the wall');
-    bar.append(lights, prev, count, next);
+    bar.append(lights);
+    // Walking along the wall: two arrows in the bottom-right corner, just above the floor.
+    const walkControls = element('div', 'room__walk');
+    walkControls.append(prev, count, next);
 
-    room.replaceChildren(view, bar);
+    room.replaceChildren(view, bar, walkControls);
     return { view, track, plane, glints, lights, hint, prev, count, next };
   }
 
@@ -361,7 +365,7 @@
       parts.track.style.transform = `translate3d(${x}px, 0, 0)`;
       parts.glints.style.transform = `translate3d(${x}px, 0, 0)`;
       parts.plane.style.setProperty('--room-floor-x', `${x}px`);
-      parts.count.textContent = `${index + 1} / ${sections.length}`;
+      parts.count.textContent = `Work ${index + 1} of ${sections.length} on the wall`;
       parts.prev.disabled = index === 0;
       parts.next.disabled = index === sections.length - 1;
       // Load the pictures you are about to walk up to.

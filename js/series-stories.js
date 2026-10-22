@@ -14,6 +14,7 @@
  *   process   [{ title, text }]                   optional: the process as a band after the intro, before the works
  *   closing   { process: [{ title, text }] (optional, beside the reflection), reflectionTitle, reflection: [paragraphs] }
  *
+ * In any paragraph, *asterisks* mark the title of a work (shown in italics).
  * Every workId must be in the catalogue (the tests check).
  */
 (function (root, stories) {
@@ -135,14 +136,14 @@
       {
         workId: 'A030',
         text: [
-          'In Almost Happy I wanted to paint the moment just before a feeling settles. Long diagonal strokes of violet, grey and muted teal move across the canvas, and in the lower right yellow, my colour for happiness, begins to gather.',
+          'In *Almost Happy* I wanted to paint the moment just before a feeling settles. Long diagonal strokes of violet, grey and muted teal move across the canvas, and in the lower right yellow, my colour for happiness, begins to gather.',
           'The brushwork keeps everything in motion, so it is never clear whether the yellow will take over or be pushed back. That uncertainty is the subject: a happiness that is close, but not yet here.',
         ],
       },
       {
         workId: 'A041',
         text: [
-          'I work with colour the way some people argue: loud, direct and a little stubborn. In Aggressive Happiness the yellow has intensified into orange.',
+          'I work with colour the way some people argue: loud, direct and a little stubborn. In *Aggressive Happiness* the yellow has intensified into orange.',
           'I pushed thick squares of paint into a hot orange field and a cooler teal one, then let a rough white break cut across the middle like a fault line. What you see is less a picture of happiness than the physical push of it, pressing into the surface until it holds.',
         ],
       },
@@ -150,7 +151,7 @@
     closing: {
       reflectionTitle: 'About the series',
       reflection: [
-        'Degrees of Happiness treats emotion as colour rather than as a subject to illustrate. Yellow, and the orange it becomes, stands for happiness throughout; each painting holds that colour at a different intensity and lets the handling of the paint carry the feeling.',
+        '*Degrees of Happiness* treats emotion as colour rather than as a subject to illustrate. Yellow, and the orange it becomes, stands for happiness throughout; each painting holds that colour at a different intensity and lets the handling of the paint carry the feeling.',
         'When the feeling is still arriving, the strokes are soft and blended. When it insists, the surface turns to hard edges, built-up squares and a single decisive line. Seen together, the paintings follow one emotion from suggestion to insistence: the colour stays the same, and what changes is how hard it pushes.',
       ],
     },

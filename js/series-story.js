@@ -46,9 +46,19 @@
     return section;
   }
 
+  /** A paragraph in which *asterisks* mark titles of works, set in italics. */
+  function paragraph(text) {
+    const node = element('p');
+    text.split(/\*([^*]+)\*/).forEach((part, i) => {
+      if (!part) return;
+      node.append(i % 2 === 1 ? element('i', undefined, part) : part);
+    });
+    return node;
+  }
+
   function paragraphs(className, list) {
     const prose = element('div', className);
-    list.forEach((text) => prose.append(element('p', undefined, text)));
+    list.forEach((text) => prose.append(paragraph(text)));
     return prose;
   }
 
