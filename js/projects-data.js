@@ -190,8 +190,9 @@
           {
             type: 'text',
             paragraphs: [
-              'The walk needed an ending that could be seen from across the field: a landmark that tells visitors they have arrived.',
-              'The design pairs science with story. Each of four panels, for Mars, Earth, Jupiter and Saturn, sets a stylised figure from the planet’s mythology against the planet itself, tied together by orbital lines.',
+              'The walk needed an ending that could be seen from across the field: a landmark that tells visitors they have arrived. The Observatory’s front wall has room for four panels, so the mural became a set of four, for Mars, Earth, Jupiter and Saturn.',
+              'Each panel shows its planet graphically, with smaller celestial bodies around it, beside a mythical figure whose drapery takes on the planet’s colours, so the figure itself can be read as the planet. The figures draw on anime, on visual research gathered online and on my own imagination.',
+              'The panels are digital mixed media. Most of the work is hand-drawn; I combined it with photo manipulation and collaged imagery, among them Hokusai’s *The Great Wave off Kanagawa* rising over Earth, and used generative tools to refine some details.',
             ],
           },
           { type: 'figure', workId: 'pw-mural-panels', caption: 'The four panels: Mars, Earth, Jupiter and Saturn.' },
@@ -199,6 +200,12 @@
             type: 'decision',
             title: 'Print, not paint',
             text: 'I had planned to paint directly on the wall. After consulting the mural specialist Sarah Jacobs, MFA, on longevity and outdoor media, I created the artwork digitally for printing on vinyl: more durable outdoors, and practical to install on the Observatory’s metal wall.',
+          },
+          {
+            type: 'text',
+            paragraphs: [
+              'The move to print also changed the mural’s place in the project. It began as the centrepiece; once it no longer called for painting by hand, my priorities shifted to the marker design system, the research and material tests behind it, and the walk tracker.',
+            ],
           },
         ],
       },
