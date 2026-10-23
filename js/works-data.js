@@ -63,7 +63,8 @@
   { id: 'A040', title: 'Wall Magazine- Champions', year: 2020, medium: 'Mixed craft', dimensions: null, category: 'wall-magazine', base: 'artwork/a040-wall-magazine-champions', ws: [600, 1200, 1800], w: 1800, h: 1137 },
   { id: 'A041', title: 'Aggressive Happiness', year: 2026, medium: 'Acrylic on wood panel', dimensions: '24x24 inches', category: 'painting', base: 'artwork/a041-aggressive-happiness', ws: [600, 1200, 1800], w: 1800, h: 1772 },
   { id: 'A042', title: 'Quarry', year: 2026, medium: 'Oil impasto on wood panel', dimensions: '12x9 inches', category: 'painting', base: 'artwork/a042-quarry', ws: [600, 1200, 1800], w: 1800, h: 1449 },
-  { id: 'A043', title: 'Old Master Study- The Milkmaid', year: 2026, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a043-old-master-study-the-milkmaid', ws: [600, 1200, 1800], w: 1800, h: 2246 },
+  { id: 'A043', title: 'Old Master Study- The Milkmaid', year: 2026, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a043-old-master-study-the-milkmaid', ws: [600, 1200, 1800], w: 1800, h: 2246,
+    notes: 'I chose Vermeer’s The Milkmaid (c. 1658–1660) because it makes an ordinary moment feel important, and it does so through light. Copying it closely was a lesson in looking. I matched the contrast between the soft light from the window and the shadow in the room, and mixed the yellow bodice and deep blue apron until they sat as they do in the original. I also worked on the textures: the crust of the bread, the glaze of the pottery, the heavy cloth, the plaster wall. What I took from it is how much calm comes from careful observation and restraint.' },
 
   // Ceramics are untitled photographs for now; add title/year here when ready.
   { id: 'ceramics8', title: null, year: null, medium: 'Ceramics', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics8', ws: [600, 1200, 1800], w: 1800, h: 1940 },
