@@ -14,7 +14,7 @@
  *   works     [{ workId, text: [paragraphs] }]    optional: the works side by side, each labelled, its words beneath
  *   process   [{ title, text }]                   optional: the process as a band after the intro, before the works
  *   processTitle                                  optional heading for that band (default "Process")
- *   closing   { process (optional, beside the reflection), processTitle, reflectionTitle, reflection: [paragraphs],
+ *   closing   { process (optional, beside the reflection), processTitle, reflectionFirst (reflection on the left), reflectionTitle, reflection: [paragraphs],
  *               credits (optional acknowledgements) }
  *
  * In any paragraph, *asterisks* mark the title of a work (shown in italics).
@@ -163,32 +163,13 @@
   // (designers, dates, parts, the calculated curve) come from toureiffel.paris and ArchDaily.
   'eiffel-tower': {
     works: [
-      {
-        workId: 'A001',
-        text: [
-          'Painted in 2016, with the tower as a dark silhouette against a low sun. With no light on the iron, the structure has to be read from the outline alone: the legs spread wide at the base and draw in as they rise. A checkered border closes the scene.',
-        ],
-      },
-      {
-        workId: 'A034',
-        text: [
-          'The tower and its reflection meet at the horizon, so the structure is seen twice, once upright and once inverted. Doubling it turns the painting into a test of symmetry: the four legs and the single line they gather into have to agree on both sides.',
-        ],
-      },
-      {
-        workId: 'A038',
-        text: [
-          'Here the tower is set within a wide skyline, and the question changes from how it is built to how it sits: its height against the horizon, its scale among other forms, its reflection in the water below.',
-        ],
-      },
-      {
-        workId: 'A012',
-        text: [
-          'The largest and most recent. The tower is rebuilt from flat planes of red, yellow, blue and black, with an orange lattice and a white moon. The structure is no longer shaded but composed: each part is a decision about balance, and the analysis that began as drawing becomes design.',
-        ],
-      },
+      { workId: 'A001', text: [] },
+      { workId: 'A034', text: [] },
+      { workId: 'A038', text: [] },
+      { workId: 'A012', text: [] },
     ],
     closing: {
+      reflectionFirst: true,
       processTitle: 'What I look at',
       process: [
         {

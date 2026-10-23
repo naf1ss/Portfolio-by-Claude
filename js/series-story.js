@@ -206,19 +206,19 @@
     return section;
   }
 
-  /** Process steps (optional) beside the reflection. */
+  /** Process steps (optional) beside the reflection; `reflectionFirst` puts the reflection on the left. */
   function closing(entry) {
     const section = element('section', 'story__closing');
-    if (entry.process) {
-      section.append(processSteps(entry.process, entry.processTitle));
-    } else {
-      section.classList.add('story__closing--single');
-    }
+    const steps = entry.process ? processSteps(entry.process, entry.processTitle) : null;
+    if (!steps) section.classList.add('story__closing--single');
+    if (steps && entry.reflectionFirst) section.classList.add('story__closing--reflection-first');
+    if (steps && !entry.reflectionFirst) section.append(steps);
 
     const reflection = element('div');
     reflection.append(element('h2', 'eyebrow', entry.reflectionTitle || 'Reflection'), paragraphs('story__prose', entry.reflection));
     if (entry.credits) reflection.append(element('p', 'story__credits', entry.credits));
     section.append(reflection);
+    if (steps && entry.reflectionFirst) section.append(steps);
     return section;
   }
 

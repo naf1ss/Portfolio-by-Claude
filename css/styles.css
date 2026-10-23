@@ -2360,6 +2360,10 @@ button:focus-visible > .roll .roll__face + .roll__face {
   .story__closing {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   }
+
+  .story__closing--reflection-first {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
 }
 
 .story__closing .story__prose {
