@@ -395,35 +395,16 @@ test('catalogue: every work a series story shows is in the catalogue', () => {
   });
 });
 
-test('seriesCoverWorks uses coverIds that exist, else the first three works', () => {
-  const works = ['a', 'b', 'c', 'd'].map((id) => ({ id }));
-  const byId = new Map(works.map((work) => [work.id, work]));
-  const ids = (series) => U.seriesCoverWorks(series, works, byId).map((work) => work.id);
-  assert.deepEqual(ids({ coverIds: ['d', 'missing', 'b'] }), ['d', 'b']);
-  assert.deepEqual(ids({ coverIds: ['missing'] }), ['a', 'b', 'c']);
-  assert.deepEqual(ids({}), ['a', 'b', 'c']);
+test('series: medium names a series by its own medium, else by its works’ categories in gallery order', () => {
+  assert.equal(U.seriesMedium({ medium: 'Monotype' }, [work({ category: 'print' })]), 'Monotype');
+  assert.equal(U.seriesMedium({}, [work({ category: 'ceramics' }), work({ category: 'ceramics' })]), 'Ceramics');
+  assert.equal(U.seriesMedium({}, [work({ category: 'drawing' }), work({ category: 'painting' })]), 'Painting & drawing');
 });
 
-test('coverRowWidths hangs works at one height, as large as the row allows', () => {
-  const sum = (list) => list.reduce((total, value) => total + value, 0);
-  // Three landscape works are limited by the row's width: they and the gaps fill it exactly.
-  const wide = U.coverRowWidths([1.5, 1.5, 1.5], { rowRatio: 1.5, gap: 0.05 });
-  assert.ok(Math.abs(sum(wide) + 10 - 100) < 1e-9);
-  // One portrait work is limited by the row's height: as tall as the row (1 / 1.5 of its width).
-  const [tall] = U.coverRowWidths([0.75], { rowRatio: 1.5, gap: 0.05 });
-  assert.ok(Math.abs(tall - 0.75 * (100 / 1.5)) < 1e-9);
-  assert.deepEqual(U.coverRowWidths([], { rowRatio: 1.5, gap: 0.05 }), []);
-});
-
-test('catalogue: every series coverId is in the series', () => {
-  const byId = new Map(WORKS.map((record) => [record.id, record]));
-  SERIES.filter((series) => series.coverIds).forEach((series) => {
-    const inSeries = new Set(U.worksInSeries(series, WORKS).map((work) => work.id));
-    series.coverIds.forEach((id) => {
-      assert.ok(byId.has(id), `${series.id}: cover ${id} is not in the catalogue`);
-      assert.ok(inSeries.has(id), `${series.id}: cover ${id} is not one of its works`);
-    });
-  });
+test('series: year span gives one year, a span, or nothing', () => {
+  assert.equal(U.yearSpan([work({ year: 2026 }), work({ year: 2026 })]), '2026');
+  assert.equal(U.yearSpan([work({ year: 2025 }), work({ year: 2016 }), work({ year: null })]), '2016–2025');
+  assert.equal(U.yearSpan([work({ year: null })]), null);
 });
 
 test('applyCuratedOrder puts listed works first within their medium and keeps the media where they were', () => {

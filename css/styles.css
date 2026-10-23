@@ -1268,9 +1268,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .series-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-  gap: clamp(2rem, 3.5vw, 3rem) clamp(1rem, 2vw, 1.75rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1280,63 +1277,92 @@ button:focus-visible > .roll .roll__face + .roll__face {
   display: none;
 }
 
-.series-card {
+/* The series index (js/gallery.js renderSeriesList): one ticker per series, its name running across the row in
+   outline, alternate rows in opposite directions. Pointing at a row, or focusing it, stops it and fills the name. */
+.series-list--ticker {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.series-list--ticker > li {
+  border-top: 1px solid var(--rule);
+}
+
+.ticker {
   display: block;
+  overflow: hidden;
+  padding-block: clamp(0.6rem, 1.4vw, 1rem);
   text-decoration: none;
 }
 
-.series-card:hover {
-  color: inherit;
-}
-
-/* The cover: the works hung side by side at one height, centred on a plain wall (js/gallery.js sizes them). */
-.series-card__cover {
-  position: relative;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 3 / 2;
-  background: var(--paper-sunken);
-  overflow: hidden;
-}
-
-.series-card__row {
+.ticker__track {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--gap, 5%);
-  width: 88%;
-  aspect-ratio: var(--row-ratio, 1.9);
+  width: max-content;
+  animation: ticker var(--ticker-duration, 40s) linear infinite;
 }
 
-.series-card__piece {
-  display: block;
+.series-list--ticker > li:nth-child(even) .ticker__track {
+  animation-direction: reverse;
+}
+
+.ticker:hover .ticker__track,
+.ticker:focus-visible .ticker__track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker__unit {
+  display: inline-flex;
   flex: none;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 10px 24px -12px rgb(0 0 0 / 0.35);
-  transition: transform 0.6s var(--ease-out);
+  align-items: center;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding-right: clamp(1rem, 2vw, 1.5rem);
 }
 
-.series-card__piece .tile__image {
-  display: block;
+.ticker__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 1.4rem + 4.4vw, 5.6rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--ink);
+  transition: color 0.5s var(--ease-out);
 }
 
-.series-card:hover .series-card__piece,
-.series-card:focus-visible .series-card__piece {
-  transform: translateY(-3px);
+.ticker:hover .ticker__title,
+.ticker:focus-visible .ticker__title {
+  color: var(--ink);
 }
 
-.series-card:hover .series-card__piece:nth-child(2),
-.series-card:focus-visible .series-card__piece:nth-child(2) {
-  transition-delay: 0.05s;
+.ticker__meta {
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.series-card:hover .series-card__piece:nth-child(3),
-.series-card:focus-visible .series-card__piece:nth-child(3) {
-  transition-delay: 0.1s;
+.ticker__mark {
+  color: var(--accent);
+  font-size: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
 }
 
+/* Without motion, each row is still: the name shown solid and the repeats out of view. */
 @media (prefers-reduced-motion: reduce) {
-  .series-card__piece {
-    transition: none;
+  .ticker__track {
+    animation: none;
+  }
+
+  .ticker__title {
+    color: var(--ink);
   }
 }
 

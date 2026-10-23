@@ -144,43 +144,53 @@
     container.replaceChildren(link, body);
   }
 
-  // Each piece is at most about a third of a card.
-  const SERIES_PIECE_SIZES = '(min-width: 60rem) 14vw, (min-width: 40rem) 22vw, 45vw';
+  // The series index is a set of tickers: each series' name runs slowly across its own row, in outline, and
+  // fills in and stops when pointed at. A track holds two identical halves, each at least as wide as the row,
+  // and slides by one half, so the loop never shows a seam.
+  const TICKER_SPEED = 55; // px per second, the same for every row whatever its length
 
-  // The cover row's shape (width / height) and the space between its works, as a fraction of its width.
-  const COVER_ROW_RATIO = 1.9;
-  const COVER_GAP = 0.04;
-
-  /** A series card's cover: a few of its works, whole, hung side by side at one height on a plain wall. */
-  function createSeriesCover(works, eager) {
-    const cover = element('span', 'series-card__cover');
-    const row = element('span', 'series-card__row');
-    row.style.setProperty('--row-ratio', COVER_ROW_RATIO);
-    row.style.setProperty('--gap', `${COVER_GAP * 100}%`);
-    const widths = U.coverRowWidths(works.map(U.aspectRatio), { rowRatio: COVER_ROW_RATIO, gap: COVER_GAP });
-    works.forEach((work, i) => {
-      const piece = element('span', 'series-card__piece');
-      piece.style.width = `${widths[i].toFixed(3)}%`;
-      piece.append(createImage(work, { eager, sizes: SERIES_PIECE_SIZES }));
-      row.append(piece);
-    });
-    cover.append(row);
-    return cover;
+  function tickerUnit(series, meta, hidden) {
+    const unit = element('span', 'ticker__unit');
+    if (hidden) unit.setAttribute('aria-hidden', 'true');
+    const mark = element('span', 'ticker__mark', '✦');
+    mark.setAttribute('aria-hidden', 'true');
+    unit.append(element('span', 'ticker__title', series.title), element('span', 'ticker__meta', meta), mark);
+    return unit;
   }
 
-  /** One card per series: a few of its works on a plain wall, and its title. */
-  function renderSeriesList(list, entries, { hrefFor, eagerCount = 3 }) {
-    const cards = entries.map(({ series, covers }, i) => {
-      const link = element('a', 'series-card');
+  function fillTicker(track, series, meta) {
+    track.replaceChildren(tickerUnit(series, meta, false));
+    const unitWidth = track.firstChild.getBoundingClientRect().width || 1;
+    const perHalf = Math.max(1, Math.ceil(track.parentElement.clientWidth / unitWidth));
+    for (let i = 1; i < perHalf * 2; i += 1) track.append(tickerUnit(series, meta, true));
+    track.style.setProperty('--ticker-duration', `${((perHalf * unitWidth) / TICKER_SPEED).toFixed(1)}s`);
+  }
+
+  /** One ticker row per series: its name, medium and years, running across the page. */
+  function renderSeriesList(list, entries, { hrefFor }) {
+    const rows = entries.map(({ series, works }) => {
+      const meta = [U.seriesMedium(series, works), U.yearSpan(works)].filter(Boolean).join(' · ');
+      const link = element('a', 'ticker');
       link.href = hrefFor(series);
-      const caption = element('span', 'tile__caption');
-      caption.append(element('span', 'tile__title', series.title));
-      link.append(createSeriesCover(covers, i < eagerCount), caption);
+      link.setAttribute('aria-label', `${series.title}, ${meta}`);
+      const track = element('span', 'ticker__track');
+      link.append(track);
       const item = element('li');
       item.append(link);
-      return item;
+      return { item, fill: () => fillTicker(track, series, meta) };
     });
-    list.replaceChildren(...cards);
+    list.classList.add('series-list--ticker');
+    list.replaceChildren(...rows.map(({ item }) => item));
+
+    const fillAll = () => rows.forEach(({ fill }) => fill());
+    fillAll();
+    // Widths change once the display face has loaded and whenever the window does.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fillAll);
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(fillAll, 150);
+    });
   }
 
   window.Gallery = { renderGallery, renderLatest, renderMediumList, renderSeriesList };

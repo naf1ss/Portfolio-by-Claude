@@ -225,31 +225,29 @@
 
   /** "7 works" or "63 works · 2023" / "12 works · 2024–2026". */
   function seriesMeta(works) {
-    const years = works.map((work) => work.year).filter(Boolean);
-    const first = Math.min(...years);
-    const last = Math.max(...years);
-    const span = years.length === 0 ? null : first === last ? String(first) : `${first}–${last}`;
+    const span = yearSpan(works);
     const count = `${works.length} ${works.length === 1 ? 'work' : 'works'}`;
     return span ? `${count} · ${span}` : count;
   }
 
-  const COVER_WORK_LIMIT = 3;
-
-  /** The works set on a series card: its coverIds that exist, else its first works. */
-  function seriesCoverWorks(series, works, byId) {
-    const chosen = (series.coverIds || []).map((id) => byId.get(id)).filter(Boolean);
-    return (chosen.length ? chosen : works).slice(0, COVER_WORK_LIMIT);
+  /**
+   * The medium a series is shown under: its own `medium` if set, else the categories of its works in gallery
+   * order, e.g. "Ceramics" or "Painting & drawing".
+   */
+  function seriesMedium(series, works) {
+    if (series.medium) return series.medium;
+    const present = new Set(works.map((work) => work.category));
+    const labels = CATEGORIES.filter(({ id }) => present.has(id)).map(({ label }) => label);
+    return labels.map((label, i) => (i === 0 ? label : label.toLowerCase())).join(' & ');
   }
 
-  /**
-   * Widths, in % of a row of the given shape (width / height), for pictures of these aspect ratios hung side
-   * by side at one common height with `gap` (a fraction of the row width) between them: as large as fits.
-   */
-  function coverRowWidths(ratios, { rowRatio, gap }) {
-    if (!ratios.length) return [];
-    const totalRatio = ratios.reduce((sum, ratio) => sum + ratio, 0);
-    const height = Math.min(1 / rowRatio, (1 - gap * (ratios.length - 1)) / totalRatio); // in row widths
-    return ratios.map((ratio) => ratio * height * 100);
+  /** The year or span of years of a set of works ("2026", "2016–2025"), or null when none is dated. */
+  function yearSpan(works) {
+    const years = works.map((work) => work.year).filter(Boolean);
+    if (!years.length) return null;
+    const first = Math.min(...years);
+    const last = Math.max(...years);
+    return first === last ? String(first) : `${first}–${last}`;
   }
 
   /** Up to `count` distinct items in random order; `random` is injectable so tests are deterministic. */
@@ -303,8 +301,8 @@
     hashForWork,
     worksInSeries,
     seriesMeta,
-    seriesCoverWorks,
-    coverRowWidths,
+    seriesMedium,
+    yearSpan,
     pickRandom,
     pickMediumWorks,
   };

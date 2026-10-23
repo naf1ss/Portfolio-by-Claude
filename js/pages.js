@@ -210,7 +210,7 @@
     const entries = (window.PORTFOLIO_SERIES || [])
       .map((series) => {
         const works = U.worksInSeries(series, catalogue);
-        return { series, works, covers: U.seriesCoverWorks(series, works, byId) };
+        return { series, works };
       })
       .filter((entry) => entry.works.length > 0);
 

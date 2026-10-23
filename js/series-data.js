@@ -4,7 +4,7 @@
  *   id        URL-safe name
  *   title     shown on the series card and page
  *   note      optional short paragraph shown on the series page (null for none)
- *   coverIds  optional: up to three work ids set side by side on the series card; defaults to the first three works
+ *   medium    optional: the medium shown in the series index; defaults to the categories of its works
  *   (a long-form write-up for a series lives in js/series-stories.js under the same id)
  *   workIds   the works, in the order to show them, OR
  *   category / year   a rule that collects matching works instead
@@ -24,7 +24,6 @@
     id: 'cross-wired',
     title: 'Cross-Wired',
     note: 'A ceramic study of form, surface and influence: a plate, a bowl and a mug, each guided by a different maker.',
-    coverIds: ['ceramics-33', 'ceramics-32', 'ceramics-34'],
     workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
   },
   {
@@ -37,12 +36,12 @@
   {
     id: 'three-ways-of-seeing',
     title: 'Three Ways of Seeing',
+    medium: 'Drawing',
     note: 'One still life drawn three ways: through light and shadow, as a study of structure, and by intuition.',
     hangTogether: true,
-    coverIds: ['A007', 'A008', 'A009'],
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
-  { id: 'horizon', title: 'Horizon', note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
+  { id: 'horizon', title: 'Horizon', medium: 'Monotype', note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
   {
     id: 'eiffel-tower',
     title: 'Eiffel Tower',
@@ -50,7 +49,7 @@
     hangTogether: true,
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
-  { id: 'still-life', title: 'Still life', note: null, coverIds: ['A010', 'A018', 'A009'], workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
+  { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
   {
     id: 'mugs',
     title: 'Mugs',
@@ -61,7 +60,6 @@
     id: 'bowls',
     title: 'Bowls',
     note: null,
-    coverIds: ['ceramics-6', 'ceramics-44', 'ceramics-47'],
     workIds: ['ceramics-6', 'ceramics-44', 'ceramics-45', 'ceramics-47', 'ceramics-59', 'ceramics-7', 'ceramics8', 'ceramics-4', 'ceramics-11', 'ceramics-52'],
   },
 ]);
