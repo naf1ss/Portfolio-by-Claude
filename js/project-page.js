@@ -143,14 +143,14 @@
     },
 
     // Questions put to a collaborator, each with what was learned and what it meant for the work.
-    findings: ({ items }) => {
+    findings: ({ items, implicationLabel = 'For the design' }) => {
       const list = element('ol', 'pcase__findings');
       items.forEach(({ question, answer, implication }) => {
         const item = element('li');
         item.append(element('p', 'pcase__finding-q', question), paragraph(answer, 'pcase__finding-a'));
         if (implication) {
           const note = element('p', 'pcase__finding-i');
-          note.append(element('b', undefined, 'For the design: '), implication);
+          note.append(element('b', undefined, `${implicationLabel}: `), implication);
           item.append(note);
         }
         list.append(item);
@@ -277,7 +277,7 @@
     );
     const heroWork = byId.get(project.hero.workId);
     if (heroWork) {
-      const heroFigure = figure(heroWork, { caption: project.hero.caption, sizes: '96vw', className: 'pcase__figure pcase__figure--hero' });
+      const heroFigure = figure(heroWork, { caption: project.hero.caption, sizes: '96vw', className: `pcase__figure pcase__figure--hero${project.hero.size === 'medium' ? ' pcase__figure--medium' : ''}` });
       // An optional link beside the caption, e.g. to a collaborating artist's own site.
       if (project.hero.link) {
         const { text, url } = project.hero.link;
