@@ -33,6 +33,8 @@
     const image = dialog.querySelector('.viewer__image');
     const title = dialog.querySelector('.viewer__title');
     const meta = dialog.querySelector('.viewer__meta');
+    const notes = dialog.querySelector('.viewer__notes');
+    const notesText = dialog.querySelector('.viewer__notes-text');
     const position = dialog.querySelector('.viewer__count');
     const stepButtons = dialog.querySelectorAll('[data-action="prev"], [data-action="next"]');
 
@@ -61,6 +63,10 @@
 
       title.textContent = caption.title;
       meta.textContent = caption.meta;
+      // A work with the artist's notes shows them beside the picture (wide screens; see .viewer__stage.has-notes).
+      notesText.textContent = work.notes || '';
+      notes.hidden = !work.notes;
+      stage.classList.toggle('has-notes', Boolean(work.notes));
       position.textContent = `${index + 1} / ${works.length}`;
       stepButtons.forEach((button) => {
         button.hidden = works.length < 2;

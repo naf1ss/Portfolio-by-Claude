@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=089b1d63">
+  <link rel="stylesheet" href="css/styles.css?v=5971ee37">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=4d7d19d8"></script>
   <script src="js/site-menu.js?v=92fc389c"></script>
@@ -29,7 +29,7 @@
   <script src="js/site-config.js?v=c5626850" defer></script>
   <script src="js/gallery.js?v=6f1340fe" defer></script>
   <script src="js/medium-picker.js?v=35ab37af" defer></script>
-  <script src="js/lightbox.js?v=1bd250a9" defer></script>
+  <script src="js/lightbox.js?v=a23e7a2c" defer></script>
   <script src="js/gallery-room-utils.js?v=d574561d" defer></script>
   <script src="js/pull-cord.js?v=1ea340c3" defer></script>
   <script src="js/gallery-room.js?v=84c15cbd" defer></script>
@@ -138,6 +138,10 @@
   <dialog class="viewer" id="viewer" aria-labelledby="viewer-title" tabindex="-1">
     <div class="viewer__stage">
       <img class="viewer__image" alt="">
+      <aside class="viewer__notes" aria-label="About the work" hidden>
+        <p class="viewer__kicker">About the work</p>
+        <p class="viewer__notes-text"></p>
+      </aside>
     </div>
     <div class="viewer__bar">
       <div>

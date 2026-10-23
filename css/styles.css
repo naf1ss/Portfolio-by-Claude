@@ -4584,6 +4584,48 @@ body[data-gallery-view='wall'] .medium-capsule {
   opacity: 1;
 }
 
+/* A work with notes: the picture moves left to make room for "About the work" on the right. On narrow screens
+   the picture keeps the whole stage and the notes stay out of the way. */
+.viewer__notes {
+  display: none;
+}
+
+@media (min-width: 56rem) {
+  .viewer__stage.has-notes {
+    --notes-width: 20rem;
+    --notes-gap: clamp(2rem, 5vw, 4.5rem);
+    grid-template: minmax(0, 1fr) / auto var(--notes-width);
+    justify-content: center;
+    column-gap: var(--notes-gap);
+  }
+
+  .viewer__stage.has-notes .viewer__image {
+    width: min(calc(100cqw - var(--notes-width) - var(--notes-gap)), calc(100cqh * var(--picture-ratio, 1)), var(--picture-max-width, 100%));
+  }
+
+  .viewer__stage.has-notes .viewer__notes {
+    display: block;
+    max-height: 100cqh;
+    overflow-y: auto;
+  }
+}
+
+.viewer__kicker {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.viewer__notes-text {
+  margin: 0.8rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
 .viewer__bar {
   display: flex;
   align-items: flex-end;
