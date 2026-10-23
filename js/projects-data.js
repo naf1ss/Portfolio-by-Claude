@@ -274,8 +274,9 @@
     ],
   },
   {
-    // From the project scope, the interview with Dr. Gan Yu (June 2, 2025), the exhibition catalogue essay and the
-    // project website. Only the painting itself is shown, by courtesy of the artist: the page is about my research.
+    // From the project scope, Gan Yu's written answers to the exhibition's research questions, the documentation of
+    // the painting's earlier showings, the interview with him (June 2, 2025), the catalogue essay and the website. Only the painting
+    // itself is shown, by courtesy of the artist: the page is about my research.
     id: 'digital-moving-mountain',
     title: 'A Digital Moving Mountain',
     kicker: 'Research project · 2025',
@@ -285,12 +286,13 @@
     hero: {
       workId: 'dmm-full',
       caption: 'Gan Yu, A Moving Mountain: Dow Jones Performance in the First Decade of the 21st Century, ink on canvas, 30 × 240 in, begun 2000. Courtesy of the artist.',
+      link: { text: 'About Gan Yu', url: 'https://www.ganyuart.com' },
     },
     glance: [
       { label: 'Collaborating artist', text: 'Dr. Gan Yu, Chinese American artist, curator and professor' },
       { label: 'My role', text: 'Student researcher; research, interaction design and development of the digital extension; catalogue essay' },
       { label: 'Advisors', text: 'Professor Yan Sun, Chair of Art and Art History; Sarah Kate Gillespie, Director of the Schmucker Art Gallery' },
-      { label: 'Methods', text: 'Visual analysis, artist interview, design trials, web development' },
+      { label: 'Methods', text: 'Archival and visual research, artist interview, design trials, web design and development' },
       { label: 'Presented in', text: 'Footprints Across the Ocean: The Art of Gan Yu, Schmucker Art Gallery, September 3 to December 6, 2025' },
     ],
     sections: [
@@ -327,16 +329,46 @@
         ],
       },
       {
-        id: 'painting',
-        label: 'The painting',
+        id: 'research',
+        label: 'The research',
         number: '01',
-        title: 'Reading the work',
+        title: 'Studying the artist and his subject',
         blocks: [
           {
             type: 'text',
             paragraphs: [
-              'Of the works in the exhibition, I chose *A Moving Mountain* as the subject of the research. Gan Yu paints the Dow Jones Industrial Average from 2000 to 2009 as a range of ink mountains, one panel for each year, in Chinese ink on Western canvas. To him the market is the largest collective performance in human history, and its charts a landscape shaped by millions of decisions.',
-              'What decided it was the sky. Above the peaks the canvas is left open, and at each showing Gan Yu invites viewers to write in it. More than 170 people have, in a dozen languages, and he considers the painting finished only when that space is full. Participation is not a feature of this work; it is its medium. A digital version that left it out would be a reproduction, not an extension.',
+              'The project began with research, not design. Of the works in the exhibition I chose *A Moving Mountain*, and to understand it I studied what stands behind it: Gan Yu’s Wall Street series, eighteen years of work from *The Wall Street Diary* and *Trading System* to *Dow Moments*, *Memorandum* and *The GameStop Mania*; his written answers to the exhibition’s research questions; the documentation of the painting’s earlier showings, with the comments viewers left on each panel; and the market itself, the decade of the Dow Jones that the painting records.',
+            ],
+          },
+          {
+            type: 'findings',
+            items: [
+              {
+                question: 'Where does the work come from?',
+                answer: 'From the 2007–2009 financial crisis. Watching the market swing between greed and fear, Gan Yu came to see it as the largest group performance in the world, running without pause from New York to London, Hong Kong and Shanghai, and its charts as a landscape shaped by millions of human decisions.',
+                implication: 'the market is presented as the painting’s subject, not only its imagery.',
+              },
+              {
+                question: 'What does the painting record?',
+                answer: 'The Dow Jones Industrial Average from 2000 to 2009, traced exactly, one panel for each year: the collapse of the dot-com bubble, the climb to a record high in 2007 and the fall of the 2008 crisis. His abstraction rests on real data; in *Trading System* and *The Wall Street Diary*, colour marks each day’s rise, fall or stillness.',
+                implication: 'the panels stay in order, year by year, so the site reads as a record of the decade rather than as loose images.',
+              },
+              {
+                question: 'Why ink on canvas?',
+                answer: 'Gan Yu joins Eastern and Western materials to stand for a globalised market: Chinese ink on Western canvas is the economy the painting describes.',
+                implication: 'the digital canvas welcomes every language and script, as the physical one does.',
+              },
+              {
+                question: 'Why do viewers write on it?',
+                answer: 'Because mass participation now defines the market: ordinary people, not only professional traders, move it. By inviting viewers to write, Gan Yu makes them part of the subject. More than 170 people have, in twelve languages, and he considers the painting finished only when the open sky above the peaks is full.',
+                implication: 'participation, not viewing, is what the website has to carry.',
+              },
+            ],
+          },
+          {
+            type: 'text',
+            paragraphs: [
+              'The research settled the direction of the project. Participation is not a feature of this painting; it is its medium. A digital version that left it out would be a reproduction, not an extension.',
             ],
           },
         ],
@@ -359,7 +391,7 @@
               {
                 question: 'What did it feel like to watch people write on your work?',
                 answer: 'Gan Yu wants every reaction, praise or criticism alike. Viewers’ sentiments about the market, the economy and the artist himself are, in his words, the value of the work.',
-                implication: 'no moderation filter; the digital canvas stays open to every response, as the physical one does.',
+                implication: 'nothing is filtered for opinion; moderation guards only against abuse.',
               },
               {
                 question: 'The canvas holds a dozen languages. Should any be favoured?',
@@ -374,7 +406,7 @@
               {
                 question: 'What should visitors take away?',
                 answer: 'A direct sense of what is happening around us. His work documents a complicated world; art is a historical record as much as something to admire.',
-                implication: 'the site sets the painting beside its subject, the decade of the Dow Jones it records.',
+                implication: 'the painting travels with its context: the artist’s biography and an overview of the research sit beside the canvas.',
               },
             ],
           },
@@ -400,13 +432,19 @@
           {
             type: 'text',
             paragraphs: [
-              'The interactive canvas follows the logic of the physical one. Visitors leave their own marks and reflections, and each new contribution is laid over the artist’s strokes and the voices already there, so the work grows the way the canvas does: a palimpsest of many hands that anyone can join, in the gallery or from afar.',
+              'The interactive canvas follows the rules of the physical one. The ten yearly panels are laid out in order, and a visitor can click anywhere on them to leave a comment at that exact spot: typed, or drawn and handwritten with a finger or stylus. It is saved the moment it is posted, so anyone who opens the painting a second later finds it in place, just as a comment on the canvas stays where it was written.',
             ],
           },
           {
             type: 'decision',
-            title: 'Participation over presentation',
-            text: 'A gallery of the panels alone would have preserved the painting but left out its central idea. The interactive canvas is the core of the site, because the painting is unfinished by design and its meaning comes from the people who write on it.',
+            title: 'Open to every view, guarded against abuse',
+            text: 'Gan Yu wants praise and criticism alike, so nothing is filtered for opinion. Typed comments with vulgar language are blocked automatically, and drawings and handwriting go to an approval queue, where Gan Yu can approve or remove them.',
+          },
+          {
+            type: 'text',
+            paragraphs: [
+              'I designed and built the site myself, keeping the interface quiet and precise so that the painting, and the voices on it, stay in front.',
+            ],
           },
         ],
       },

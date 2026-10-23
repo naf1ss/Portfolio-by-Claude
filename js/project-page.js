@@ -276,7 +276,19 @@
       paragraph(project.summary, 'pcase__summary')
     );
     const heroWork = byId.get(project.hero.workId);
-    if (heroWork) hero.append(figure(heroWork, { caption: project.hero.caption, sizes: '96vw', className: 'pcase__figure pcase__figure--hero' }));
+    if (heroWork) {
+      const heroFigure = figure(heroWork, { caption: project.hero.caption, sizes: '96vw', className: 'pcase__figure pcase__figure--hero' });
+      // An optional link beside the caption, e.g. to a collaborating artist's own site.
+      if (project.hero.link) {
+        const { text, url } = project.hero.link;
+        const link = element('a', 'pcase__figure-link', `${text} ↗`);
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        heroFigure.querySelector('figcaption').append(link);
+      }
+      hero.append(heroFigure);
+    }
 
     const glance = element('dl', 'pcase__glance');
     project.glance.forEach(({ label, text }) => {

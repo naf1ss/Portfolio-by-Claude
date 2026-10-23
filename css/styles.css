@@ -1515,6 +1515,20 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: var(--ink-muted);
 }
 
+.pcase__figure-link {
+  margin-left: auto; /* sits at the right end of the caption line */
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-underline-offset: 0.3em;
+  white-space: nowrap;
+}
+
+.pcase__figure-link:hover {
+  color: var(--accent);
+}
+
 /* At a glance */
 .pcase__glance {
   display: grid;
