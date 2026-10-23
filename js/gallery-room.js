@@ -17,6 +17,10 @@
   const PHONE_LAMP_PX = 52; // phones: the lamp's gap, kept above and below the frame so it stays centred
   const PHONE_LABEL_GAP_PX = 18; // phones: between the frame and its label
   const NOTES_MIN_GAP_PX = 48; // wide screens: between the frames and the note beside them
+  // The wall text writes itself in when you arrive at a work (the pictures never animate). Delays in ms.
+  const TEXT_DELAY_FIRST_MS = 250; // on a fresh wall: after the room has settled
+  const TEXT_DELAY_WALK_MS = 600; // walking: as the work comes into view
+  const TEXT_DELAY_JUMP_MS = 150; // jumping straight to a work, e.g. back from the close-up
 
   function element(tag, className, text) {
     const node = document.createElement(tag);
@@ -60,6 +64,13 @@
     return line;
   }
 
+  /** A title whose text sits in its own span, so the arrival animation can raise it out of a masked line. */
+  function createTitle(text) {
+    const title = element('h2', 'room__title');
+    title.append(element('span', 'room__title-text', text));
+    return title;
+  }
+
   /** The wall label: what a gallery prints beside a work (or beside a series hung together). */
   function createLabel(section, categoryLabel) {
     const label = element('div', 'room__label');
@@ -70,7 +81,7 @@
 
     if (section.series) {
       label.append(element('p', 'room__kicker', `${categoryLabel} · Series of ${works.length}`));
-      label.append(element('h2', 'room__title', section.series.title));
+      label.append(createTitle(section.series.title));
       const media = new Set(works.map((work) => work.medium));
       const sizes = new Set(works.map((work) => work.dimensions));
       addFact(media.size === 1 ? lead.medium : '');
@@ -79,7 +90,7 @@
       addFact(U.seriesMeta(works).split(' · ')[1] || '');
     } else {
       label.append(element('p', 'room__kicker', categoryLabel));
-      label.append(element('h2', 'room__title', lead.title || lead.medium || 'Untitled'));
+      label.append(createTitle(lead.title || lead.medium || 'Untitled'));
       addFact(lead.medium);
       const size = sizeLine(lead.dimensions);
       if (size) facts.append(size);
@@ -243,6 +254,7 @@
     let index = 0;
     let segmentWidth = 0;
     let walkingUntil = 0;
+    let armed = false; // wall text is held back until the fonts are in, so it never writes itself in twice
 
     function setLights(on) {
       room.classList.toggle('is-lit', on);
@@ -356,6 +368,23 @@
       });
     }
 
+    /**
+     * Writes in the wall text of the work you are standing at, and puts away the text of the one you left.
+     * Only a change of work animates: resizing the window leaves the text where it is.
+     */
+    function revealCurrentText(delayMs) {
+      if (!armed) return;
+      const segments = parts.track.querySelectorAll('.room__segment:not(.room__segment--end)');
+      segments.forEach((segment, i) => {
+        if (i !== index) segment.classList.remove('is-here');
+      });
+      const here = segments[index];
+      if (!here || here.classList.contains('is-here')) return;
+      here.style.setProperty('--text-base', `${delayMs}ms`);
+      void here.offsetWidth; // settle the hidden state first, so the change is a transition
+      here.classList.add('is-here');
+    }
+
     /** Moves the camera to the current section; with `animate` it walks there along the wall. */
     function place(animate) {
       const moving = animate && !reduceMotion.matches;
@@ -364,6 +393,7 @@
       parts.track.style.transform = `translate3d(${x}px, 0, 0)`;
       parts.glints.style.transform = `translate3d(${x}px, 0, 0)`;
       parts.plane.style.setProperty('--room-floor-x', `${x}px`);
+      revealCurrentText(moving ? TEXT_DELAY_WALK_MS : TEXT_DELAY_JUMP_MS);
       parts.count.textContent = `Work ${index + 1} of ${sections.length} on the wall`;
       parts.prev.disabled = index === 0;
       parts.next.disabled = index === sections.length - 1;
@@ -419,11 +449,17 @@
     return {
       /** Hangs `works` (one medium) and shows the room, standing at `focusId` or the first work. */
       show(works, { focusId } = {}) {
+        armed = false;
         buildWall(works);
         room.hidden = false;
         index = Math.max(0, R.sectionIndexOf(sections, focusId));
         layout();
-        if (document.fonts) document.fonts.ready.then(layout);
+        const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+        fontsReady.then(() => {
+          layout();
+          armed = true;
+          revealCurrentText(TEXT_DELAY_FIRST_MS);
+        });
       },
       hide() {
         room.hidden = true;

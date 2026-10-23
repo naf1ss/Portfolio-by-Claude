@@ -4077,6 +4077,86 @@ body[data-gallery-view='wall'] .medium-capsule {
   opacity: 0.5;
 }
 
+/* Arrival: wall text starts hidden and writes itself in, one line after another, when its work becomes the
+   current one (js/gallery-room.js adds .is-here). The pictures are never part of this. A title rises out of a
+   masked line, the rule draws across, everything else fades up. Leaving is quick, so old text is gone as you walk. */
+.room__label > *,
+.room__notes > * {
+  opacity: 0;
+  transform: translateY(0.6rem);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.room__title {
+  overflow: hidden;
+  padding-bottom: 0.14em; /* room for descenders inside the mask */
+  margin-bottom: -0.14em;
+  transform: none;
+}
+
+/* Leaving: the title fades where it stands, and only then drops back behind its mask, so no slice of it shows. */
+.room__title-text {
+  display: block;
+  transform: translateY(112%);
+  transition: transform 0s linear 0.35s;
+}
+
+.room__rule {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.room__segment.is-here {
+  --text-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.room__segment.is-here .room__label > *,
+.room__segment.is-here .room__notes > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 1.1s ease calc(var(--text-base, 0ms) + var(--n, 0) * 100ms), transform 1.1s var(--text-ease) calc(var(--text-base, 0ms) + var(--n, 0) * 100ms);
+}
+
+.room__segment.is-here .room__rule {
+  opacity: 0.5;
+  transition-duration: 0.9s;
+}
+
+.room__segment.is-here .room__title {
+  transition: opacity 0.5s ease calc(var(--text-base, 0ms) + 100ms);
+}
+
+.room__segment.is-here .room__title-text {
+  transform: none;
+  transition: transform 1.2s var(--text-ease) calc(var(--text-base, 0ms) + 100ms);
+}
+
+/* The order lines are read in; the notes follow the label. */
+.room__label > :nth-child(1) { --n: 0; }
+.room__label > :nth-child(2) { --n: 1; }
+.room__label > :nth-child(3) { --n: 3; }
+.room__label > :nth-child(4) { --n: 4; }
+.room__label > :nth-child(5) { --n: 5; }
+.room__label > :nth-child(6) { --n: 6; }
+.room__label > :nth-child(7) { --n: 7; }
+.room__notes > :nth-child(1) { --n: 5; }
+.room__notes > :nth-child(2) { --n: 6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .room__label > *,
+  .room__notes > *,
+  .room__title-text,
+  .room__rule {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .room__rule {
+    opacity: 0.5;
+  }
+}
+
 /* Wide but short screens: a compact label, so a group's titles and link stay on the wall. */
 @media (min-width: 62rem) and (max-height: 56rem) {
   .room__title {
