@@ -514,7 +514,7 @@
       { label: 'Context', text: 'A data visualization course: recreate and remix a chart, then design an infographic' },
       { label: 'Disciplines', text: 'Data visualization, art-world research, graphic design' },
       { label: 'Tools', text: 'Python (pandas, Matplotlib), Procreate, Picsart' },
-      { label: 'Data', text: 'DataUSA; National Museum of Women in the Arts; the Burns Halperin Report; UNESCO; academic studies' },
+      { label: 'Data', text: 'DataUSA; National Museum of Women in the Arts; the Burns Halperin Report; PLOS One; Freelands Foundation' },
     ],
     sections: [
       {
@@ -560,7 +560,7 @@
             items: [
               { value: '64–68%', label: 'Women’s average wage as a share of men’s, in every year from 2014 to 2022' },
               { value: '$49,882', label: 'Women’s average wage in 2022, against $74,780 for men' },
-              { value: '≈ 19%', label: 'How much both wages rose across the period, so the gap held steady' },
+              { value: '18–19%', label: 'How much each wage rose from 2014 to 2022, so the gap held steady' },
             ],
           },
           {
@@ -579,7 +579,7 @@
           {
             type: 'text',
             paragraphs: [
-              'The infographic turns research from the National Museum of Women in the Arts, the Burns Halperin Report, UNESCO and academic studies into four panels: a contrast, the numbers, signs of progress, and a call to action. It opens with the sharpest comparison, and each panel moves the viewer one step further, from the problem to what could change it.',
+              'The infographic draws on the National Museum of Women in the Arts, the Burns Halperin Report, Artnet News, a PLOS One study of museum collections and the Freelands Foundation. It has four panels: a contrast, the numbers, signs of progress and a call to action. It opens with the sharpest comparison, and each panel moves the viewer one step further, from the problem to what could change it.',
             ],
           },
           {
@@ -594,7 +594,7 @@
           {
             type: 'decision',
             title: 'One colour for women',
-            text: 'A single magenta marks women throughout: the small wedge of the museum donut, the tassel on the graduate’s cap, the figure at the easel. Black and grey carry everything else, so the eye follows one thread through all four panels. Torn paper separates the panels, so that the gap is felt as a break as well as read as a number.',
+            text: 'A single magenta marks women throughout: the small wedge of the museum chart, the graduate’s cap, the figure at the easel. Black and grey carry everything else, so the eye can follow one thread through all four panels, which are divided by torn-paper edges.',
           },
         ],
       },
@@ -607,10 +607,10 @@
           {
             type: 'text',
             paragraphs: [
-              'A second infographic applied the same approach to institutional data. Starting from federal figures and college profiles, I redrew the charts in one palette and set the key numbers as a quick-read panel beside them.',
+              'A second infographic applied the same approach to a different subject: my college. I gathered figures from the federal IPEDS database and College Factual, reworked the charts, and set the key numbers in a quick-read panel beside them.',
             ],
           },
-          { type: 'figure', size: 'medium', workId: 'dv-infographic-gettysburg', caption: 'Why Choose Gettysburg College? Federal data redrawn in the college’s navy and orange.' },
+          { type: 'figure', size: 'medium', workId: 'dv-infographic-gettysburg', caption: 'Why Choose Gettysburg College? Figures from IPEDS and College Factual, set in the college’s navy and orange.' },
         ],
       },
       {
@@ -627,28 +627,29 @@
           { type: 'link', text: 'See the code and data on GitHub', url: 'https://github.com/naf1ss/DSportfolio' },
           {
             type: 'credits',
-            text: 'Data: DataUSA (artists and related workers); National Museum of Women in the Arts; Burns Halperin Report (Artnet News, 2022); UNESCO Courier; Gendered Prices (The Review of Financial Studies); Hyperallergic; IPEDS and College Factual. GitHub Copilot and ChatGPT assisted with coding, brainstorming and drafting the written reports.',
+            text: 'Data: DataUSA (artists and related workers); National Museum of Women in the Arts; Burns Halperin Report (Artnet News, 2022); UNESCO Courier; Gendered Prices (The Review of Financial Studies); Hyperallergic; IPEDS and College Factual. GitHub Copilot helped with the bar chart code, and ChatGPT with brainstorming and with drafting the written reports; the infographics are my own design.',
           },
         ],
       },
     ],
   },
   {
-    // From the notebook (re-run) and the DS 325 final report; not from the repository README, which does not match them.
+    // Written from the notebook (Sami_SoccerNTeam.ipynb, re-run on the repository's data) and the DS 325 final report.
+    // The repository README is not used: its accuracy, label and file list do not match the code.
     id: 'national-team-selection',
     title: 'Can Club Statistics Predict National Team Selection?',
     kicker: 'Data science',
     cta: 'Read the case study',
     summary:
-      'A statistical test of a common belief in football: that the best club players are the ones who make their national team. Two models, 2,852 players, and a result that was more interesting for failing.',
+      'A machine-learning test of a common belief in football: that the players with the strongest club numbers are the ones picked for World Cup squads. Two models, 2,847 players and 30 statistics each, and a clear answer: club statistics alone are not enough.',
     cover: 'ml-confusion',
-    hero: { workId: 'ml-confusion', size: 'medium', caption: 'Confusion matrices for the two models: both find almost none of the selected players.' },
+    hero: { workId: 'ml-confusion', size: 'medium', caption: 'Confusion matrices for the two models on 570 players they had not seen. Both find only a few of the 98 selected players.' },
     glance: [
       { label: 'Role', text: 'Analyst: data preparation, modelling, evaluation and report' },
       { label: 'Context', text: 'Final project for a data science course' },
       { label: 'Disciplines', text: 'Statistics, machine learning, sports analytics' },
       { label: 'Tools', text: 'Python, pandas, scikit-learn, Seaborn, Matplotlib' },
-      { label: 'Data', text: 'Player statistics for the top five European leagues, 2023–24; World Cup squads, 1930–2022' },
+      { label: 'Data', text: 'Player statistics from the top five European leagues, 2023–24; World Cup squad lists, 1930–2022' },
     ],
     sections: [
       {
@@ -659,12 +660,12 @@
           {
             type: 'text',
             paragraphs: [
-              'Alongside my art, I study mathematics, and I like to test what people assume. In football it is assumed that national teams are built from the players with the strongest club records. I wanted to know whether the numbers agree.',
+              'Alongside my art, I study mathematics, and I like to test what people take for granted. In football it is often assumed that national teams are built from the players with the best club records. I wanted to see whether the numbers bear that out.',
             ],
           },
           {
             type: 'question',
-            text: 'Can a player’s club-level statistics reliably predict whether he is selected for a national team?',
+            text: 'Can a player’s club statistics reliably predict whether he has been selected for a World Cup squad?',
           },
         ],
       },
@@ -677,16 +678,17 @@
           {
             type: 'text',
             paragraphs: [
-              'I combined two datasets. The first holds 2,852 players from the top five European leagues, each with 37 measures: goals, assists, minutes, expected goals and assists, progressive passes and more. The second lists every squad at the men’s World Cup from 1930 to 2022. I matched players by name and labelled each one as selected if he appeared in a squad.',
-              'I split the players 80/20, trained a logistic regression as a simple, interpretable baseline and a random forest to catch non-linear patterns, and tested both on the players they had not seen.',
+              'I combined two datasets. The first describes 2,852 players in the top five European leagues in the 2023–24 season: age, appearances, minutes, goals, assists, cards, expected goals and assists, progressive passes and carries, and the same figures per 90 minutes. The second lists the players in every World Cup squad from 1930 to 2022.',
+              'I matched the two by player name, and labelled a player “selected” if his name appears in a World Cup squad. After setting aside the columns that are not performance measures (name, club, league, position, nationality, birth year and rank) and the five rows with missing values, 2,847 players remained, each described by 30 numerical statistics.',
+              'I held back 20% of the players as a test set, keeping the same share of selected players in both parts, and trained two models: a logistic regression, simple and easy to interpret, and a random forest, which can pick up patterns a straight line cannot.',
             ],
           },
           {
             type: 'stats',
             items: [
-              { value: '2,852', label: 'Players, each described by 37 club statistics' },
-              { value: '487', label: 'Of them labelled as selected, about 17%' },
-              { value: '2', label: 'Models compared: logistic regression and random forest' },
+              { value: '2,847', label: 'Players, each described by 30 club statistics' },
+              { value: '487', label: 'Labelled as selected: about 17% of all players' },
+              { value: '570', label: 'Players held back for testing, 98 of them selected' },
             ],
           },
         ],
@@ -695,7 +697,7 @@
         id: 'findings',
         label: 'Findings',
         number: '02',
-        title: 'High accuracy, little insight',
+        title: 'High accuracy, low recall',
         blocks: [
           {
             type: 'findings',
@@ -703,27 +705,27 @@
             items: [
               {
                 question: 'How accurate were the models?',
-                answer: 'About 82% on the held-out players. But 83% of players were not selected, so a model that always answered “not selected” would score almost the same.',
-                implication: 'Accuracy flatters a lopsided dataset.',
+                answer: 'Both scored about 82% on the test players. But 83% of those players were not selected, so a model that always answered “not selected” would score slightly higher.',
+                implication: 'When one outcome is much more common, accuracy alone says little.',
               },
               {
                 question: 'Could they find the selected players?',
-                answer: 'Barely. Logistic regression identified 6 of the 98 selected players in the test set, and the random forest 8.',
-                implication: 'The measure that matters is recall, and it was very low.',
+                answer: 'Rarely. Of the 98 selected players in the test set, the logistic regression found 6 and the random forest 8. When the models did predict “selected”, they were right about a third of the time (precision 0.32 and 0.36).',
+                implication: 'Recall, the share of selected players found, is the measure that matters here, and it was low.',
               },
               {
-                question: 'Which statistics mattered?',
-                answer: 'Age came first, both in correlation (0.24) and in the random forest’s feature importance, followed by expected assists and progressive passes. Every relationship was weak.',
-                implication: 'Age may reflect opportunity as much as ability: an older player has had more tournaments to be picked for.',
+                question: 'Which statistics mattered most?',
+                answer: 'Age, in both models. It had the strongest correlation with selection (0.24), followed by expected assists, progressive passes and goals plus assists, and it was also the random forest’s most important feature, ahead of progressive passes and minutes played. All of these relationships were weak.',
+                implication: 'Age may stand for experience: an older player has had more tournaments in which to be picked.',
               },
             ],
           },
-          { type: 'figure', workId: 'ml-confusion', caption: 'Confusion matrices. Each model correctly rejects most unselected players and finds almost none of the selected ones.' },
+          { type: 'figure', workId: 'ml-confusion', caption: 'Confusion matrices. Rows are the true labels, columns the predictions; 1 means selected. Each model rejects most unselected players correctly and finds few of the selected ones.' },
           {
             type: 'row',
             items: [
-              { workId: 'ml-correlation', caption: 'Correlation of each statistic with selection: all weak' },
-              { workId: 'ml-importance', caption: 'Which statistics the random forest relied on' },
+              { workId: 'ml-correlation', caption: 'Correlation of each statistic with selection: all weak, age the strongest' },
+              { workId: 'ml-importance', caption: 'The statistics the random forest relied on most' },
             ],
           },
         ],
@@ -732,18 +734,18 @@
         id: 'limits',
         label: 'Limits',
         number: '03',
-        title: 'What the result can and cannot say',
+        title: 'What the result shows, and what it cannot',
         blocks: [
           {
             type: 'decision',
-            title: 'Reporting the failure plainly',
-            text: 'The tempting headline was the accuracy. I reported the recall instead, because it shows what the models could not do: club statistics alone do not explain who is picked.',
+            title: 'Reporting recall, not just accuracy',
+            text: 'An 82% accuracy would have made a tidy headline. I reported recall as well, because it shows what the models could not do: club statistics alone do not explain who is selected.',
           },
           {
             type: 'text',
             paragraphs: [
-              'The labels have limits. A player counts as selected if he appears in any World Cup squad since 1930, matched by name, so names can collide, and most matches come from the 2014 to 2022 tournaments, while the club statistics are from 2023–24, after the last World Cup. The data also leaves out what coaches weigh: tactics, injuries, leadership and reputation.',
-              'A better version would label players from real national team call-ups in the season being measured, and add position and team strength. That is where I would take it next.',
+              'Some limits come from the data. Only about one player in six is labelled selected, which pulls both models toward predicting “not selected”. The labels come from World Cup squads over many decades, matched on names, while the statistics describe a single later season. And much of what coaches weigh is not in the data at all: tactical fit, injuries, leadership and reputation.',
+              'A next version would label players from national team call-ups in the same season, add position and team strength, and use methods that correct for the imbalance between the two groups.',
             ],
           },
         ],
@@ -756,13 +758,13 @@
           {
             type: 'text',
             paragraphs: [
-              'This project showed me how easily a number can look like an answer. A low-scoring model that explains why it fails taught me more than a high score would have. It is the same habit I bring to the studio: look closely, test the assumption, and say honestly what the work does and does not show.',
+              'This project taught me how easily a number can look like an answer. A model that explains why it falls short taught me more than a high score would have. It is a habit I bring to the studio as well: look closely, test the assumption, and say plainly what the work does and does not show.',
             ],
           },
           { type: 'link', text: 'See the notebook and report on GitHub', url: 'https://github.com/naf1ss/Sami_SoccerPotentialNationalTeam' },
           {
             type: 'credits',
-            text: 'Data: Orkun Aktas, All Football Players Stats in Top 5 Leagues 23/24 (Kaggle); World Cup squads from the jfjelstul/worldcup dataset. ChatGPT assisted with editing and formatting the written report.',
+            text: 'Data: Orkun Aktas, All Football Players Stats in Top 5 Leagues 23/24 (Kaggle); World Cup squads from the jfjelstul/worldcup database. ChatGPT assisted with editing and formatting the written report.',
           },
         ],
       },
