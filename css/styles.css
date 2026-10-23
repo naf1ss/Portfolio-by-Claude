@@ -1597,6 +1597,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
   height: 100%;
   font-size: 1.05rem;
   font-weight: 500;
+  white-space: nowrap; /* every row of the wheel is one line high */
   text-decoration: none;
   transform-origin: left center;
   opacity: clamp(0.12, calc(1 - var(--d, 0) * 0.3), 1);
@@ -1608,6 +1609,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
   min-width: 1.6rem;
   font-size: 0.8em;
   font-variant-numeric: tabular-nums;
+}
+
+.pcase__contents-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pcase__contents a:hover {

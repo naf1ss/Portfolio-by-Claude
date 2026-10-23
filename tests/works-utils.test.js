@@ -454,3 +454,13 @@ test('catalogue: every picture a project shows is in the catalogue', () => {
     assert.equal(new Set(project.sections.map((s) => s.id)).size, project.sections.length, `${project.id}: section ids repeat`);
   });
 });
+
+test('projects: every contents label fits on one row of the rail', () => {
+  const PROJECTS = require('../js/projects-data.js');
+  const MAX_RAIL_LABEL = 16; // characters that fit the 14rem rail at the current link's size
+  PROJECTS.forEach((project) =>
+    project.sections.forEach(({ id, label }) =>
+      assert.ok(label.length <= MAX_RAIL_LABEL, `${project.id}/${id}: "${label}" is too long for the contents rail`)
+    )
+  );
+});

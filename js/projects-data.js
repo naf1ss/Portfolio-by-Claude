@@ -274,13 +274,13 @@
     ],
   },
   {
-    // From the project scope, the interview with Dr. Gan Yu (June 2025), the exhibition catalogue text, the
-    // gallery's announcement and the project website. Gan Yu's painting is shown by courtesy of the artist.
+    // From the project scope, the interview with Dr. Gan Yu (June 2, 2025), the exhibition catalogue essay and the
+    // project website. Only the painting itself is shown, by courtesy of the artist: the page is about my research.
     id: 'digital-moving-mountain',
     title: 'A Digital Moving Mountain',
     kicker: 'Research project · 2025',
     summary:
-      'A participatory digital extension of Dr. Gan Yu’s ink painting *A Moving Mountain*, researched and built in collaboration with the artist for his solo exhibition *Footprints Across the Ocean* at the Schmucker Art Gallery, Gettysburg College.',
+      'A research project with the Chinese American artist Dr. Gan Yu, asking how a website could carry his participatory ink painting *A Moving Mountain* beyond the gallery wall. Presented in his exhibition *Footprints Across the Ocean* at the Schmucker Art Gallery, Gettysburg College.',
     cover: 'dmm-full',
     hero: {
       workId: 'dmm-full',
@@ -288,47 +288,23 @@
     },
     glance: [
       { label: 'Collaborating artist', text: 'Dr. Gan Yu, Chinese American artist, curator and professor' },
-      { label: 'My role', text: 'Student researcher; designer and developer of the digital extension' },
+      { label: 'My role', text: 'Student researcher; research, interaction design and development of the digital extension; catalogue essay' },
       { label: 'Advisors', text: 'Professor Yan Sun, Chair of Art and Art History; Sarah Kate Gillespie, Director of the Schmucker Art Gallery' },
-      { label: 'Exhibition', text: 'Footprints Across the Ocean: The Art of Gan Yu, September 3 to December 6, 2025' },
-      { label: 'Fields', text: 'Contemporary art, digital humanities, interaction design, web development' },
+      { label: 'Methods', text: 'Visual analysis, artist interview, design trials, web development' },
+      { label: 'Presented in', text: 'Footprints Across the Ocean: The Art of Gan Yu, Schmucker Art Gallery, September 3 to December 6, 2025' },
     ],
     sections: [
       {
-        id: 'work',
-        label: 'The painting',
-        title: 'A painting its viewers finish',
+        id: 'overview',
+        label: 'Overview',
+        title: 'Why I took on this research',
         blocks: [
           {
             type: 'text',
             paragraphs: [
-              'For eighteen years Gan Yu has treated the stock market as a subject for art. He sees it as the largest collective performance in human history: from New York to London, Hong Kong to Shanghai, it never stops, and its charts trace a landscape made by millions of decisions.',
-              '*A Moving Mountain* paints the Dow Jones Industrial Average from 2000 to 2009 as a range of ink mountains, one panel for each year, brushed in Chinese ink on Western canvas. Mountains were once the home of the gods; Wall Street has become the temple of the global economy. Above the peaks, the canvas is left open: viewers are invited to write on it, and the painting is finished only when that space is full.',
-            ],
-          },
-          {
-            type: 'stats',
-            items: [
-              { value: '30 × 240 in', label: 'Ink on canvas, in ten panels' },
-              { value: '2000–2009', label: 'The Dow Jones, one panel for each year' },
-              { value: '170+', label: 'Viewers who have written on the canvas' },
-              { value: '12', label: 'Languages in their handwriting' },
-            ],
-          },
-          {
-            type: 'grid',
-            columns: 5,
-            items: [
-              { workId: 'dmm-panel-2000', label: '2000' },
-              { workId: 'dmm-panel-2001', label: '2001' },
-              { workId: 'dmm-panel-2002', label: '2002' },
-              { workId: 'dmm-panel-2003', label: '2003' },
-              { workId: 'dmm-panel-2004', label: '2004' },
-              { workId: 'dmm-panel-2005', label: '2005' },
-              { workId: 'dmm-panel-2006', label: '2006' },
-              { workId: 'dmm-panel-2007', label: '2007' },
-              { workId: 'dmm-panel-2008', label: '2008' },
-              { workId: 'dmm-panel-2009', label: '2009' },
+              'In 2025 the Schmucker Art Gallery at Gettysburg College prepared *Footprints Across the Ocean*, a survey of forty-five years of work by the Chinese American artist Dr. Gan Yu. Two students joined the exhibition as researchers: Westley Rathbun on its art-historical side, and I on its digital and interactive side.',
+              'I took the project on because it sits where my two fields meet. I study mathematics and studio art, and Gan Yu has spent eighteen years turning stock-market data into ink painting. I wanted to find out whether code, used with care, could do something for his work that a gallery wall cannot.',
+              'Exhibitions are made for the people in the room. When a show closes, or for anyone who cannot travel to it, the conversation with the work stops. For most paintings that is a loss of access. For a painting completed by its viewers, it is a loss of the work itself.',
             ],
           },
         ],
@@ -336,12 +312,12 @@
       {
         id: 'question',
         label: 'The question',
-        title: 'Carrying participation beyond the gallery',
+        title: 'Translation, not display',
         blocks: [
           {
             type: 'text',
             paragraphs: [
-              'Writing on the canvas requires being in the room with it. For the painting’s showing at Gettysburg, I took on its digital and interactive part: a way for the painting to keep collecting voices, from anywhere, without losing what makes it Gan Yu’s.',
+              'Putting pictures of the painting online would have been easy, and beside the point. The research asked what a participatory painting needs in order to keep living on a screen, and what it must not lose on the way.',
             ],
           },
           {
@@ -351,15 +327,30 @@
         ],
       },
       {
-        id: 'interview',
-        label: 'Research with the artist',
+        id: 'painting',
+        label: 'The painting',
         number: '01',
-        title: 'Conversations with Gan Yu',
+        title: 'Reading the work',
         blocks: [
           {
             type: 'text',
             paragraphs: [
-              'The research began with the artist. In June 2025 I interviewed Gan Yu together with my fellow student researcher Westley Rathbun, an art history and museum studies major, with Professor Sun and Professor Gillespie taking part. Westley’s questions traced Gan Yu’s path from socialist realism to his Wall Street series; mine asked what the painting needed from a digital form. His answers became my design brief.',
+              'Of the works in the exhibition, I chose *A Moving Mountain* as the subject of the research. Gan Yu paints the Dow Jones Industrial Average from 2000 to 2009 as a range of ink mountains, one panel for each year, in Chinese ink on Western canvas. To him the market is the largest collective performance in human history, and its charts a landscape shaped by millions of decisions.',
+              'What decided it was the sky. Above the peaks the canvas is left open, and at each showing Gan Yu invites viewers to write in it. More than 170 people have, in a dozen languages, and he considers the painting finished only when that space is full. Participation is not a feature of this work; it is its medium. A digital version that left it out would be a reproduction, not an extension.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'interview',
+        label: 'The interview',
+        number: '02',
+        title: 'Listening to the artist',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'On June 2, 2025, I interviewed Gan Yu with Westley, Professor Sun and Professor Gillespie. Westley’s questions traced his path from socialist realism to the Wall Street series; mine asked what the painting would need from a digital form. I also put my first proposal to him, a version of the canvas that visitors could write on with a finger or stylus, kept on a website and seen live in the gallery, and tested it against his answers.',
             ],
           },
           {
@@ -368,12 +359,12 @@
               {
                 question: 'What did it feel like to watch people write on your work?',
                 answer: 'Gan Yu wants every reaction, praise or criticism alike. Viewers’ sentiments about the market, the economy and the artist himself are, in his words, the value of the work.',
-                implication: 'the digital canvas stays open to every response rather than filtering what people say.',
+                implication: 'no moderation filter; the digital canvas stays open to every response, as the physical one does.',
               },
               {
                 question: 'The canvas holds a dozen languages. Should any be favoured?',
                 answer: 'Any language is welcome; English serves as the common one.',
-                implication: 'visitors respond in whatever language is theirs, as they do on the canvas.',
+                implication: 'visitors respond in whatever language is theirs.',
               },
               {
                 question: 'Is a meeting of physical and digital a model for your future work?',
@@ -390,54 +381,62 @@
         ],
       },
       {
-        id: 'design',
-        label: 'Translating the work',
-        number: '02',
-        title: 'From ink and canvas to a shared screen',
+        id: 'translation',
+        label: 'Translation',
+        number: '03',
+        title: 'Keeping the original in view',
         blocks: [
           {
             type: 'text',
             paragraphs: [
-              'The extension keeps the logic of the original. I made high-resolution digital versions of the panels in Photoshop and Procreate, preserving the brushwork, the flow of the ink and its layered tones.',
-              'The interactive canvas follows the physical one: visitors leave their own marks and reflections, and each new contribution is laid over the artist’s strokes and over the voices that came before it, so the work grows the way the canvas does, a palimpsest of many hands that anyone can join, in the gallery or from afar.',
+              'My first plan was to redraw the panels as digital paintings. I made trial versions and then set them aside: a copy, however careful, would have people writing on my version of the painting instead of his.',
+            ],
+          },
+          {
+            type: 'decision',
+            title: 'The original canvas, not a redrawn copy',
+            text: 'The website is built on photographs of the painting itself, so every contribution lands on Gan Yu’s brushwork, beside the handwriting of the viewers who came before.',
+          },
+          {
+            type: 'text',
+            paragraphs: [
+              'The interactive canvas follows the logic of the physical one. Visitors leave their own marks and reflections, and each new contribution is laid over the artist’s strokes and the voices already there, so the work grows the way the canvas does: a palimpsest of many hands that anyone can join, in the gallery or from afar.',
             ],
           },
           {
             type: 'decision',
             title: 'Participation over presentation',
-            text: 'A digital gallery of the panels alone would have preserved the painting but left out its central idea. The core of the site is the interactive canvas, because the painting is unfinished by design and its meaning comes from the people who write on it.',
+            text: 'A gallery of the panels alone would have preserved the painting but left out its central idea. The interactive canvas is the core of the site, because the painting is unfinished by design and its meaning comes from the people who write on it.',
           },
         ],
       },
       {
-        id: 'website',
-        label: 'The website',
-        number: '03',
-        title: 'A Digital Moving Mountain',
+        id: 'outcome',
+        label: 'Outcome',
+        number: '04',
+        title: 'What the research produced',
         blocks: [
           {
-            type: 'text',
-            paragraphs: [
-              'The finished site brings the research together: a gallery of the ten panels, one for each year; the artist’s biography; my reflections; an overview of the project; and the interactive canvas, where visitors from anywhere add their reflections to an artwork that is still evolving.',
+            type: 'outcomes',
+            items: [
+              {
+                title: 'A Digital Moving Mountain',
+                status: 'Live',
+                text: 'A website with a gallery of the ten panels, the artist’s biography, my reflections, an overview of the research and the interactive canvas, where visitors anywhere add their reflections to a painting that is still evolving.',
+              },
+              {
+                title: 'In the exhibition',
+                status: 'Presented',
+                text: 'The digital extension was presented as part of *Footprints Across the Ocean: The Art of Gan Yu* at the Schmucker Art Gallery, where I am credited as one of the exhibition’s two student researchers.',
+              },
+              {
+                title: 'Exhibition catalogue',
+                status: 'Printed',
+                text: 'I wrote the catalogue essay on the digital extension, setting out how it carries the painting’s invitation to write from the gallery wall to the screen.',
+              },
             ],
           },
           { type: 'link', text: 'Visit A Digital Moving Mountain', url: 'https://a-digital-moving-mountain-landing.vercel.app' },
-        ],
-      },
-      {
-        id: 'exhibition',
-        label: 'The exhibition',
-        number: '04',
-        title: 'Footprints Across the Ocean',
-        blocks: [
-          {
-            type: 'text',
-            paragraphs: [
-              'The extension accompanied *Footprints Across the Ocean: The Art of Gan Yu* at the Schmucker Art Gallery, a survey of forty-five years of his work, from early socialist-realist portraits to the Wall Street series, shown from September 3 to December 6, 2025.',
-              'Westley and I are named as the exhibition’s student researchers. The programme opened with gallery talks by the artist and student researchers and continued with a panel discussion in October; I wrote the text on the digital extension for the printed exhibition catalogue.',
-            ],
-          },
-          { type: 'figure', size: 'medium', workId: 'dmm-announcement', caption: 'The exhibition announcement, Gettysburg College, crediting Westley Rathbun ’27 and Md Nafisul Hasan Sami ’27 as student researchers.' },
         ],
       },
       {

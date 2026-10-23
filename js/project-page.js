@@ -171,7 +171,7 @@
         const head = element('div');
         head.append(element('b', undefined, title));
         if (status) head.append(element('span', 'pcase__status', status));
-        item.append(head, element('p', undefined, text));
+        item.append(head, paragraph(text));
         list.append(item);
       });
       return list;
@@ -230,7 +230,8 @@
     sections.forEach(({ id, label, number }) => {
       const link = element('a');
       link.href = `#${id}`;
-      link.append(element('span', 'pcase__contents-number', number || ''), label);
+      link.title = label;
+      link.append(element('span', 'pcase__contents-number', number || ''), element('span', 'pcase__contents-label', label));
       links.set(id, link);
       const item = element('li');
       item.append(link);
