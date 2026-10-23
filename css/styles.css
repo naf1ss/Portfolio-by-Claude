@@ -4096,6 +4096,7 @@ body[data-gallery-view='wall'] .medium-capsule {
   padding-bottom: 0.14em; /* room for descenders inside the mask */
   margin-bottom: -0.14em;
   transform: none;
+  overflow-wrap: break-word; /* the mask would clip a word wider than the column */
 }
 
 /* Leaving: the title fades where it stands, and only then drops back behind its mask, so no slice of it shows. */

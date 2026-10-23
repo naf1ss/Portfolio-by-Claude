@@ -65,9 +65,15 @@
   }
 
   /** A title whose text sits in its own span, so the arrival animation can raise it out of a masked line. */
+  /** The title in its mask. A title with a subtitle ("Still Life: Monotone Study") breaks after the colon. */
   function createTitle(text) {
     const title = element('h2', 'room__title');
-    title.append(element('span', 'room__title-text', text));
+    const line = element('span', 'room__title-text');
+    text.split(/(?<=:)\s+/).forEach((part, i) => {
+      if (i) line.append(' ', document.createElement('br')); // the space keeps copied and spoken text intact
+      line.append(part);
+    });
+    title.append(line);
     return title;
   }
 
