@@ -15,9 +15,10 @@
  *   { type: 'stats', items: [{ value, label }] }
  *   { type: 'figure', workId, caption, size? }         one picture, whole; size 'medium' keeps it narrower
  *   { type: 'row', items: [{ workId, caption }] }      pictures side by side at one height, none cropped
- *   { type: 'grid', items: [{ workId, label, caption }] }   same-shape pictures in an even grid
+ *   { type: 'grid', columns?, items: [{ workId, label, caption }] }   same-shape pictures in an even grid
  *   { type: 'compare', items: [{ workId, label, caption }] } two stages of a design, side by side
  *   { type: 'decision', title, text }                  a key decision, set apart
+ *   { type: 'findings', items: [{ question, answer, implication? }] }   what a conversation taught
  *   { type: 'outcomes', items: [{ title, text, status? }] }
  *   { type: 'changes', items: [{ title, from, to }] }  how the plan changed
  *   { type: 'link', text, url }
@@ -37,6 +38,7 @@
     id: 'planet-walk',
     title: 'Planet Walk & Observatory Mural',
     kicker: 'Case study · 2026',
+    cta: 'Read the case study',
     summary:
       'A walkable scale model of the solar system across Gettysburg College, from the planetarium to the Observatory: a measured route, eleven ceramic station markers, a four-panel mural and a companion website.',
     cover: 'pw-mural-mockup',
@@ -266,6 +268,194 @@
           {
             type: 'credits',
             text: 'With thanks to my mentor, Dr. Ryan E. Johnson; Professor Tina Gebhart, for guidance in ceramics; and Sarah Jacobs, MFA, for advice on mural materials and installation.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    // From the project scope, the interview with Dr. Gan Yu (June 2025), the exhibition catalogue text, the
+    // gallery's announcement and the project website. Gan Yu's painting is shown by courtesy of the artist.
+    id: 'digital-moving-mountain',
+    title: 'A Digital Moving Mountain',
+    kicker: 'Research project · 2025',
+    summary:
+      'A participatory digital extension of Dr. Gan Yu’s ink painting *A Moving Mountain*, researched and built in collaboration with the artist for his solo exhibition *Footprints Across the Ocean* at the Schmucker Art Gallery, Gettysburg College.',
+    cover: 'dmm-full',
+    hero: {
+      workId: 'dmm-full',
+      caption: 'Gan Yu, A Moving Mountain: Dow Jones Performance in the First Decade of the 21st Century, ink on canvas, 30 × 240 in, begun 2000. Courtesy of the artist.',
+    },
+    glance: [
+      { label: 'Collaborating artist', text: 'Dr. Gan Yu, Chinese American artist, curator and professor' },
+      { label: 'My role', text: 'Student researcher; designer and developer of the digital extension' },
+      { label: 'Advisors', text: 'Professor Yan Sun, Chair of Art and Art History; Sarah Kate Gillespie, Director of the Schmucker Art Gallery' },
+      { label: 'Exhibition', text: 'Footprints Across the Ocean: The Art of Gan Yu, September 3 to December 6, 2025' },
+      { label: 'Fields', text: 'Contemporary art, digital humanities, interaction design, web development' },
+    ],
+    sections: [
+      {
+        id: 'work',
+        label: 'The painting',
+        title: 'A painting its viewers finish',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'For eighteen years Gan Yu has treated the stock market as a subject for art. He sees it as the largest collective performance in human history: from New York to London, Hong Kong to Shanghai, it never stops, and its charts trace a landscape made by millions of decisions.',
+              '*A Moving Mountain* paints the Dow Jones Industrial Average from 2000 to 2009 as a range of ink mountains, one panel for each year, brushed in Chinese ink on Western canvas. Mountains were once the home of the gods; Wall Street has become the temple of the global economy. Above the peaks, the canvas is left open: viewers are invited to write on it, and the painting is finished only when that space is full.',
+            ],
+          },
+          {
+            type: 'stats',
+            items: [
+              { value: '30 × 240 in', label: 'Ink on canvas, in ten panels' },
+              { value: '2000–2009', label: 'The Dow Jones, one panel for each year' },
+              { value: '170+', label: 'Viewers who have written on the canvas' },
+              { value: '12', label: 'Languages in their handwriting' },
+            ],
+          },
+          {
+            type: 'grid',
+            columns: 5,
+            items: [
+              { workId: 'dmm-panel-2000', label: '2000' },
+              { workId: 'dmm-panel-2001', label: '2001' },
+              { workId: 'dmm-panel-2002', label: '2002' },
+              { workId: 'dmm-panel-2003', label: '2003' },
+              { workId: 'dmm-panel-2004', label: '2004' },
+              { workId: 'dmm-panel-2005', label: '2005' },
+              { workId: 'dmm-panel-2006', label: '2006' },
+              { workId: 'dmm-panel-2007', label: '2007' },
+              { workId: 'dmm-panel-2008', label: '2008' },
+              { workId: 'dmm-panel-2009', label: '2009' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'question',
+        label: 'The question',
+        title: 'Carrying participation beyond the gallery',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'Writing on the canvas requires being in the room with it. For the painting’s showing at Gettysburg, I took on its digital and interactive part: a way for the painting to keep collecting voices, from anywhere, without losing what makes it Gan Yu’s.',
+            ],
+          },
+          {
+            type: 'question',
+            text: 'How can a digital extension deepen the way audiences understand and take part in an artist’s work, while keeping faith with the original?',
+          },
+        ],
+      },
+      {
+        id: 'interview',
+        label: 'Research with the artist',
+        number: '01',
+        title: 'Conversations with Gan Yu',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'The research began with the artist. In June 2025 I interviewed Gan Yu together with my fellow student researcher Westley Rathbun, an art history and museum studies major, with Professor Sun and Professor Gillespie taking part. Westley’s questions traced Gan Yu’s path from socialist realism to his Wall Street series; mine asked what the painting needed from a digital form. His answers became my design brief.',
+            ],
+          },
+          {
+            type: 'findings',
+            items: [
+              {
+                question: 'What did it feel like to watch people write on your work?',
+                answer: 'Gan Yu wants every reaction, praise or criticism alike. Viewers’ sentiments about the market, the economy and the artist himself are, in his words, the value of the work.',
+                implication: 'the digital canvas stays open to every response rather than filtering what people say.',
+              },
+              {
+                question: 'The canvas holds a dozen languages. Should any be favoured?',
+                answer: 'Any language is welcome; English serves as the common one.',
+                implication: 'visitors respond in whatever language is theirs, as they do on the canvas.',
+              },
+              {
+                question: 'Is a meeting of physical and digital a model for your future work?',
+                answer: 'He called it essential: traditional ink painting has to meet new media and technology if it is to reach a new generation.',
+                implication: 'the website is treated as part of the artwork’s life, not as a record of it.',
+              },
+              {
+                question: 'What should visitors take away?',
+                answer: 'A direct sense of what is happening around us. His work documents a complicated world; art is a historical record as much as something to admire.',
+                implication: 'the site sets the painting beside its subject, the decade of the Dow Jones it records.',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'design',
+        label: 'Translating the work',
+        number: '02',
+        title: 'From ink and canvas to a shared screen',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'The extension keeps the logic of the original. I made high-resolution digital versions of the panels in Photoshop and Procreate, preserving the brushwork, the flow of the ink and its layered tones.',
+              'The interactive canvas follows the physical one: visitors leave their own marks and reflections, and each new contribution is laid over the artist’s strokes and over the voices that came before it, so the work grows the way the canvas does, a palimpsest of many hands that anyone can join, in the gallery or from afar.',
+            ],
+          },
+          {
+            type: 'decision',
+            title: 'Participation over presentation',
+            text: 'A digital gallery of the panels alone would have preserved the painting but left out its central idea. The core of the site is the interactive canvas, because the painting is unfinished by design and its meaning comes from the people who write on it.',
+          },
+        ],
+      },
+      {
+        id: 'website',
+        label: 'The website',
+        number: '03',
+        title: 'A Digital Moving Mountain',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'The finished site brings the research together: a gallery of the ten panels, one for each year; the artist’s biography; my reflections; an overview of the project; and the interactive canvas, where visitors from anywhere add their reflections to an artwork that is still evolving.',
+            ],
+          },
+          { type: 'link', text: 'Visit A Digital Moving Mountain', url: 'https://a-digital-moving-mountain-landing.vercel.app' },
+        ],
+      },
+      {
+        id: 'exhibition',
+        label: 'The exhibition',
+        number: '04',
+        title: 'Footprints Across the Ocean',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'The extension accompanied *Footprints Across the Ocean: The Art of Gan Yu* at the Schmucker Art Gallery, a survey of forty-five years of his work, from early socialist-realist portraits to the Wall Street series, shown from September 3 to December 6, 2025.',
+              'Westley and I are named as the exhibition’s student researchers. The programme opened with gallery talks by the artist and student researchers and continued with a panel discussion in October; I wrote the text on the digital extension for the printed exhibition catalogue.',
+            ],
+          },
+          { type: 'figure', size: 'medium', workId: 'dmm-announcement', caption: 'The exhibition announcement, Gettysburg College, crediting Westley Rathbun ’27 and Md Nafisul Hasan Sami ’27 as student researchers.' },
+        ],
+      },
+      {
+        id: 'reflection',
+        label: 'Reflection',
+        title: 'What the mountain taught me',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'I never expected anyone to make art about the stock market. The first time I saw *A Moving Mountain* I was surprised, a little confused, and then curious: how could finance become poetry? That curiosity started this project.',
+              'Working on it made me think about art that crosses boundaries between fields, cultures and people. Turning the painting into a digital space was as much about discovery as preservation, and every contribution reminded me that a work keeps growing through the people who meet it, not only through the artist’s first marks.',
+              'Above all, it showed me that an unlikely subject can create connection, and that technology, used with care, can bring people closer to art instead of pushing them away. Collaborating with an established artist on his own exhibition taught me to listen first and build second.',
+            ],
+          },
+          {
+            type: 'credits',
+            text: 'With thanks to Dr. Gan Yu; Professor Yan Sun, Chair of Art and Art History; Sarah Kate Gillespie, Director of the Schmucker Art Gallery; and Westley Rathbun.',
           },
         ],
       },

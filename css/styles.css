@@ -1790,10 +1790,68 @@ button:focus-visible > .roll .roll__face + .roll__face {
   gap: 1.5rem 1rem;
 }
 
+@media (min-width: 56rem) {
+  .pcase__grid--fixed {
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 40rem) {
   .pcase__grid {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.pcase__findings {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: finding;
+  border-top: 1px solid var(--rule);
+}
+
+.pcase__findings li {
+  display: grid;
+  gap: 0.5rem 2rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+  counter-increment: finding;
+}
+
+@media (min-width: 56rem) {
+  .pcase__findings li {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .pcase__finding-i {
+    grid-column: 2;
+  }
+}
+
+.pcase__finding-q {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.pcase__finding-q::before {
+  content: counter(finding, decimal-leading-zero) '  ';
+  color: var(--accent);
+}
+
+.pcase__finding-a {
+  font-family: var(--font-prose);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.pcase__finding-i {
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .pcase__decision {
