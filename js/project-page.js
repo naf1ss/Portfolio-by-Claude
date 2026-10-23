@@ -308,33 +308,39 @@
     watchContents(container, nav, links);
   }
 
-  /** The projects list: each project's cover, whole, beside its title and summary. */
+  /**
+   * The projects list, an index: each row is numbered, its text leads and its cover follows, shown whole at a
+   * capped height so a tall photograph and a long panorama sit at a similar visual weight.
+   */
   function renderList(list, projects, { byId, hrefFor }) {
-    const items = projects.map((project) => {
+    const items = projects.map((project, i) => {
       const item = element('li');
       const link = element('a', 'project-card');
       link.href = hrefFor(project);
-      const cover = byId.get(project.cover);
-      if (cover) {
-        const img = new Image();
-        img.alt = '';
-        img.width = cover.w;
-        img.height = cover.h;
-        img.sizes = '(min-width: 64rem) 55vw, 92vw';
-        img.srcset = U.buildSrcset(cover);
-        img.src = U.fallbackUrl(cover);
-        const frame = element('span', 'project-card__image');
-        frame.append(img);
-        link.append(frame);
-      }
       const text = element('span', 'project-card__text');
       text.append(
+        element('span', 'project-card__index', String(i + 1).padStart(2, '0')),
         element('span', 'project-card__kicker', project.kicker),
         element('span', 'project-card__title', project.title),
         paragraph(project.summary, 'project-card__summary', 'span'),
         element('span', 'project-card__more', `${project.cta || 'Read the project'} →`)
       );
       link.append(text);
+      const cover = byId.get(project.cover);
+      if (cover) {
+        const img = new Image();
+        img.alt = '';
+        img.width = cover.w;
+        img.height = cover.h;
+        img.loading = i === 0 ? 'eager' : 'lazy';
+        img.decoding = 'async';
+        img.sizes = '(min-width: 56rem) 45vw, 92vw';
+        img.srcset = U.buildSrcset(cover);
+        img.src = U.fallbackUrl(cover);
+        const frame = element('span', 'project-card__image');
+        frame.append(img);
+        link.append(frame);
+      }
       item.append(link);
       return item;
     });

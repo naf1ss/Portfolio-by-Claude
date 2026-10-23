@@ -1352,35 +1352,56 @@ button:focus-visible > .roll .roll__face + .roll__face {
 }
 
 .project-list {
-  display: grid;
-  gap: clamp(2.5rem, 5vw, 4rem);
   margin: 0;
   padding: 0;
   list-style: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+.project-list > li {
+  border-top: 1px solid var(--rule);
 }
 
 .project-card {
   display: grid;
-  gap: clamp(1.25rem, 3vw, 3rem);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
+  padding-block: clamp(2rem, 4.5vw, 3.5rem);
   text-decoration: none;
 }
 
 @media (min-width: 56rem) {
   .project-card {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+  }
+}
+
+/* The cover is shown whole and never cropped; its height is capped so no single cover dominates the index. */
+.project-card__image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+@media (min-width: 56rem) {
+  .project-card__image {
+    justify-content: flex-end;
   }
 }
 
 .project-card__image img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
   transition: transform 1.2s var(--ease-out);
 }
 
-.project-card__image {
-  display: block;
-  overflow: hidden;
+@media (min-width: 56rem) {
+  .project-card__image img {
+    max-height: clamp(13rem, 24vw, 20rem);
+  }
 }
 
 .project-card:hover .project-card__image img {
@@ -1390,6 +1411,15 @@ button:focus-visible > .roll .roll__face + .roll__face {
 .project-card__text {
   display: grid;
   gap: 0.75rem;
+  max-width: 34rem;
+}
+
+.project-card__index {
+  margin-bottom: 0.35rem;
+  color: var(--ink-muted);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .project-card__kicker,
@@ -1404,7 +1434,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .project-card__title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 1.4rem + 2vw, 3.2rem);
+  font-size: clamp(1.9rem, 1.3rem + 1.7vw, 2.8rem);
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.02;
@@ -1412,9 +1442,9 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .project-card__summary {
   font-family: var(--font-prose);
-  font-size: 1.2rem;
+  font-size: 1.12rem;
   font-weight: 500;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .project-card__more {
