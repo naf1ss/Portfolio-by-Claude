@@ -159,19 +159,61 @@
       ],
     },
   },
-  // From the artist's own account of why he keeps painting the tower (2026).
+  // From the artist's own account of why he keeps painting the tower (2026). The facts about the tower
+  // (designers, dates, parts, the calculated curve) come from toureiffel.paris and ArchDaily.
   'eiffel-tower': {
     works: [
-      { workId: 'A001', text: [] },
-      { workId: 'A034', text: [] },
-      { workId: 'A038', text: [] },
-      { workId: 'A012', text: [] },
+      {
+        workId: 'A001',
+        text: [
+          'Painted in 2016, with the tower as a dark silhouette against a low sun. With no light on the iron, the structure has to be read from the outline alone: the legs spread wide at the base and draw in as they rise. A checkered border closes the scene.',
+        ],
+      },
+      {
+        workId: 'A034',
+        text: [
+          'The tower and its reflection meet at the horizon, so the structure is seen twice, once upright and once inverted. Doubling it turns the painting into a test of symmetry: the four legs and the single line they gather into have to agree on both sides.',
+        ],
+      },
+      {
+        workId: 'A038',
+        text: [
+          'Here the tower is set within a wide skyline, and the question changes from how it is built to how it sits: its height against the horizon, its scale among other forms, its reflection in the water below.',
+        ],
+      },
+      {
+        workId: 'A012',
+        text: [
+          'The largest and most recent. The tower is rebuilt from flat planes of red, yellow, blue and black, with an orange lattice and a white moon. The structure is no longer shaded but composed: each part is a decision about balance, and the analysis that began as drawing becomes design.',
+        ],
+      },
     ],
     closing: {
+      processTitle: 'What I look at',
+      process: [
+        {
+          title: 'Structure',
+          text: 'Four lattice piers stand on a square plan, lean inward and meet in a single line. Each of the 18,038 iron parts was designed and calculated in advance, so the lattice is a drawing before it is a tower.',
+        },
+        {
+          title: 'Curve',
+          text: 'The curve of the legs was worked out mathematically to reduce the wind’s hold on the tower. The shape people find graceful is the shape that solves a problem.',
+        },
+        {
+          title: 'Openings',
+          text: 'The gaps in the lattice matter as much as the iron. To paint the tower is to paint the sky through it, and to decide what stays solid and what is left open.',
+        },
+        {
+          title: 'Authorship',
+          text: 'The engineers Maurice Koechlin and Émile Nouguier conceived it and the architect Stephen Sauvestre refined its form, including the arches at its base. It belongs to both disciplines.',
+        },
+      ],
       reflectionTitle: 'About the series',
       reflection: [
         'The Eiffel Tower began as a test. Long before it became a recurring subject, I set out to see whether I could render every part of its structure: the lattice of wrought iron, the arches at its base, the way its four legs gather into a single line.',
-        'Working through that structure, I came to admire it, both as engineering and as history: a tower built as the entrance to the 1889 World’s Fair that became the image of a city. Paris has stayed close to me ever since.',
+        'What kept me looking was how much of the form is reasoned. The curve of the legs, the proportion of arch to lattice, the thousands of parts each worked out before they were raised: beauty and logic are the same thing here, and I find that more convincing than ornament.',
+        'It is also how I like to think, in plans and relationships: how a part sits in the whole, where weight gathers, how much space is left open. Painting the tower is a way to practise that, and it has drawn me toward architecture, the discipline that thinks this way for a living.',
+        'I admire it as history, too: a tower built as the entrance to the 1889 World’s Fair, meant to be temporary and doubted by many at the time, that became the image of a city. Paris has stayed close to me ever since.',
         'I have returned to the tower across nearly a decade and several mediums, from poster colour to mixed media. Each return is a practice: the same silhouette set against a different sky, colour field or reflection, and a way of measuring how my hand and my eye have changed.',
       ],
     },

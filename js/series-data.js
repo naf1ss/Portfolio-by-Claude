@@ -45,7 +45,7 @@
   {
     id: 'eiffel-tower',
     title: 'Eiffel Tower',
-    note: 'Paintings of the Eiffel Tower made over nearly a decade: a study of its structure that became a practice I keep returning to.',
+    note: 'Paintings of the Eiffel Tower made over nearly a decade: a study of how it is built that became a practice I keep returning to.',
     hangTogether: true,
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
