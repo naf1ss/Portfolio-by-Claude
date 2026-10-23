@@ -119,6 +119,8 @@
     const photographer = document.querySelector('.gallery-peek');
 
     let category = U.categoryFromSearch(location.search, DEFAULT_GALLERY_CATEGORY);
+    // A link to a medium with nothing in it (a hidden section) opens the default medium instead of an empty page.
+    if (category !== 'all' && !counts[category]) category = DEFAULT_GALLERY_CATEGORY;
     let view = readGalleryView();
     const showingWall = () => view === 'wall' && RoomUtils.isWallCategory(category);
 
