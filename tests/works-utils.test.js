@@ -424,7 +424,7 @@ test('catalogue: every picture a project shows is in the catalogue', () => {
   const PROJECTS = require('../js/projects-data.js');
   const ids = new Set(WORKS.map((record) => record.id));
   PROJECTS.forEach((project) => {
-    const used = [project.cover, project.hero.workId];
+    const used = [project.cover, project.hero && project.hero.workId].filter(Boolean);
     project.sections.forEach((section) =>
       section.blocks.forEach((block) => {
         if (block.workId) used.push(block.workId);
@@ -433,6 +433,21 @@ test('catalogue: every picture a project shows is in the catalogue', () => {
     );
     used.forEach((id) => assert.ok(ids.has(id), `${project.id}: ${id} is not in the catalogue`));
     assert.equal(new Set(project.sections.map((s) => s.id)).size, project.sections.length, `${project.id}: section ids repeat`);
+  });
+});
+
+test('projects: a case study shows each picture only once', () => {
+  const PROJECTS = require('../js/projects-data.js');
+  PROJECTS.forEach((project) => {
+    const shown = project.hero ? [project.hero.workId] : [];
+    project.sections.forEach((section) =>
+      section.blocks.forEach((block) => {
+        if (block.workId) shown.push(block.workId);
+        (block.items || []).forEach((item) => item.workId && shown.push(item.workId));
+      })
+    );
+    const repeated = shown.filter((id, i) => shown.indexOf(id) !== i);
+    assert.deepEqual(repeated, [], `${project.id} repeats ${repeated.join(', ')}`);
   });
 });
 

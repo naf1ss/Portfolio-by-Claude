@@ -68,9 +68,9 @@
       return block;
     },
 
-    criteria: ({ items }) => {
+    criteria: ({ items, title = 'Design criteria' }) => {
       const block = element('div', 'pcase__criteria');
-      block.append(element('p', 'pcase__eyebrow', 'Design criteria'));
+      block.append(element('p', 'pcase__eyebrow', title));
       const list = element('ul');
       items.forEach(({ title, text }) => {
         const item = element('li');
@@ -96,6 +96,15 @@
       if (!work) return null;
       const className = size ? `pcase__figure pcase__figure--${size}` : 'pcase__figure';
       return figure(work, { caption, className });
+    },
+
+    // A picture with a guide to reading it beside it (below it on narrow screens).
+    annotated: ({ workId, caption, title, items }, byId) => {
+      const work = byId.get(workId);
+      if (!work) return null;
+      const block = element('div', 'pcase__annotated');
+      block.append(figure(work, { caption, sizes: '(min-width: 64rem) 40vw, 92vw' }), BLOCKS.criteria({ items, title }));
+      return block;
     },
 
     // Side by side at one height: each picture's share of the row follows its shape, so none is cropped.
@@ -158,9 +167,9 @@
       return list;
     },
 
-    decision: ({ title, text }) => {
+    decision: ({ title, text, eyebrow = 'Key decision' }) => {
       const block = element('aside', 'pcase__decision');
-      block.append(element('p', 'pcase__eyebrow', 'Key decision'), element('h3', undefined, title), paragraph(text));
+      block.append(element('p', 'pcase__eyebrow', eyebrow), element('h3', undefined, title), paragraph(text));
       return block;
     },
 
@@ -270,12 +279,22 @@
 
   function renderCase(container, project, { byId }) {
     const hero = element('header', 'pcase__hero');
-    hero.append(
+    const intro = element('div', 'pcase__intro');
+    intro.append(
       element('p', 'pcase__kicker', project.kicker),
       element('h1', 'pcase__name', project.title),
       paragraph(project.summary, 'pcase__summary')
     );
-    const heroWork = byId.get(project.hero.workId);
+    hero.append(intro);
+
+    const glance = element('dl', 'pcase__glance');
+    project.glance.forEach(({ label, text }) => {
+      const item = element('div');
+      item.append(element('dt', undefined, label), element('dd', undefined, text));
+      glance.append(item);
+    });
+
+    const heroWork = project.hero && byId.get(project.hero.workId);
     if (heroWork) {
       const heroFigure = figure(heroWork, { caption: project.hero.caption, sizes: '96vw', className: `pcase__figure pcase__figure--hero${project.hero.size === 'medium' ? ' pcase__figure--medium' : ''}` });
       // An optional link beside the caption, e.g. to a collaborating artist's own site.
@@ -288,14 +307,11 @@
         heroFigure.querySelector('figcaption').append(link);
       }
       hero.append(heroFigure);
+    } else {
+      // No opening picture: the project at a glance sits beside the title, so every picture appears once, in its section.
+      hero.classList.add('pcase__hero--split');
+      hero.append(glance);
     }
-
-    const glance = element('dl', 'pcase__glance');
-    project.glance.forEach(({ label, text }) => {
-      const item = element('div');
-      item.append(element('dt', undefined, label), element('dd', undefined, text));
-      glance.append(item);
-    });
 
     const { nav, links } = contents(project.sections);
     const body = element('div', 'pcase__body');
@@ -303,7 +319,7 @@
     const layout = element('div', 'pcase__layout');
     layout.append(nav, body);
 
-    container.replaceChildren(hero, glance, layout);
+    container.replaceChildren(...(heroWork ? [hero, glance, layout] : [hero, layout]));
     container.hidden = false;
     watchContents(container, nav, links);
   }

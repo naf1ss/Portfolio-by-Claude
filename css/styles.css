@@ -1585,6 +1585,56 @@ button:focus-visible > .roll .roll__face + .roll__face {
   color: var(--accent);
 }
 
+/* No opening picture: title and summary on the left, the project at a glance on the right. */
+.pcase__intro {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 56rem) {
+  .pcase__hero--split {
+    grid-template-columns: minmax(0, 1.7fr) minmax(15rem, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: end;
+  }
+
+  .pcase__hero--split .pcase__glance {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin: 0;
+    padding-block: 0;
+    border-block: 0;
+  }
+
+  .pcase__hero--split .pcase__glance > div {
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--rule);
+  }
+}
+
+.pcase__hero--split {
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* A picture and the guide to reading it, side by side on wide screens. */
+.pcase__annotated {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+@media (min-width: 64rem) {
+  .pcase__annotated {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .pcase__annotated .pcase__criteria ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* At a glance */
 .pcase__glance {
   display: grid;
@@ -1779,6 +1829,7 @@ button:focus-visible > .roll .roll__face + .roll__face {
 
 .pcase__criteria li {
   display: grid;
+  align-content: start;
   gap: 0.35rem;
   padding-top: 0.8rem;
   border-top: 1px solid var(--ink);
