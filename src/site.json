@@ -14,7 +14,7 @@
       ]
     },
     {"label": "Series", "href": "series.html", "menuLabel": "Series", "childrenFrom": "series"},
-    {"label": "Projects", "href": "projects.html", "menuLabel": "Projects", "childrenFrom": "projects"},
+    {"label": "Interdisciplinary projects", "page": "Projects", "href": "projects.html", "menuLabel": "Interdisciplinary projects", "childrenFrom": "projects"},
     {"label": "Artist statement", "href": "artist-statement.html"},
     {"label": "Resume", "href": "resume.html"},
     {"label": "Contact", "href": "contact.html"}

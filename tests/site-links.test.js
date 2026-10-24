@@ -12,8 +12,10 @@ const htmlFiles = fs.readdirSync(ROOT).filter((file) => file.endsWith('.html'));
 const slug = (label) => label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 test('each menu item is served at the address its name suggests (GitHub Pages serves /gallery from gallery.html)', () => {
-  site.nav.forEach(({ label, href }) => {
-    assert.equal(href, `${slug(label)}.html`, `"${label}" should live at ${slug(label)}.html`);
+  // An item whose label is longer than its address names the short form in `page` (e.g. "Interdisciplinary projects" at projects.html).
+  site.nav.forEach(({ label, href, page }) => {
+    const expected = `${slug(page || label)}.html`;
+    assert.equal(href, expected, `"${label}" should live at ${expected}`);
     assert.ok(htmlFiles.includes(href), `${href} is missing`);
   });
 });

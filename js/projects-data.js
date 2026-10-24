@@ -508,7 +508,7 @@
     kicker: 'Data visualization',
     cta: 'Read the case study',
     summary:
-      'Two pieces of data work on one question: how do women fare in the art world? I rebuilt a chart of wages in art professions and remixed it, then turned research on museums, exhibitions and the art market into a four-panel infographic.',
+      'How do women fare in the art world, and how can data make the answer clear? I rebuilt and remixed a chart of artists’ wages, then designed a four-panel infographic on women’s place in museums, exhibitions and the art market.',
     cover: 'dv-infographic-women',
     glance: [
       { label: 'Role', text: 'Researcher, data analyst and designer' },
@@ -526,8 +526,8 @@
           {
             type: 'text',
             paragraphs: [
-              'I study art and mathematics, and this project is where the two meet. Women earn most of the fine arts degrees in the United States, yet they are a small share of the artists in museum collections. I wanted to see that gap in data, and then design it so that someone who has never read a report would understand it at a glance.',
-              'The work has two parts. First I rebuilt an existing chart of artists’ wages to learn how it was made, and remixed it. Then I gathered research from several sources and designed an infographic that moves from the problem to what could change it.',
+              'Women earn most of the fine arts degrees awarded in the United States, yet they make up only a small share of the artists in major museum collections. This project set out to show that gap clearly: first through a chart of what artists earn, then through an infographic a general reader could take in at a glance.',
+              'It had two stages. Rebuilding an existing chart showed me how its design choices shape what it says; designing the infographic meant turning findings from several studies into a single, ordered argument.',
             ],
           },
           {
@@ -545,8 +545,8 @@
           {
             type: 'text',
             paragraphs: [
-              'I began with a line chart from DataUSA showing the average yearly wage of men and women working as artists and related workers in the United States, from 2014 to 2022. I rebuilt it in Python as closely as I could: the blue and red for each gender, the pale background, the gridlines, the dollar labels and the small gender symbols in the legend. The one thing I could not match was the typeface.',
-              'For the remix I kept the data, colours and background and changed one thing: the lines became pairs of bars, so that the two wages for each year stand side by side.',
+              'The starting point was a DataUSA line chart of the average yearly wage of men and women working as artists and related workers in the United States between 2014 and 2022. I rebuilt it in Python to match the original as closely as possible, from its colours, background and gridlines to its dollar labels and gender symbols. Only the typeface could not be matched.',
+              'The remix keeps the same data, colours and background but replaces the lines with paired bars, so each year’s two wages can be compared directly.',
             ],
           },
           {
@@ -560,10 +560,10 @@
             type: 'criteria',
             title: 'How to read the charts',
             items: [
-              { title: 'Across', text: 'The years, from 2014 to 2022.' },
-              { title: 'Up', text: 'The average yearly wage, from $0 to about $80,000.' },
-              { title: 'Colour', text: 'Dark blue is men; red is women.' },
-              { title: 'What to notice', text: 'Red sits well below blue every year, and the two rise together, so the gap between them barely closes.' },
+              { title: 'Across', text: 'Years, from 2014 to 2022.' },
+              { title: 'Up', text: 'Average yearly wage, from $0 to about $80,000.' },
+              { title: 'Colour', text: 'Dark blue for men, red for women.' },
+              { title: 'What to notice', text: 'In every year the red falls well short of the blue, and the two rise together, so the gap never closes.' },
             ],
           },
           {
@@ -578,7 +578,7 @@
             type: 'decision',
             eyebrow: 'Key insight',
             title: 'What the remix does and does not do',
-            text: 'Bars make each year easy to compare, but a gap is a ratio, and neither chart shows one. Working it out from the data was the real finding: women earned about two-thirds of what men did in every year, and that share barely moved. If I made the chart again, I would plot that ratio directly.',
+            text: 'Paired bars make each year easier to compare, but a pay gap is a ratio, and neither chart shows one. Calculating it from the data gave the clearest finding: women earned about two-thirds of men’s average wage in every year, and that share barely changed. A further revision would chart the ratio itself.',
           },
         ],
       },
@@ -591,7 +591,7 @@
           {
             type: 'text',
             paragraphs: [
-              'The infographic draws on the National Museum of Women in the Arts, the Burns Halperin Report, Artnet News, a PLOS One study of museum collections and the Freelands Foundation. I designed it in four panels that read from top to bottom like a short argument: the contrast, the evidence, signs of progress and a call to action.',
+              'The infographic gathers evidence from the National Museum of Women in the Arts, the Burns Halperin Report, Artnet News, a PLOS One study of museum collections and the Freelands Foundation. Its four panels read from top to bottom as a short argument: a contrast, the evidence behind it, signs of change and a call to action.',
             ],
           },
           {
@@ -600,16 +600,16 @@
             caption: 'Women Underrepresented in the Art World, designed in Procreate and Picsart.',
             title: 'How to read the infographic',
             items: [
-              { title: 'Dramatic contrast', text: 'The top panel sets two facts side by side: 70% of US art graduates are women, yet 87% of the artists in major museum collections are men.' },
-              { title: 'Gap by numbers', text: 'The circle shows museum collections, with the black share for men (87%) and the small magenta wedge for women. Below it, 33%: the share of exhibitions given to women.' },
-              { title: 'Progress', text: 'Signs of change: women were 53% of the artists in the 2019 Venice Biennale, and the Baltimore Museum of Art committed to acquiring only works by women in 2020.' },
-              { title: 'Call to action', text: 'A balance scale weighs a woman artist against a man, with the line that representation shapes careers, earnings and visibility.' },
+              { title: 'Dramatic contrast', text: 'The opening sets training against recognition: women are most of the art graduates in the United States, but few of the artists that major museums collect.' },
+              { title: 'Gap by numbers', text: 'The circle shows how lopsided those collections are, with women as the thin magenta slice, and the gallery icon below carries the same imbalance into exhibitions.' },
+              { title: 'Progress', text: 'The turn toward change: a major international exhibition, the 2019 Venice Biennale, that reached gender parity, and an American museum that committed a full year of acquisitions to women.' },
+              { title: 'Call to action', text: 'The balance scale states the argument in one image: equal representation is a matter of fairness, with real consequences for artists’ careers, income and visibility.' },
             ],
           },
           {
             type: 'decision',
             title: 'One colour for women',
-            text: 'A single magenta marks women throughout: the small wedge of the museum chart, the graduate’s cap, the figure at the easel. Black and grey carry everything else, so the eye can follow one thread through all four panels, which are divided by torn-paper edges.',
+            text: 'A single magenta marks women throughout: the slice of the museum chart, the graduate’s cap, the figure at the easel. Black and grey carry everything else, so the eye can follow one thread through all four panels, which are separated by torn-paper edges.',
           },
         ],
       },
@@ -621,7 +621,7 @@
           {
             type: 'text',
             paragraphs: [
-              'Data and design ask the same question: what does the viewer see first? Recreating a chart taught me how many small choices, such as colour, scale and an axis that starts at zero, decide what a picture of numbers says. Designing the infographic taught me that numbers need a structure before they persuade. I bring that way of looking back to my painting, where I also decide what the eye meets first.',
+              'Charts and paintings pose the same question: what does the viewer see first? Rebuilding a chart showed me how much small choices of colour, scale and baseline decide what numbers appear to say, and designing the infographic showed me that evidence persuades only when it is ordered. Both lessons carry back into my painting, where I am always deciding what the eye meets first.',
             ],
           },
           { type: 'link', text: 'See the code and data on GitHub', url: 'https://github.com/naf1ss/DSportfolio' },
@@ -641,14 +641,14 @@
     kicker: 'Data science',
     cta: 'Read the case study',
     summary:
-      'A machine-learning test of a common belief in football: that the players with the strongest club numbers are the ones picked for World Cup squads. Two models, 2,847 players and 30 statistics each, and a clear answer: club statistics alone are not enough.',
+      'A machine-learning test of a common belief in football (soccer): that the players with the strongest club statistics are the ones chosen for World Cup squads. Two models, 2,847 players, 30 statistics each, and a clear answer: club numbers alone are not enough.',
     cover: 'ml-confusion',
     glance: [
       { label: 'Role', text: 'Analyst: data preparation, modelling, evaluation and report' },
       { label: 'Context', text: 'Final project for a data science course' },
       { label: 'Disciplines', text: 'Statistics, machine learning, sports analytics' },
       { label: 'Tools', text: 'Python, pandas, scikit-learn, Seaborn, Matplotlib' },
-      { label: 'Data', text: 'Top five European leagues, 2023–24; World Cup squads, 1930–2022' },
+      { label: 'Data', text: 'Europe’s top five leagues, 2023–24; World Cup squads, 1930–2022' },
     ],
     sections: [
       {
@@ -659,7 +659,7 @@
           {
             type: 'text',
             paragraphs: [
-              'Alongside my art, I study mathematics, and I like to test what people take for granted. In football it is often assumed that national teams are built from the players with the best club records. I wanted to see whether the numbers bear that out.',
+              'In football (soccer), it is widely assumed that national teams are built from the players with the best club records. This project tests that assumption with data: if strong club numbers lead to selection, a model trained on those numbers should be able to tell selected players from the rest.',
             ],
           },
           {
@@ -677,9 +677,9 @@
           {
             type: 'text',
             paragraphs: [
-              'I combined two datasets. The first describes 2,852 players in the top five European leagues in the 2023–24 season: age, appearances, minutes, goals, assists, cards, expected goals and assists, progressive passes and carries, and the same figures per 90 minutes. The second lists the players in every World Cup squad from 1930 to 2022.',
-              'I matched the two by player name, and labelled a player “selected” if his name appears in a World Cup squad. After setting aside the columns that are not performance measures (name, club, league, position, nationality, birth year and rank) and the five rows with missing values, 2,847 players remained, each described by 30 numerical statistics.',
-              'I held back 20% of the players as a test set, keeping the same share of selected players in both parts, and trained two models on the rest: a logistic regression, simple and easy to interpret, and a random forest, which can pick up patterns a straight line cannot. Each model then had to sort the test players it had never seen.',
+              'I combined two datasets. The first covers 2,852 players in Europe’s top five leagues (England, Spain, Italy, Germany and France) during the 2023–24 season. Its statistics range from age, appearances and minutes to goals, assists, cards, expected goals and progressive passes, along with rates per 90 minutes. The second lists every player named to a World Cup squad between 1930 and 2022.',
+              'I matched players across the two by name and labelled a player “selected” if he appeared in a World Cup squad. I then set aside the columns that do not measure performance (name, club, league, position, nationality, birth year and rank) and five rows with missing data, leaving 2,847 players described by 30 numerical statistics.',
+              'One fifth of the players were held back for testing, with the same proportion of selected players as the rest. Two models learned from the remaining four fifths: a logistic regression, which is simple and easy to interpret, and a random forest, which can capture more complex patterns. Each was then asked to classify test players it had never seen.',
             ],
           },
           {
@@ -701,7 +701,7 @@
           {
             type: 'text',
             paragraphs: [
-              'Both models were right about 82% of the time, which sounds strong. The chart below shows why it is not: almost all of those correct answers are players who were not selected.',
+              'Both models were correct for about 82% of the test players, which sounds impressive. The chart below shows why it is not: nearly all of those correct answers are players who were not selected.',
             ],
           },
           { type: 'figure', workId: 'ml-confusion', caption: 'Each model’s answers for the 570 test players: logistic regression in blue, random forest in green.' },
@@ -721,13 +721,13 @@
             items: [
               {
                 question: 'Is 82% accuracy good?',
-                answer: 'Not here. 83% of the test players were not selected, so a model that always answered “not selected” would score slightly higher.',
+                answer: 'Not here. Because 83% of the test players were not selected, a model that simply answered “not selected” every time would score slightly higher.',
                 implication: 'When one outcome is much more common, accuracy alone says little.',
               },
               {
                 question: 'Could the models find the selected players?',
-                answer: 'Rarely: 6 of 98 for the logistic regression and 8 of 98 for the random forest. When they did answer “selected”, they were right about a third of the time.',
-                implication: 'This share of selected players found, called recall, is the measure that matters, and it was low.',
+                answer: 'Rarely. Of the 98 selected players, the logistic regression found 6 and the random forest 8. When the models did predict “selected”, they were right only about a third of the time.',
+                implication: 'The share of selected players a model finds, known as recall, is the measure that matters here, and it was low.',
               },
             ],
           },
@@ -742,7 +742,7 @@
           {
             type: 'text',
             paragraphs: [
-              'To see why the models struggled, I looked at how each statistic relates to selection on its own, and at which statistics the random forest leaned on.',
+              'To understand why the models struggled, I examined how strongly each statistic relates to selection on its own, and which statistics the random forest relied on most.',
             ],
           },
           {
@@ -765,7 +765,7 @@
             type: 'decision',
             eyebrow: 'A closer look',
             title: 'Why age might lead',
-            text: 'Age may stand for experience rather than form: an older player has simply had more tournaments in which to be picked. That is a reminder that a model can only find what its labels let it find.',
+            text: 'Age may reflect experience rather than form: an older player has simply had more tournaments in which to be chosen. It is a reminder that a model can only learn what its labels allow.',
           },
         ],
       },
@@ -778,9 +778,9 @@
           {
             type: 'text',
             paragraphs: [
-              'The answer to the question is no: club statistics alone do not reliably predict who is selected. I reported recall as well as accuracy, because accuracy alone would have hidden that.',
-              'Some limits come from the data. Only about one player in six is labelled selected, which pulls both models toward answering “not selected”. The labels come from World Cup squads over many decades, matched on names, while the statistics describe a single later season. And much of what coaches weigh is not in the data at all: tactical fit, injuries, leadership and reputation.',
-              'A next version would label players from national team call-ups in the same season, add position and team strength, and use methods that correct for the imbalance between the two groups.',
+              'The answer to the question is no: club statistics alone cannot reliably identify who is selected. Reporting recall alongside accuracy made that visible; accuracy alone would have hidden it.',
+              'Several limits come from the data. Only about one player in six is labelled selected, which pulls both models toward predicting “not selected”. The labels come from World Cup squads spanning many decades and are matched by name, while the statistics describe a single, later season. And much of what coaches weigh is absent from the data altogether: tactical fit, injuries, leadership and reputation.',
+              'A stronger version would label players from national team call-ups in the same season, add position and team strength, and use methods that correct for the imbalance between the two groups.',
             ],
           },
         ],
@@ -793,7 +793,7 @@
           {
             type: 'text',
             paragraphs: [
-              'This project taught me how easily a number can look like an answer. A model that explains why it falls short taught me more than a high score would have. It is a habit I bring to the studio as well: look closely, test the assumption, and say plainly what the work does and does not show.',
+              'The project showed me how easily a number can pass for an answer. A model that explains its own shortcomings taught me more than a high score would have, and the same discipline applies in the studio: look closely, test assumptions, and state plainly what the work does and does not show.',
             ],
           },
           { type: 'link', text: 'See the notebook and report on GitHub', url: 'https://github.com/naf1ss/Sami_SoccerPotentialNationalTeam' },
