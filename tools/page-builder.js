@@ -64,12 +64,13 @@ function assertAttributeSafe(name, value) {
  */
 /**
  * Fills the children of nav entries that name a list instead of spelling one out:
- * `"childrenFrom": "series"` lists every series (js/series-data.js) and `"projects"` every project
- * (js/projects-data.js), so a new one joins the menu on the next build.
+ * `"childrenFrom": "series"` lists every series (js/series-data.js) except those kept to the gallery
+ * (`galleryOnly`: the photography series) and `"projects"` every project (js/projects-data.js), so a new
+ * one joins the menu on the next build.
  */
 function resolveNav(nav, { series = [], projects = [] } = {}) {
   const lists = {
-    series: series.map(({ id, title }) => ({ label: title, href: `series.html?s=${encodeURIComponent(id)}` })),
+    series: series.filter(({ galleryOnly }) => !galleryOnly).map(({ id, title }) => ({ label: title, href: `series.html?s=${encodeURIComponent(id)}` })),
     projects: projects.map(({ id, title }) => ({ label: title, href: `projects.html?p=${encodeURIComponent(id)}` })),
   };
   return nav.map((entry) => {

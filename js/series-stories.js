@@ -220,8 +220,8 @@
         workId: 'A007',
         caption: 'Observational realism built on light and shadow.',
         text: [
-          'This drawing demands precision and careful blending in pursuit of realism. The light source is clear, the contrast between light and dark is sustained, and the form of the table reads beneath the cloth.',
-          'The violin case was difficult at the outset but resolved convincingly, and the varied tones of the patterned tablecloth are carried through graduated shades of charcoal.',
+          'This drawing demands precision and careful blending in pursuit of realism. I kept to one clear light source, held the contrast between light and dark throughout, and built the form of the table beneath the cloth.',
+          'The violin case was the hardest part to begin. The varied tones of the patterned tablecloth are carried through graduated shades of charcoal.',
         ],
       },
       {
@@ -243,18 +243,18 @@
         kicker: 'Input-output drawing · charcoal on paper',
         title: 'Intuitive drawing',
         workId: 'A009',
-        caption: 'Playful, imperfect shapes that invite curiosity.',
+        caption: 'Drawn without looking at the paper.',
         text: [
           'I made this drawing without looking at the paper. My eyes remained on the still life throughout while my hand followed, which made the process intuitive, spontaneous and enjoyable.',
-          'The resulting shapes are unexpected and expressive. The handle of the violin case, for instance, became a banana beside the apple: unintended, and a pleasure to discover.',
+          'The shapes that resulted were not ones I planned. The handle of the violin case, for instance, became a banana beside the apple.',
         ],
       },
     ],
     closing: {
       reflectionTitle: 'Looking back',
       reflection: [
-        'I am pleased with how faithfully the drawings record the arrangement, and with the care given to each.',
-        'My professor encouraged me to embrace the unusual angle of my drawing, which gives the scene a distinct perspective.',
+        'The first two drawings record the same arrangement in different terms: one through tone, the other through structure.',
+        'My professor encouraged me to embrace the unusual angle of my drawing.',
         'If I were to extend one approach, it would be the input-output drawing. Its spontaneity felt liberating and points toward more experimental, expressive work.',
       ],
     },

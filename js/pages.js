@@ -271,7 +271,9 @@
     const gallery = document.getElementById('gallery');
 
     if (!chosen) {
-      window.Gallery.renderSeriesList(list, entries, { hrefFor: (series) => `series.html?s=${series.id}` });
+      // Photography series live in the gallery's Photography section, not on this page.
+      const listed = entries.filter((entry) => !entry.series.galleryOnly);
+      window.Gallery.renderSeriesList(list, listed, { hrefFor: (series) => `series.html?s=${series.id}` });
       window.Motion.reveal(list.children);
       return;
     }

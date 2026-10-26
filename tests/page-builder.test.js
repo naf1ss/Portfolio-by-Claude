@@ -133,6 +133,13 @@ test('a page with a base front matter key gets a <base> tag, and others do not',
   assert.doesNotMatch(without, /<base/);
 });
 
+test('resolveNav leaves out series kept to the gallery', () => {
+  const nav = resolveNav([{ label: 'Series', href: 'series.html', childrenFrom: 'series' }], {
+    series: [{ id: 'horizon', title: 'Horizon' }, { id: 'city', title: 'City', galleryOnly: true }],
+  });
+  assert.deepEqual(nav[0].children, [{ label: 'Horizon', href: 'series.html?s=horizon' }]);
+});
+
 test('resolveNav lists every series under an entry with childrenFrom: "series"', () => {
   const nav = resolveNav(
     [{ label: 'Gallery', href: 'gallery.html' }, { label: 'Series', href: 'series.html', childrenFrom: 'series' }],

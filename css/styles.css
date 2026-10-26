@@ -555,9 +555,52 @@ a:hover {
     color: var(--accent);
   }
 
+  /* Gallery, Series and Projects fold their links behind an arrow beside the name. */
+  .has-menu .site-nav__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.25rem;
+  }
+
+  /* A long name wraps rather than pushing its arrow onto a line of its own. */
+  .has-menu .site-nav__group > a {
+    max-width: calc(100% - 3rem);
+  }
+
+  .has-menu .site-nav__expand {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .site-nav__expand::before {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-0.12rem) rotate(45deg);
+    transition: transform 0.3s var(--ease);
+  }
+
+  .site-nav__group.is-expanded > .site-nav__expand::before {
+    transform: translateY(0.12rem) rotate(-135deg);
+  }
+
+  .has-menu .site-nav__group:not(.is-expanded) > .site-nav__menu {
+    display: none;
+  }
+
   /* Under Gallery and Series, their media and series as a line of small italics. */
   .has-menu .site-nav .site-nav__menu {
     position: static;
+    flex-basis: 100%;
     display: flex;
     flex-wrap: wrap;
     gap: 0.1rem 1.1rem;
@@ -701,6 +744,11 @@ a:hover {
 
 /* Gallery's media menu: opens under the link on hover or keyboard focus. Touch screens go straight to the
    gallery, where the same media are the filters. */
+/* The fold-away arrows are for the phone menu only. */
+.site-nav__expand {
+  display: none;
+}
+
 .site-nav__group {
   position: relative;
 }

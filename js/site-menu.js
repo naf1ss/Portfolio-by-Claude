@@ -45,6 +45,27 @@
     placeThemeToggle();
     phone.addEventListener('change', placeThemeToggle);
 
+    // On phones each group (Gallery, Series, Projects) folds its list of links behind a small arrow, so Contact
+    // and the other pages are never pushed far down the panel. The group holding the current page starts open.
+    nav.querySelectorAll('.site-nav__group').forEach((group, index) => {
+      const submenu = group.querySelector('.site-nav__menu');
+      const heading = group.querySelector(':scope > a');
+      if (!submenu || !heading) return;
+      submenu.id = submenu.id || `site-nav-menu-${index}`;
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'site-nav__expand';
+      toggle.setAttribute('aria-controls', submenu.id);
+      toggle.setAttribute('aria-label', `Show ${submenu.getAttribute('aria-label') || 'sections'}`);
+      const setExpanded = (expanded) => {
+        group.classList.toggle('is-expanded', expanded);
+        toggle.setAttribute('aria-expanded', String(expanded));
+      };
+      setExpanded(Boolean(group.querySelector('[aria-current]')));
+      toggle.addEventListener('click', () => setExpanded(!group.classList.contains('is-expanded')));
+      heading.after(toggle);
+    });
+
     button.addEventListener('click', () => setOpen(!isOpen()));
     // A link to the page already open (or to another filter of it) should still close the panel.
     nav.addEventListener('click', (event) => {
