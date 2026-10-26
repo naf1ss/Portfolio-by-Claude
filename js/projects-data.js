@@ -42,7 +42,7 @@
     kicker: 'Case study · 2026',
     cta: 'Read the case study',
     summary:
-      'A walkable scale model of the solar system across Gettysburg College, from the planetarium to the Observatory: a measured route, eleven ceramic station markers, a four-panel mural and a companion website.',
+      'Astronomical scale translated into an eleven-station walk across Gettysburg College, from the planetarium to the Observatory, bringing together site planning, ceramic markers, digital illustration and public education. Route and mural production are complete; installation is pending.',
     cover: 'pw-mural-mockup',
     hero: { workId: 'pw-mural-mockup', caption: 'The mural mocked up on the College Observatory, where the walk ends.' },
     glance: [
@@ -51,6 +51,8 @@
       { label: 'Timeline', text: 'Eight weeks, summer 2026' },
       { label: 'Disciplines', text: 'Astronomy, mathematics, site planning, ceramics, illustration, web design' },
       { label: 'Deliverables', text: 'Route and station plan, eleven markers, a four-panel mural, a website' },
+      { label: 'Budget', text: '$500, co-managed' },
+      { label: 'Status', text: 'Route and mural production complete; markers ready to glaze and fire; installation pending' },
     ],
     sections: [
       {
@@ -63,6 +65,7 @@
             paragraphs: [
               'The solar system is almost entirely empty space, yet diagrams and textbooks pack the planets side by side. Most people never feel the distances. A scale model can change that: it turns the astronomical unit, an abstraction, into footsteps.',
               'The project set out to build one across campus in support of Physics and Astronomy outreach: a walk that begins with the Sun in the planetarium at Masters Hall and ends at Pluto, at the College Observatory, with a mural that makes the Observatory a destination worth walking to.',
+              'Over eight weeks I worked with physics and ceramics faculty and a mural specialist, and co-managed the project’s $500 budget. The route and the mural are produced and the markers are ready to glaze and fire; installation is still to come.',
             ],
           },
           {
@@ -138,7 +141,7 @@
           },
           {
             type: 'text',
-            paragraphs: ['Colour came next. I made 66 test tiles to work out glaze, texture and finish, comparing them side by side under the same light.'],
+            paragraphs: ['Colour came next. I produced 66 material and glaze tests to work out clay, glaze, texture and finish, comparing them side by side under the same light before settling on a surface for each world.'],
           },
           {
             type: 'row',
@@ -295,6 +298,7 @@
       { label: 'My role', text: 'Student researcher; research, interaction design and development of the digital extension; catalogue essay' },
       { label: 'Advisors', text: 'Professor Yan Sun, Chair of Art and Art History; Sarah Kate Gillespie, Director of the Schmucker Art Gallery' },
       { label: 'Methods', text: 'Archival and visual research, artist interview, design trials, web design and development' },
+      { label: 'Questions', text: 'Participation and authorship in a digital extension of a painting' },
       { label: 'Presented in', text: 'Footprints Across the Ocean: The Art of Gan Yu, Schmucker Art Gallery, September 3 to December 6, 2025' },
     ],
     sections: [
@@ -311,6 +315,7 @@
               'Exhibitions are made for the people in the room. When a show closes, or for anyone who cannot travel to it, the conversation with the work stops. For most paintings that is a loss of access. For a painting completed by its viewers, it is a loss of the work itself.',
             ],
           },
+          { type: 'link', text: 'Visit A Digital Moving Mountain', url: 'https://a-digital-moving-mountain-landing.vercel.app' },
         ],
       },
       {
@@ -322,6 +327,7 @@
             type: 'text',
             paragraphs: [
               'Putting pictures of the painting online would have been easy, and beside the point. The research asked what a participatory painting needs in order to keep living on a screen, and what it must not lose on the way.',
+              'Two ideas ran through it: participation, how viewers take part in the work, and authorship, whose work it is once they have. Gan Yu painted the mountain; the viewers write its sky. A digital version had to keep both hands visible.',
             ],
           },
           {
@@ -472,7 +478,7 @@
               {
                 title: 'Exhibition catalogue',
                 status: 'Printed',
-                text: 'I wrote the catalogue essay on the digital extension, setting out how it carries the painting’s invitation to write from the gallery wall to the screen.',
+                text: 'I wrote the catalogue essay on the digital extension, examining the research and design methodology behind it, with guidance from faculty and gallery mentors.',
               },
             ],
           },
