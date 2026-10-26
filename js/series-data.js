@@ -49,7 +49,7 @@
     hangTogether: true,
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
-  { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A007', 'A008', 'A009'] },
+  { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A028', 'A007', 'A008', 'A009'] },
   {
     id: 'mugs',
     title: 'Mugs',
