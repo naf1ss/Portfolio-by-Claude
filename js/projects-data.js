@@ -660,7 +660,7 @@
           { type: 'link', text: 'See the code and data on GitHub', url: 'https://github.com/naf1ss/DSportfolio' },
           {
             type: 'credits',
-            text: 'Sources: DataUSA (American Community Survey), artists and related workers, 2014–2022; National Center for Education Statistics, Digest of Education Statistics 2017, Table 325.95; Charlotte Burns and Julia Halperin, The Burns Halperin Report, Artnet News, 2022; Chad M. Topaz et al., “Diversity of artists in major U.S. museums,” PLOS ONE, 2019; frieze and Elephant on the 2019 Venice Biennale; Artnet News on the Baltimore Museum of Art, 2019. GitHub Copilot helped with the bar chart code and ChatGPT with brainstorming and drafting the written reports. The first infographic is my own design; the 2026 revision and the ratio chart were built with Claude, from figures checked against these sources.',
+            text: 'Sources: DataUSA (American Community Survey), artists and related workers, 2014–2022; National Center for Education Statistics, Digest of Education Statistics 2017, Table 325.95; Charlotte Burns and Julia Halperin, The Burns Halperin Report, Artnet News, 2022; Chad M. Topaz et al., “Diversity of artists in major U.S. museums,” PLOS ONE, 2019; frieze and Elephant on the 2019 Venice Biennale; Artnet News on the Baltimore Museum of Art, 2019. GitHub Copilot helped with the bar chart code and ChatGPT with brainstorming and drafting the written reports. Infographic: first version 2025, revised 2026.',
           },
         ],
       },
