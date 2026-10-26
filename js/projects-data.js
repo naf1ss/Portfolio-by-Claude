@@ -226,7 +226,21 @@
             type: 'text',
             paragraphs: [
               'The website was not in the original plan; it grew out of the walk itself. A walk this long needs something to keep visitors going from one station to the next.',
-              'At its centre is a walk tracker. Visitors mark each station as they reach it and follow their progress outward from the Sun; when they finish, the site greets them with facts about the journey they have just made. Around the tracker sit a map of the stops and a page for each planet, so the walk carries on for visitors, campus tours and future outreach.',
+              'The site opens on the solar system itself: scrolling carries the visitor through the Milky Way to the Sun and its planets, and choosing any world opens its page, with the planet, a few facts and where its marker sits on campus.',
+            ],
+          },
+          { type: 'figure', workId: 'pw-site-solar', caption: 'The home page: the solar system in 3D. Choosing a world opens its page.' },
+          {
+            type: 'text',
+            paragraphs: [
+              'At its centre is a walk tracker, built for the phone in a visitor’s hand. Visitors mark each station as they reach it and follow their progress outward from the Sun: the time, the distance covered and the stops reached; when they finish, the site greets them with facts about the journey they have just made. Around the tracker sit a map of the stops and a page for each planet, so the walk carries on for visitors, campus tours and future outreach.',
+            ],
+          },
+          {
+            type: 'row',
+            items: [
+              { workId: 'pw-site-saturn', caption: 'A planet page: Saturn, and where its marker sits on campus' },
+              { workId: 'pw-site-tracker', caption: 'The walk tracker on a phone, partway along the walk' },
             ],
           },
           { type: 'link', text: 'Open the Planet Walk website', url: 'https://planet-walk.vercel.app/' },
@@ -443,10 +457,18 @@
               'The interactive canvas follows the rules of the physical one. The ten yearly panels are laid out in order, and a visitor can click anywhere on them to leave a comment at that exact spot: typed, or drawn and handwritten with a finger or stylus. It is saved the moment it is posted, so anyone who opens the painting a second later finds it in place, just as a comment on the canvas stays where it was written.',
             ],
           },
+          { type: 'figure', workId: 'dmm-site-canvas', caption: 'The interactive canvas: the panel for 2000, where visitors’ typed notes sit among the handwriting left in the gallery. The other years wait on either side.' },
           {
             type: 'decision',
             title: 'Open to every view, guarded against abuse',
             text: 'Gan Yu wants praise and criticism alike, so nothing is filtered for opinion. Typed comments with vulgar language are blocked automatically, and drawings and handwriting go to an approval queue, where Gan Yu can approve or remove them.',
+          },
+          {
+            type: 'row',
+            items: [
+              { workId: 'dmm-site-write', caption: 'Leaving a note: typed, or drawn by hand; drawings are reviewed before they appear' },
+              { workId: 'dmm-site-phone', caption: 'The same canvas on a phone' },
+            ],
           },
           {
             type: 'text',
@@ -482,6 +504,7 @@
               },
             ],
           },
+          { type: 'figure', size: 'medium', workId: 'dmm-site-home', caption: 'The website’s home page, which leads to the gallery of panels, the artist’s biography, the research and the interactive canvas.' },
           { type: 'link', text: 'Visit A Digital Moving Mountain', url: 'https://a-digital-moving-mountain-landing.vercel.app' },
         ],
       },
