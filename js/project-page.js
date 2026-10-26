@@ -328,8 +328,10 @@
    * The projects list, an index: each row is numbered, its text leads and its cover follows, shown whole at a
    * capped height so a tall photograph and a long panorama sit at a similar visual weight.
    */
-  function renderList(list, projects, { byId, hrefFor }) {
-    const items = projects.map((project, i) => {
+  /** `start` continues the numbering from an earlier list (the secondary projects follow the main ones). */
+  function renderList(list, projects, { byId, hrefFor, start = 0 }) {
+    const items = projects.map((project, index) => {
+      const i = start + index;
       const item = element('li');
       const link = element('a', 'project-card');
       link.href = hrefFor(project);

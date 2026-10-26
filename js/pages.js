@@ -406,10 +406,15 @@
     const article = document.getElementById('project-case');
 
     if (!chosen) {
-      window.ProjectPage.renderList(document.getElementById('project-list'), projects, {
-        byId,
-        hrefFor: (project) => `projects.html?p=${project.id}`,
-      });
+      // Projects marked `secondary` are listed after the main ones, in a smaller section of their own.
+      const main = projects.filter((project) => !project.secondary);
+      const more = projects.filter((project) => project.secondary);
+      const hrefFor = (project) => `projects.html?p=${project.id}`;
+      window.ProjectPage.renderList(document.getElementById('project-list'), main, { byId, hrefFor });
+      if (more.length) {
+        document.getElementById('projects-more').hidden = false;
+        window.ProjectPage.renderList(document.getElementById('project-list-more'), more, { byId, hrefFor, start: main.length });
+      }
       return;
     }
 

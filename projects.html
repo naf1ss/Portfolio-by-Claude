@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=4dd34ca1">
+  <link rel="stylesheet" href="css/styles.css?v=af06a9f8">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=4d7d19d8"></script>
   <script src="js/site-menu.js?v=5409c094"></script>
@@ -25,13 +25,13 @@
   <script src="js/works-data.js?v=40de6934" defer></script>
   <script src="js/works-photography.js?v=46f823e8" defer></script>
   <script src="js/photo-brightness.js?v=2f10a6e4" defer></script>
-  <script src="js/projects-data.js?v=5a38e7ab" defer></script>
-  <script src="js/project-page.js?v=361e0592" defer></script>
+  <script src="js/projects-data.js?v=3b586e35" defer></script>
+  <script src="js/project-page.js?v=32bc6752" defer></script>
   <script src="js/painted-text.js?v=652abef6" defer></script>
   <script src="js/site-config.js?v=cfecd8d5" defer></script>
   <script src="js/lightbox.js?v=a23e7a2c" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
-  <script src="js/pages.js?v=015a1052" defer></script>
+  <script src="js/pages.js?v=a3cc22fc" defer></script>
   <script src="js/interactions.js?v=3cfe50da" defer></script>
 </head>
 <body data-page="projects">
@@ -83,6 +83,10 @@
       <h1 class="page-title">Projects</h1>
       <p class="projects-intro">Research and interdisciplinary work, from the question to the result.</p>
       <ul class="project-list" id="project-list"></ul>
+      <section class="projects-more" id="projects-more" aria-labelledby="projects-more-title" hidden>
+        <h2 class="projects-more__title" id="projects-more-title">Also: data science</h2>
+        <ul class="project-list project-list--compact" id="project-list-more"></ul>
+      </section>
     </div>
     <p class="series-back" id="project-back" hidden><a href="projects.html">&larr; All projects</a></p>
     <article class="pcase" id="project-case" hidden></article>

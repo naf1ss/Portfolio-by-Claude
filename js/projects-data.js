@@ -4,6 +4,7 @@
  *
  *   id, title, kicker, summary     shown on the projects list and at the top of the case study
  *   cover                          work id for the projects list (shown whole, never cropped)
+ *   secondary                      optional: true lists the project in a smaller section below the main ones
  *   hero    { workId, caption, size?, link? }   optional opening picture; size 'medium' keeps it narrower. Without one,
  *                                  the project at a glance sits beside the title. A case study shows each picture once (tested).
  *   glance  [{ label, text }]      the project at a glance (role, timeline, disciplines...)
@@ -674,14 +675,15 @@
     kicker: 'Data science',
     cta: 'Read the case study',
     summary:
-      'A machine-learning test of a common belief in football (soccer): that the players with the strongest club statistics are the ones chosen for World Cup squads. Two models, 2,847 players, 30 statistics each, and a clear answer: club numbers alone are not enough.',
+      'A machine-learning test of a common belief in football (soccer): that the players with the strongest club statistics are the ones chosen for World Cup squads. Made in spring 2025, before the 2026 World Cup. On this data, two models could not pick out the selected players, and looking closely at why showed how much the result depends on how “selected” was defined.',
     cover: 'ml-confusion',
+    secondary: true,
     glance: [
       { label: 'Role', text: 'Analyst: data preparation, modelling, evaluation and report' },
-      { label: 'Context', text: 'Final project for a data science course' },
+      { label: 'Context', text: 'Final project for a data science course, spring 2025 (before the 2026 World Cup)' },
       { label: 'Disciplines', text: 'Statistics, machine learning, sports analytics' },
       { label: 'Tools', text: 'Python, pandas, scikit-learn, Seaborn, Matplotlib' },
-      { label: 'Data', text: 'Europe’s top five leagues, 2023–24; World Cup squads, 1930–2022' },
+      { label: 'Data', text: 'Club statistics: Europe’s top five leagues, 2023–24. Squads: every World Cup up to 2022, the most recent at the time' },
     ],
     sections: [
       {
@@ -692,12 +694,13 @@
           {
             type: 'text',
             paragraphs: [
-              'In football (soccer), it is widely assumed that national teams are built from the players with the best club records. This project tests that assumption with data: if strong club numbers lead to selection, a model trained on those numbers should be able to tell selected players from the rest.',
+              'In football (soccer), it is widely assumed that national teams are built from the players with the best club records. This project tests that assumption with data: if strong club numbers go with selection, a model trained on those numbers should be able to tell selected players from the rest.',
+              'I made it in spring 2025, when the most recent World Cup was the 2022 tournament. So “selected” here means named to a World Cup squad at any tournament up to 2022, while the statistics describe the 2023–24 season, after those squads were chosen. The test is about selection history, not a forecast of who would be picked next.',
             ],
           },
           {
             type: 'question',
-            text: 'Can a player’s club statistics reliably predict whether he has been selected for a World Cup squad?',
+            text: 'Do a player’s 2023–24 club statistics separate those who had been named to a World Cup squad, up to 2022, from those who had not?',
           },
         ],
       },
@@ -711,7 +714,7 @@
             type: 'text',
             paragraphs: [
               'I combined two datasets. The first covers 2,852 players in Europe’s top five leagues (England, Spain, Italy, Germany and France) during the 2023–24 season. Its statistics range from age, appearances and minutes to goals, assists, cards, expected goals and progressive passes, along with rates per 90 minutes. The second lists every player named to a World Cup squad between 1930 and 2022.',
-              'I matched players across the two by name and labelled a player “selected” if he appeared in a World Cup squad. I then set aside the columns that do not measure performance (name, club, league, position, nationality, birth year and rank) and five rows with missing data, leaving 2,847 players described by 30 numerical statistics.',
+              'I matched players across the two by name and labelled a player “selected” if his name appeared in any World Cup squad up to 2022. I then set aside the columns that do not measure performance (name, club, league, position, nationality, birth year and rank) and five rows with missing data, leaving 2,847 players described by 30 numerical statistics.',
               'One fifth of the players were held back for testing, with the same proportion of selected players as the rest. Two models learned from the remaining four fifths: a logistic regression, which is simple and easy to interpret, and a random forest, which can capture more complex patterns. Each was then asked to classify test players it had never seen.',
             ],
           },
@@ -803,17 +806,52 @@
         ],
       },
       {
+        id: 'labels',
+        label: 'The labels',
+        number: '04',
+        title: 'Looking again at what “selected” means',
+        blocks: [
+          {
+            type: 'text',
+            paragraphs: [
+              'A model can only learn what its labels say, so I went back and checked them: which players were called selected, which were not, and whether that matched reality.',
+            ],
+          },
+          {
+            type: 'findings',
+            implicationLabel: 'What it means',
+            items: [
+              {
+                question: 'Did every squad player get labelled?',
+                answer: 'No. 531 entries in the squad list have no first name, because the player is known by one name, such as Rodri, Pedri, Casemiro or Alisson, so an exact first-and-last-name match could never find them. Accents and spellings split others, such as Ritsu Doan and Jérémy Doku. About 40 players named in World Cup squads were labelled not selected.',
+                implication: 'some of the “not selected” players were in fact selected, which blurs exactly the difference the models were asked to learn.',
+              },
+              {
+                question: 'Could a name match the wrong player?',
+                answer: 'Yes. Eight players were matched to squads from before they were sixteen, among them a player born in 2001 matched to a squad from 1950.',
+                implication: 'matching should use player identifiers and dates, not names alone.',
+              },
+              {
+                question: 'Could every player have been selected?',
+                answer: 'No. Players from countries that did not qualify could never be labelled selected, whatever their statistics: Norway’s Erling Haaland and Martin Ødegaard, for instance.',
+                implication: 'the label measures whether a country reached the World Cup as much as how a player performed.',
+              },
+            ],
+          },
+        ],
+      },
+      {
         id: 'limits',
         label: 'Limits',
-        number: '04',
+        number: '05',
         title: 'What the result shows, and what it cannot',
         blocks: [
           {
             type: 'text',
             paragraphs: [
-              'The answer to the question is no: club statistics alone cannot reliably identify who is selected. Reporting recall alongside accuracy made that visible; accuracy alone would have hidden it.',
-              'Several limits come from the data. Only about one player in six is labelled selected, which pulls both models toward predicting “not selected”. The labels come from World Cup squads spanning many decades and are matched by name, while the statistics describe a single, later season. And much of what coaches weigh is absent from the data altogether: tactical fit, injuries, leadership and reputation.',
-              'A stronger version would label players from national team call-ups in the same season, add position and team strength, and use methods that correct for the imbalance between the two groups.',
+              'On this data, with this definition of “selected”, neither model could pick out the selected players: they found 6 and 8 of 98. That is a finding about these two models and these labels. It does not show that club statistics cannot predict selection in general.',
+              'Three things limit what the test can show. The timing runs backwards: the statistics come from a season after the squads were chosen. The labels are noisy: matched by name across nearly a century of squads, and impossible for players whose countries did not qualify. And only about one player in six is labelled selected, which pulls both models toward predicting “not selected”, so recall, not accuracy, is the measure to watch. Much of what coaches weigh is absent from the data altogether: tactical fit, injuries, leadership and reputation.',
+              'A fair test would run forwards: statistics from one season against the squads chosen after it, such as 2023–24 form against the 2026 World Cup squads, now that they are known. It would match players by identifier, compare only players whose countries could pick them, add position and team strength, and correct for the imbalance between the two groups.',
             ],
           },
         ],
@@ -826,7 +864,7 @@
           {
             type: 'text',
             paragraphs: [
-              'The project showed me how easily a number can pass for an answer. A model that explains its own shortcomings taught me more than a high score would have, and the same discipline applies in the studio: look closely, test assumptions, and state plainly what the work does and does not show.',
+              'The project showed me how easily a number can pass for an answer, and how much of that answer is decided before any model runs, by what the data calls a yes and a no. A model that explains its own shortcomings taught me more than a high score would have, and the same discipline applies in the studio: look closely, test assumptions, and state plainly what the work does and does not show.',
             ],
           },
           { type: 'link', text: 'See the notebook and report on GitHub', url: 'https://github.com/naf1ss/Sami_SoccerPotentialNationalTeam' },
