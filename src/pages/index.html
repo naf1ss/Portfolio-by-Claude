@@ -22,7 +22,7 @@ scripts: intro-utils, works-utils, works-data, works-photography, hero-window-ut
       <div class="hero__foot">
         <p class="hero__lede">Fun fact: I am ambidextrous.</p>
         <div class="hero__actions">
-          <a class="button button--solid" href="gallery.html">Take a look</a>
+          <a class="button button--solid" href="gallery.html">Explore</a>
         </div>
       </div>
       <p class="hero__credit">
@@ -49,6 +49,14 @@ scripts: intro-utils, works-utils, works-data, works-photography, hero-window-ut
         <a class="text-link" href="gallery.html">All work &rarr;</a>
       </div>
       <div class="latest" id="latest"></div>
+    </section>
+
+    <section class="wrap section" id="selected-section" aria-labelledby="selected-heading" hidden>
+      <div class="section__head" data-reveal-on-load>
+        <h2 class="eyebrow" id="selected-heading">Selected work</h2>
+        <a class="text-link" href="gallery.html">All work &rarr;</a>
+      </div>
+      <ul class="gallery" id="selected"></ul>
     </section>
 
     <section class="wrap section" aria-labelledby="mediums-heading">

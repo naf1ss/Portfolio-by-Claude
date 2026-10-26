@@ -400,6 +400,15 @@ test('NOTE_TOPICS starts with the friendliest default', () => {
   assert.equal(ContactUtils.NOTE_TOPICS[0], 'Just saying hello');
 });
 
+test('catalogue: every selected work on the home page exists, once', () => {
+  const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
+  const ids = [...(/selectedIds:\s*\[([^\]]*)\]/.exec(source) || [, ''])[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
+  assert.ok(ids.length > 0, 'selectedIds not found');
+  const known = new Set(WORKS.map((record) => record.id));
+  ids.forEach((id) => assert.ok(known.has(id), `selectedIds: ${id} is not in the catalogue`));
+  assert.equal(new Set(ids).size, ids.length, 'selectedIds lists a work twice');
+});
+
 test('catalogue: the latest work and every medium pick in the config exist and match their medium', () => {
   const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
   const byId = new Map(WORKS.map((record) => [record.id, record]));

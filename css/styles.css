@@ -6047,6 +6047,19 @@ body[data-gallery-view='wall'] .medium-capsule {
   padding-block: clamp(2rem, 6vw, 4.5rem) clamp(1.75rem, 4vw, 3rem);
 }
 
+.resume-head__files {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+@media (min-width: 40.0625rem) {
+  .resume-head__files {
+    align-items: flex-end;
+  }
+}
+
 .resume-head__name {
   max-width: 14ch;
   font-size: clamp(2.6rem, 1.5rem + 5vw, 5.5rem);

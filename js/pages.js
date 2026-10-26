@@ -80,6 +80,13 @@
       { counts, pickFor: (id) => pickByCategory.get(id) || null }
     );
 
+    // Selected work: a hand-picked grid after the latest work; each picture opens in the gallery's close-up.
+    const selected = (config.selectedIds || []).map((id) => byId.get(id)).filter(Boolean);
+    if (selected.length) {
+      document.getElementById('selected-section').hidden = false;
+      window.Gallery.renderGallery(document.getElementById('selected'), selected, { hrefFor, eagerCount: 0 });
+    }
+
     window.Motion.reveal(document.querySelectorAll('#latest > *'));
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
   }
@@ -423,7 +430,6 @@
   function initResume() {
     const links = document.getElementById('resume-links');
     links.hidden = renderContactLinks(links, { showValue: false }) === 0;
-    document.querySelector('[data-print]').addEventListener('click', () => window.print());
   }
 
   const pages = { home: initHome, gallery: initGallery, series: initSeries, projects: initProjects, contact: initContact, resume: initResume };

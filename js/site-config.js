@@ -17,6 +17,12 @@ window.SITE_CONFIG = {
   // The big "Latest work" feature on the home page.
   latestId: 'A041',
 
+  // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs
+  // and ceramics are shown in their own sections of the gallery; the six Horizon monotypes stay in their series.
+  selectedIds: [
+    'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A031', 'A014', 'A015',
+  ],
+
   // "Browse by medium" on the home page shows one work beside each medium. A visitor's first home page in a
   // session shows each `best`; after that every visit shows a random work from the same medium. A medium
   // without a `best` (photography) always shows a random one.
