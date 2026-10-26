@@ -89,6 +89,22 @@
 
     window.Motion.reveal(document.querySelectorAll('#latest > *'));
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
+
+    // First visit: point out the window in the header. On phones it lives in the menu.
+    if (window.Hints) {
+      const curtain = () =>
+        window.Hints.currentTheme() === 'dark' ? 'Open the curtain for light mode' : 'Close the curtain for dark mode';
+      window.Hints.show({
+        id: 'theme',
+        targets: [
+          { selector: '.site-header > .theme-toggle', text: curtain },
+          {
+            selector: '.menu-toggle',
+            text: () => (window.Hints.currentTheme() === 'dark' ? 'Light mode: open the curtain in the menu' : 'Dark mode: close the curtain in the menu'),
+          },
+        ],
+      });
+    }
   }
 
   // The gallery opens on paintings; ?c=all (or any other medium) is a click away.
@@ -261,6 +277,17 @@
     // When the filter was switched, rewrite the URL so ?c= matches what is shown.
     show(category, { updateUrl: switchedFilter, focusId: linkedId });
     if (linkedId) lightbox.open(linkedId, 'load');
+
+    // First visit, on the wall: point out the grid, the quicker way to look through everything.
+    if (window.Hints && showingWall() && !linkedId) {
+      window.Hints.show({
+        id: 'grid',
+        targets: [
+          { selector: '.view-switch--room [data-view="grid"]', text: 'Grid mode for a quick view' },
+          { selector: '.medium-capsule .view-switch [data-view="grid"]', text: 'Grid mode for a quick view' },
+        ],
+      });
+    }
   }
 
 

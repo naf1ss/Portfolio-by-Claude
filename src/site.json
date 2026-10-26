@@ -47,6 +47,7 @@
     {"file": "pull-cord"},
     {"file": "gallery-room", "requires": ["works-utils", "gallery-room-utils", "pull-cord"]},
     {"file": "contact-utils"},
+    {"file": "hints"},
     {"file": "pages", "requires": ["site-config", "contact-utils"]},
     {"file": "contact", "requires": ["contact-utils", "site-config"]},
     {"file": "resume-ledger"},
