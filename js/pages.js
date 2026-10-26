@@ -173,7 +173,6 @@
     const picks = new Map((config.mediumPicks || []).map((pick) => [pick.category, pick.best]));
     const picker = window.MediumPicker.create({
       options,
-      counts,
       thumbFor: (id) => (id === 'all' ? null : byId.get(picks.get(id)) || all.find((work) => work.category === id)),
       onSelect: (next) => show(next, { updateUrl: true }),
       onView: (next) => {

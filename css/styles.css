@@ -4537,14 +4537,6 @@ body[data-treatment='fog']::after {
   line-height: 1.05;
 }
 
-.placard__count {
-  color: var(--room-muted);
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
 .placard__chevron {
   align-self: center;
   width: 0.85rem;

@@ -2,7 +2,7 @@
  * The gallery's medium picker, in three forms that share one state:
  *
  *   letters   wide screens, grid view: the media lettered in small capitals, the current one underlined (no counts)
- *   placard   wide screens, wall view: "You are in Prints · 9 works" in the corner of the wall; it opens a
+ *   placard   wide screens, wall view: "You are in Prints" in the corner of the wall; it opens a
  *             menu of every medium with a small picture of each
  *   capsule   phones: a frosted-glass capsule whose bright pill slides to the current medium
  *
@@ -36,8 +36,6 @@
     Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, value));
     return node;
   }
-
-  const worksLabel = (count) => `${count} ${count === 1 ? 'work' : 'works'}`;
 
   /** A Wall / Grid switch, as two icons. `labels` renames a view ({ wall: 'Gallery' }). */
   function createViewSwitch(className, labels = {}) {
@@ -77,12 +75,11 @@
 
   /**
    * options.options   [{ id, label }] in display order
-   * options.counts    works per option id
    * options.thumbFor  (id) => the work pictured beside that option in the placard's menu (or null)
    * options.onSelect  (id) => void
    * options.onView    ('wall' | 'grid') => void
    */
-  function create({ options, counts, thumbFor, onSelect, onView }) {
+  function create({ options, thumbFor, onSelect, onView }) {
     const choices = []; // every medium button in every form, for keeping them in step
 
     function addChoice(node, id) {
@@ -121,16 +118,15 @@
     const eyebrow = element('p', 'placard__eyebrow', 'You are in');
     const opener = button('placard__button', { 'aria-expanded': 'false', 'aria-haspopup': 'true' });
     const name = element('span', 'placard__name');
-    const count = element('span', 'placard__count');
     opener.innerHTML = '<svg class="placard__chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
-    opener.prepend(name, count);
+    opener.prepend(name);
     const menu = element('div', 'placard-menu');
     menu.id = 'placard-menu';
     menu.hidden = true;
     opener.setAttribute('aria-controls', menu.id);
     options.forEach(({ id, label }) => {
       const choice = addChoice(button('placard-menu__item'), id);
-      choice.append(createThumb(thumbFor(id)), element('b', undefined, label), element('small', undefined, String(counts[id])));
+      choice.append(createThumb(thumbFor(id)), element('b', undefined, label));
       menu.append(choice);
     });
     placard.append(eyebrow, opener, menu);
@@ -197,7 +193,6 @@
         choices.forEach((choice) => choice.setAttribute('aria-pressed', String(choice.dataset.category === activeId)));
         const option = options.find(({ id }) => id === activeId);
         name.textContent = option ? option.label : '';
-        count.textContent = worksLabel(counts[activeId] || 0);
         placePill(placed);
         placed = true;
       },
