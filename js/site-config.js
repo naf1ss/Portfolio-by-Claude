@@ -23,8 +23,8 @@ window.SITE_CONFIG = {
     'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
   ],
 
-  // Kept off the gallery's grid view, but still hung on the wall and shown in their series: two of the three
-  // still-life drawings, which only make sense beside the others.
+  // Kept off the gallery's grid view, but still hung on the wall and shown in Three Ways of Seeing: two of
+  // the three still-life drawings, which only make sense beside the others.
   gridHiddenIds: ['A008', 'A009'],
 
   // "Browse by medium" on the home page shows one work beside each medium. A visitor's first home page in a

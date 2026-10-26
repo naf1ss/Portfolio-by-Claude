@@ -47,7 +47,7 @@ const PAGES = [
   { url: 'gallery.html?c=photography', tap: ['#photo-grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
   { url: 'series.html', tap: ['.ticker'] },
   { url: 'series.html?s=eiffel-tower' },
-  { url: 'series.html?s=still-life', tap: ['#gallery .tile'] },
+  { url: 'series.html?s=cross-wired', tap: ['#gallery .tile'] },
   { url: 'series.html?s=negligible', tap: ['.exhibit__link', '.series-back .view-switch button'] },
   { url: 'series.html?s=negligible', tap: ['.exhibit__grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
   { url: 'series.html?s=through-the-window' },

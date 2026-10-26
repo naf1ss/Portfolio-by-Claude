@@ -1,7 +1,7 @@
 /**
  * The gallery's medium picker, in three forms that share one state:
  *
- *   letters   wide screens, grid view: the media lettered in small capitals, the current one underlined
+ *   letters   wide screens, grid view: the media lettered in small capitals, the current one underlined (no counts)
  *   placard   wide screens, wall view: "You are in Prints · 9 works" in the corner of the wall; it opens a
  *             menu of every medium with a small picture of each
  *   capsule   phones: a frosted-glass capsule whose bright pill slides to the current medium
@@ -96,7 +96,7 @@
     const letters = element('ul', 'medium-letters');
     options.forEach(({ id, label }) => {
       const choice = addChoice(button('medium-letters__item'), id);
-      choice.append(label, element('sup', undefined, String(counts[id])));
+      choice.append(label);
       const item = element('li');
       item.append(choice);
       letters.append(item);
@@ -110,7 +110,7 @@
     track.append(pill);
     options.forEach(({ id, label }) => {
       const choice = addChoice(button('medium-capsule__item'), id);
-      choice.append(label, element('small', undefined, String(counts[id])));
+      choice.append(label);
       track.append(choice);
     });
     const capsuleViews = createViewSwitch('view-switch--glass');
