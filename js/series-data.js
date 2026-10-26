@@ -49,6 +49,20 @@
     hangTogether: true,
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
+  {
+    id: 'stage-light',
+    title: 'Stage Light',
+    medium: 'Photography',
+    note: 'Dancers on a dark stage, each held in a pool of coloured light.',
+    workIds: ['photo-0572', 'photo-0575', 'photo-0579', 'photo-0586', 'photo-0588', 'photo-0594', 'photo-0597', 'photo-0606', 'photo-0609', 'photo-0611'],
+  },
+  {
+    id: 'through-the-window',
+    title: 'Through the Window',
+    medium: 'Photography',
+    note: 'Windows, doorways and openings, and the light or the view on the other side of them.',
+    workIds: ['photo-0085', 'photo-0086', 'photo-0087', 'photo-0110', 'photo-0132', 'photo-0143', 'photo-0145', 'photo-0084', 'photo-0150', 'photo-0441', 'photo-0447'],
+  },
   { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A028', 'A007', 'A008', 'A009'] },
   {
     id: 'mugs',

@@ -283,9 +283,40 @@ test('series: listed ids all exist and keep their order', () => {
 });
 
 test('series: a category + year rule collects only matching works', () => {
-  const found = U.worksInSeries({ category: 'photography', year: 2022 }, WORKS);
+  const found = U.worksInSeries({ category: 'photography', year: 2025 }, WORKS);
   assert.ok(found.length > 0);
-  assert.ok(found.every((w) => w.category === 'photography' && w.year === 2022));
+  assert.ok(found.every((w) => w.category === 'photography' && w.year === 2025));
+});
+
+test('photography: every photograph belongs to a series, so none is shown without one', () => {
+  const inSeries = new Set(SERIES.flatMap((series) => series.workIds || []));
+  const orphans = PHOTOS.filter((photo) => !inSeries.has(photo.id)).map((photo) => photo.id);
+  assert.deepEqual(orphans, []);
+});
+
+test('photography: each frame is titled by its series and place in it', () => {
+  const rolls = U.photographyRolls(SERIES, WORKS);
+  rolls.forEach(({ series, works }) => {
+    works.forEach((work, index) => {
+      assert.equal(work.title, `${series.title}, ${index + 1} of ${works.length}`);
+    });
+  });
+});
+
+test('photographyRolls: keeps only series made of photographs, with their frames in series order', () => {
+  const photo = (id) => work({ id, category: 'photography' });
+  const painting = work({ id: 'p1', category: 'painting' });
+  const works = [photo('a'), photo('b'), photo('c'), painting];
+  const rolls = U.photographyRolls(
+    [
+      { id: 'roll', title: 'Roll', workIds: ['c', 'a'] },
+      { id: 'mixed', title: 'Mixed', workIds: ['a', 'p1'] },
+      { id: 'empty', title: 'Empty', workIds: ['missing'] },
+    ],
+    works
+  );
+  assert.deepEqual(rolls.map((roll) => roll.series.id), ['roll']);
+  assert.deepEqual(rolls[0].works.map((w) => w.id), ['c', 'a']);
 });
 
 test('series: meta line gives the count and the year or span of years', () => {

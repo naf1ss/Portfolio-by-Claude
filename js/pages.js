@@ -27,16 +27,21 @@
     return document.querySelector(`a[data-work-id="${workId}"] .tile__image`);
   }
 
-  /** Creates the viewer for a gallery list and opens it when a tile is clicked. */
-  function mountViewer(list, options = {}) {
-    const lightbox = window.Lightbox.create(document.getElementById('viewer'), { findOrigin: findTileImage, ...options });
-    list.addEventListener('click', (event) => {
+  /** Opens the viewer when a work's link inside `host` is clicked (modified clicks keep their usual meaning). */
+  function openOnClick(host, lightbox) {
+    host.addEventListener('click', (event) => {
       const link = event.target.closest('a[data-work-id]');
       const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
       if (!link || event.defaultPrevented || event.button !== 0 || modified) return;
       event.preventDefault();
       lightbox.open(link.dataset.workId, 'user');
     });
+  }
+
+  /** Creates the viewer for a gallery list and opens it when a tile is clicked. */
+  function mountViewer(list, options = {}) {
+    const lightbox = window.Lightbox.create(document.getElementById('viewer'), { findOrigin: findTileImage, ...options });
+    openOnClick(list, lightbox);
     return lightbox;
   }
 
@@ -133,6 +138,10 @@
         if (showingWall()) room.goTo(work.id, { animate: false });
       },
     });
+    // Photography is shown as one roll per series, not as a grid or a wall.
+    const rollsBox = document.getElementById('rolls');
+    openOnClick(rollsBox, lightbox);
+    let rolls = null;
     room = window.GalleryRoom.create(document.getElementById('room'), {
       series: window.PORTFOLIO_SERIES || [],
       onOpenWork: (id) => lightbox.open(id, 'user'),
@@ -167,11 +176,22 @@
       category = next;
       const visible = U.filterWorks(all, category);
       const wall = showingWall();
-      list.hidden = wall;
+      const showingRolls = category === 'photography';
+      list.hidden = wall || showingRolls;
+      rollsBox.hidden = !showingRolls;
       // The CSS places the picker by this: on the wall, or above the grid.
       document.body.dataset.galleryView = wall ? 'wall' : 'grid';
 
-      if (wall) {
+      if (showingRolls) {
+        room.hide();
+        list.replaceChildren();
+        if (!rolls) {
+          rolls = U.photographyRolls(window.PORTFOLIO_SERIES || [], all);
+          window.Gallery.renderRolls(rollsBox, rolls, { hrefFor: (work) => U.hashForWork(work) });
+          window.Motion.reveal(rollsBox.children);
+        }
+        lightbox.setWorks(rolls.flatMap((roll) => roll.works));
+      } else if (wall) {
         list.replaceChildren();
         room.show(visible, { focusId });
         lightbox.setWorks(room.order());

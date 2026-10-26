@@ -276,6 +276,17 @@
     return chosen;
   }
 
+  /**
+   * The photography section is shown a series at a time ("rolls"): every series made only of photographs,
+   * in series order, with its frames in the order the series lists them. Photographs outside any series are
+   * not shown there.
+   */
+  function photographyRolls(seriesList, works) {
+    return seriesList
+      .map((series) => ({ series, works: worksInSeries(series, works) }))
+      .filter(({ works: frames }) => frames.length > 0 && frames.every((work) => work.category === 'photography'));
+  }
+
   return {
     IMAGE_ROOT,
     SIZE_SUFFIXES,
@@ -300,6 +311,7 @@
     workIdFromHash,
     hashForWork,
     worksInSeries,
+    photographyRolls,
     seriesMeta,
     seriesMedium,
     yearSpan,

@@ -87,6 +87,91 @@
     list.replaceChildren(...tiles);
   }
 
+  // ---------- Photography rolls ----------
+  // Each series is a roll of film laid out on a light table: its title and note, then its frames in one
+  // sideways strip, numbered the way a contact sheet numbers them.
+
+  const ROLL_SIZES = '(min-width: 700px) 24rem, 70vw';
+
+  function pad2(number) {
+    return String(number).padStart(2, '0');
+  }
+
+  function rollButton(direction) {
+    const button = element('button', `roll__step roll__step--${direction}`);
+    button.type = 'button';
+    button.setAttribute('aria-label', direction === 'prev' ? 'Previous photographs' : 'Next photographs');
+    button.append(element('span', undefined, direction === 'prev' ? '←' : '→'));
+    return button;
+  }
+
+  function createFrame(work, position, { hrefFor, eager }) {
+    const item = element('li', 'roll__frame');
+    item.style.setProperty('--ar', U.aspectRatio(work));
+    const link = element('a', 'tile');
+    link.href = hrefFor(work);
+    link.dataset.workId = work.id;
+    link.setAttribute('aria-label', U.accessibleName(work, position));
+    const frame = element('span', 'tile__frame');
+    frame.append(createImage(work, { eager, sizes: ROLL_SIZES }));
+    link.append(frame);
+    item.append(link, element('span', 'roll__no', pad2(position)));
+    return item;
+  }
+
+  /** Steps the strip by most of its width, disables the arrows at its ends and draws how far along it is. */
+  function wireRoll(strip, prev, next, progress) {
+    const update = () => {
+      const max = strip.scrollWidth - strip.clientWidth;
+      prev.disabled = strip.scrollLeft <= 1;
+      next.disabled = strip.scrollLeft >= max - 1;
+      // the share of the strip that has come into view so far
+      const seen = (strip.scrollLeft + strip.clientWidth) / strip.scrollWidth;
+      progress.style.setProperty('--seen', seen.toFixed(3));
+    };
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const step = (direction) =>
+      strip.scrollBy({ left: direction * strip.clientWidth * 0.8, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    strip.addEventListener('scroll', update, { passive: true });
+    // Measures once the strip is on the page and again whenever its size changes.
+    new ResizeObserver(update).observe(strip);
+  }
+
+  function createRoll({ series, works }, number, { hrefFor }) {
+    const section = element('section', 'roll');
+    const heading = element('h2', 'roll__title', series.title);
+    heading.id = `roll-${series.id}`;
+    section.setAttribute('aria-labelledby', heading.id);
+
+    const prev = rollButton('prev');
+    const next = rollButton('next');
+    const head = element('header', 'roll__head');
+    const text = element('div', 'roll__text');
+    text.append(element('span', 'roll__index', pad2(number)), heading);
+    if (series.note) text.append(element('p', 'roll__note', series.note));
+    const controls = element('div', 'roll__controls');
+    controls.append(element('span', 'roll__count', `${works.length} frames`), prev, next);
+    head.append(text, controls);
+
+    const strip = element('ul', 'roll__strip');
+    strip.tabIndex = 0;
+    strip.setAttribute('aria-label', `${series.title}, ${works.length} photographs. Scrolls sideways.`);
+    strip.append(...works.map((work, i) => createFrame(work, i + 1, { hrefFor, eager: i < 3 })));
+
+    const progress = element('span', 'roll__progress');
+    progress.setAttribute('aria-hidden', 'true');
+    section.append(head, strip, progress);
+    wireRoll(strip, prev, next, progress);
+    return section;
+  }
+
+  /** Replaces the contents of `container` with one roll per series; `rolls` comes from U.photographyRolls. */
+  function renderRolls(container, rolls, { hrefFor }) {
+    container.replaceChildren(...rolls.map((roll, i) => createRoll(roll, i + 1, { hrefFor })));
+  }
+
   /**
    * "Browse by medium" on the home page: one row per medium with its name, a small picture of one of its works
    * and how many works it holds. `pickFor(categoryId)` returns that work (or null for a row without one).
@@ -193,5 +278,5 @@
     });
   }
 
-  window.Gallery = { renderGallery, renderLatest, renderMediumList, renderSeriesList };
+  window.Gallery = { renderGallery, renderRolls, renderLatest, renderMediumList, renderSeriesList };
 })();

@@ -3346,6 +3346,169 @@ html {
   font-size: var(--step--1);
 }
 
+/* ---------- Photography rolls ----------
+   A series of photographs is laid out like a roll on a light table: a black strip that scrolls sideways, every
+   frame at one height and numbered underneath, with the series' name and note above it. The strip stays dark in
+   both themes, the way photographs are best viewed. */
+.rolls {
+  display: grid;
+  gap: clamp(3.5rem, 8vw, 7rem);
+  padding-block: clamp(0.5rem, 2vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+}
+
+.roll__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.roll__text {
+  max-width: 42rem;
+}
+
+.roll__index {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.roll__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 400;
+  line-height: 1.05;
+  overflow-wrap: break-word;
+}
+
+.roll__note {
+  max-width: 34rem;
+  margin: 0.7rem 0 0;
+  font-family: var(--font-prose);
+  font-size: var(--step-1);
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.roll__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roll__count {
+  margin-right: 0.75rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.roll__step {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease), color 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.roll__step:not(:disabled):hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.roll__step:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.roll__strip {
+  --roll-h: clamp(17rem, 62vh, 34rem);
+  --roll-pad: clamp(1rem, 2.5vw, 1.75rem);
+  display: flex;
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  margin: 0;
+  padding: var(--roll-pad);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--roll-pad);
+  scrollbar-width: none;
+  list-style: none;
+  background: #0e0e10;
+  color: #fff;
+}
+
+.roll__strip::-webkit-scrollbar {
+  display: none;
+}
+
+.roll__strip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.roll__frame {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.roll__frame .tile__frame {
+  height: var(--roll-h);
+  aspect-ratio: var(--ar);
+  background: #1a1a1d;
+}
+
+.roll__frame .tile__image {
+  height: 100%;
+  object-fit: cover;
+}
+
+.roll__no {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+
+/* A hairline under the strip: how much of the roll has come into view. */
+.roll__progress {
+  display: block;
+  height: 2px;
+  margin-top: 0.9rem;
+  background: var(--rule);
+}
+
+.roll__progress::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transform: scaleX(var(--seen, 0));
+  transform-origin: left;
+  transition: transform 0.25s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roll__progress::after {
+    transition: none;
+  }
+}
+
 /* ---------- Home: latest work ---------- */
 .latest {
   display: grid;
@@ -3811,7 +3974,8 @@ body[data-gallery-view='wall'] .medium-capsule {
     display: flex;
   }
 
-  body[data-gallery-view='grid'] #gallery {
+  body[data-gallery-view='grid'] #gallery,
+  body[data-gallery-view='grid'] #rolls {
     padding-top: 4.5rem;
   }
 }
