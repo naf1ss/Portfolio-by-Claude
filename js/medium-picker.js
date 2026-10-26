@@ -39,12 +39,13 @@
 
   const worksLabel = (count) => `${count} ${count === 1 ? 'work' : 'works'}`;
 
-  /** A Wall / Grid switch, as two icons. */
-  function createViewSwitch(className) {
+  /** A Wall / Grid switch, as two icons. `labels` renames a view ({ wall: 'Gallery' }). */
+  function createViewSwitch(className, labels = {}) {
     const group = element('div', `view-switch ${className}`);
     group.setAttribute('role', 'group');
     group.setAttribute('aria-label', 'View');
-    VIEWS.forEach(({ id, label }) => {
+    VIEWS.forEach(({ id, label: defaultLabel }) => {
+      const label = labels[id] || defaultLabel;
       const choice = button('view-switch__button', { 'data-view': id, 'aria-pressed': 'false', 'aria-label': label });
       choice.innerHTML = ICONS[id];
       choice.title = label;
@@ -202,14 +203,14 @@
       },
       /**
        * `available`: false for media that only show as a grid.
-       * `labels`: names to use instead of "Wall" / "Grid" (photography's first view is its series).
+       * `labels`: names to use instead of "Wall" / "Grid" (photography calls its first view "Gallery").
        */
       setView(view, { available, labels = {} }) {
         viewSwitches.forEach((group) => {
           group.hidden = !available;
+          pressView(group, view);
           group.querySelectorAll('[data-view]').forEach((choice) => {
             const label = labels[choice.dataset.view] || VIEWS.find(({ id }) => id === choice.dataset.view).label;
-            choice.setAttribute('aria-pressed', String(choice.dataset.view === view));
             choice.setAttribute('aria-label', label);
             choice.title = label;
           });
@@ -220,5 +221,12 @@
     };
   }
 
-  window.MediumPicker = { create };
+  /** Sets which view of a switch is pressed. */
+  function pressView(group, view) {
+    group.querySelectorAll('[data-view]').forEach((choice) => {
+      choice.setAttribute('aria-pressed', String(choice.dataset.view === view));
+    });
+  }
+
+  window.MediumPicker = { create, createViewSwitch, pressView };
 })();

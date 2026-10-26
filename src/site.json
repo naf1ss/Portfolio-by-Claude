@@ -41,7 +41,7 @@
     {"file": "gallery"},
     {"file": "medium-picker", "requires": ["works-utils"]},
     {"file": "series-story", "requires": ["works-utils"]},
-    {"file": "photo-series", "requires": ["works-utils"]},
+    {"file": "photo-series", "requires": ["works-utils", "gallery"]},
     {"file": "lightbox"},
     {"file": "gallery-room-utils"},
     {"file": "pull-cord"},

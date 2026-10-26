@@ -90,7 +90,10 @@
   const VIEW_KEYS = { works: 'nuances.galleryView', photography: 'nuances.photographyView' };
   const viewGroupOf = (category) => (category === 'photography' ? 'photography' : 'works');
 
-  /** "wall" or "grid", remembered between visits. For photography "wall" is the series index. */
+  /**
+   * "wall" or "grid", remembered between visits. Photography calls "wall" its gallery: the index of series and,
+   * inside a series, the room it is hung as. The photography choice is shared by both pages.
+   */
   function readGalleryView(group) {
     try {
       return localStorage.getItem(VIEW_KEYS[group]) === 'grid' ? 'grid' : 'wall';
@@ -141,10 +144,13 @@
         if (showingWall()) room.goTo(work.id, { animate: false });
       },
     });
-    // Photography is shown as an index of series, each opening its own room on the series page.
+    // Photography is shown as an index of series, each opening its own room on the series page, or as a grid.
     const photoBox = document.getElementById('photo-index');
+    const photoGrid = document.getElementById('photo-grid');
+    openOnClick(photoGrid, lightbox);
     const photoSeries = U.photographySeries(window.PORTFOLIO_SERIES || [], all);
     let photoIndex = null;
+    let photoGridDrawn = false;
     room = window.GalleryRoom.create(document.getElementById('room'), {
       series: window.PORTFOLIO_SERIES || [],
       onOpenWork: (id) => lightbox.open(id, 'user'),
@@ -181,27 +187,32 @@
       const visible = U.filterWorks(all, category);
       const wall = showingWall();
       const showingPhotos = category === 'photography';
-      const showingSeries = showingPhotos && currentView() === 'wall';
-      list.hidden = wall || showingSeries;
-      photoBox.hidden = !showingSeries;
-      if (!showingSeries && photoIndex) photoIndex.reset();
+      const showingIndex = showingPhotos && currentView() === 'wall';
+      list.hidden = wall || showingPhotos;
+      photoBox.hidden = !showingIndex;
+      photoGrid.hidden = !showingPhotos || showingIndex;
+      if (!showingIndex && photoIndex) photoIndex.reset();
       // The CSS places the picker by this: on the wall, or above the grid.
       document.body.dataset.galleryView = wall ? 'wall' : 'grid';
 
       if (showingPhotos) {
         room.hide();
+        list.replaceChildren();
         // Both views keep the photographs in series order, so the close-up steps through them the same way.
         const photographs = photoSeries.flatMap((entry) => entry.works);
-        if (showingSeries) {
-          list.replaceChildren();
+        if (showingIndex) {
           if (!photoIndex) {
             photoIndex = window.PhotoSeries.renderIndex(photoBox, photoSeries, {
               hrefFor: (series) => `series.html?s=${series.id}`,
             });
             window.Motion.reveal(photoBox.querySelectorAll('.pindex__lede, .pindex__line'));
           }
-        } else {
-          window.Gallery.renderGallery(list, photographs, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
+        } else if (!photoGridDrawn) {
+          window.PhotoSeries.renderSeriesGrid(photoGrid, photoSeries, {
+            hrefFor: (series) => `series.html?s=${series.id}`,
+            hrefForWork: (work) => U.hashForWork(work),
+          });
+          photoGridDrawn = true;
         }
         lightbox.setWorks(photographs);
       } else if (wall) {
@@ -219,7 +230,7 @@
       picker.setActive(category);
       picker.setView(currentView(), {
         available: RoomUtils.isWallCategory(category) || showingPhotos,
-        labels: showingPhotos ? { wall: 'Series' } : {},
+        labels: showingPhotos ? { wall: 'Gallery' } : {},
       });
       if (photographer) photographer.classList.toggle('is-shown', category === 'photography');
 
@@ -281,17 +292,38 @@
       back.querySelector('a').href = indexHref;
       back.querySelector('a').textContent = '← Photography';
       roomBox.hidden = false;
-      window.PhotoSeries.renderRoom(
-        roomBox,
-        chosen,
-        {
-          number: photoPlace + 1,
-          total: photoSeries.length,
-          previous: photoSeries[photoPlace - 1] || null,
-          next: photoSeries[photoPlace + 1] || photoSeries[0],
-        },
-        { hrefFor: (entry) => `series.html?s=${entry.id}`, hrefForWork: (work) => U.hashForWork(work), indexHref }
-      );
+
+      // The same Gallery / Grid choice as the Photography page: the series as its room, or as a plain grid.
+      const place = {
+        number: photoPlace + 1,
+        total: photoSeries.length,
+        previous: photoSeries[photoPlace - 1] || null,
+        next: photoSeries[photoPlace + 1] || photoSeries[0],
+      };
+      const switcher = window.MediumPicker.createViewSwitch('view-switch--corner', { wall: 'Gallery' });
+      back.classList.add('series-back--views');
+      back.append(switcher);
+      let view = readGalleryView('photography');
+      let hung = null;
+      const hang = () => {
+        if (hung) hung.destroy();
+        hung = window.PhotoSeries.renderRoom(roomBox, chosen, place, {
+          hrefFor: (entry) => `series.html?s=${entry.id}`,
+          hrefForWork: (work) => U.hashForWork(work),
+          indexHref,
+          view,
+        });
+        window.MediumPicker.pressView(switcher, view);
+      };
+      switcher.addEventListener('click', (event) => {
+        const choice = event.target.closest('button[data-view]');
+        if (!choice || choice.dataset.view === view) return;
+        view = choice.dataset.view;
+        saveGalleryView('photography', view);
+        window.scrollTo(0, 0);
+        hang();
+      });
+      hang();
       const roomViewer = mountViewer(roomBox);
       roomViewer.setWorks(works);
       const linkedPhoto = U.workIdFromHash(location.hash, works);

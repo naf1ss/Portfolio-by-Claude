@@ -16,7 +16,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=d3704cf6">
+  <link rel="stylesheet" href="css/styles.css?v=7cdd5572">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=4d7d19d8"></script>
   <script src="js/site-menu.js?v=c4e21e99"></script>
@@ -29,14 +29,14 @@
   <script src="js/painted-text.js?v=652abef6" defer></script>
   <script src="js/site-config.js?v=c5626850" defer></script>
   <script src="js/gallery.js?v=6f1340fe" defer></script>
-  <script src="js/medium-picker.js?v=ddb664af" defer></script>
-  <script src="js/photo-series.js?v=b13a0a6c" defer></script>
+  <script src="js/medium-picker.js?v=e512e5f2" defer></script>
+  <script src="js/photo-series.js?v=85f82f8d" defer></script>
   <script src="js/lightbox.js?v=a23e7a2c" defer></script>
   <script src="js/gallery-room-utils.js?v=2e33c951" defer></script>
   <script src="js/pull-cord.js?v=1ea340c3" defer></script>
   <script src="js/gallery-room.js?v=bcfdd72b" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
-  <script src="js/pages.js?v=4afd564d" defer></script>
+  <script src="js/pages.js?v=c9975961" defer></script>
   <script src="js/interactions.js?v=3cfe50da" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -111,6 +111,8 @@
     <ul class="gallery" id="gallery"></ul>
     <!-- Photography is shown a series at a time: an index of series (js/photo-series.js), each opening its own room. -->
     <div class="pindex" id="photo-index" hidden></div>
+    <!-- ... or as a grid: each series with its name and statement above all of its photographs. -->
+    <div class="pgrid" id="photo-grid" hidden></div>
     <noscript><p class="muted">Please enable JavaScript to view the gallery.</p></noscript>
     </div>
     <!-- The gallery room (js/gallery-room.js) is built here for paintings, drawings and prints. -->

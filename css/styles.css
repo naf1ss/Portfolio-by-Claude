@@ -1315,6 +1315,17 @@ button:focus-visible > .roll .roll__face + .roll__face {
   text-transform: uppercase;
 }
 
+.series-back--views {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.series-back--views .view-switch {
+  margin-right: -0.5rem; /* the icons' own padding, so they end at the page edge */
+}
+
 .series-back[hidden] + .page-title {
   padding-top: clamp(2rem, 6vw, 5rem);
 }
@@ -3556,7 +3567,8 @@ html {
   padding-top: clamp(1rem, 3vw, 2rem);
 }
 
-.exhibit__kicker {
+.exhibit__kicker,
+.pgrid__kicker {
   margin: 0 0 0.9rem;
   font-size: var(--step--1);
   font-weight: 700;
@@ -3573,7 +3585,8 @@ html {
   overflow-wrap: break-word;
 }
 
-.exhibit__statement {
+.exhibit__statement,
+.pgrid__note {
   max-width: 36rem;
   margin: 1.4rem 0 0;
   font-family: var(--font-prose);
@@ -3630,6 +3643,45 @@ html {
 .js-motion .exhibit__frame:not(.is-in) {
   opacity: 0;
   transform: translateY(2.5rem);
+}
+
+/* Photography as a grid: each series with its name and statement above all of its photographs. */
+.pgrid {
+  padding-block: clamp(0.5rem, 2vw, 1.5rem) clamp(3rem, 8vw, 6rem);
+}
+
+.pgrid__series + .pgrid__series {
+  margin-top: clamp(4.5rem, 11vw, 9rem);
+}
+
+.pgrid__head {
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
+}
+
+.pgrid__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 400;
+  line-height: 1.05;
+  overflow-wrap: break-word;
+}
+
+.pgrid__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pgrid__title a:hover,
+.pgrid__title a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.14em;
+}
+
+/* A series page shown as a grid keeps its words; the photographs follow plainly. */
+.exhibit__grid {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
 }
 
 /* The way on: the next room large, the previous room and the index small. */
@@ -4711,9 +4763,20 @@ body[data-gallery-view='wall'] .medium-capsule {
     padding-top: 4.5rem;
   }
 
+  /* Starts with a small heading, which needs more room under the capsule than a picture does. */
+  body[data-gallery-view='grid'] #photo-grid {
+    padding-top: 5.75rem;
+  }
+
   /* One work to a row, as wide as the screen, so the detail can be seen without opening it. */
   .gallery__item {
     flex-basis: 100%;
+  }
+
+  /* A finger-sized switch on a series page. */
+  .series-back--views .view-switch__button {
+    width: 2.75rem;
+    height: 2.75rem;
   }
 
 }

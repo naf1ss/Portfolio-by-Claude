@@ -4,8 +4,11 @@
  *   renderIndex   the Photography section of the gallery: one large line per series and no photographs, which
  *                 are kept for the rooms. Pointing at (or focusing) a line tints the whole page in that series'
  *                 room colour, so each room is announced by its light before it is entered.
+ *   renderSeriesGrid  the Photography section as a grid: each series with its name, its statement and all of
+ *                 its photographs together, one series after another
  *   renderRoom    one series on its own page, hung according to its idea. The series' `treatment`
- *                 (series-data.js) picks the hang; styles.css draws each one (.exhibit[data-treatment]):
+ *                 (series-data.js) picks the hang; styles.css draws each one (.exhibit[data-treatment]).
+ *                 With `view: 'grid'` the same page shows the series' photographs as a plain grid instead:
  *
  *     vast    Negligible: the title is set tiny in an empty screen; every photograph fills the screen alone
  *     light   The Light Hits: photographs wait in the dark and light up as they reach the middle of the screen
@@ -121,11 +124,14 @@
 
   // ---------- Room ----------
 
-  /** Adds `.is-in` as each frame comes into view (and `.is-lit` in the light room as it reaches the middle). */
+  /**
+   * Adds `.is-in` as each frame comes into view (and `.is-lit` in the light room as it reaches the middle).
+   * Returns a function that stops watching.
+   */
   function watchFrames(frames, treatment) {
     if (reduceMotion || !('IntersectionObserver' in window)) {
       frames.forEach((frame) => frame.classList.add('is-in', 'is-lit'));
-      return;
+      return () => {};
     }
     const arrive = new IntersectionObserver(
       (entries) =>
@@ -138,7 +144,7 @@
     );
     frames.forEach((frame) => arrive.observe(frame));
 
-    if (treatment !== 'light') return;
+    if (treatment !== 'light') return () => arrive.disconnect();
     // Light reaches a photograph once it crosses the middle band of the screen, and stays on it.
     // A frame that was scrolled straight past the band (a jump, a fast fling) is lit as well.
     const light = new IntersectionObserver(
@@ -152,6 +158,10 @@
       { rootMargin: '-38% 0px -38% 0px' }
     );
     frames.forEach((frame) => light.observe(frame));
+    return () => {
+      arrive.disconnect();
+      light.disconnect();
+    };
   }
 
   // How large each room's photographs are drawn, for the browser's choice of file.
@@ -201,8 +211,9 @@
     return { pass, stage, list, counter, total };
   }
 
+  /** Starts the sideways pass; returns a function that ends it (the page may switch to its grid). */
   function startPassing({ pass, stage, list, counter, total }) {
-    if (reduceMotion) return;
+    if (reduceMotion) return () => {};
     pass.classList.add('is-passing');
     const frames = [...list.children];
     let distance = 0;
@@ -230,11 +241,13 @@
       update();
     };
 
-    window.addEventListener('scroll', () => {
+    const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
-    }, { passive: true });
+    };
+    const resizes = new ResizeObserver(measure);
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', measure);
-    new ResizeObserver(measure).observe(list);
+    resizes.observe(list);
 
     // Tabbing to a photograph off to the side scrolls the page to the point where it passes the middle.
     list.addEventListener('focusin', (event) => {
@@ -245,14 +258,22 @@
       window.scrollTo({ top: pass.offsetTop + offset });
     });
     measure();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measure);
+      resizes.disconnect();
+      cancelAnimationFrame(raf);
+    };
   }
 
   /**
    * One series as a room. `place` is { number, total, previous, next } among the photography series, so the
    * room can say where it hangs and lead on to the next one.
    */
-  function renderRoom(container, { series, works }, place, { hrefFor, hrefForWork, indexHref }) {
-    const treatment = series.treatment || 'vast';
+  function renderRoom(container, { series, works }, place, { hrefFor, hrefForWork, indexHref, view = 'wall' }) {
+    const asGrid = view === 'grid';
+    // 'tiles' has no room styling: the page keeps its colour and its words, and shows the photographs plainly.
+    const treatment = asGrid ? 'tiles' : series.treatment || 'vast';
     const article = element('article', 'exhibit');
     article.dataset.treatment = treatment;
 
@@ -264,13 +285,23 @@
     if (series.note) intro.append(element('p', 'exhibit__statement', series.note));
     intro.append(element('p', 'exhibit__meta', countLine(works)));
 
-    const sizes = ROOM_SIZES[treatment] || DEFAULT_SIZES;
-    const list = element('ol', 'exhibit__frames');
-    const frames = works.map((work, i) =>
-      createFrame(work, i + 1, works.length, { hrefFor: hrefForWork, sizes, eager: i < 2 })
-    );
-    list.append(...frames);
-    const passing = treatment === 'window' ? hangPassing(list, works.length) : null;
+    let body;
+    let passing = null;
+    const ends = []; // what to undo when the page switches view
+    if (asGrid) {
+      body = element('ul', 'gallery exhibit__grid');
+      window.Gallery.renderGallery(body, works, { hrefFor: hrefForWork, eagerCount: 6 });
+    } else {
+      const sizes = ROOM_SIZES[treatment] || DEFAULT_SIZES;
+      const list = element('ol', 'exhibit__frames');
+      const frames = works.map((work, i) =>
+        createFrame(work, i + 1, works.length, { hrefFor: hrefForWork, sizes, eager: i < 2 })
+      );
+      list.append(...frames);
+      passing = treatment === 'window' ? hangPassing(list, works.length) : null;
+      body = passing ? passing.pass : list;
+      ends.push(watchFrames(frames, treatment));
+    }
 
     const nav = element('nav', 'exhibit__nav');
     nav.setAttribute('aria-label', 'More photography');
@@ -282,13 +313,39 @@
     rest.append(all);
     nav.append(rest);
 
-    article.append(intro, passing ? passing.pass : list, nav);
+    article.append(intro, body, nav);
     container.replaceChildren(article);
-    document.body.dataset.treatment = treatment;
-    watchFrames(frames, treatment);
-    if (passing) startPassing(passing);
-    return article;
+    if (asGrid) delete document.body.dataset.treatment;
+    else document.body.dataset.treatment = treatment;
+
+    // The passing view measures the frames, so it starts once they are in the page.
+    if (passing) ends.push(startPassing(passing));
+    return { destroy: () => ends.forEach((end) => end()) };
   }
 
-  window.PhotoSeries = { renderIndex, renderRoom, setMood };
+  // ---------- Grid ----------
+
+  /**
+   * The Photography section as a grid: for each series its name (a link to its room), its statement and then all
+   * of its photographs together in the site's ordinary grid.
+   */
+  function renderSeriesGrid(container, entries, { hrefFor, hrefForWork }) {
+    const sections = entries.map(({ series, works }, i) => {
+      const section = element('section', 'pgrid__series');
+      const heading = element('h2', 'pgrid__title');
+      const link = element('a', undefined, series.title);
+      link.href = hrefFor(series);
+      heading.append(link);
+      const head = element('header', 'pgrid__head');
+      head.append(element('p', 'pgrid__kicker', `${pad2(i + 1)} / ${pad2(entries.length)} · ${countLine(works)}`), heading);
+      if (series.note) head.append(element('p', 'pgrid__note', series.note));
+      const list = element('ul', 'gallery');
+      window.Gallery.renderGallery(list, works, { hrefFor: hrefForWork, eagerCount: i === 0 ? 6 : 0 });
+      section.append(head, list);
+      return section;
+    });
+    container.replaceChildren(...sections);
+  }
+
+  window.PhotoSeries = { renderIndex, renderSeriesGrid, renderRoom, setMood };
 })();
