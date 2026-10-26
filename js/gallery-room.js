@@ -290,10 +290,12 @@
     }
 
     /**
-     * The box a framed work may fill. Wide screens: the middle column, less room for the lamp. Phones: the work
-     * and its label are centred together on the wall, so the tallest label and the lamp's gaps come off first.
+     * The box a framed work may fill. Wide screens: the middle column, less room for the lamp. Narrower screens:
+     * the work and its label are centred together on the wall, so a label and the lamp's gaps come off first:
+     * the tallest label of all when every work shares one scale, or only `own` segment's label when each work
+     * is sized on its own (phones), so one long label no longer shrinks every other work.
      */
-    function availableSpace() {
+    function availableSpace(own) {
       const segments = parts.track.querySelectorAll('.room__segment:not(.room__segment--end)');
       if (window.matchMedia('(min-width: 62rem)').matches) {
         const box = segments[0].querySelector('.room__art').getBoundingClientRect();
@@ -302,7 +304,8 @@
       const style = getComputedStyle(segments[0]);
       const innerW = segments[0].clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
       const innerH = segments[0].clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-      const labelH = Math.max(...Array.from(segments, (segment) => segment.querySelector('.room__label').offsetHeight));
+      const labelOf = (segment) => segment.querySelector('.room__label').offsetHeight;
+      const labelH = own ? labelOf(own) : Math.max(...Array.from(segments, labelOf));
       return { w: innerW * 0.9, h: (innerH - labelH - PHONE_LABEL_GAP_PX - 2 * PHONE_LAMP_PX) * 0.95 };
     }
 
@@ -312,7 +315,12 @@
       room.style.setProperty('--room-top', `${Math.round(room.getBoundingClientRect().top + window.scrollY)}px`);
       segmentWidth = room.clientWidth;
       room.style.setProperty('--room-segment', `${segmentWidth}px`);
-      const scales = R.sectionScales(sections, availableSpace());
+      // Phones show each work as large as the wall allows; wider screens keep every work at true relative size.
+      const relative = window.matchMedia('(min-width: 40.0625rem)').matches;
+      const segments = parts.track.querySelectorAll('.room__segment:not(.room__segment--end)');
+      const scales = relative
+        ? R.sectionScales(sections, availableSpace())
+        : sections.map((section, i) => R.sectionScales([section], availableSpace(segments[i]), { relative: false })[0]);
 
       parts.track.querySelectorAll('.room__segment:not(.room__segment--end)').forEach((segment, i) => {
         const section = sections[i];

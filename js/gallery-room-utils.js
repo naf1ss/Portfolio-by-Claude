@@ -144,11 +144,13 @@
   /**
    * Pixels per inch for each section. Single works share one scale, so a 24 in panel hangs visibly larger
    * than a 12 in study; a group may be scaled down further so the whole group still fits its wall.
+   * With `relative: false` (phones, where one shared scale leaves a 12 in canvas a thumbnail) every section
+   * is simply as large as its wall allows; the label still gives the real size.
    */
-  function sectionScales(sections, available) {
+  function sectionScales(sections, available, { relative = true } = {}) {
     const fit = (size) => Math.min(available.w / size.w, available.h / size.h);
     const singles = sections.filter((section) => section.works.length === 1).map(sectionInches);
-    const shared = singles.length ? Math.min(...singles.map(fit)) : Infinity;
+    const shared = relative && singles.length ? Math.min(...singles.map(fit)) : Infinity;
     return sections.map((section) => {
       const scale = Math.min(shared, fit(sectionInches(section)));
       return Number.isFinite(scale) ? scale : 1;

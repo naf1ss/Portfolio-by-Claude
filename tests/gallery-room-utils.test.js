@@ -81,3 +81,14 @@ test('a group of mixed sizes hangs in one row on the centre line, the largest wo
   // Two works, or works of one size, keep the series' own order.
   assert.deepEqual(R.hangGroup([sized('x', 10), sized('y', 30)]).map((w) => w.id), ['x', 'y']);
 });
+
+test('sectionScales: without relative scale every single work fills its wall', () => {
+  const small = { works: [{ id: 's', dimensions: '12x9 inches', category: 'painting', w: 900, h: 1200 }] };
+  const large = { works: [{ id: 'l', dimensions: '36x24 inches', category: 'painting', w: 1200, h: 1800 }] };
+  const available = { w: 300, h: 500 };
+  const [shared] = R.sectionScales([small, large], available);
+  const [alone] = R.sectionScales([small, large], available, { relative: false });
+  assert.ok(alone > shared, 'the small work is drawn larger once it no longer shares the large one\'s scale');
+  const fitted = R.sectionInches(small);
+  assert.ok(Math.abs(Math.min(available.w / fitted.w, available.h / fitted.h) - alone) < 1e-9);
+});

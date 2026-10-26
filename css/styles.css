@@ -383,6 +383,11 @@ a:hover {
   }
 }
 
+/* The theme window's place in the phone menu (js/site-menu.js moves it there under 40rem). */
+.site-nav__theme {
+  display: none;
+}
+
 /* ---------- Phone menu (js/site-menu.js) ----------
    Under 40rem the links fold behind a round Menu button beside the theme toggle and open as a full-screen
    panel: large page names, with the gallery's media as small pills under Gallery. */
@@ -399,6 +404,7 @@ a:hover {
   .has-menu .menu-toggle {
     order: 2;
     position: relative;
+    margin-left: auto;
     display: inline-grid;
     place-items: center;
     width: 2.6rem;
@@ -447,6 +453,9 @@ a:hover {
     overflow-y: auto;
     padding: 6rem var(--gutter) 3rem;
     background: color-mix(in srgb, var(--paper) 84%, transparent);
+    /* Scrolled, the list fades out under the header instead of running into the wordmark. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 4.25rem, #000 6rem);
+    mask-image: linear-gradient(to bottom, transparent 4.25rem, #000 6rem);
     -webkit-backdrop-filter: blur(26px) saturate(1.3);
     backdrop-filter: blur(26px) saturate(1.3);
     opacity: 0;
@@ -473,6 +482,27 @@ a:hover {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.3s var(--ease), visibility 0s;
+  }
+
+  /* The theme window at the foot of the panel, with its label beside it. */
+  .has-menu .site-nav__theme {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2.25rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .site-nav__theme .theme-toggle {
+    width: 2.75rem;
+  }
+
+  .site-nav__theme-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
   }
 
   /* Centred when it fits; when it is taller than the screen it starts below the header and scrolls,
@@ -2498,6 +2528,16 @@ button:focus-visible > .roll .roll__face + .roll__face {
   margin-top: 1.4rem;
 }
 
+/* Phones: one picture to a row at the screen's width (a fixed height left portraits as narrow strips). */
+@media (max-width: 40rem) {
+  .story__set-item .story__media img {
+    width: 100%;
+    height: auto;
+    max-height: 78svh;
+    object-fit: contain;
+  }
+}
+
 .story__media .story__label {
   display: grid;
   gap: 0.1rem;
@@ -4498,7 +4538,7 @@ body[data-treatment='fog']::after {
 /* Phones: the glass capsule. Light text on dark glass over the wall; over the grid it takes the page's colours. */
 .medium-capsule {
   --glass-ink: var(--ink);
-  --glass-fill: color-mix(in srgb, var(--paper) 62%, transparent);
+  --glass-fill: color-mix(in srgb, var(--paper) 86%, transparent);
   --glass-edge: color-mix(in srgb, var(--ink) 14%, transparent);
   --glass-pill: var(--ink);
   --glass-pill-ink: var(--paper);
@@ -4531,6 +4571,10 @@ body[data-gallery-view='wall'] .medium-capsule {
   overflow-x: auto;
   border-radius: 999px;
   scrollbar-width: none;
+  /* Labels cut off at either end fade out; the padding keeps the first and last items clear of the fade. */
+  padding-inline: 0.7rem;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 0.7rem, #000 calc(100% - 0.7rem), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 0.7rem, #000 calc(100% - 0.7rem), transparent);
 }
 
 .medium-capsule__track::-webkit-scrollbar {
@@ -4659,6 +4703,12 @@ body[data-gallery-view='wall'] .medium-capsule {
   body[data-gallery-view='grid'] #photo-index {
     padding-top: 4.5rem;
   }
+
+  /* One work to a row, as wide as the screen, so the detail can be seen without opening it. */
+  .gallery__item {
+    flex-basis: 100%;
+  }
+
 }
 
 /* ---------- Gallery room ----------
@@ -6340,6 +6390,10 @@ body[data-gallery-view='wall'] .is-menu-open .site-header,
   color: var(--ink);
 }
 
+body[data-gallery-view='wall'] .site-footer {
+  margin-top: 0;
+}
+
 body[data-gallery-view='wall'] .room {
   --room-head: var(--header-h, 5.75rem);
 }
@@ -6373,5 +6427,14 @@ body[data-gallery-view='wall'] .room__segment {
 
   body[data-gallery-view='wall'] .room__segment {
     padding-top: calc(var(--room-head) + 7.25rem);
+  }
+}
+
+/* Short phones: a group's label keeps its titles but drops the heading and each work's medium and size
+   (the close-up still gives them), so the label no longer takes the wall from the paintings. */
+@media (max-width: 40rem) and (max-height: 760px) {
+  .room__works-heading,
+  .room__works-meta {
+    display: none;
   }
 }
