@@ -108,6 +108,6 @@
     medium: 'Photography',
     galleryOnly: true,
     treatment: 'grid',
-    note: 'Just the city. Streets, towers and skylines in New York and London, photographed as I found them.',
+    note: 'New York and London, photographed from the street and from above. Most of these frames look up: towers cut out against cloud, a street closing into a canyon of glass, the Shard and One World Trade held in black and white. The weather and the hour change a city more than its buildings do, so there is a storm over Tower Bridge, Big Ben in low sun, the Washington Square arch lit at night, and, in one frame, a skyline that exists only as a reflection in a dark window.',
   },
 ]);
