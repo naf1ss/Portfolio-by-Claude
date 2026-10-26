@@ -20,7 +20,7 @@ window.SITE_CONFIG = {
   // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs
   // and ceramics are shown in their own sections of the gallery; the six Horizon monotypes stay in their series.
   selectedIds: [
-    'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A031', 'A014', 'A015',
+    'A042', 'A010', 'A017', 'A028', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
   ],
 
   // "Browse by medium" on the home page shows one work beside each medium. A visitor's first home page in a
