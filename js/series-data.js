@@ -7,7 +7,9 @@
  *   medium    optional: the medium shown in the series index; defaults to the categories of its works
  *   (a long-form write-up for a series lives in js/series-stories.js under the same id)
  *   workIds   the works, in the order to show them, OR
- *   category / year   a rule that collects matching works instead
+ *   category / year   a rule that collects matching works instead, OR
+ *   neither   the works that name this series (photographs, see works-photography.js)
+ *   treatment         photography only: how the series' room is hung (see js/photo-series.js)
  *   hangTogether      optional: true hangs the series' works side by side on one stretch of the gallery wall
  *
  * These are a starting point: regroup, rename and add notes here as the
@@ -49,20 +51,6 @@
     hangTogether: true,
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
-  {
-    id: 'stage-light',
-    title: 'Stage Light',
-    medium: 'Photography',
-    note: 'Dancers on a dark stage, each held in a pool of coloured light.',
-    workIds: ['photo-0572', 'photo-0575', 'photo-0579', 'photo-0586', 'photo-0588', 'photo-0594', 'photo-0597', 'photo-0606', 'photo-0609', 'photo-0611'],
-  },
-  {
-    id: 'through-the-window',
-    title: 'Through the Window',
-    medium: 'Photography',
-    note: 'Windows, doorways and openings, and the light or the view on the other side of them.',
-    workIds: ['photo-0085', 'photo-0086', 'photo-0087', 'photo-0110', 'photo-0132', 'photo-0143', 'photo-0145', 'photo-0084', 'photo-0150', 'photo-0441', 'photo-0447'],
-  },
   { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A028', 'A007', 'A008', 'A009'] },
   {
     id: 'mugs',
@@ -75,5 +63,55 @@
     title: 'Bowls',
     note: null,
     workIds: ['ceramics-6', 'ceramics-44', 'ceramics-45', 'ceramics-47', 'ceramics-59', 'ceramics-7', 'ceramics8', 'ceramics-4', 'ceramics-11', 'ceramics-52'],
+  },
+  // ---------- Photography: each series has its own room, hung according to its idea ----------
+  {
+    id: 'negligible',
+    title: 'Negligible',
+    medium: 'Photography',
+    treatment: 'vast',
+    note: 'Most of every frame is sky. What sits inside it is small enough to miss: an aeroplane, a lamp post, birds on a wire, a plastic bag carried across an English sky, and sometimes nothing but cloud. I let the subject shrink until it is almost gone, because that is its true size. Against the sky, and everything beyond it, a single thing is negligible. So are we.',
+  },
+  {
+    id: 'the-light-hits',
+    title: 'The Light Hits',
+    medium: 'Photography',
+    treatment: 'light',
+    note: 'Each photograph holds the moment light lands on something: a tissue box on a windowsill, a laptop on a library table, a polished floor, the face of a building at sunset. The things themselves are ordinary. What they share is the moment the light reached them.',
+  },
+  {
+    id: 'straight-from-ghost-stories',
+    title: 'Straight from Ghost Stories',
+    medium: 'Photography',
+    treatment: 'fog',
+    note: 'These photographs share one colour: the cold, low grade of an old ghost film. Fog around a streetlamp, a house lit on an empty night, bare trees under a pale sky, a clock tower lost in cloud. Looking at them, I am taken straight into a ghost story.',
+  },
+  {
+    id: 'asymmetrical',
+    title: 'Asymmetrical',
+    medium: 'Photography',
+    treatment: 'axis',
+    note: 'The title is ironic. Nearly every photograph here is symmetrical: a tunnel, a staircase, a nave, a window, each built around a centre line. I named the series for the opposite of what it shows, on purpose.',
+  },
+  {
+    id: 'through-the-window',
+    title: 'Through the Window',
+    medium: 'Photography',
+    treatment: 'window',
+    note: 'A window is a frame someone else has already made. I look through it: from a screened porch, a ruined arch, an oval opening in a white wall, an aeroplane seat. What lies outside is only ever the part the window allows.',
+  },
+  {
+    id: 'stage-light',
+    title: 'Stage Light',
+    medium: 'Photography',
+    treatment: 'stage',
+    note: 'Dancers on a dark stage, each held in a single pool of coloured light. The stage is black; the light decides who appears.',
+  },
+  {
+    id: 'city',
+    title: 'City',
+    medium: 'Photography',
+    treatment: 'grid',
+    note: 'Just the city. Streets, towers and skylines in New York and London, photographed as I found them.',
   },
 ]);

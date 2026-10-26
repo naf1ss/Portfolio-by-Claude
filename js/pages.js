@@ -138,10 +138,10 @@
         if (showingWall()) room.goTo(work.id, { animate: false });
       },
     });
-    // Photography is shown as one roll per series, not as a grid or a wall.
-    const rollsBox = document.getElementById('rolls');
-    openOnClick(rollsBox, lightbox);
-    let rolls = null;
+    // Photography is shown as an index of series, each opening its own room on the series page.
+    const photoBox = document.getElementById('photo-index');
+    const photoSeries = U.photographySeries(window.PORTFOLIO_SERIES || [], all);
+    let photoIndex = null;
     room = window.GalleryRoom.create(document.getElementById('room'), {
       series: window.PORTFOLIO_SERIES || [],
       onOpenWork: (id) => lightbox.open(id, 'user'),
@@ -176,21 +176,24 @@
       category = next;
       const visible = U.filterWorks(all, category);
       const wall = showingWall();
-      const showingRolls = category === 'photography';
-      list.hidden = wall || showingRolls;
-      rollsBox.hidden = !showingRolls;
+      const showingPhotos = category === 'photography';
+      list.hidden = wall || showingPhotos;
+      photoBox.hidden = !showingPhotos;
+      if (!showingPhotos && photoIndex) photoIndex.reset();
       // The CSS places the picker by this: on the wall, or above the grid.
       document.body.dataset.galleryView = wall ? 'wall' : 'grid';
 
-      if (showingRolls) {
+      if (showingPhotos) {
         room.hide();
         list.replaceChildren();
-        if (!rolls) {
-          rolls = U.photographyRolls(window.PORTFOLIO_SERIES || [], all);
-          window.Gallery.renderRolls(rollsBox, rolls, { hrefFor: (work) => U.hashForWork(work) });
-          window.Motion.reveal(rollsBox.children);
+        if (!photoIndex) {
+          photoIndex = window.PhotoSeries.renderIndex(photoBox, photoSeries, {
+            hrefFor: (series) => `series.html?s=${series.id}`,
+          });
+          window.Motion.reveal(photoBox.querySelectorAll('.pindex__lede, .pindex__line'));
         }
-        lightbox.setWorks(rolls.flatMap((roll) => roll.works));
+        // A shared link to one photograph still opens it here, in series order.
+        lightbox.setWorks(photoSeries.flatMap((entry) => entry.works));
       } else if (wall) {
         list.replaceChildren();
         room.show(visible, { focusId });
@@ -251,6 +254,38 @@
 
     const { series, works } = chosen;
     document.title = `${series.title} — nuances by nafis`;
+
+    // A photography series is hung as its own room, with its own heading, and leads on to the next room.
+    const photoSeries = U.photographySeries(window.PORTFOLIO_SERIES || [], catalogue);
+    const photoPlace = photoSeries.findIndex((entry) => entry.series.id === series.id);
+    if (photoPlace !== -1 && window.PhotoSeries) {
+      const roomBox = document.getElementById('photo-room');
+      const indexHref = 'gallery.html?c=photography';
+      title.hidden = true;
+      note.hidden = true;
+      list.hidden = true;
+      back.hidden = false;
+      back.querySelector('a').href = indexHref;
+      back.querySelector('a').textContent = '← Photography';
+      roomBox.hidden = false;
+      window.PhotoSeries.renderRoom(
+        roomBox,
+        chosen,
+        {
+          number: photoPlace + 1,
+          total: photoSeries.length,
+          previous: photoSeries[photoPlace - 1] || null,
+          next: photoSeries[photoPlace + 1] || photoSeries[0],
+        },
+        { hrefFor: (entry) => `series.html?s=${entry.id}`, hrefForWork: (work) => U.hashForWork(work), indexHref }
+      );
+      const roomViewer = mountViewer(roomBox);
+      roomViewer.setWorks(works);
+      const linkedPhoto = U.workIdFromHash(location.hash, works);
+      if (linkedPhoto) roomViewer.open(linkedPhoto, 'load');
+      return;
+    }
+
     title.textContent = series.title;
     note.textContent = series.note || '';
     back.hidden = false;

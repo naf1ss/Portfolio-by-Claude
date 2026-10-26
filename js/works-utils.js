@@ -217,6 +217,13 @@
       const byId = new Map(works.map((work) => [work.id, work]));
       return series.workIds.map((id) => byId.get(id)).filter(Boolean);
     }
+    // A series with no list and no rule holds the works that name it (photographs carry `series`), in their
+    // own frame order, whatever order the catalogue is sorted in.
+    if (!series.category && !series.year) {
+      return works
+        .filter((work) => work.series === series.id)
+        .sort((a, b) => (a.frame || 0) - (b.frame || 0));
+    }
     return works.filter(
       (work) =>
         (!series.category || work.category === series.category) && (!series.year || work.year === series.year)
@@ -277,11 +284,10 @@
   }
 
   /**
-   * The photography section is shown a series at a time ("rolls"): every series made only of photographs,
-   * in series order, with its frames in the order the series lists them. Photographs outside any series are
-   * not shown there.
+   * The photography section is shown a series at a time: every series made only of photographs, in series
+   * order, with its frames in their own order. Photographs outside any series are not shown there.
    */
-  function photographyRolls(seriesList, works) {
+  function photographySeries(seriesList, works) {
     return seriesList
       .map((series) => ({ series, works: worksInSeries(series, works) }))
       .filter(({ works: frames }) => frames.length > 0 && frames.every((work) => work.category === 'photography'));
@@ -311,7 +317,7 @@
     workIdFromHash,
     hashForWork,
     worksInSeries,
-    photographyRolls,
+    photographySeries,
     seriesMeta,
     seriesMedium,
     yearSpan,

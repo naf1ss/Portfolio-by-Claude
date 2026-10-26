@@ -1,7 +1,7 @@
 ---
 title: Series — nuances by nafis
 description: Series of paintings, prints, ceramics and photographs by Nafis.
-scripts: works-utils, works-data, works-photography, series-data, series-stories, gallery, series-story, lightbox, pages, magnifier-utils, magnifier
+scripts: page-mood, works-utils, works-data, works-photography, series-data, series-stories, gallery, series-story, photo-series, lightbox, pages, magnifier-utils, magnifier
 ---
   <main id="main" class="wrap">
     <p class="series-back" id="series-back" hidden><a href="series.html">&larr; All series</a></p>
@@ -10,5 +10,7 @@ scripts: works-utils, works-data, works-photography, series-data, series-stories
     <ul class="series-list" id="series-list"></ul>
     <ul class="gallery" id="gallery" hidden></ul>
     <div class="story" id="series-story" hidden></div>
+    <!-- A photography series is hung as its own room (js/photo-series.js). -->
+    <div id="photo-room" hidden></div>
     <noscript><p class="muted">Please enable JavaScript to view the series.</p></noscript>
   </main>

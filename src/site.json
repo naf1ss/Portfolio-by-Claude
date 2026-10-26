@@ -22,6 +22,7 @@
   "scripts": [
     {"file": "theme-utils", "defer": false},
     {"file": "theme", "defer": false},
+    {"file": "page-mood", "defer": false},
     {"file": "site-menu", "defer": false},
     {"file": "intro-utils", "defer": false},
     {"file": "motion", "defer": false},
@@ -39,6 +40,7 @@
     {"file": "gallery"},
     {"file": "medium-picker", "requires": ["works-utils"]},
     {"file": "series-story", "requires": ["works-utils"]},
+    {"file": "photo-series", "requires": ["works-utils"]},
     {"file": "lightbox"},
     {"file": "gallery-room-utils"},
     {"file": "pull-cord"},

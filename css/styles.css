@@ -3346,166 +3346,869 @@ html {
   font-size: var(--step--1);
 }
 
-/* ---------- Photography rolls ----------
-   A series of photographs is laid out like a roll on a light table: a black strip that scrolls sideways, every
-   frame at one height and numbered underneath, with the series' name and note above it. The strip stays dark in
-   both themes, the way photographs are best viewed. */
-.rolls {
-  display: grid;
-  gap: clamp(3.5rem, 8vw, 7rem);
-  padding-block: clamp(0.5rem, 2vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+/* ---------- Photography: room colours ----------
+   Every photography series has a room colour. The series page opens in it (js/page-mood.js sets html[data-mood]
+   before the page is drawn), and pointing at a series in the Photography index tints the whole page with it.
+   A room keeps its colour in both themes, the way a gallery room is painted once. */
+:root[data-mood='negligible'] {
+  --paper: #e9eef2;
+  --paper-sunken: #dae2e9;
+  --ink: #0f1b26;
+  --rule: #c3cfd9;
+  color-scheme: light;
 }
 
-.roll__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem 2rem;
-  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+:root[data-mood='the-light-hits'] {
+  --paper: #060606;
+  --paper-sunken: #121212;
+  --ink: #f4eee3;
+  --rule: #2e2b27;
+  color-scheme: dark;
 }
 
-.roll__text {
-  max-width: 42rem;
+:root[data-mood='straight-from-ghost-stories'] {
+  --paper: #242926;
+  --paper-sunken: #1c201e;
+  --ink: #d9dccf;
+  --rule: #414943;
+  color-scheme: dark;
 }
 
-.roll__index {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-size: var(--step--1);
-  font-weight: 700;
-  letter-spacing: 0.22em;
+:root[data-mood='asymmetrical'] {
+  --paper: #f2efe8;
+  --paper-sunken: #e5e0d5;
+  --ink: #151412;
+  --rule: #d0c9bb;
+  color-scheme: light;
 }
 
-.roll__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--step-3);
-  font-weight: 400;
-  line-height: 1.05;
-  overflow-wrap: break-word;
+:root[data-mood='through-the-window'] {
+  --paper: #e6e0d4;
+  --paper-sunken: #d8d0c1;
+  --ink: #1c1915;
+  --rule: #c6bcaa;
+  color-scheme: light;
 }
 
-.roll__note {
-  max-width: 34rem;
-  margin: 0.7rem 0 0;
+:root[data-mood='stage-light'] {
+  --paper: #000;
+  --paper-sunken: #0d0d0d;
+  --ink: #fff;
+  --rule: #2a2a2a;
+  color-scheme: dark;
+}
+
+:root[data-mood='city'] {
+  --paper: #17181a;
+  --paper-sunken: #222327;
+  --ink: #ececec;
+  --rule: #36383d;
+  color-scheme: dark;
+}
+
+:root[data-mood] {
+  background: var(--paper);
+}
+
+/* Only the index fades between rooms; a room page opens already in its colour. */
+:root.is-mood-fading body {
+  transition: background-color 0.7s var(--ease), color 0.7s var(--ease);
+}
+
+/* ---------- Photography: the index ----------
+   One large line per series. Pointing at a line dims the others, tints the page with that room's colour and
+   shows the series flicking past beside the pointer (.pindex__flip). Touch screens get a strip instead. */
+.pindex {
+  padding-block: clamp(0.5rem, 2vw, 1.5rem) clamp(3rem, 8vw, 6rem);
+}
+
+.pindex__lede {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
   font-family: var(--font-prose);
   font-size: var(--step-1);
   font-style: italic;
-  line-height: 1.35;
 }
 
-.roll__controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.pindex__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
 }
 
-.roll__count {
-  margin-right: 0.75rem;
+.pindex__line {
+  border-bottom: 1px solid var(--rule);
+}
+
+.pindex__link {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr auto;
+  align-items: baseline;
+  gap: 0 1.5rem;
+  padding-block: clamp(1rem, 2.2vw, 1.75rem);
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.45s var(--ease);
+}
+
+.pindex__link:hover {
+  color: inherit;
+}
+
+.pindex__no {
   font-size: var(--step--1);
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.2em;
+}
+
+.pindex__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.1rem + 4.8vw, 6.25rem);
+  line-height: 1;
+  overflow-wrap: break-word;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.pindex__meta {
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.roll__step {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 1.15rem;
-  cursor: pointer;
-  transition: background-color 0.25s var(--ease), color 0.25s var(--ease), opacity 0.25s var(--ease);
+.pindex__list[data-active] .pindex__link {
+  opacity: 0.25;
 }
 
-.roll__step:not(:disabled):hover {
-  background: var(--ink);
-  color: var(--paper);
+.pindex__list[data-active] .pindex__link:hover,
+.pindex__list[data-active] .pindex__link:focus-visible {
+  opacity: 1;
 }
 
-.roll__step:disabled {
-  opacity: 0.3;
-  cursor: default;
+.pindex__link:hover .pindex__title,
+.pindex__link:focus-visible .pindex__title {
+  font-style: italic;
+  transform: translateX(0.35em);
 }
 
-.roll__strip {
-  --roll-h: clamp(17rem, 62vh, 34rem);
-  --roll-pad: clamp(1rem, 2.5vw, 1.75rem);
+.pindex__strip {
   display: flex;
-  gap: clamp(0.75rem, 1.6vw, 1.25rem);
-  margin: 0;
-  padding: var(--roll-pad);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: var(--roll-pad);
-  scrollbar-width: none;
-  list-style: none;
-  background: #0e0e10;
-  color: #fff;
+  grid-column: 2 / -1;
+  gap: 0.4rem;
+  height: 4.75rem;
+  margin-top: 0.9rem;
+  overflow: hidden;
 }
 
-.roll__strip::-webkit-scrollbar {
-  display: none;
-}
-
-.roll__strip:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.roll__frame {
+.pindex__thumb {
   flex: none;
-  scroll-snap-align: start;
-}
-
-.roll__frame .tile__frame {
-  height: var(--roll-h);
+  width: auto;
+  height: 100%;
   aspect-ratio: var(--ar);
-  background: #1a1a1d;
+  object-fit: cover;
+  background: var(--paper-sunken);
 }
 
-.roll__frame .tile__image {
+.pindex__flip {
+  --flip-h: clamp(15rem, 36vh, 26rem);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: calc(var(--flip-h) * var(--ar, 0.75));
+  height: var(--flip-h);
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.55);
+  transition: opacity 0.3s var(--ease);
+}
+
+.pindex__flip.is-shown {
+  opacity: 1;
+}
+
+.pindex__flip img {
+  display: block;
+  width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.roll__no {
-  display: block;
-  margin-top: 0.65rem;
+@media (hover: hover) and (pointer: fine) {
+  .pindex__strip {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .pindex__link {
+    grid-template-columns: 2.25rem 1fr;
+    gap: 0.35rem 0.75rem;
+  }
+
+  .pindex__meta {
+    grid-column: 2;
+  }
+}
+
+/* ---------- Photography: a series' room ----------
+   Shared parts first; then each treatment (series-data.js) hangs the same markup its own way. */
+.exhibit {
+  padding-top: clamp(1rem, 3vw, 2rem);
+}
+
+.exhibit__kicker {
+  margin: 0 0 0.9rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.exhibit__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  font-weight: 400;
+  line-height: 1;
+  overflow-wrap: break-word;
+}
+
+.exhibit__statement {
+  max-width: 36rem;
+  margin: 1.4rem 0 0;
+  font-family: var(--font-prose);
+  font-size: var(--step-1);
+  line-height: 1.45;
+}
+
+.exhibit__meta {
+  margin: 1.4rem 0 0;
   font-size: var(--step--1);
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-/* A hairline under the strip: how much of the roll has come into view. */
-.roll__progress {
-  display: block;
-  height: 2px;
-  margin-top: 0.9rem;
-  background: var(--rule);
+.exhibit__frames {
+  margin: clamp(3.5rem, 9vw, 7rem) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.roll__progress::after {
-  content: '';
+.exhibit__link {
   display: block;
+}
+
+.exhibit__frame .tile__frame {
+  display: block;
+  background: var(--paper-sunken);
+}
+
+.exhibit__frame .tile__image {
+  display: block;
+  width: 100%;
   height: 100%;
+  object-fit: cover; /* the frame already has the photograph's own proportions, so nothing is cut */
+}
+
+.exhibit__no {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.exhibit__no-of {
+  font-weight: 400;
+}
+
+.js-motion .exhibit__frame {
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease-out);
+}
+
+.js-motion .exhibit__frame:not(.is-in) {
+  opacity: 0;
+  transform: translateY(2.5rem);
+}
+
+/* The way on: the next room large, the previous room and the index small. */
+.exhibit__nav {
+  margin-top: clamp(5rem, 12vw, 10rem);
+  padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--rule);
+}
+
+.exhibit__next {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.exhibit__nav-label {
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.exhibit__next .exhibit__nav-title {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  line-height: 1;
+}
+
+.exhibit__next .exhibit__nav-title::after {
+  content: ' \2192';
+}
+
+.exhibit__next:hover {
+  color: inherit;
+}
+
+.exhibit__next:hover .exhibit__nav-title {
+  font-style: italic;
+}
+
+.exhibit__nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.exhibit__prev {
+  display: inline-flex;
+  gap: 0.6em;
+  color: inherit;
+  text-decoration: none;
+}
+
+.exhibit__prev .exhibit__nav-title {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.exhibit__prev .exhibit__nav-label {
+  font-size: inherit;
+}
+
+.exhibit__all {
+  margin-left: auto;
+  color: inherit;
+}
+
+/* --- Negligible (vast): the words are made small and the sky large. The title is a whisper in an empty
+   screen; then each photograph fills the screen on its own. --- */
+.exhibit[data-treatment='vast'] .exhibit__intro {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-height: calc(100svh - 10rem);
+  text-align: center;
+}
+
+.exhibit[data-treatment='vast'] .exhibit__kicker,
+.exhibit[data-treatment='vast'] .exhibit__meta {
+  font-size: 0.6rem;
+}
+
+.exhibit[data-treatment='vast'] .exhibit__title {
+  font-family: var(--font-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.45em;
+  text-transform: lowercase;
+}
+
+.exhibit[data-treatment='vast'] .exhibit__statement {
+  max-width: 25rem;
+  margin-top: 2.75rem;
+  font-size: var(--step-0);
+  font-style: italic;
+}
+
+.exhibit[data-treatment='vast'] .exhibit__frames {
+  margin-top: 0;
+}
+
+.exhibit[data-treatment='vast'] .exhibit__frame {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-height: 100svh;
+  padding-block: 5svh;
+}
+
+.exhibit[data-treatment='vast'] .tile__frame {
+  width: auto;
+  height: min(86svh, calc((100vw - 2 * var(--gutter)) / var(--ar)));
+  aspect-ratio: var(--ar);
+}
+
+.exhibit[data-treatment='vast'] .exhibit__no {
+  font-size: 0.58rem;
+}
+
+.js-motion .exhibit[data-treatment='vast'] .exhibit__frame {
+  transition-duration: 2s;
+}
+
+.js-motion .exhibit[data-treatment='vast'] .exhibit__frame:not(.is-in) {
+  transform: none;
+}
+
+/* --- The Light Hits (light): a dark room. Each photograph waits unlit and the light reaches it as it comes
+   to the middle of the screen, then stays. The hang alternates sides and sizes. --- */
+.exhibit[data-treatment='light'] .exhibit__title {
+  animation: exhibit-light-up 2.6s var(--ease) both;
+}
+
+@keyframes exhibit-light-up {
+  from {
+    opacity: 0.08;
+  }
+}
+
+.exhibit[data-treatment='light'] .exhibit__frames {
+  display: grid;
+  gap: clamp(4rem, 11vw, 9rem);
+}
+
+.exhibit[data-treatment='light'] .exhibit__frame {
+  --w: 60%;
+  width: min(var(--w), calc(82svh * var(--ar)));
+}
+
+.exhibit[data-treatment='light'] .exhibit__frame:nth-child(even) {
+  --w: 44%;
+  justify-self: end;
+  text-align: right;
+}
+
+.exhibit[data-treatment='light'] .exhibit__frame:nth-child(4n + 3) {
+  --w: 52%;
+  justify-self: center;
+}
+
+.exhibit[data-treatment='light'] .tile__image {
+  filter: brightness(0.14) saturate(0.4);
+  transition: filter 1.9s var(--ease), opacity 0.5s var(--ease);
+}
+
+.exhibit[data-treatment='light'] .is-lit .tile__image {
+  filter: none;
+}
+
+/* --- Straight from Ghost Stories (fog): an old film's title card, a fine grain over the whole room, and
+   photographs that surface out of a blur, each with a darkened edge. --- */
+body[data-treatment='fog']::after {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0.1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: exhibit-grain 0.9s steps(5) infinite;
+}
+
+@keyframes exhibit-grain {
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-1%, -2%); }
+  80% { transform: translate(3%, 1%); }
+}
+
+.exhibit[data-treatment='fog'] .exhibit__intro {
+  display: grid;
+  justify-items: center;
+  max-width: 46rem;
+  margin: clamp(1rem, 4vw, 3rem) auto 0;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
+  border: 1px solid var(--rule);
+  outline: 1px solid var(--rule);
+  outline-offset: 7px;
+  text-align: center;
+}
+
+.exhibit[data-treatment='fog'] .exhibit__title {
+  font-family: var(--font-prose);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.exhibit[data-treatment='fog'] .exhibit__statement {
+  font-style: italic;
+}
+
+.exhibit[data-treatment='fog'] .exhibit__frames {
+  display: grid;
+  justify-items: center;
+  gap: clamp(5rem, 13vw, 10rem);
+}
+
+.exhibit[data-treatment='fog'] .exhibit__frame {
+  width: min(100%, 64rem, calc(80svh * var(--ar)));
+  text-align: center;
+}
+
+.exhibit[data-treatment='fog'] .exhibit__frame:nth-child(3n + 2) {
+  width: min(100%, 40rem, calc(70svh * var(--ar)));
+}
+
+.exhibit[data-treatment='fog'] .tile__frame {
+  position: relative;
+}
+
+.exhibit[data-treatment='fog'] .tile__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgb(10 12 11 / 0.5));
+}
+
+.exhibit[data-treatment='fog'] .exhibit__no::before,
+.exhibit[data-treatment='fog'] .exhibit__no::after {
+  content: ' \2014 ';
+}
+
+.js-motion .exhibit[data-treatment='fog'] .exhibit__frame:not(.is-in) {
+  transform: none;
+}
+
+.js-motion .exhibit[data-treatment='fog'] .tile__image {
+  transition: filter 2.8s var(--ease), opacity 2.4s var(--ease);
+}
+
+.js-motion .exhibit[data-treatment='fog'] .exhibit__frame:not(.is-in) .tile__image {
+  filter: blur(18px) brightness(0.5);
+}
+
+/* --- Asymmetrical (axis): the room is built on one centre line that runs the whole way down. The
+   photographs hang on it and every number is printed twice, once in mirror image. --- */
+.exhibit[data-treatment='axis'] .exhibit__intro {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.exhibit[data-treatment='axis'] .exhibit__intro::before {
+  content: '';
+  width: 1px;
+  height: clamp(2.5rem, 6vw, 4rem);
+  margin-bottom: 1.5rem;
   background: var(--ink);
-  transform: scaleX(var(--seen, 0));
-  transform-origin: left;
-  transition: transform 0.25s var(--ease);
+}
+
+.exhibit[data-treatment='axis'] .exhibit__frames {
+  position: relative;
+  display: grid;
+  gap: clamp(4rem, 9vw, 7rem);
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.exhibit[data-treatment='axis'] .exhibit__frames::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--ink);
+  opacity: 0.3;
+}
+
+.exhibit[data-treatment='axis'] .exhibit__frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 3rem);
+}
+
+.exhibit[data-treatment='axis'] .exhibit__frame::before,
+.exhibit[data-treatment='axis'] .exhibit__frame::after {
+  content: attr(data-no);
+  grid-row: 1;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+}
+
+.exhibit[data-treatment='axis'] .exhibit__frame::before {
+  grid-column: 1;
+  justify-self: end;
+}
+
+.exhibit[data-treatment='axis'] .exhibit__frame::after {
+  grid-column: 3;
+  justify-self: start;
+  transform: scaleX(-1);
+}
+
+.exhibit[data-treatment='axis'] .exhibit__link {
+  grid-column: 2;
+  grid-row: 1;
+  width: min(56rem, calc(100vw - 2 * var(--gutter) - 10rem), calc(80svh * var(--ar)));
+}
+
+.exhibit[data-treatment='axis'] .exhibit__no {
+  display: none;
+}
+
+@media (max-width: 40rem) {
+  .exhibit[data-treatment='axis'] .exhibit__frame {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .exhibit[data-treatment='axis'] .exhibit__frame::before,
+  .exhibit[data-treatment='axis'] .exhibit__frame::after {
+    display: none;
+  }
+
+  .exhibit[data-treatment='axis'] .exhibit__link {
+    grid-column: 1;
+    width: min(100%, calc(76svh * var(--ar)));
+  }
+
+  .exhibit[data-treatment='axis'] .exhibit__no {
+    display: block;
+    padding-inline: 0.5rem;
+    background: var(--paper);
+    position: relative;
+  }
+}
+
+/* --- Through the Window (window): a wall of windows. Each photograph sits deep in a painted casing above a
+   sill, so the viewer looks through it the way the camera did. --- */
+.exhibit[data-treatment='window'] .exhibit__frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  align-items: end;
+  gap: clamp(3.5rem, 7vw, 5.5rem) clamp(2rem, 4.5vw, 4rem);
+}
+
+.exhibit[data-treatment='window'] .exhibit__frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exhibit[data-treatment='window'] .exhibit__link {
+  position: relative;
+  width: 100%;
+  padding: clamp(0.65rem, 1.3vw, 0.95rem);
+  background: #f8f5ef;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.06), 0 18px 34px -20px rgb(40 30 20 / 0.5);
+}
+
+/* the sill */
+.exhibit[data-treatment='window'] .exhibit__link::after {
+  content: '';
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: -0.7rem;
+  height: 0.7rem;
+  background: #d2c7b4;
+  box-shadow: 0 8px 12px -8px rgb(0 0 0 / 0.4);
+}
+
+.exhibit[data-treatment='window'] .tile__frame {
+  position: relative;
+  aspect-ratio: var(--ar);
+}
+
+/* the depth of the opening */
+.exhibit[data-treatment='window'] .tile__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25), inset 0 12px 18px -10px rgb(0 0 0 / 0.6),
+    inset 0 -3px 8px -2px rgb(0 0 0 / 0.25);
+}
+
+.exhibit[data-treatment='window'] .exhibit__no {
+  margin-top: 1.75rem;
+}
+
+/* --- Stage Light (stage): a black stage. Each photograph comes on under its own spotlight, and the
+   performers enter from the left, the centre and the right in turn. --- */
+.exhibit[data-treatment='stage'] .exhibit__intro {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  justify-items: center;
+  padding-block: clamp(2rem, 8vh, 5rem);
+  text-align: center;
+}
+
+.exhibit[data-treatment='stage'] .exhibit__intro::before {
+  content: '';
+  position: absolute;
+  inset: -8rem -10% -2rem;
+  z-index: -1;
+  background: radial-gradient(ellipse 34% 62% at 50% 0%, rgb(255 248 230 / 0.2), transparent 72%);
+}
+
+.exhibit[data-treatment='stage'] .exhibit__frames {
+  display: grid;
+  gap: clamp(4rem, 10vw, 8rem);
+}
+
+.exhibit[data-treatment='stage'] .exhibit__frame {
+  position: relative;
+  isolation: isolate;
+  justify-self: center;
+  width: min(100%, calc(80svh * var(--ar)));
+  text-align: center;
+}
+
+.exhibit[data-treatment='stage'] .exhibit__frame:nth-child(3n + 1) {
+  justify-self: start;
+}
+
+.exhibit[data-treatment='stage'] .exhibit__frame:nth-child(3n) {
+  justify-self: end;
+}
+
+.exhibit[data-treatment='stage'] .exhibit__frame::before {
+  content: '';
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  z-index: -1;
+  width: 190%;
+  height: 136%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 45%, rgb(255 248 230 / 0.13), transparent 70%);
+  opacity: 0;
+  transition: opacity 1.8s var(--ease) 0.2s;
+}
+
+.exhibit[data-treatment='stage'] .exhibit__frame.is-in::before {
+  opacity: 1;
+}
+
+.js-motion .exhibit[data-treatment='stage'] .exhibit__frame:not(.is-in) {
+  transform: none;
+}
+
+.js-motion .exhibit[data-treatment='stage'] .tile__image {
+  transition: filter 1.4s var(--ease) 0.15s, opacity 0.5s var(--ease);
+}
+
+.js-motion .exhibit[data-treatment='stage'] .exhibit__frame:not(.is-in) .tile__image {
+  filter: brightness(0);
+}
+
+/* --- City (grid): a dense block. The title is set like signage, the photographs are packed edge to edge
+   in rows like streets, each numbered like a door; pointing at one dims the rest of the block. --- */
+.exhibit[data-treatment='grid'] .exhibit__title {
+  font-family: var(--font-text);
+  font-size: clamp(4.5rem, 1.5rem + 13vw, 14rem);
+  font-weight: 800;
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.exhibit[data-treatment='grid'] .exhibit__statement {
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+}
+
+.exhibit[data-treatment='grid'] .exhibit__frames {
+  --row: clamp(10rem, 24vw, 22rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.exhibit[data-treatment='grid'] .exhibit__frames::after {
+  content: '';
+  flex-grow: 1000000;
+}
+
+.exhibit[data-treatment='grid'] .exhibit__frame {
+  position: relative;
+  flex-grow: calc(var(--ar) * 100);
+  flex-basis: calc(var(--ar) * var(--row));
+  min-width: 0;
+}
+
+.exhibit[data-treatment='grid'] .tile__frame {
+  aspect-ratio: var(--ar);
+}
+
+.exhibit[data-treatment='grid'] .exhibit__no {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  margin: 0;
+  padding: 0.2rem 0.45rem;
+  background: #000;
+  color: #fff;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  pointer-events: none;
+}
+
+.exhibit[data-treatment='grid'] .exhibit__no-of {
+  display: none;
+}
+
+.exhibit[data-treatment='grid'] .tile__image {
+  transition: opacity 0.5s var(--ease), transform 1.6s var(--ease-out);
+}
+
+.exhibit[data-treatment='grid'] .exhibit__frames:hover .exhibit__frame:not(:hover) .tile__image {
+  opacity: 0.4;
+}
+
+/* Small screens: the alternating hangs become one column. */
+@media (max-width: 40rem) {
+  .exhibit[data-treatment='light'] .exhibit__frame,
+  .exhibit[data-treatment='light'] .exhibit__frame:nth-child(even),
+  .exhibit[data-treatment='light'] .exhibit__frame:nth-child(4n + 3) {
+    --w: 100%;
+  }
+
+  .exhibit[data-treatment='light'] .exhibit__frame:nth-child(even) {
+    --w: 82%;
+  }
+
+  .exhibit[data-treatment='stage'] .exhibit__frame:nth-child(n) {
+    justify-self: center;
+  }
+
+  .exhibit[data-treatment='grid'] .exhibit__frames {
+    --row: 8.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .roll__progress::after {
+  :root.is-mood-fading body {
     transition: none;
+  }
+
+  body[data-treatment='fog']::after,
+  .exhibit[data-treatment='light'] .exhibit__title {
+    animation: none;
   }
 }
 
@@ -3975,7 +4678,7 @@ body[data-gallery-view='wall'] .medium-capsule {
   }
 
   body[data-gallery-view='grid'] #gallery,
-  body[data-gallery-view='grid'] #rolls {
+  body[data-gallery-view='grid'] #photo-index {
     padding-top: 4.5rem;
   }
 }

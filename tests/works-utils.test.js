@@ -288,26 +288,45 @@ test('series: a category + year rule collects only matching works', () => {
   assert.ok(found.every((w) => w.category === 'photography' && w.year === 2025));
 });
 
-test('photography: every photograph belongs to a series, so none is shown without one', () => {
-  const inSeries = new Set(SERIES.flatMap((series) => series.workIds || []));
-  const orphans = PHOTOS.filter((photo) => !inSeries.has(photo.id)).map((photo) => photo.id);
-  assert.deepEqual(orphans, []);
+test('photography: every photograph names a photography series, and its title says where it hangs', () => {
+  const seriesById = new Map(SERIES.map((series) => [series.id, series]));
+  PHOTOS.forEach((photo) => {
+    const series = seriesById.get(photo.series);
+    assert.ok(series, `${photo.id} names a series that does not exist: ${photo.series}`);
+    assert.ok(photo.title.startsWith(`${series.title}, `), `${photo.id} is titled for another series`);
+  });
 });
 
-test('photography: each frame is titled by its series and place in it', () => {
-  const rolls = U.photographyRolls(SERIES, WORKS);
-  rolls.forEach(({ series, works }) => {
+test('photography: frames keep their series order even in the sorted catalogue', () => {
+  U.photographySeries(SERIES, U.sortWorks(WORKS)).forEach(({ series, works }) => {
     works.forEach((work, index) => {
       assert.equal(work.title, `${series.title}, ${index + 1} of ${works.length}`);
     });
   });
 });
 
-test('photographyRolls: keeps only series made of photographs, with their frames in series order', () => {
+test('photography: every photography series has a room treatment', () => {
+  const treatments = ['vast', 'light', 'fog', 'axis', 'window', 'stage', 'grid'];
+  U.photographySeries(SERIES, WORKS).forEach(({ series }) => {
+    assert.ok(treatments.includes(series.treatment), `${series.id} has no known treatment`);
+  });
+});
+
+test('photography: photo ids are unique', () => {
+  const ids = PHOTOS.map((photo) => photo.id);
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test('worksInSeries: a series with no list or rule holds the works that name it, in their order', () => {
+  const works = [work({ id: 'a', series: 'sky' }), work({ id: 'b' }), work({ id: 'c', series: 'sky' })];
+  assert.deepEqual(U.worksInSeries({ id: 'sky' }, works).map((w) => w.id), ['a', 'c']);
+});
+
+test('photographySeries: keeps only series made of photographs, with their frames in series order', () => {
   const photo = (id) => work({ id, category: 'photography' });
   const painting = work({ id: 'p1', category: 'painting' });
   const works = [photo('a'), photo('b'), photo('c'), painting];
-  const rolls = U.photographyRolls(
+  const found = U.photographySeries(
     [
       { id: 'roll', title: 'Roll', workIds: ['c', 'a'] },
       { id: 'mixed', title: 'Mixed', workIds: ['a', 'p1'] },
@@ -315,8 +334,8 @@ test('photographyRolls: keeps only series made of photographs, with their frames
     ],
     works
   );
-  assert.deepEqual(rolls.map((roll) => roll.series.id), ['roll']);
-  assert.deepEqual(rolls[0].works.map((w) => w.id), ['c', 'a']);
+  assert.deepEqual(found.map((entry) => entry.series.id), ['roll']);
+  assert.deepEqual(found[0].works.map((w) => w.id), ['c', 'a']);
 });
 
 test('series: meta line gives the count and the year or span of years', () => {
