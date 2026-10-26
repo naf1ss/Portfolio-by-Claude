@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node tools/build-pages.js",
     "test": "node --test",
-    "pretest": "node tools/build-pages.js --check"
+    "pretest": "node tools/build-pages.js --check",
+    "check:phone": "node tools/check-phone.js"
   }
 }

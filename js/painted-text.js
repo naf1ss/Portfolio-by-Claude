@@ -6,8 +6,8 @@
  *                                                                 <span class="painted__layer">n</span></span> ...
  *
  * data-painted names the collection ("photography", "paintings"). Pictures are drawn at
- * random from the catalogue, so adding or removing works needs no change here. A picture too dark to read
- * through the letters (a night scene on a black footer) is skipped for the next one. Nothing
+ * random from the catalogue, so adding or removing works needs no change here. Photographs too dark to read
+ * through the letters (a night scene on a black footer) are left out, by their measured brightness. Nothing
  * loads until the element is near the screen. Each change fires a bubbling "painted:show"
  * event ({ detail: { work, url } }); clicking the element is up to the page (see PaintedText.of).
  */
@@ -20,7 +20,7 @@
   const PAINTING_CATEGORIES = ['painting'];
   // Average brightness (0–1) below which a picture would vanish into a dark background behind the letters.
   const MIN_BRIGHTNESS = 0.22;
-  const SAMPLE_SIZE = 24; // pictures are measured on a tiny copy; that is plenty for an average
+  const LETTER_FILE = 600; // the smallest file is plenty for a letter, and quick on a phone
 
   const Works = window.WorksUtils;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -28,37 +28,24 @@
 
   /** The works a collection name stands for; unknown names and missing data give none. */
   function collection(name) {
-    if (name === 'photography') return window.PORTFOLIO_PHOTOS || [];
+    if (name === 'photography') {
+      // Brightness is measured ahead of time (tools/photo-brightness.py); an unmeasured photograph is kept.
+      const brightness = window.PORTFOLIO_PHOTO_BRIGHTNESS || {};
+      return (window.PORTFOLIO_PHOTOS || []).filter((work) => !(brightness[work.id] < MIN_BRIGHTNESS));
+    }
     if (name === 'paintings') {
       return (window.PORTFOLIO_WORKS || []).filter((work) => PAINTING_CATEGORIES.includes(work.category));
     }
     return [];
   }
 
-  /** The picture's average brightness, 0 (black) to 1 (white); 1 if it cannot be measured, so it is kept. */
-  function brightnessOf(image) {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = SAMPLE_SIZE;
-      canvas.height = SAMPLE_SIZE;
-      const context = canvas.getContext('2d', { willReadFrequently: true });
-      context.drawImage(image, 0, 0, SAMPLE_SIZE, SAMPLE_SIZE);
-      const { data } = context.getImageData(0, 0, SAMPLE_SIZE, SAMPLE_SIZE);
-      let total = 0;
-      for (let i = 0; i < data.length; i += 4) total += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-      return total / (data.length / 4) / 255;
-    } catch (error) {
-      return 1;
-    }
-  }
-
-  /** Resolves with the picture's URL once it has loaded, or null if it failed or is too dark to read. */
+  /** Resolves with the picture's URL once it has loaded, or null if it failed. */
   function loadPicture(work) {
     // custom-property URLs resolve against the stylesheet, so give the page-relative path in full
-    const url = new URL(Works.fallbackUrl(work), document.baseURI).href;
+    const url = new URL(Works.imageUrl(work, LETTER_FILE), document.baseURI).href;
     return new Promise((resolve) => {
       const image = new Image();
-      image.onload = () => resolve(brightnessOf(image) >= MIN_BRIGHTNESS ? url : null);
+      image.onload = () => resolve(url);
       image.onerror = () => resolve(null);
       image.src = url;
     });

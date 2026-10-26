@@ -510,3 +510,9 @@ test('projects: every contents label fits on one row of the rail', () => {
     )
   );
 });
+
+test('photography: every photograph has a measured brightness (run tools/photo-brightness.py after adding photos)', () => {
+  const brightness = require('../js/photo-brightness.js');
+  const missing = PHOTOS.filter((photo) => typeof brightness[photo.id] !== 'number').map((photo) => photo.id);
+  assert.deepEqual(missing, []);
+});

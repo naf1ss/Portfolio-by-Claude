@@ -478,6 +478,11 @@ a:hover {
     overflow: hidden;
   }
 
+  /* A closed panel takes no taps at all. */
+  html.has-menu:not(.is-menu-open) .site-nav {
+    pointer-events: none;
+  }
+
   .is-menu-open .site-nav {
     opacity: 1;
     visibility: visible;
@@ -563,7 +568,9 @@ a:hover {
     background: none;
     box-shadow: none;
     opacity: 1;
-    visibility: visible;
+    /* Inherit, never "visible": a visible child of the hidden panel would stay tappable while the menu is
+       closed, an invisible layer of links over the page. */
+    visibility: inherit;
     transform: none;
   }
 
@@ -5490,6 +5497,18 @@ body[data-gallery-view='wall'] .medium-capsule {
 @media (max-width: 40rem) {
   .room__cord {
     --cord-reach: 0rem;
+  }
+
+  /* A fingertip-sized target around the small bead: the tap area reaches well beyond what is drawn. */
+  .room__cord::after {
+    content: '';
+    position: absolute;
+    inset: -0.6rem -0.75rem -1rem;
+  }
+
+  .room__walk button {
+    min-width: 2.9rem;
+    min-height: 2.9rem;
   }
 }
 
