@@ -52,18 +52,6 @@
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
   { id: 'still-life', title: 'Still life', note: null, workIds: ['A010', 'A018', 'A028', 'A007', 'A008', 'A009'] },
-  {
-    id: 'mugs',
-    title: 'Mugs',
-    note: null,
-    workIds: ['ceramics9', 'ceramics-22', 'ceramics-28', 'ceramics-25', 'ceramics-29'],
-  },
-  {
-    id: 'bowls',
-    title: 'Bowls',
-    note: null,
-    workIds: ['ceramics-6', 'ceramics-44', 'ceramics-45', 'ceramics-47', 'ceramics-59', 'ceramics-7', 'ceramics8', 'ceramics-4', 'ceramics-11', 'ceramics-52'],
-  },
   // ---------- Photography: each series has its own room, hung according to its idea ----------
   {
     id: 'negligible',
