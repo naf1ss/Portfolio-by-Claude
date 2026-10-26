@@ -1,9 +1,9 @@
 /**
  * Photography, a series at a time.
  *
- *   renderIndex   the Photography section of the gallery: one large line per series. Pointing at a line
- *                 tints the whole page in that series' room colour and shows its photographs flicking past
- *                 beside the pointer, like a flip book; on touch screens each line shows a short strip instead.
+ *   renderIndex   the Photography section of the gallery: one large line per series and no photographs, which
+ *                 are kept for the rooms. Pointing at (or focusing) a line tints the whole page in that series'
+ *                 room colour, so each room is announced by its light before it is entered.
  *   renderRoom    one series on its own page, hung according to its idea. The series' `treatment`
  *                 (series-data.js) picks the hang; styles.css draws each one (.exhibit[data-treatment]):
  *
@@ -11,7 +11,8 @@
  *     light   The Light Hits: photographs wait in the dark and light up as they reach the middle of the screen
  *     fog     Straight from Ghost Stories: an old film's title card, grain, photographs surfacing out of a blur
  *     axis    Asymmetrical: everything hangs on one centre line, numbered in mirror image on both sides
- *     window  Through the Window: a wall of windows, each photograph in a deep frame above a sill
+ *     window  Through the Window: scrolling down slides the photographs sideways past the screen, like views
+ *             going by outside a train window, with a counter for where you are
  *     stage   Stage Light: a black stage; each photograph is lit by its own spotlight as it comes on
  *     grid    City: a dense block of photographs, tightly packed like streets, numbered like doors
  *
@@ -24,10 +25,6 @@
   const U = window.WorksUtils;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const FLIP_MS = 420; // how long each photograph shows in the index's flip book
-  const FOLLOW = 0.18; // how quickly the flip book catches up with the pointer (0–1 per frame)
-  const STRIP_COUNT = 4; // photographs in a line's strip on touch screens
-  const OFFSET = 'translate(2.5rem, -50%)'; // the flip book sits just right of the pointer, clear of the title
   const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
   function element(tag, className, text) {
@@ -73,69 +70,6 @@
 
   // ---------- Index ----------
 
-  /**
-   * The flip book: one picture that follows the pointer and steps through the hovered series. Built once and
-   * shared by every line; it never takes focus or clicks.
-   */
-  function createFlipBook() {
-    const box = element('figure', 'pindex__flip');
-    box.setAttribute('aria-hidden', 'true');
-    const img = element('img');
-    img.alt = '';
-    box.append(img);
-
-    let frames = [];
-    let index = 0;
-    let timer = 0;
-    let target = { x: 0, y: 0 };
-    let at = { x: 0, y: 0 };
-    let raf = 0;
-
-    const showFrame = () => {
-      const work = frames[index % frames.length];
-      img.src = U.imageUrl(work, 600);
-      box.style.setProperty('--ar', U.aspectRatio(work));
-      index += 1;
-    };
-
-    const follow = () => {
-      at.x += (target.x - at.x) * FOLLOW;
-      at.y += (target.y - at.y) * FOLLOW;
-      box.style.transform = `translate3d(${at.x}px, ${at.y}px, 0) ${OFFSET}`;
-      raf = Math.abs(target.x - at.x) + Math.abs(target.y - at.y) > 0.5 ? requestAnimationFrame(follow) : 0;
-    };
-
-    function moveTo(x, y, { jump = false } = {}) {
-      target = { x, y };
-      if (jump || reduceMotion) {
-        at = { ...target };
-        box.style.transform = `translate3d(${x}px, ${y}px, 0) ${OFFSET}`;
-      } else if (!raf) {
-        raf = requestAnimationFrame(follow);
-      }
-    }
-
-    function show(works) {
-      frames = works;
-      index = 0;
-      // fetch the series' small files up front so the flip book never waits on the network
-      works.forEach((work) => {
-        new Image().src = U.imageUrl(work, 600);
-      });
-      clearInterval(timer);
-      showFrame();
-      if (!reduceMotion) timer = setInterval(showFrame, FLIP_MS);
-      box.classList.add('is-shown');
-    }
-
-    function hide() {
-      clearInterval(timer);
-      box.classList.remove('is-shown');
-    }
-
-    return { box, moveTo, show, hide };
-  }
-
   function createIndexLine({ series, works }, number, hrefFor) {
     const item = element('li', 'pindex__line');
     const link = element('a', 'pindex__link');
@@ -146,59 +80,37 @@
       element('span', 'pindex__title', series.title),
       element('span', 'pindex__meta', countLine(works))
     );
-    const strip = element('span', 'pindex__strip');
-    strip.setAttribute('aria-hidden', 'true');
-    works.slice(0, STRIP_COUNT).forEach((work) => {
-      const thumb = picture(work, { sizes: '30vw', className: 'pindex__thumb' });
-      thumb.style.setProperty('--ar', U.aspectRatio(work));
-      strip.append(thumb);
-    });
-    link.append(strip);
     item.append(link);
     return item;
   }
 
-  /** The Photography section: every series as one line, with the flip book on pointers that can hover. */
+  /** The Photography section: every series as one line; the room colour follows the pointer and focus. */
   function renderIndex(container, entries, { hrefFor }) {
     const count = NUMBER_WORDS[entries.length] || String(entries.length);
     const intro = element('p', 'pindex__lede', `${count[0].toUpperCase()}${count.slice(1)} series, each built around one idea.`);
     const list = element('ol', 'pindex__list');
     list.append(...entries.map((entry, i) => createIndexLine(entry, i + 1, hrefFor)));
-    const flip = createFlipBook();
-    container.replaceChildren(intro, list, flip.box);
+    container.replaceChildren(intro, list);
 
-    const byId = new Map(entries.map((entry) => [entry.series.id, entry]));
-    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-    function enter(link, point) {
-      const entry = byId.get(link.dataset.series);
-      if (!entry) return;
+    function enter(link) {
       document.documentElement.classList.add('is-mood-fading');
-      setMood(entry.series.id);
-      list.dataset.active = entry.series.id;
-      if (!canHover) return;
-      flip.moveTo(point.x, point.y, { jump: !flip.box.classList.contains('is-shown') });
-      flip.show(entry.works);
+      setMood(link.dataset.series);
+      list.dataset.active = link.dataset.series;
     }
 
     function leave() {
       setMood(null);
       delete list.dataset.active;
-      flip.hide();
     }
 
     list.addEventListener('pointerover', (event) => {
       const link = event.target.closest('.pindex__link');
-      if (link && link.dataset.series !== list.dataset.active) enter(link, { x: event.clientX, y: event.clientY });
+      if (link && link.dataset.series !== list.dataset.active) enter(link);
     });
-    list.addEventListener('pointermove', (event) => flip.moveTo(event.clientX, event.clientY));
     list.addEventListener('pointerleave', leave);
-    // Keyboard: the room colour follows focus, and the flip book sits at the end of the focused line.
     list.addEventListener('focusin', (event) => {
       const link = event.target.closest('.pindex__link');
-      if (!link) return;
-      const box = link.getBoundingClientRect();
-      enter(link, { x: box.right - box.width * 0.18, y: box.top + box.height / 2 });
+      if (link) enter(link);
     });
     list.addEventListener('focusout', (event) => {
       if (!list.contains(event.relatedTarget)) leave();
@@ -246,7 +158,7 @@
   const ROOM_SIZES = {
     vast: '(min-width: 700px) 70vw, 100vw',
     grid: '(min-width: 900px) 33vw, 60vw',
-    window: '(min-width: 900px) 30vw, 90vw',
+    window: '(min-width: 900px) 55vw, 90vw',
   };
   const DEFAULT_SIZES = '(min-width: 900px) 60vw, 100vw';
 
@@ -275,6 +187,66 @@
     return link;
   }
 
+  // ---------- The passing view (Through the Window) ----------
+  // The frames sit in one row inside a stage that sticks to the screen; the stage's container is made as tall
+  // as the row is wide, so scrolling down moves the row sideways. Without motion it stays a plain column.
+
+  function hangPassing(list, total) {
+    const pass = element('div', 'exhibit__pass');
+    const stage = element('div', 'exhibit__pass-stage');
+    const counter = element('p', 'exhibit__pass-count');
+    counter.setAttribute('aria-hidden', 'true');
+    stage.append(list, counter);
+    pass.append(stage);
+    return { pass, stage, list, counter, total };
+  }
+
+  function startPassing({ pass, stage, list, counter, total }) {
+    if (reduceMotion) return;
+    pass.classList.add('is-passing');
+    const frames = [...list.children];
+    let distance = 0;
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      const progress = distance ? Math.min(1, Math.max(0, -pass.getBoundingClientRect().top / distance)) : 0;
+      const offset = progress * distance;
+      list.style.transform = `translate3d(${-offset}px, 0, 0)`;
+      // the frame nearest the middle of the screen is the one being looked at
+      const middle = offset + stage.clientWidth / 2;
+      let nearest = 0;
+      frames.forEach((frame, i) => {
+        const best = frames[nearest];
+        const distanceOf = (node) => Math.abs(node.offsetLeft + node.offsetWidth / 2 - middle);
+        if (distanceOf(frame) < distanceOf(best)) nearest = i;
+      });
+      counter.textContent = `${pad2(nearest + 1)} / ${pad2(total)}`;
+    };
+
+    const measure = () => {
+      distance = Math.max(0, list.offsetWidth - stage.clientWidth);
+      pass.style.height = `${stage.clientHeight + distance}px`;
+      update();
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    }, { passive: true });
+    window.addEventListener('resize', measure);
+    new ResizeObserver(measure).observe(list);
+
+    // Tabbing to a photograph off to the side scrolls the page to the point where it passes the middle.
+    list.addEventListener('focusin', (event) => {
+      const frame = event.target.closest('.exhibit__frame');
+      if (!frame || !distance) return;
+      stage.scrollLeft = 0;
+      const offset = Math.min(distance, Math.max(0, frame.offsetLeft + frame.offsetWidth / 2 - stage.clientWidth / 2));
+      window.scrollTo({ top: pass.offsetTop + offset });
+    });
+    measure();
+  }
+
   /**
    * One series as a room. `place` is { number, total, previous, next } among the photography series, so the
    * room can say where it hangs and lead on to the next one.
@@ -298,6 +270,7 @@
       createFrame(work, i + 1, works.length, { hrefFor: hrefForWork, sizes, eager: i < 2 })
     );
     list.append(...frames);
+    const passing = treatment === 'window' ? hangPassing(list, works.length) : null;
 
     const nav = element('nav', 'exhibit__nav');
     nav.setAttribute('aria-label', 'More photography');
@@ -309,10 +282,11 @@
     rest.append(all);
     nav.append(rest);
 
-    article.append(intro, list, nav);
+    article.append(intro, passing ? passing.pass : list, nav);
     container.replaceChildren(article);
     document.body.dataset.treatment = treatment;
     watchFrames(frames, treatment);
+    if (passing) startPassing(passing);
     return article;
   }
 
