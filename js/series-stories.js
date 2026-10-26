@@ -156,6 +156,8 @@
       reflection: [
         '*Degrees of Happiness* treats emotion as colour rather than as a subject to illustrate. Yellow, and the orange it becomes, stands for happiness throughout; each painting holds that colour at a different intensity and lets the handling of the paint carry the feeling.',
         'When the feeling is still arriving, the strokes are soft and blended. When it insists, the surface turns to hard edges, built-up squares and a single decisive line. Seen together, the paintings follow one emotion from suggestion to insistence: the colour stays the same, and what changes is how hard it pushes.',
+        'The paintings sit in the tradition of Abstract Expressionism, and each leans toward a different side of it. *Almost Happy* is gestural: the long strokes keep the whole surface moving, as in action painting, where the brushwork is a record of the act of painting. *Aggressive Happiness* leans toward Colour Field painting, which asks large areas of colour to carry feeling. Rothko wanted colour to reach basic human emotions, and Barnett Newman argued that a painting should be an experience rather than a picture of one.',
+        'Hans Hofmann is the closest to what I do with the orange and the teal. He described a painting as a space where colours and shapes advance and recede at the same time, which he called push and pull. In *Aggressive Happiness* the hot orange presses toward the viewer while the cooler teal holds back, and the white break is where the two meet.',
       ],
     },
   },

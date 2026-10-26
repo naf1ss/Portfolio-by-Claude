@@ -33,7 +33,7 @@
   {
     id: 'degrees-of-happiness',
     title: 'Degrees of Happiness',
-    note: 'Abstract paintings that treat happiness as colour. Yellow, and the orange it becomes, is held at a different intensity in each work: in one the feeling is still arriving; in the other it pushes back.',
+    note: 'Two abstract paintings that treat happiness as colour, in the line of Abstract Expressionism and Colour Field painting. Yellow, and the orange it becomes, is held at a different intensity in each: in one the feeling is still arriving; in the other it pushes back.',
     hangTogether: true,
     workIds: ['A030', 'A041'],
   },
