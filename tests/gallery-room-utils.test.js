@@ -92,3 +92,29 @@ test('sectionScales: without relative scale every single work fills its wall', (
   const fitted = R.sectionInches(small);
   assert.ok(Math.abs(Math.min(available.w / fitted.w, available.h / fitted.h) - alone) < 1e-9);
 });
+
+test('wallSections: apart (phones), a series hangs in its own order, one work to each stretch', () => {
+  const works = [
+    { id: 'a', category: 'painting', w: 900, h: 1200 },
+    { id: 'c', category: 'painting', w: 900, h: 1200 },
+    { id: 'b', category: 'painting', w: 900, h: 1200 },
+    { id: 'z', category: 'painting', w: 900, h: 1200 },
+  ];
+  const series = [{ id: 's', title: 'S', hangTogether: true, workIds: ['a', 'b', 'c'] }];
+  const sections = R.wallSections(works, series, { together: false });
+  assert.deepEqual(sections.map((section) => section.works.map((w) => w.id)), [['a'], ['b'], ['c'], ['z']]);
+  assert.deepEqual(sections.map((section) => section.part || null), [
+    { number: 1, total: 3 },
+    { number: 2, total: 3 },
+    { number: 3, total: 3 },
+    null,
+  ]);
+});
+
+test('frameKind: works on paper are matted whatever their category; canvases and panels are not', () => {
+  assert.equal(R.frameKind({ category: 'painting', medium: 'Poster color on paper' }), 'paper');
+  assert.equal(R.frameKind({ category: 'painting', medium: 'Acrylic on Paper' }), 'paper');
+  assert.equal(R.frameKind({ category: 'painting', medium: 'Oil on canvas panel' }), 'canvas');
+  assert.equal(R.frameKind({ category: 'print', medium: 'Intaglio' }), 'paper');
+  assert.equal(R.frameKind({ category: 'drawing', medium: 'Charcoal' }), 'paper');
+});

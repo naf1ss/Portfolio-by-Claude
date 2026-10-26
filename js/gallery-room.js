@@ -85,7 +85,15 @@
     const facts = element('dl', 'room__facts');
     const addFact = (text) => text && facts.append(element('dd', undefined, text));
 
-    if (section.series) {
+    if (section.part) {
+      // One work of a series, hung on its own (phones): its own title and facts, and where it sits in the series.
+      label.append(element('p', 'room__kicker', `${section.series.title} · ${section.part.number} of ${section.part.total}`));
+      label.append(createTitle(lead.title || lead.medium || 'Untitled'));
+      addFact(lead.medium);
+      const size = sizeLine(lead.dimensions);
+      if (size) facts.append(size);
+      addFact(lead.year ? String(lead.year) : '');
+    } else if (section.series) {
       label.append(element('p', 'room__kicker', `${categoryLabel} · Series of ${works.length}`));
       label.append(createTitle(section.series.title));
       const media = new Set(works.map((work) => work.medium));
@@ -103,7 +111,8 @@
       addFact(lead.year ? String(lead.year) : '');
     }
     label.append(element('span', 'room__rule'), facts);
-    if (section.series) label.append(...seriesDetails(section));
+    if (section.part) label.append(seriesLink(section.series));
+    else if (section.series) label.append(...seriesDetails(section));
     return label;
   }
 
@@ -130,10 +139,14 @@
       });
       details.push(element('p', 'room__works-heading', R.groupGrid(section.works).rows === 1 ? 'Left to right' : 'In order'), list);
     }
-    const link = element('a', 'room__series-link', 'View the series →');
-    link.href = `series.html?s=${encodeURIComponent(section.series.id)}`;
-    details.push(link);
+    details.push(seriesLink(section.series));
     return details;
+  }
+
+  function seriesLink(series) {
+    const link = element('a', 'room__series-link', 'View the series →');
+    link.href = `series.html?s=${encodeURIComponent(series.id)}`;
+    return link;
   }
 
   /** The artist's notes (or a series' note), hung on the other side of the work. */
@@ -147,7 +160,7 @@
   }
 
   function createFrame(work) {
-    const frame = element('button', `room__frame room__frame--${work.category}`);
+    const frame = element('button', `room__frame room__frame--${R.frameKind(work)}`);
     frame.type = 'button';
     frame.dataset.workId = work.id;
     frame.setAttribute('aria-label', `Open ${work.title || work.medium || 'this work'}`);
@@ -179,7 +192,8 @@
 
   function createSegment(section, categoryLabel) {
     const segment = element('section', 'room__segment');
-    segment.setAttribute('aria-label', section.series ? section.series.title : section.works[0].title || 'Work');
+    const lead = section.works[0];
+    segment.setAttribute('aria-label', section.series && !section.part ? section.series.title : lead.title || 'Work');
     const art = element('div', 'room__art');
     const hang = element('div', 'room__hang');
     const frames = element('div', 'room__frames');
@@ -278,8 +292,13 @@
       },
     });
 
+    // Phones hang each work of a series on its own stretch of wall (see wallSections).
+    const phone = window.matchMedia('(max-width: 40rem)');
+    let hung = [];
+
     function buildWall(works) {
-      sections = R.wallSections(works, series);
+      hung = works;
+      sections = R.wallSections(works, series, { together: !phone.matches });
       const categoryLabel = labels.get(works[0] && works[0].category) || 'Work';
       // An empty stretch of wall at each end, so the first and last works are not at the edge of the world.
       const segments = [element('div', 'room__segment room__segment--end')];
@@ -320,12 +339,13 @@
       const segments = parts.track.querySelectorAll('.room__segment:not(.room__segment--end)');
       const scales = relative
         ? R.sectionScales(sections, availableSpace())
-        : sections.map((section, i) => R.sectionScales([section], availableSpace(segments[i]), { relative: false })[0]);
+        : sections.map((section, i) => R.sectionScales([section], availableSpace(segments[i]), { relative: false, compact: true })[0]);
+      const frameOptions = { compact: !relative };
 
       parts.track.querySelectorAll('.room__segment:not(.room__segment--end)').forEach((segment, i) => {
         const section = sections[i];
         const ppi = scales[i];
-        const outer = R.sectionInches(section);
+        const outer = R.sectionInches(section, frameOptions);
         segment.style.setProperty('--room-fw', `${(outer.w * ppi).toFixed(1)}px`);
         segment.style.setProperty('--room-fh', `${(outer.h * ppi).toFixed(1)}px`);
         segment.style.setProperty('--room-lamp-gap', `${Math.max(44, outer.h * ppi * 0.13).toFixed(1)}px`);
@@ -335,7 +355,7 @@
         frames.style.setProperty('--room-spacing', `${(R.GROUP_SPACING_IN * ppi).toFixed(1)}px`);
 
         frames.querySelectorAll('.room__frame').forEach((frame, j) => {
-          const size = R.framedInches(section.works[j]);
+          const size = R.framedInches(section.works[j], frameOptions);
           frame.style.setProperty('--room-moulding', `${Math.max(4, size.framing.moulding * ppi).toFixed(1)}px`);
           frame.style.setProperty('--room-inner', `${Math.max(3, size.framing.inner * ppi).toFixed(1)}px`);
           frame.style.setProperty('--room-pw', `${(size.picture.w * ppi).toFixed(1)}px`);
@@ -347,11 +367,11 @@
         // Each bay's pool of light sits over its own frame: offsets from the centre of the row.
         const pools = segment.querySelectorAll('.room__pool--bay');
         if (pools.length) {
-          const widths = section.works.map((work) => R.framedInches(work).w * ppi);
+          const widths = section.works.map((work) => R.framedInches(work, frameOptions).w * ppi);
           const spacing = R.GROUP_SPACING_IN * ppi;
           let left = -(widths.reduce((sum, w) => sum + w, 0) + spacing * (widths.length - 1)) / 2;
           pools.forEach((pool, j) => {
-            const size = R.framedInches(section.works[j]);
+            const size = R.framedInches(section.works[j], frameOptions);
             pool.style.setProperty('--pool-x', `${(left + widths[j] / 2).toFixed(1)}px`);
             pool.style.setProperty('--room-fw', `${(size.w * ppi).toFixed(1)}px`);
             pool.style.setProperty('--room-fh', `${(size.h * ppi).toFixed(1)}px`);
@@ -452,6 +472,16 @@
       const dy = event.clientY - swipeStart.y;
       swipeStart = null;
       if (Math.abs(dx) > SWIPE_DISTANCE && Math.abs(dx) > Math.abs(dy) * 1.5) walk(dx < 0 ? 1 : -1);
+    });
+
+    // Turning a phone to a wider screen (or back) rehangs the wall, standing at the same work.
+    phone.addEventListener('change', () => {
+      if (room.hidden || !hung.length) return;
+      const here = sections[index] && sections[index].works[0].id;
+      buildWall(hung);
+      index = Math.max(0, R.sectionIndexOf(sections, here));
+      layout();
+      revealCurrentText(0);
     });
 
     let resizeFrame = 0;

@@ -19,6 +19,8 @@
     print: Object.freeze({ moulding: 0.6, inner: 2.8 }),
     drawing: Object.freeze({ moulding: 0.6, inner: 2.8 }),
   });
+  // Phones: a narrow mat, so on a small screen the picture, not the mat, takes the room.
+  const COMPACT_MAT_IN = 1.2;
 
   const FALLBACK_LONG_SIDE_IN = 16; // for works with no size in the catalogue
   // Hanging follows gallery practice: every work, and every group as a unit, is hung "on centre", its middle
@@ -43,9 +45,21 @@
     return ratio >= 1 ? { w: longSide, h: longSide / ratio } : { w: longSide * ratio, h: longSide };
   }
 
-  /** Outer size in inches once framed. */
-  function framedInches(work) {
-    const framing = FRAMING[work.category] || FRAMING.painting;
+  /**
+   * How a work is framed: "paper" (a white mat inside a thin moulding) for anything on paper, whatever its
+   * category, so a painting in poster colour or acrylic on paper is matted like a print; "canvas" (a dark float
+   * frame) otherwise.
+   */
+  function frameKind(work) {
+    if (work.category === 'print' || work.category === 'drawing') return 'paper';
+    return /\bon\s+paper\b/i.test(work.medium || '') ? 'paper' : 'canvas';
+  }
+
+  /** Outer size in inches once framed; `compact` (phones) narrows the mat around a work on paper. */
+  function framedInches(work, { compact = false } = {}) {
+    const paper = frameKind(work) === 'paper';
+    const base = paper ? FRAMING.print : FRAMING.painting;
+    const framing = paper && compact ? { ...base, inner: COMPACT_MAT_IN } : base;
     const picture = sizeInches(work);
     const edge = 2 * (framing.moulding + framing.inner);
     return { w: picture.w + edge, h: picture.h + edge, picture, framing };
@@ -53,9 +67,11 @@
 
   /**
    * Stretches of wall, in order: one work each, except series marked `hangTogether`, whose visible works share
-   * one stretch at the place of the first of them.
+   * one stretch at the place of the first of them. With `together: false` (phones, where a group on one narrow
+   * wall leaves every work a thumbnail) a series still hangs in its own order at that place, but each work has
+   * a stretch of its own, marked `part: { number, total }` so its label can say where it sits in the series.
    */
-  function wallSections(works, seriesList = []) {
+  function wallSections(works, seriesList = [], { together = true } = {}) {
     const groupOf = new Map();
     seriesList
       .filter((series) => series.hangTogether && Array.isArray(series.workIds))
@@ -83,7 +99,18 @@
       section.works.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
       section.works = hangGroup(section.works);
     });
-    return sections;
+    if (together) return sections;
+    return sections.flatMap((section) => {
+      if (!section.series) return [section];
+      const order = section.series.workIds;
+      const inOrder = section.works.slice().sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+      return inOrder.map((work, i) => ({
+        id: work.id,
+        works: [work],
+        series: section.series,
+        part: { number: i + 1, total: inOrder.length },
+      }));
+    });
   }
 
   /** Whether every work in a group has the same framed size (a set of prints, say). */
@@ -123,8 +150,8 @@
   }
 
   /** Outer size in inches of everything hung on one stretch of wall. */
-  function sectionInches(section) {
-    const sizes = section.works.map(framedInches);
+  function sectionInches(section, options = {}) {
+    const sizes = section.works.map((work) => framedInches(work, options));
     if (sizes.length === 1) return { w: sizes[0].w, h: sizes[0].h };
     const { columns, rows } = groupGrid(section.works);
     if (rows === 1) {
@@ -147,12 +174,13 @@
    * With `relative: false` (phones, where one shared scale leaves a 12 in canvas a thumbnail) every section
    * is simply as large as its wall allows; the label still gives the real size.
    */
-  function sectionScales(sections, available, { relative = true } = {}) {
+  function sectionScales(sections, available, { relative = true, compact = false } = {}) {
+    const inches = (section) => sectionInches(section, { compact });
     const fit = (size) => Math.min(available.w / size.w, available.h / size.h);
-    const singles = sections.filter((section) => section.works.length === 1).map(sectionInches);
+    const singles = sections.filter((section) => section.works.length === 1).map(inches);
     const shared = relative && singles.length ? Math.min(...singles.map(fit)) : Infinity;
     return sections.map((section) => {
-      const scale = Math.min(shared, fit(sectionInches(section)));
+      const scale = Math.min(shared, fit(inches(section)));
       return Number.isFinite(scale) ? scale : 1;
     });
   }
@@ -174,6 +202,7 @@
     isWallCategory,
     sizeInches,
     framedInches,
+    frameKind,
     wallSections,
     groupGrid,
     isUniform,
