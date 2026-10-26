@@ -20,8 +20,12 @@ window.SITE_CONFIG = {
   // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs
   // and ceramics are shown in their own sections of the gallery; the six Horizon monotypes stay in their series.
   selectedIds: [
-    'A042', 'A010', 'A017', 'A028', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
+    'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
   ],
+
+  // Kept off the gallery's grid view, but still hung on the wall and shown in their series: two of the three
+  // still-life drawings, which only make sense beside the others.
+  gridHiddenIds: ['A008', 'A009'],
 
   // "Browse by medium" on the home page shows one work beside each medium. A visitor's first home page in a
   // session shows each `best`; after that every visit shows a random work from the same medium. A medium
@@ -30,7 +34,7 @@ window.SITE_CONFIG = {
     { category: 'painting', best: 'A043' },
     { category: 'print', best: 'A027' },
     { category: 'ceramics', best: 'ceramics9' },
-    { category: 'digital', best: 'A031' },
+    { category: 'digital', best: 'A014' },
     { category: 'drawing', best: 'A007' },
     { category: 'photography' },
   ],

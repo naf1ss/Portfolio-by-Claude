@@ -193,6 +193,10 @@
       category = next;
       const visible = U.filterWorks(all, category);
       const wall = showingWall();
+      // The grid leaves out a few works that belong on the wall and in their series (site-config.js); a work
+      // opened by its link is always shown.
+      const gridHidden = new Set(config.gridHiddenIds || []);
+      const inGrid = visible.filter((work) => !gridHidden.has(work.id) || work.id === focusId);
       const showingPhotos = category === 'photography';
       const showingIndex = showingPhotos && currentView() === 'wall';
       list.hidden = wall || showingPhotos;
@@ -228,11 +232,11 @@
         lightbox.setWorks(room.order());
       } else {
         room.hide();
-        window.Gallery.renderGallery(list, visible, {
+        window.Gallery.renderGallery(list, inGrid, {
           hrefFor: (work) => U.hashForWork(work),
           eagerCount: 6,
         });
-        lightbox.setWorks(visible);
+        lightbox.setWorks(inGrid);
       }
       picker.setActive(category);
       picker.setView(currentView(), {
@@ -241,12 +245,13 @@
       });
       if (photographer) photographer.classList.toggle('is-shown', category === 'photography');
 
-      const noun = visible.length === 1 ? 'work' : 'works';
+      const shown = wall || showingPhotos ? visible : inGrid;
+      const noun = shown.length === 1 ? 'work' : 'works';
       const where = wall ? ' on the wall' : '';
       status.textContent =
         category === 'all'
-          ? `Showing all ${visible.length} ${noun}`
-          : `Showing ${visible.length} ${noun}${where}: ${labels.get(category)}`;
+          ? `Showing all ${shown.length} ${noun}`
+          : `Showing ${shown.length} ${noun}${where}: ${labels.get(category)}`;
 
       if (updateUrl) {
         const query = category === DEFAULT_GALLERY_CATEGORY ? '' : `?c=${category}`;
