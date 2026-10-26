@@ -200,12 +200,18 @@
         placePill(placed);
         placed = true;
       },
-      /** `available`: false for media that only show as a grid. */
-      setView(view, { available }) {
+      /**
+       * `available`: false for media that only show as a grid.
+       * `labels`: names to use instead of "Wall" / "Grid" (photography's first view is its series).
+       */
+      setView(view, { available, labels = {} }) {
         viewSwitches.forEach((group) => {
           group.hidden = !available;
           group.querySelectorAll('[data-view]').forEach((choice) => {
+            const label = labels[choice.dataset.view] || VIEWS.find(({ id }) => id === choice.dataset.view).label;
             choice.setAttribute('aria-pressed', String(choice.dataset.view === view));
+            choice.setAttribute('aria-label', label);
+            choice.title = label;
           });
         });
         capsule.classList.toggle('has-views', available);

@@ -34,7 +34,8 @@ const PHONES = [
   { name: 'small phone 375×667', width: 375, height: 667 },
 ];
 
-// Every page, with the controls on it that must take a tap. `tap` selectors are checked only when present.
+// Every page, with the controls on it that must take a tap. `tap` selectors are checked only when present;
+// `storage` seeds localStorage first (a view the visitor chose on an earlier visit).
 const PAGES = [
   { url: 'index.html' },
   { url: 'gallery.html', tap: ['.room__segment.is-here .room__frame', '.room__cord', '.room__walk button', '.menu-toggle'] },
@@ -42,7 +43,8 @@ const PAGES = [
   { url: 'gallery.html?c=print', tap: ['.room__segment.is-here .room__frame'] },
   { url: 'gallery.html?c=digital', tap: ['#gallery .tile'] },
   { url: 'gallery.html?c=ceramics', tap: ['#gallery .tile'] },
-  { url: 'gallery.html?c=photography', tap: ['.pindex__link'] },
+  { url: 'gallery.html?c=photography', tap: ['.pindex__link', '.medium-capsule .view-switch button'] },
+  { url: 'gallery.html?c=photography', tap: ['#gallery .tile'], storage: { 'nuances.photographyView': 'grid' } },
   { url: 'series.html', tap: ['.ticker'] },
   { url: 'series.html?s=eiffel-tower' },
   { url: 'series.html?s=still-life', tap: ['#gallery .tile'] },
@@ -111,6 +113,7 @@ async function checkPage(context, base, page, phone) {
     if (response.status() >= 400) problems.push(`failed to load ${response.url().replace(base, '')} (${response.status()})`);
   });
 
+  if (page.storage) await tab.addInitScript((items) => Object.entries(items).forEach(([key, value]) => localStorage.setItem(key, value)), page.storage);
   await tab.goto(base + page.url, { waitUntil: 'load' });
   await tab.waitForTimeout(1200);
 
@@ -127,7 +130,7 @@ async function checkPage(context, base, page, phone) {
   if (!painted) problems.push('the footer lettering stayed empty');
 
   await tab.close();
-  return problems.map((problem) => `${phone.name} · ${page.url}: ${problem}`);
+  return problems.map((problem) => `${phone.name} · ${page.url}${page.storage ? ' (grid view)' : ''}: ${problem}`);
 }
 
 async function main() {

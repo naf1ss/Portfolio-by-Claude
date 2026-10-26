@@ -86,20 +86,22 @@
 
   // The gallery opens on paintings; ?c=all (or any other medium) is a click away.
   const DEFAULT_GALLERY_CATEGORY = 'painting';
-  const GALLERY_VIEW_KEY = 'nuances.galleryView';
+  // Photography remembers its own choice: it opens as its series, whatever view the paintings were left in.
+  const VIEW_KEYS = { works: 'nuances.galleryView', photography: 'nuances.photographyView' };
+  const viewGroupOf = (category) => (category === 'photography' ? 'photography' : 'works');
 
-  /** "wall" or "grid": how paintings, drawings and prints are shown, remembered between visits. */
-  function readGalleryView() {
+  /** "wall" or "grid", remembered between visits. For photography "wall" is the series index. */
+  function readGalleryView(group) {
     try {
-      return localStorage.getItem(GALLERY_VIEW_KEY) === 'grid' ? 'grid' : 'wall';
+      return localStorage.getItem(VIEW_KEYS[group]) === 'grid' ? 'grid' : 'wall';
     } catch (error) {
       return 'wall';
     }
   }
 
-  function saveGalleryView(view) {
+  function saveGalleryView(group, view) {
     try {
-      localStorage.setItem(GALLERY_VIEW_KEY, view);
+      localStorage.setItem(VIEW_KEYS[group], view);
     } catch (error) {
       // storage unavailable: the choice lasts for this page only
     }
@@ -126,8 +128,9 @@
     let category = U.categoryFromSearch(location.search, DEFAULT_GALLERY_CATEGORY);
     // A link to a medium with nothing in it (a hidden section) opens the default medium instead of an empty page.
     if (category !== 'all' && !counts[category]) category = DEFAULT_GALLERY_CATEGORY;
-    let view = readGalleryView();
-    const showingWall = () => view === 'wall' && RoomUtils.isWallCategory(category);
+    const views = { works: readGalleryView('works'), photography: readGalleryView('photography') };
+    const currentView = () => views[viewGroupOf(category)];
+    const showingWall = () => currentView() === 'wall' && RoomUtils.isWallCategory(category);
 
     // The close-up glides out of whichever picture was clicked: a wall frame or a grid tile.
     let room = null;
@@ -161,9 +164,10 @@
       thumbFor: (id) => (id === 'all' ? null : byId.get(picks.get(id)) || all.find((work) => work.category === id)),
       onSelect: (next) => show(next, { updateUrl: true }),
       onView: (next) => {
-        if (next === view) return;
-        view = next;
-        saveGalleryView(view);
+        const group = viewGroupOf(category);
+        if (next === views[group]) return;
+        views[group] = next;
+        saveGalleryView(group, next);
         show(category, { updateUrl: false });
       },
     });
@@ -177,23 +181,29 @@
       const visible = U.filterWorks(all, category);
       const wall = showingWall();
       const showingPhotos = category === 'photography';
-      list.hidden = wall || showingPhotos;
-      photoBox.hidden = !showingPhotos;
-      if (!showingPhotos && photoIndex) photoIndex.reset();
+      const showingSeries = showingPhotos && currentView() === 'wall';
+      list.hidden = wall || showingSeries;
+      photoBox.hidden = !showingSeries;
+      if (!showingSeries && photoIndex) photoIndex.reset();
       // The CSS places the picker by this: on the wall, or above the grid.
       document.body.dataset.galleryView = wall ? 'wall' : 'grid';
 
       if (showingPhotos) {
         room.hide();
-        list.replaceChildren();
-        if (!photoIndex) {
-          photoIndex = window.PhotoSeries.renderIndex(photoBox, photoSeries, {
-            hrefFor: (series) => `series.html?s=${series.id}`,
-          });
-          window.Motion.reveal(photoBox.querySelectorAll('.pindex__lede, .pindex__line'));
+        // Both views keep the photographs in series order, so the close-up steps through them the same way.
+        const photographs = photoSeries.flatMap((entry) => entry.works);
+        if (showingSeries) {
+          list.replaceChildren();
+          if (!photoIndex) {
+            photoIndex = window.PhotoSeries.renderIndex(photoBox, photoSeries, {
+              hrefFor: (series) => `series.html?s=${series.id}`,
+            });
+            window.Motion.reveal(photoBox.querySelectorAll('.pindex__lede, .pindex__line'));
+          }
+        } else {
+          window.Gallery.renderGallery(list, photographs, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
         }
-        // A shared link to one photograph still opens it here, in series order.
-        lightbox.setWorks(photoSeries.flatMap((entry) => entry.works));
+        lightbox.setWorks(photographs);
       } else if (wall) {
         list.replaceChildren();
         room.show(visible, { focusId });
@@ -207,7 +217,10 @@
         lightbox.setWorks(visible);
       }
       picker.setActive(category);
-      picker.setView(view, { available: RoomUtils.isWallCategory(category) });
+      picker.setView(currentView(), {
+        available: RoomUtils.isWallCategory(category) || showingPhotos,
+        labels: showingPhotos ? { wall: 'Series' } : {},
+      });
       if (photographer) photographer.classList.toggle('is-shown', category === 'photography');
 
       const noun = visible.length === 1 ? 'work' : 'works';
