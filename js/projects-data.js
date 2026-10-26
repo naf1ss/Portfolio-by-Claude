@@ -530,21 +530,22 @@
     ],
   },
   {
-    // From the Recreate/Remix notebook, the DataUSA data, the infographic and its sources (data visualization course).
-    // The wage ratios are calculated from the course dataset (Recreate.csv, 2014–2022). No opening picture, so each picture appears once.
+    // From the Recreate/Remix notebook, the DataUSA data (Recreate.csv, 2014–2022), the first infographic (2025) and its
+    // revision (2026). Every figure in the revision is checked against its source; the wage ratio and its margin of
+    // error are calculated from the published wages and margins. Each picture appears once.
     id: 'women-in-the-art-world',
     title: 'Women in the Art World: Data and Design',
     kicker: 'Data visualization',
     cta: 'Read the case study',
     summary:
-      'How do women fare in the art world, and how can data make the answer clear? I rebuilt and remixed a chart of artists’ wages, then designed a four-panel infographic on women’s place in museums, exhibitions and the art market.',
-    cover: 'dv-infographic-women',
+      'How do women fare in the art world, and how can data make the answer clear? I rebuilt and remixed a chart of artists’ wages, designed an infographic on women’s place in museums and the market, and then revised both: charting the pay gap as a ratio, and rebuilding the infographic so every figure is drawn to scale and traced to its source.',
+    cover: 'dv-infographic-women-2026',
     glance: [
       { label: 'Role', text: 'Researcher, data analyst and designer' },
-      { label: 'Context', text: 'A data visualization course' },
+      { label: 'Context', text: 'A data visualization course (2025), revised in 2026' },
       { label: 'Disciplines', text: 'Data visualization, art-world research, graphic design' },
-      { label: 'Tools', text: 'Python (pandas, Matplotlib), Procreate, Picsart' },
-      { label: 'Data', text: 'DataUSA; National Museum of Women in the Arts; Burns Halperin Report; PLOS One; Freelands Foundation' },
+      { label: 'Tools', text: 'Python (pandas, Matplotlib), Procreate, Picsart; the revision in HTML and SVG' },
+      { label: 'Data', text: 'DataUSA; NCES; the Burns Halperin Report; PLOS ONE; Artnet News; frieze' },
     ],
     sections: [
       {
@@ -555,8 +556,8 @@
           {
             type: 'text',
             paragraphs: [
-              'Women earn most of the fine arts degrees awarded in the United States, yet they make up only a small share of the artists in major museum collections. This project set out to show that gap clearly: first through a chart of what artists earn, then through an infographic a general reader could take in at a glance.',
-              'It had two stages. Rebuilding an existing chart showed me how its design choices shape what it says; designing the infographic meant turning findings from several studies into a single, ordered argument.',
+              'Women earn most of the degrees in the visual and performing arts in the United States, yet they make up only a small share of the artists in major museum collections. This project set out to show that gap clearly: first through a chart of what artists earn, then through an infographic a general reader could take in at a glance.',
+              'It had three stages. Rebuilding an existing chart showed me how its design choices shape what it says; designing the infographic meant turning findings from several studies into one ordered argument; revising both, a year later, meant checking every number and drawing each one to scale.',
             ],
           },
           {
@@ -586,28 +587,25 @@
             ],
           },
           {
-            type: 'criteria',
-            title: 'How to read the charts',
-            items: [
-              { title: 'Across', text: 'Years, from 2014 to 2022.' },
-              { title: 'Up', text: 'Average yearly wage, from $0 to about $80,000.' },
-              { title: 'Colour', text: 'Dark blue for men, red for women.' },
-              { title: 'What to notice', text: 'In every year the red falls well short of the blue, and the two rise together, so the gap never closes.' },
-            ],
+            type: 'decision',
+            eyebrow: 'Key insight',
+            title: 'A pay gap is a ratio',
+            text: 'Paired bars make each year easier to compare, but neither chart shows the gap itself. A pay gap is a ratio: what women earn for each dollar men earn. So the revision charts that ratio directly, against a line for parity.',
           },
+          { type: 'figure', workId: 'dv-wage-ratio', caption: 'The revision: women’s average wage as a share of men’s, with the margin of error shaded.' },
           {
             type: 'stats',
             items: [
               { value: '64–68%', label: 'Women’s average wage as a share of men’s, in every year from 2014 to 2022' },
-              { value: '$49,882', label: 'Women’s average wage in 2022, against $74,780 for men' },
-              { value: '18–19%', label: 'How much each wage rose from 2014 to 2022, so the gap held steady' },
+              { value: '67¢', label: 'For every dollar men earned in 2022: $49,882 against $74,780' },
+              { value: '±9–11 pts', label: 'The margin of error on each year’s ratio, wider than any change from year to year' },
             ],
           },
           {
-            type: 'decision',
-            eyebrow: 'Key insight',
-            title: 'What the remix does and does not do',
-            text: 'Paired bars make each year easier to compare, but a pay gap is a ratio, and neither chart shows one. Calculating it from the data gave the clearest finding: women earned about two-thirds of men’s average wage in every year, and that share barely changed. A further revision would chart the ratio itself.',
+            type: 'text',
+            paragraphs: [
+              'Drawing the margin of error changed the finding. The survey behind these wages leaves a margin of nine to eleven percentage points on each year’s ratio, larger than any movement between years. The honest reading is not that the gap narrowed or widened, but that it held: women earned about two-thirds of what men earned, every year.',
+            ],
           },
         ],
       },
@@ -620,25 +618,31 @@
           {
             type: 'text',
             paragraphs: [
-              'The infographic gathers evidence from the National Museum of Women in the Arts, the Burns Halperin Report, Artnet News, a PLOS One study of museum collections and the Freelands Foundation. Its four panels read from top to bottom as a short argument: a contrast, the evidence behind it, signs of change and a call to action.',
+              'The first infographic, made for the course in 2025, gathered evidence from museums, studies and the art press into four panels that read from top to bottom as a short argument: a contrast, the evidence behind it, signs of change and a call to action. A single magenta marked women throughout, and torn-paper edges separated the panels.',
+              'Returning to it a year later, I found three problems. The circle labelled 87% drew the women’s slice as about a quarter of the whole, when it should have been about an eighth. Two figures, 70% of art graduates and 33% of solo exhibitions, could not be traced to a source. And one line of sources at the foot covered every figure, so a reader could not tell which study said what, or about which years and which museums.',
             ],
           },
           {
-            type: 'annotated',
-            workId: 'dv-infographic-women',
-            caption: 'Women Underrepresented in the Art World, designed in Procreate and Picsart.',
-            title: 'How to read the infographic',
+            type: 'compare',
             items: [
-              { title: 'Dramatic contrast', text: 'The opening sets training against recognition: women are most of the art graduates in the United States, but few of the artists that major museums collect.' },
-              { title: 'Gap by numbers', text: 'The circle shows how lopsided those collections are, with women as the thin magenta slice, and the gallery icon below carries the same imbalance into exhibitions.' },
-              { title: 'Progress', text: 'The turn toward change: a major international exhibition, the 2019 Venice Biennale, that reached gender parity, and an American museum that committed a full year of acquisitions to women.' },
-              { title: 'Call to action', text: 'The balance scale states the argument in one image: equal representation is a matter of fairness, with real consequences for artists’ careers, income and visibility.' },
+              { workId: 'dv-infographic-women', label: 'First version, 2025', caption: 'Designed in Procreate and Picsart.' },
+              { workId: 'dv-infographic-women-2026', label: 'Revised, 2026', caption: 'Drawn from the data, every figure with its source.' },
+            ],
+          },
+          {
+            type: 'criteria',
+            title: 'What the revision changes',
+            items: [
+              { title: 'Drawn to scale', text: 'Each bar is drawn from its value on one scale from 0 to 100%, with a line for parity, so no shape can say more or less than its number.' },
+              { title: 'One argument', text: 'The figures are ordered as steps, from studying art to being shown, collected, bought and sold, and the share of women falls at each one: from 61% to 3%.' },
+              { title: 'Every figure traced', text: 'Each number carries its year, the museums or population it describes, and a numbered source. The two figures that could not be traced were replaced with ones that could.' },
+              { title: 'What stays', text: 'The magenta for women, the signs of change and the closing call to action, now with the facts behind them stated exactly.' },
             ],
           },
           {
             type: 'decision',
-            title: 'One colour for women',
-            text: 'A single magenta marks women throughout: the slice of the museum chart, the graduate’s cap, the figure at the easel. Black and grey carry everything else, so the eye can follow one thread through all four panels, which are separated by torn-paper edges.',
+            title: 'Accuracy is part of the design',
+            text: 'An infographic asks to be believed at a glance, so its shapes have to be as exact as its numbers. In the revision the drawing and the data are the same thing: every bar is generated from the figure it shows.',
           },
         ],
       },
@@ -650,13 +654,13 @@
           {
             type: 'text',
             paragraphs: [
-              'Charts and paintings pose the same question: what does the viewer see first? Rebuilding a chart showed me how much small choices of colour, scale and baseline decide what numbers appear to say, and designing the infographic showed me that evidence persuades only when it is ordered. Both lessons carry back into my painting, where I am always deciding what the eye meets first.',
+              'Charts and paintings pose the same question: what does the viewer see first? Rebuilding a chart showed me how much small choices of colour, scale and baseline decide what numbers appear to say, and designing the infographic showed me that evidence persuades only when it is ordered. Revising it taught me the last lesson: a striking image built on an untraceable number, or a slice drawn the wrong size, undoes the argument it was made to carry.',
             ],
           },
           { type: 'link', text: 'See the code and data on GitHub', url: 'https://github.com/naf1ss/DSportfolio' },
           {
             type: 'credits',
-            text: 'Data: DataUSA (artists and related workers); National Museum of Women in the Arts; Burns Halperin Report (Artnet News, 2022); UNESCO Courier; Gendered Prices (The Review of Financial Studies); Hyperallergic. GitHub Copilot helped with the bar chart code, and ChatGPT with brainstorming and drafting the written reports; the infographic is my own design.',
+            text: 'Sources: DataUSA (American Community Survey), artists and related workers, 2014–2022; National Center for Education Statistics, Digest of Education Statistics 2017, Table 325.95; Charlotte Burns and Julia Halperin, The Burns Halperin Report, Artnet News, 2022; Chad M. Topaz et al., “Diversity of artists in major U.S. museums,” PLOS ONE, 2019; frieze and Elephant on the 2019 Venice Biennale; Artnet News on the Baltimore Museum of Art, 2019. GitHub Copilot helped with the bar chart code and ChatGPT with brainstorming and drafting the written reports. The first infographic is my own design; the 2026 revision and the ratio chart were built with Claude, from figures checked against these sources.',
           },
         ],
       },
