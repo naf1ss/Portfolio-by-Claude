@@ -6331,6 +6331,45 @@ body[data-gallery-view='wall'] .medium-capsule {
   margin-top: 0.45rem;
 }
 
+/* A short status line under a row's points (Planet Walk). */
+.ledger-note {
+  margin: -0.4rem 0 0;
+  padding: 0 2rem 1.4rem calc(12rem + 1.5rem);
+  max-width: 54rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* Honors and sports: a plain list with the same en dash as the rows. */
+.resume-list {
+  max-width: 54rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resume-list li {
+  position: relative;
+  padding-left: 1.4rem;
+}
+
+.resume-list li::before {
+  content: '\2013';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.resume-list li + li {
+  margin-top: 0.45rem;
+}
+
+.ledger-more a,
+.ledger-note a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 /* Coursework and skills: plain lines under a small label. */
 .resume-plain {
   max-width: 52rem;
@@ -6359,7 +6398,8 @@ body[data-gallery-view='wall'] .medium-capsule {
     grid-column: 1 / -1;
   }
 
-  .ledger-more ul {
+  .ledger-more ul,
+  .ledger-note {
     padding: 0 0 1.4rem;
   }
 }
