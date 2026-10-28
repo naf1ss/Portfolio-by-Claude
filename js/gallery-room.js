@@ -15,6 +15,11 @@
   const SWIPE_DISTANCE = 50;
   const LAMP_ROOM_PX = 64; // space kept above the tallest work for its lamp
   const PHONE_LAMP_PX = 52; // phones: the lamp's gap, kept above and below the frame so it stays centred
+// Museums hang a work with its centre about 57 inches (145 cm) above the floor. The wall runs on below the screen to
+  // that height, at the wall's own scale, so the floor is reached by scrolling down rather than sitting under the frames.
+  const HANG_CENTRE_IN = 57;
+  const MAX_WALL_BELOW = 0.4; // at most this share of the screen's height, so the works stay in view above the floor
+  const PHONE_WALL_BELOW = 0.3; // phones: works are not drawn to scale, so a fixed share of the screen
   const PHONE_LABEL_GAP_PX = 18; // phones: between the frame and its label
   const NOTES_MIN_GAP_PX = 48; // wide screens: between the frames and the note beside them
   // The wall text writes itself in when you arrive at a work (the pictures never animate). Delays in ms.
@@ -328,6 +333,25 @@
       return { w: innerW * 0.9, h: (innerH - labelH - PHONE_LABEL_GAP_PX - 2 * PHONE_LAMP_PX) * 0.95 };
     }
 
+    /**
+     * The wall below the works, down to the floor. Wide screens draw the wall to scale, so the floor is placed where a
+     * museum's would be: a single work's centre HANG_CENTRE_IN above it, at the shared scale of single works (groups
+     * are only ever drawn smaller). Phones size each work to fit the screen, not to scale, so they get a fixed
+     * stretch of wall instead. The works keep their place on screen; only the floor moves down.
+     */
+    function setWallBelow(scales, relative) {
+      const segment = parts.track.querySelector('.room__segment:not(.room__segment--end)');
+      const art = segment && segment.querySelector('.room__art');
+      if (!art || scales.length === 0) return;
+      let below = window.innerHeight * PHONE_WALL_BELOW;
+      if (relative) {
+        const centreToFloor = segment.getBoundingClientRect().bottom - (art.getBoundingClientRect().top + art.offsetHeight / 2);
+        below = HANG_CENTRE_IN * Math.max(...scales) - centreToFloor;
+      }
+      below = Math.min(window.innerHeight * MAX_WALL_BELOW, Math.max(0, below));
+      room.style.setProperty('--room-below', `${Math.round(below)}px`);
+    }
+
     /** Sizes every frame from one scale (see sectionScales) and keeps the camera on the current section. */
     function layout() {
       if (room.hidden || sections.length === 0) return;
@@ -341,6 +365,7 @@
         ? R.sectionScales(sections, availableSpace())
         : sections.map((section, i) => R.sectionScales([section], availableSpace(segments[i]), { relative: false, compact: true })[0]);
       const frameOptions = { compact: !relative };
+      setWallBelow(scales, relative);
 
       parts.track.querySelectorAll('.room__segment:not(.room__segment--end)').forEach((segment, i) => {
         const section = sections[i];

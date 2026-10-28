@@ -4876,8 +4876,9 @@ body[data-gallery-view='wall'] .medium-capsule {
   position: relative;
   overflow: hidden;
   /* Fills the screen below the header and filters (gallery-room.js measures --room-top), so the work sits
-     in the middle of the screen. */
-  height: max(26rem, calc(100svh - var(--room-top, 8rem)));
+     in the middle of the screen; the wall then runs on below the screen (--room-below, set by gallery-room.js
+     from the museum hanging height) before the floor. */
+  height: calc(max(26rem, calc(100svh - var(--room-top, 8rem))) + var(--room-below, 0px));
   background: var(--room-wall);
   color: var(--room-ink);
   user-select: none;
@@ -4936,7 +4937,8 @@ body[data-gallery-view='wall'] .medium-capsule {
   grid-template-rows: minmax(0, 1fr) auto;
   gap: 1.25rem;
   width: var(--room-segment, 100vw);
-  height: 100%;
+  /* The works fill the first screen of wall; the extra wall below them is left bare. */
+  height: calc(100% - var(--room-below, 0px));
   padding: 4.25rem var(--gutter) 1.5rem;
 }
 
@@ -5390,7 +5392,7 @@ body[data-gallery-view='wall'] .medium-capsule {
 @media (max-width: 61.99rem) {
   .room {
     --room-floor-h: clamp(3.5rem, 10svh, 6rem);
-    height: max(34rem, calc(100svh - var(--room-top, 8rem)));
+    height: calc(max(34rem, calc(100svh - var(--room-top, 8rem))) + var(--room-below, 0px));
   }
 
   /* A compact label under the work: title, then medium, size and year on one line. */
@@ -5655,7 +5657,7 @@ body[data-gallery-view='wall'] .medium-capsule {
   position: absolute;
   z-index: 4;
   right: var(--room-edge);
-  bottom: calc(var(--room-floor-h) + 0.75rem);
+  bottom: calc(var(--room-floor-h) + var(--room-below, 0px) + 0.75rem);
   display: flex;
   gap: 0.25rem;
 }
