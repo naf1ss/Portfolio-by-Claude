@@ -18,7 +18,7 @@
 // Museums hang a work with its centre about 57 inches (145 cm) above the floor. The wall runs on below the screen to
   // that height, at the wall's own scale, so the floor is reached by scrolling down rather than sitting under the frames.
   const HANG_CENTRE_IN = 57;
-  const MAX_WALL_BELOW = 0.4; // at most this share of the screen's height, so the works stay in view above the floor
+  const MAX_WALL_BELOW = 0.2; // at most this share of the screen's height, so the works stay in view above the floor
   const PHONE_WALL_BELOW = 0.3; // phones: works are not drawn to scale, so a fixed share of the screen
   const PHONE_LABEL_GAP_PX = 18; // phones: between the frame and its label
   const NOTES_MIN_GAP_PX = 48; // wide screens: between the frames and the note beside them
