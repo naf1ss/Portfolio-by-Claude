@@ -215,6 +215,8 @@
       const showingPhotos = category === 'photography';
       const showingIndex = showingPhotos && currentView() === 'wall';
       list.hidden = wall || showingPhotos;
+      // The CSS can present a medium its own way (graphic design: flyers shown large, as printed sheets).
+      list.dataset.medium = category;
       photoBox.hidden = !showingIndex;
       photoGrid.hidden = !showingPhotos || showingIndex;
       if (!showingIndex && photoIndex) photoIndex.reset();

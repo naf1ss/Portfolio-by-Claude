@@ -25,6 +25,7 @@
     { id: 'drawing', label: 'Drawing' },
     { id: 'print', label: 'Prints' },
     { id: 'digital', label: 'Digital' },
+    { id: 'design', label: 'Graphic design' },
     { id: 'photography', label: 'Photography' },
     { id: 'ceramics', label: 'Ceramics' },
     { id: 'wall-magazine', label: 'Wall magazine', onHome: false },

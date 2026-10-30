@@ -12,6 +12,7 @@ window.SITE_CONFIG = {
   // (newest first). Horizon's prints hang together on the wall wherever the first of them falls.
   galleryOrder: {
     print: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A027', 'A025', 'A026'],
+    design: ['flyer-mindfulness', 'flyer-hsa-trip', 'flyer-meet-daniel-collins', 'flyer-ash-wednesday', 'flyer-chicken-fingers'],
   },
 
   // The big "Latest work" feature on the home page.
@@ -35,6 +36,7 @@ window.SITE_CONFIG = {
     { category: 'print', best: 'A027' },
     { category: 'ceramics', best: 'ceramics9' },
     { category: 'digital', best: 'A014' },
+    { category: 'design', best: 'flyer-mindfulness' },
     { category: 'drawing', best: 'A007' },
     { category: 'photography' },
   ],

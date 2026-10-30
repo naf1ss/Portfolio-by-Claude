@@ -3,7 +3,7 @@
  * "Artwork Catalogue.xlsx" and the optimised images in /images.
  *
  *   id        catalogue id (also the URL hash, lower-cased)
- *   category  painting | drawing | print | digital | ceramics | wall-magazine (photography lives in works-photography.js)
+ *   category  painting | drawing | print | digital | design | ceramics | wall-magazine (photography lives in works-photography.js)
  *   base      image path without size suffix, relative to /images
  *   ws        real pixel widths of the -600, -1200 and -1800 files
  *   w, h      pixel size of the largest file (drives layout before load)
@@ -81,6 +81,13 @@
   { id: 'A042', title: 'Quarry', year: 2026, medium: 'Oil impasto on wood panel', dimensions: '12x9 inches', category: 'painting', base: 'artwork/a042-quarry', ws: [600, 1200, 1800], w: 1800, h: 1449 },
   { id: 'A043', title: 'Old Master Study- The Milkmaid', year: 2026, medium: 'Oil on canvas panel', dimensions: '16x20 inches', category: 'painting', base: 'artwork/a043-old-master-study-the-milkmaid', ws: [600, 1200, 1800], w: 1800, h: 2246,
     notes: 'I chose Vermeer’s The Milkmaid (c. 1658–1660) because it makes an ordinary moment feel important, and it does so through light. Copying it closely was a lesson in looking. I matched the contrast between the soft light from the window and the shadow in the room, and mixed the yellow bodice and deep blue apron until they sat as they do in the original. I also worked on the textures: the crust of the bread, the glaze of the pottery, the heavy cloth, the plaster wall. What I took from it is how much calm comes from careful observation and restraint.' },
+
+  // Graphic design: flyers, best first in site-config.js (galleryOrder.design).
+  { id: 'flyer-mindfulness', title: 'Spring Mindfulness Retreat', year: 2026, medium: 'Flyer for the Center for Religious and Spiritual Life', dimensions: null, category: 'design', base: 'design/flyer-mindfulness', ws: [600, 1200, 1800], w: 1800, h: 2250 },
+  { id: 'flyer-hsa-trip', title: 'Hindu Student Association Field Trip', year: 2026, medium: 'Flyer for the Center for Religious and Spiritual Life', dimensions: null, category: 'design', base: 'design/flyer-hsa-trip', ws: [600, 1200, 1800], w: 1800, h: 2250 },
+  { id: 'flyer-meet-daniel-collins', title: 'Meet Daniel Collins', year: 2026, medium: 'Flyer for the Center for Religious and Spiritual Life', dimensions: null, category: 'design', base: 'design/flyer-meet-daniel-collins', ws: [600, 1200, 1545], w: 1545, h: 2000 },
+  { id: 'flyer-ash-wednesday', title: 'Ash Wednesday', year: 2026, medium: 'Flyer for the Center for Religious and Spiritual Life', dimensions: null, category: 'design', base: 'design/flyer-ash-wednesday', ws: [600, 1080, 1080], w: 1080, h: 1350 },
+  { id: 'flyer-chicken-fingers', title: 'Chicken Finger Friday', year: 2024, medium: 'Flyer', dimensions: null, category: 'design', base: 'design/flyer-chicken-fingers', ws: [600, 1200, 1800], w: 1800, h: 1200 },
 
   // Ceramics are untitled photographs for now; add title/year here when ready.
   { id: 'ceramics8', title: null, year: 2026, medium: 'Ceramics', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics8', ws: [600, 1200, 1800], w: 1800, h: 1940 },

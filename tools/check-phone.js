@@ -42,6 +42,7 @@ const PAGES = [
   { url: 'gallery.html?c=drawing', tap: ['.room__segment.is-here .room__frame', '.room__cord'] },
   { url: 'gallery.html?c=print', tap: ['.room__segment.is-here .room__frame'] },
   { url: 'gallery.html?c=digital', tap: ['#gallery .tile'] },
+  { url: 'gallery.html?c=design', tap: ['#gallery .tile'] },
   { url: 'gallery.html?c=ceramics', tap: ['#gallery .tile'] },
   { url: 'gallery.html?c=photography', tap: ['.pindex__link', '.medium-capsule .view-switch button'] },
   { url: 'gallery.html?c=photography', tap: ['#photo-grid .tile'], storage: { 'nuances.photographyView': 'grid' } },

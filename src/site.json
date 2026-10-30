@@ -9,6 +9,7 @@
         {"label": "Drawing", "href": "gallery.html?c=drawing"},
         {"label": "Prints", "href": "gallery.html?c=print"},
         {"label": "Digital", "href": "gallery.html?c=digital"},
+        {"label": "Graphic design", "href": "gallery.html?c=design"},
         {"label": "Photography", "href": "gallery.html?c=photography"},
         {"label": "Ceramics", "href": "gallery.html?c=ceramics"}
       ]

@@ -3427,6 +3427,17 @@ html {
   list-style: none;
 }
 
+/* Graphic design: flyers are made to be read at a glance from across a room, so they are shown large, as
+   printed sheets lifted off the page. */
+.gallery[data-medium='design'] {
+  --row-height: clamp(15rem, 30vw, 28rem);
+  gap: calc(var(--gap) * 2.25) calc(var(--gap) * 1.5);
+}
+
+.gallery[data-medium='design'] .tile__frame {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 12px 28px -10px rgb(0 0 0 / 0.35);
+}
+
 /* Keeps a short last row from stretching across the whole width. */
 .gallery::after {
   content: '';
