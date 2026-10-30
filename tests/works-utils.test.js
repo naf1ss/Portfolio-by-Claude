@@ -525,3 +525,17 @@ test('photography: every photograph has a measured brightness (run tools/photo-b
   const missing = PHOTOS.filter((photo) => typeof brightness[photo.id] !== 'number').map((photo) => photo.id);
   assert.deepEqual(missing, []);
 });
+
+test('groupSets moves every member of a set up behind the first, and countByCategory counts a set once', () => {
+  const works = [
+    work({ id: 'a', category: 'design' }),
+    work({ id: 's1', category: 'design', set: 'board' }),
+    work({ id: 'b', category: 'design' }),
+    work({ id: 's2', category: 'design', set: 'board' }),
+    work({ id: 's3', category: 'design', set: 'board' }),
+  ];
+  assert.deepEqual(U.groupSets(works).map((w) => w.id), ['a', 's1', 's2', 's3', 'b']);
+  const counts = U.countByCategory(works);
+  assert.equal(counts.design, 3);
+  assert.equal(counts.all, 3);
+});

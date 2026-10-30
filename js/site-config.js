@@ -12,7 +12,10 @@ window.SITE_CONFIG = {
   // (newest first). Horizon's prints hang together on the wall wherever the first of them falls.
   galleryOrder: {
     print: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A027', 'A025', 'A026'],
-    design: ['flyer-mindfulness', 'flyer-hsa-trip', 'flyer-meet-daniel-collins', 'flyer-ash-wednesday', 'flyer-chicken-fingers'],
+    design: [
+      'flyer-mindfulness', 'flyer-hsa-trip', 'flyer-meet-daniel-collins', 'flyer-ash-wednesday', 'flyer-chicken-fingers',
+      'sangam-team', 'sangam-vice-president', 'sangam-secretary', 'sangam-treasurer', 'sangam-photographer',
+    ],
   },
 
   // The big "Latest work" feature on the home page.

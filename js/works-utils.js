@@ -91,15 +91,40 @@
       : works.filter((work) => work.category === category);
   }
 
+  /** Works per category; a set (several works shown as one tile) counts once. */
   function countByCategory(works) {
-    const counts = { all: works.length };
+    const counts = { all: 0 };
     CATEGORIES.forEach(({ id }) => {
       counts[id] = 0;
     });
+    const seenSets = new Set();
     works.forEach((work) => {
+      if (work.set) {
+        if (seenSets.has(work.set)) return;
+        seenSets.add(work.set);
+      }
+      counts.all += 1;
       counts[work.category] = (counts[work.category] || 0) + 1;
     });
     return counts;
+  }
+
+  /**
+   * The same works, with every member of a set moved up to follow the first one, in their own order. The grid
+   * then shows each set as one tile, and the viewer steps through its members together.
+   */
+  function groupSets(works) {
+    const members = new Map();
+    works.forEach((work) => {
+      if (work.set) members.set(work.set, [...(members.get(work.set) || []), work]);
+    });
+    const placed = new Set();
+    return works.flatMap((work) => {
+      if (!work.set) return [work];
+      if (placed.has(work.set)) return [];
+      placed.add(work.set);
+      return members.get(work.set);
+    });
   }
 
   /**
@@ -307,6 +332,7 @@
     aspectRatio,
     filterWorks,
     countByCategory,
+    groupSets,
     sortWorks,
     applyCuratedOrder,
     formatDimensions,

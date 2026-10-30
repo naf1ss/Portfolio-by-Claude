@@ -167,6 +167,24 @@
         if (showingWall()) room.goTo(work.id, { animate: false });
       },
     });
+    // What the close-up steps through for the medium on show. A set's tile opens the close-up on that set alone,
+    // and closing it returns to the whole medium.
+    let viewerWorks = [];
+    const useViewerWorks = (works) => {
+      viewerWorks = works;
+      lightbox.setWorks(works);
+    };
+    list.addEventListener(
+      'click',
+      (event) => {
+        const tile = event.target.closest('.tile--set');
+        const set = tile && byId.get(tile.dataset.workId) && byId.get(tile.dataset.workId).set;
+        if (!set) return;
+        lightbox.setWorks(viewerWorks.filter((work) => work.set === set));
+        document.getElementById('viewer').addEventListener('close', () => lightbox.setWorks(viewerWorks), { once: true });
+      },
+      true // before the shared click handler opens the close-up
+    );
     // Photography is shown as an index of series, each opening its own room on the series page, or as a grid.
     const photoBox = document.getElementById('photo-index');
     const photoGrid = document.getElementById('photo-grid');
@@ -206,7 +224,8 @@
 
     function show(next, { updateUrl, focusId } = {}) {
       category = next;
-      const visible = U.filterWorks(all, category);
+      // A set's works follow one another, so the grid shows one tile for them and the viewer steps through them together.
+      const visible = U.groupSets(U.filterWorks(all, category));
       const wall = showingWall();
       // The grid leaves out a few works that belong on the wall and in their series (site-config.js); a work
       // opened by its link is always shown.
@@ -242,18 +261,18 @@
           });
           photoGridDrawn = true;
         }
-        lightbox.setWorks(photographs);
+        useViewerWorks(photographs);
       } else if (wall) {
         list.replaceChildren();
         room.show(visible, { focusId });
-        lightbox.setWorks(room.order());
+        useViewerWorks(room.order());
       } else {
         room.hide();
         window.Gallery.renderGallery(list, inGrid, {
           hrefFor: (work) => U.hashForWork(work),
           eagerCount: 6,
         });
-        lightbox.setWorks(inGrid);
+        useViewerWorks(inGrid);
       }
       picker.setActive(category);
       picker.setView(currentView(), {

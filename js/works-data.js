@@ -4,6 +4,8 @@
  *
  *   id        catalogue id (also the URL hash, lower-cased)
  *   category  painting | drawing | print | digital | design | ceramics | wall-magazine (photography lives in works-photography.js)
+ *   set, setTitle   optional: works sharing a `set` id show as one tile in the grid that turns through them, titled
+ *                   `setTitle`; the viewer then steps through them together (WorksUtils.groupSets)
  *   base      image path without size suffix, relative to /images
  *   ws        real pixel widths of the -600, -1200 and -1800 files
  *   w, h      pixel size of the largest file (drives layout before load)
@@ -89,6 +91,11 @@
   { id: 'flyer-ash-wednesday', title: 'Ash Wednesday', year: 2026, medium: 'Flyer for the Center for Religious and Spiritual Life', dimensions: null, category: 'design', base: 'design/flyer-ash-wednesday', ws: [600, 1080, 1080], w: 1080, h: 1350 },
   { id: 'flyer-chicken-fingers', title: 'Chicken Finger Friday', year: 2024, medium: 'Flyer', dimensions: null, category: 'design', base: 'design/flyer-chicken-fingers', ws: [600, 1200, 1800], w: 1800, h: 1200 },
 
+  { id: 'sangam-team', title: 'SANGAM Exec Board: Meet our Team', year: 2024, medium: 'Instagram series for SANGAM, five posts', dimensions: null, category: 'design', set: 'sangam-exec-board', setTitle: 'SANGAM Exec Board, Spring 2024', base: 'design/sangam-team', ws: [600, 1200, 1290], w: 1290, h: 1290 },
+  { id: 'sangam-vice-president', title: 'SANGAM Exec Board: Vice-President', year: 2024, medium: 'Instagram series for SANGAM, five posts', dimensions: null, category: 'design', set: 'sangam-exec-board', setTitle: 'SANGAM Exec Board, Spring 2024', base: 'design/sangam-vice-president', ws: [600, 1200, 1290], w: 1290, h: 1290 },
+  { id: 'sangam-secretary', title: 'SANGAM Exec Board: Secretary', year: 2024, medium: 'Instagram series for SANGAM, five posts', dimensions: null, category: 'design', set: 'sangam-exec-board', setTitle: 'SANGAM Exec Board, Spring 2024', base: 'design/sangam-secretary', ws: [600, 1200, 1290], w: 1290, h: 1290 },
+  { id: 'sangam-treasurer', title: 'SANGAM Exec Board: Treasurer', year: 2024, medium: 'Instagram series for SANGAM, five posts', dimensions: null, category: 'design', set: 'sangam-exec-board', setTitle: 'SANGAM Exec Board, Spring 2024', base: 'design/sangam-treasurer', ws: [600, 1200, 1290], w: 1290, h: 1290 },
+  { id: 'sangam-photographer', title: 'SANGAM Exec Board: Photographer', year: 2024, medium: 'Instagram series for SANGAM, five posts', dimensions: null, category: 'design', set: 'sangam-exec-board', setTitle: 'SANGAM Exec Board, Spring 2024', base: 'design/sangam-photographer', ws: [600, 1200, 1290], w: 1290, h: 1290 },
   // Ceramics are untitled photographs for now; add title/year here when ready.
   { id: 'ceramics8', title: null, year: 2026, medium: 'Ceramics', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics8', ws: [600, 1200, 1800], w: 1800, h: 1940 },
   { id: 'ceramics9', title: 'Mug', year: 2026, medium: 'Glazes: black slip, GEB white at the foot and chun above', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics9', ws: [600, 1200, 1800], w: 1800, h: 1387 },

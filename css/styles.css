@@ -3438,6 +3438,43 @@ html {
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 12px 28px -10px rgb(0 0 0 / 0.35);
 }
 
+/* A set (several works on one tile): the works lie stacked and cross-fade, one at a time. */
+.tile__frame--set {
+  position: relative;
+}
+
+.tile__frame--set .tile__image + .tile__image {
+  position: absolute;
+  inset: 0;
+}
+
+.tile__frame--set .tile__image.is-loaded:not(.is-current) {
+  opacity: 0;
+}
+
+.tile__frame--set .tile__image.is-current {
+  z-index: 1;
+}
+
+.tile__frame--set .tile__image {
+  transition: opacity 0.8s var(--ease), transform 1.6s var(--ease-out);
+}
+
+.tile__set-count {
+  position: absolute;
+  z-index: 2;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Keeps a short last row from stretching across the whole width. */
 .gallery::after {
   content: '';

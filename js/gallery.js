@@ -76,14 +76,82 @@
     return item;
   }
 
+  const SET_STEP_MS = 2000; // how long each work of a set stays on its tile
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   /**
-   * Replaces the contents of `list` (a <ul>) with one tile per work.
-   * The first `eagerCount` images load immediately; the rest are lazy.
+   * One tile for a set of works (see `set` in works-data.js): the works are stacked and the tile turns through them,
+   * one every SET_STEP_MS, with "n / N" in the corner. It pauses while pointed at or focused, and stays on the first
+   * work when the visitor prefers less motion. The link follows the work on show, so a click opens that one.
+   */
+  function createSetTile(members, position, { hrefFor, eager }) {
+    const first = members[0];
+    const item = element('li', 'gallery__item');
+    item.style.setProperty('--ar', U.aspectRatio(first));
+
+    const link = element('a', 'tile tile--set');
+    const frame = element('span', 'tile__frame tile__frame--set');
+    const images = members.map((work, i) => {
+      const img = createImage(work, { eager: eager && i === 0 });
+      if (i > 0) img.loading = 'lazy';
+      frame.append(img);
+      return img;
+    });
+    const counter = element('span', 'tile__set-count');
+    counter.setAttribute('aria-hidden', 'true');
+    frame.append(counter);
+
+    const caption = element('span', 'tile__caption');
+    caption.append(element('span', 'tile__title', first.setTitle || first.title));
+    const meta = U.metaLine(first);
+    if (meta) caption.append(element('span', 'tile__meta', meta));
+    link.append(frame, caption);
+    item.append(link);
+
+    let current = 0;
+    const show = (index) => {
+      current = index;
+      images.forEach((img, i) => img.classList.toggle('is-current', i === index));
+      link.href = hrefFor(members[index]);
+      link.dataset.workId = members[index].id;
+      link.setAttribute('aria-label', `${first.setTitle || first.title}, a set of ${members.length}: ${U.accessibleName(members[index], position)}`);
+      counter.textContent = `${index + 1} / ${members.length}`;
+    };
+    show(0);
+
+    let paused = false;
+    ['pointerenter', 'focusin'].forEach((type) => link.addEventListener(type, () => (paused = true)));
+    ['pointerleave', 'focusout'].forEach((type) => link.addEventListener(type, () => (paused = false)));
+    const timer = setInterval(() => {
+      if (!item.isConnected) {
+        clearInterval(timer); // the grid was redrawn
+        return;
+      }
+      if (paused || reduceMotion.matches || document.hidden) return;
+      show((current + 1) % members.length);
+    }, SET_STEP_MS);
+    return item;
+  }
+
+  /**
+   * Replaces the contents of `list` (a <ul>) with one tile per work, and one per set: a set's members follow
+   * each other (WorksUtils.groupSets) and share a single tile. The first `eagerCount` images load immediately;
+   * the rest are lazy.
    */
   function renderGallery(list, works, { hrefFor, eagerCount = 4 }) {
-    const tiles = works.map((work, i) =>
-      createTile(work, i + 1, { hrefFor, eager: i < eagerCount })
-    );
+    const tiles = [];
+    for (let i = 0; i < works.length; i += 1) {
+      const work = works[i];
+      const options = { hrefFor, eager: tiles.length < eagerCount };
+      if (!work.set) {
+        tiles.push(createTile(work, tiles.length + 1, options));
+        continue;
+      }
+      let end = i;
+      while (end + 1 < works.length && works[end + 1].set === work.set) end += 1;
+      tiles.push(createSetTile(works.slice(i, end + 1), tiles.length + 1, options));
+      i = end;
+    }
     list.replaceChildren(...tiles);
   }
 
