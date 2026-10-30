@@ -92,7 +92,6 @@
   'stage-light-img-7041': 0.203,
   'stage-light-img-7044': 0.061,
   'stage-light-img-7047': 0.084,
-  'stage-light-img-7050': 0.14,
   'stage-light-img-7052': 0.081,
   'stage-light-img-7054': 0.026,
   'stage-light-img-7056': 0.058,
