@@ -150,7 +150,7 @@
 
   function seriesLink(series) {
     const link = element('a', 'room__series-link', 'View the series →');
-    link.href = `series.html?s=${encodeURIComponent(series.id)}`;
+    link.href = window.WorksUtils.seriesPage(series.id);
     return link;
   }
 

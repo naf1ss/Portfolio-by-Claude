@@ -108,10 +108,24 @@ and on a custom domain without changes.
 
 ## After changing a page, the nav, or any CSS or JS
 
-Run `npm run build`. It regenerates the six HTML pages from `src/` and adds a short content hash to every stylesheet and script address (`css/styles.css?v=1a2b3c4d`), so browsers re-download a file the moment it changes instead of showing an old cached copy.
+Run `npm run build`. It regenerates the HTML pages from `src/` (and the project and series pages, the sitemap, robots.txt and llms.txt) and adds a short content hash to every stylesheet and script address (`css/styles.css?v=1a2b3c4d`), so browsers re-download a file the moment it changes instead of showing an old cached copy.
 `npm test` fails if any page is out of date, so a forgotten build cannot be pushed unnoticed.
 
 - **Change the nav, footer or viewer:** edit `src/site.json` or the file in `src/partials/`, then build. All pages follow.
 - **Add a page:** create `src/pages/<name>.html` (copy `contact.html`'s front matter), add it to `nav` in `src/site.json` if it should be linked, build.
 - **Add a script:** put it in `js/`, list it in `scripts` in `src/site.json` (the order there is the load order; add `"requires"` for scripts it depends on), and name it in the `scripts:` line of each page that needs it.
 - **Change the copyright year:** `copyrightYear` in `src/site.json`.
+
+## Search engines and link previews
+
+The build also writes, from the site's own data:
+
+- a page for every project and series (`project-<id>.html`, `series-<id>.html`) with its own title, description, address
+  and preview picture, its heading already in the HTML, and structured data (tools/seo.js); old links
+  (`projects.html?p=<id>`, `series.html?s=<id>`) forward to them
+- `sitemap.xml`, `robots.txt` and `llms.txt`
+
+Titles carry the artist's full name. The preview pictures (images/og/) are made separately, after adding or renaming a
+project or series: `node tools/make-og-images.js` (needs Playwright). `npm test` fails if a page's preview picture is
+missing. Search Console: add the verification tag Google gives you to `src/partials/head.html`, build, and submit
+`https://nuancesbynafis.com/sitemap.xml`.

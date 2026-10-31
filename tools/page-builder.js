@@ -7,6 +7,8 @@
  */
 'use strict';
 
+const { projectPage, seriesPage } = require('../js/works-utils.js');
+
 const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 const SLOT_MARKER = /^<!-- @slot (\w+) -->\n/gm;
 
@@ -70,8 +72,8 @@ function assertAttributeSafe(name, value) {
  */
 function resolveNav(nav, { series = [], projects = [] } = {}) {
   const lists = {
-    series: series.filter(({ galleryOnly }) => !galleryOnly).map(({ id, title }) => ({ label: title, href: `series.html?s=${encodeURIComponent(id)}` })),
-    projects: projects.map(({ id, title }) => ({ label: title, href: `projects.html?p=${encodeURIComponent(id)}` })),
+    series: series.filter(({ galleryOnly }) => !galleryOnly).map(({ id, title }) => ({ label: title, href: seriesPage(id) })),
+    projects: projects.map(({ id, title }) => ({ label: title, href: projectPage(id) })),
   };
   return nav.map((entry) => {
     if (!entry.childrenFrom) return entry;
@@ -192,14 +194,42 @@ function splitList(value) {
   return value ? value.split(',').map((item) => item.trim()).filter(Boolean) : [];
 }
 
+/** The page's address on the live site: the home page is the site itself. */
+function pageUrl(site, file) {
+  return `${site.url}${file === 'index.html' ? '' : file}`;
+}
+
+/** JSON for a <script type="application/ld+json"> block; "<" is escaped so no text can close the script. */
+function renderJsonLd(data) {
+  if (!data) return '';
+  return `  <script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
+}
+
 /**
  * @param {string} name     page file name without extension ("about")
  * @param {string} source   contents of src/pages/<name>.html
  * @param {{layout: string, partials: Record<string, string>, site: object,
  *          contactLinks?: {label: string, href: string}[]}} parts
+ * @param {{file?: string, bodyData?: Record<string, string>, navCurrent?: string, jsonLd?: object}} extras
+ *        for pages generated from another page's source (a project's or a series' own page): the file written,
+ *        data attributes for <body>, the nav entry to mark as current, and structured data for search engines
  */
-function renderPage(name, source, { layout, partials, site, contactLinks = [] }) {
+function renderPage(name, source, { layout, partials, site, contactLinks = [] }, extras = {}) {
   const { meta, slots } = parsePage(source);
+  const file = extras.file || `${name}.html`;
+  // Pages served from any address (the 404 page) have no single address of their own.
+  const canonical = meta.base || !site.url ? '' : `  <link rel="canonical" href="${pageUrl(site, file)}">\n  <meta property="og:url" content="${pageUrl(site, file)}">`;
+  const ogImage = meta['og-image'] || site.ogImage;
+  const ogImageTags = ogImage && site.url
+    ? [
+        `  <meta property="og:image" content="${site.url}${assertAttributeSafe('og-image', ogImage)}">`,
+        '  <meta property="og:image:width" content="1200">',
+        '  <meta property="og:image:height" content="630">',
+      ].join('\n')
+    : '';
+  const bodyData = Object.entries(extras.bodyData || {})
+    .map(([key, value]) => ` data-${key}="${escapeAttribute(value)}"`)
+    .join('');
   ['title', 'description'].forEach((key) => {
     if (!meta[key]) throw new Error(`${name}: front matter "${key}" is required.`);
   });
@@ -214,13 +244,17 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] })
     base: meta.base ? `  <base href="${assertAttributeSafe('base', meta.base)}">` : '',
     fontPreloads: renderFontPreloads(site.fonts),
     scripts: renderScripts(site, scripts),
+    canonical,
+    ogImage: ogImageTags,
+    jsonLd: renderJsonLd(extras.jsonLd),
   });
 
   return fillTemplate(layout, {
     head,
     page: name === 'index' ? 'home' : name,
+    bodyData,
     intro: slots.intro || '',
-    header: fillTemplate(partials.header, { nav: renderNav(site.nav, `${name}.html`) }).replace(/\n$/, ''),
+    header: fillTemplate(partials.header, { nav: renderNav(site.nav, extras.navCurrent || `${name}.html`) }).replace(/\n$/, ''),
     main: slots.main,
     footer: renderFooter(partials.footer, site, contactLinks),
     // The image viewer is only needed on pages that load the lightbox script.
@@ -228,4 +262,4 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] })
   });
 }
 
-module.exports = { parsePage, fillTemplate, renderPage, resolveNav, renderNav, renderRedirect };
+module.exports = { parsePage, fillTemplate, renderPage, resolveNav, renderNav, renderRedirect, pageUrl };

@@ -250,13 +250,13 @@
         if (showingIndex) {
           if (!photoIndex) {
             photoIndex = window.PhotoSeries.renderIndex(photoBox, photoSeries, {
-              hrefFor: (series) => `series.html?s=${series.id}`,
+              hrefFor: (series) => U.seriesPage(series.id),
             });
             window.Motion.reveal(photoBox.querySelectorAll('.pindex__lede, .pindex__line'));
           }
         } else if (!photoGridDrawn) {
           window.PhotoSeries.renderSeriesGrid(photoGrid, photoSeries, {
-            hrefFor: (series) => `series.html?s=${series.id}`,
+            hrefFor: (series) => U.seriesPage(series.id),
             hrefForWork: (work) => U.hashForWork(work),
           });
           photoGridDrawn = true;
@@ -322,7 +322,13 @@
       })
       .filter((entry) => entry.works.length > 0);
 
-    const chosen = entries.find((entry) => entry.series.id === new URLSearchParams(location.search).get('s'));
+    // A series page names its series on <body>; an old link (series.html?s=<id>) moves to that page.
+    const legacyId = new URLSearchParams(location.search).get('s');
+    if (legacyId && entries.some((entry) => entry.series.id === legacyId)) {
+      location.replace(U.seriesPage(legacyId) + location.hash);
+      return;
+    }
+    const chosen = entries.find((entry) => entry.series.id === document.body.dataset.series);
     const title = document.getElementById('series-title');
     const note = document.getElementById('series-note');
     const back = document.getElementById('series-back');
@@ -332,13 +338,12 @@
     if (!chosen) {
       // Photography series live in the gallery's Photography section, not on this page.
       const listed = entries.filter((entry) => !entry.series.galleryOnly);
-      window.Gallery.renderSeriesList(list, listed, { hrefFor: (series) => `series.html?s=${series.id}` });
+      window.Gallery.renderSeriesList(list, listed, { hrefFor: (series) => U.seriesPage(series.id) });
       window.Motion.reveal(list.children);
       return;
     }
 
     const { series, works } = chosen;
-    document.title = `${series.title} — nuances by nafis`;
 
     // A photography series is hung as its own room, with its own heading, and leads on to the next room.
     const photoSeries = U.photographySeries(window.PORTFOLIO_SERIES || [], catalogue);
@@ -369,7 +374,7 @@
       const hang = () => {
         if (hung) hung.destroy();
         hung = window.PhotoSeries.renderRoom(roomBox, chosen, place, {
-          hrefFor: (entry) => `series.html?s=${entry.id}`,
+          hrefFor: (entry) => U.seriesPage(entry.id),
           hrefForWork: (work) => U.hashForWork(work),
           indexHref,
           view,
@@ -418,11 +423,17 @@
     if (linkedId) lightbox.open(linkedId, 'load');
   }
 
-  /** Lists every project, or (with ?p=<id>) shows one project's case study. */
+  /** Lists every project, or (on a project's own page) shows its case study. */
   function initProjects() {
-    const { byId } = loadWorks();
+    const { U, byId } = loadWorks();
     const projects = window.PORTFOLIO_PROJECTS || [];
-    const chosen = projects.find((project) => project.id === new URLSearchParams(location.search).get('p'));
+    // A project page names its project on <body>; an old link (projects.html?p=<id>) moves to that page.
+    const legacyId = new URLSearchParams(location.search).get('p');
+    if (legacyId && projects.some((project) => project.id === legacyId)) {
+      location.replace(U.projectPage(legacyId) + location.hash);
+      return;
+    }
+    const chosen = projects.find((project) => project.id === document.body.dataset.project);
     const index = document.getElementById('projects-index');
     const article = document.getElementById('project-case');
 
@@ -430,7 +441,7 @@
       // Projects marked `secondary` are listed after the main ones, in a smaller section of their own.
       const main = projects.filter((project) => !project.secondary);
       const more = projects.filter((project) => project.secondary);
-      const hrefFor = (project) => `projects.html?p=${project.id}`;
+      const hrefFor = (project) => U.projectPage(project.id);
       window.ProjectPage.renderList(document.getElementById('project-list'), main, { byId, hrefFor });
       if (more.length) {
         document.getElementById('projects-more').hidden = false;
@@ -439,7 +450,6 @@
       return;
     }
 
-    document.title = `${chosen.title} — nuances by nafis`;
     index.hidden = true;
     document.getElementById('project-back').hidden = false;
     window.ProjectPage.renderCase(article, chosen, { byId });

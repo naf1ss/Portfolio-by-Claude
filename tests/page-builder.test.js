@@ -137,7 +137,7 @@ test('resolveNav leaves out series kept to the gallery', () => {
   const nav = resolveNav([{ label: 'Series', href: 'series.html', childrenFrom: 'series' }], {
     series: [{ id: 'horizon', title: 'Horizon' }, { id: 'city', title: 'City', galleryOnly: true }],
   });
-  assert.deepEqual(nav[0].children, [{ label: 'Horizon', href: 'series.html?s=horizon' }]);
+  assert.deepEqual(nav[0].children, [{ label: 'Horizon', href: 'series-horizon.html' }]);
 });
 
 test('resolveNav lists every series under an entry with childrenFrom: "series"', () => {
@@ -150,8 +150,8 @@ test('resolveNav lists every series under an entry with childrenFrom: "series"',
     label: 'Series',
     href: 'series.html',
     children: [
-      { label: 'Horizon', href: 'series.html?s=horizon' },
-      { label: 'Three Ways', href: 'series.html?s=three%20ways' },
+      { label: 'Horizon', href: 'series-horizon.html' },
+      { label: 'Three Ways', href: 'series-three ways.html' },
     ],
   });
   assert.throws(() => resolveNav([{ label: 'X', href: 'x.html', childrenFrom: 'nope' }]), /unknown childrenFrom/);
@@ -161,5 +161,5 @@ test('resolveNav lists every project under an entry with childrenFrom: "projects
   const nav = resolveNav([{ label: 'Projects', href: 'projects.html', childrenFrom: 'projects' }], {
     projects: [{ id: 'planet-walk', title: 'Planet Walk' }],
   });
-  assert.deepEqual(nav[0].children, [{ label: 'Planet Walk', href: 'projects.html?p=planet-walk' }]);
+  assert.deepEqual(nav[0].children, [{ label: 'Planet Walk', href: 'project-planet-walk.html' }]);
 });

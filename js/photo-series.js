@@ -48,7 +48,7 @@
   function picture(work, { sizes, eager = false, className = 'tile__image' }) {
     const img = new Image();
     img.className = className;
-    img.alt = '';
+    img.alt = U.altText(work); // the link's name is what screen readers announce; this describes the picture
     img.width = work.w;
     img.height = work.h;
     img.loading = eager ? 'eager' : 'lazy';

@@ -1,0 +1,34 @@
+# nuances by nafis
+
+> Portfolio of Md Nafisul Hasan Sami (Nafis), an artist studying mathematics and studio art, with a minor in data science, at Gettysburg College. Painting, drawing, printmaking, ceramics, photography, digital art and graphic design, and interdisciplinary projects joining art with science and data.
+
+## Pages
+
+- [Gallery](https://nuancesbynafis.com/gallery.html): All works by medium, on a gallery wall or as a grid.
+- [Series](https://nuancesbynafis.com/series.html): Bodies of work built around one idea.
+- [Interdisciplinary projects](https://nuancesbynafis.com/projects.html): Case studies, from the question to the result.
+- [Artist statement](https://nuancesbynafis.com/artist-statement.html)
+- [Resume](https://nuancesbynafis.com/resume.html)
+- [Contact](https://nuancesbynafis.com/contact.html)
+
+## Projects
+
+- [Planet Walk & Observatory Mural](https://nuancesbynafis.com/project-planet-walk.html): Astronomical scale translated into an eleven-station walk across Gettysburg College, from the planetarium to the Observatory, bringing together site planning, ceramic markers, digital illustration…
+- [A Digital Moving Mountain](https://nuancesbynafis.com/project-digital-moving-mountain.html): A research project with the Chinese American artist Dr. Gan Yu, asking how a website could carry his participatory ink painting A Moving Mountain beyond the gallery wall.
+- [Women in the Art World: Data and Design](https://nuancesbynafis.com/project-women-in-the-art-world.html): How do women fare in the art world, and how can data make the answer clear?
+- [Can Club Statistics Predict National Team Selection?](https://nuancesbynafis.com/project-national-team-selection.html): A machine-learning test of a common belief in football (soccer): that the players with the strongest club statistics are the ones chosen for World Cup squads.
+
+## Series
+
+- [Cross-Wired](https://nuancesbynafis.com/series-cross-wired.html): A ceramic study of form, surface and influence: a plate, a bowl and a mug, each guided by a different maker.
+- [Degrees of Happiness](https://nuancesbynafis.com/series-degrees-of-happiness.html): Two abstract paintings that treat happiness as colour, in the line of Abstract Expressionism and Colour Field painting.
+- [Three Ways of Seeing](https://nuancesbynafis.com/series-three-ways-of-seeing.html): One still life drawn three ways: through light and shadow, as a study of structure, and by intuition.
+- [Horizon](https://nuancesbynafis.com/series-horizon.html): Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.
+- [Eiffel Tower](https://nuancesbynafis.com/series-eiffel-tower.html): Paintings of the Eiffel Tower made over nearly a decade: a study of how it is built that became a practice I keep returning to.
+- [Negligible](https://nuancesbynafis.com/series-negligible.html): Most of every frame is sky. What sits inside it is small enough to miss: an aeroplane, a lamp post, birds on a wire, a plastic bag carried across an English sky, and sometimes nothing but cloud.
+- [The Light Hits](https://nuancesbynafis.com/series-the-light-hits.html): Each photograph holds the moment light lands on something: a tissue box on a windowsill, a laptop on a library table, a polished floor, the face of a building at sunset.
+- [Straight from Ghost Stories](https://nuancesbynafis.com/series-straight-from-ghost-stories.html): These photographs share one colour: the cold, low grade of an old ghost film. Fog around a streetlamp, a house lit on an empty night, bare trees under a pale sky, a clock tower lost in cloud.
+- [Asymmetrical](https://nuancesbynafis.com/series-asymmetrical.html): The title is ironic. Nearly every photograph here is symmetrical: a tunnel, a staircase, a nave, a window, each built around a centre line.
+- [Through the Window](https://nuancesbynafis.com/series-through-the-window.html): A window is a frame someone else has already made. I look through it: from a screened porch, a ruined arch, an oval opening in a white wall, an aeroplane seat.
+- [Stage Light](https://nuancesbynafis.com/series-stage-light.html): Dancers on a dark stage, each held in a single pool of coloured light. The stage is black; the light decides who appears.
+- [City](https://nuancesbynafis.com/series-city.html): New York and London, photographed from the street and from above.

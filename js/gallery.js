@@ -34,7 +34,8 @@
   function createImage(work, { eager = false, sizes = TILE_SIZES } = {}) {
     const img = new Image();
     img.className = 'tile__image';
-    img.alt = ''; // the caption and link name already describe the work
+    // Screen readers announce the tile's link name; the alt text describes the picture itself for image search.
+    img.alt = U.altText(work);
     img.width = work.w;
     img.height = work.h;
     img.loading = eager ? 'eager' : 'lazy';

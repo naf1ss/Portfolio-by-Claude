@@ -114,6 +114,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Room for the scrollbar is kept from the start, so the page does not jump sideways when the works are drawn
+     in and the page grows long enough to scroll (a layout shift search engines count against the page). */
+  scrollbar-gutter: stable;
   /* Everything is sized in rem, so on big monitors (from about 1760px wide) the
      whole page scales up with the screen instead of floating in empty margins. */
   font-size: max(100%, calc(0.5vw + 7.2px));
@@ -287,6 +290,31 @@ a:hover {
   color: inherit;
   cursor: pointer;
   view-transition-name: theme-window;
+}
+
+/* Pages draw their works after loading. The main area starts a screen tall, so the footer begins below the screen
+   instead of being pushed down in view as the works arrive (a layout shift search engines count against a page).
+   Phones' content already reaches past the screen. */
+@media (min-width: 40.0625rem) {
+  html.has-menu #main {
+    min-height: 100svh;
+  }
+}
+
+.theme-toggle--slot {
+  aspect-ratio: 60 / 76; /* the window drawing's own proportions (theme.js) */
+  view-transition-name: none;
+}
+
+/* Without scripts there is no window to make room for; on phones it lives in the menu. */
+html:not(.has-menu) .theme-toggle--slot {
+  display: none;
+}
+
+@media (max-width: 40rem) {
+  .theme-toggle--slot {
+    display: none;
+  }
 }
 
 .theme-window {

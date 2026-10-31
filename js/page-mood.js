@@ -6,6 +6,8 @@
 (function () {
   'use strict';
 
-  const id = new URLSearchParams(location.search).get('s');
+  // The series' own page (series-<id>.html, or without .html as GitHub Pages also serves it), or an old ?s= link.
+  const fromPath = /\/series-([a-z0-9-]+?)(?:\.html)?$/.exec(location.pathname);
+  const id = fromPath ? fromPath[1] : new URLSearchParams(location.search).get('s');
   if (id && /^[a-z0-9-]+$/.test(id)) document.documentElement.dataset.mood = id;
 })();

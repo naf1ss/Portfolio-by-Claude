@@ -136,7 +136,10 @@
 
     const button = createToggle();
     reflect(button);
-    header.append(button);
+    // The header keeps an empty slot of the window's size (header.html), so putting it in moves nothing.
+    const slot = header.querySelector('.theme-toggle--slot');
+    if (slot) slot.replaceWith(button);
+    else header.append(button);
 
     const status = document.createElement('p');
     status.className = 'theme-status';

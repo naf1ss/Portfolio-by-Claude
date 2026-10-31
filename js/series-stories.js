@@ -1,5 +1,5 @@
 /**
- * Long-form write-ups for a series page (series.html?s=<id>), keyed by series id and rendered by
+ * Long-form write-ups for a series page (series-<id>.html), keyed by series id and rendered by
  * series-story.js. A series with a story shows these pictures and words instead of a grid of its works.
  *
  *   intro     { workId, caption, lead, facts, index } a picture (optional) beside the series' note, a line (or lines) under it;
