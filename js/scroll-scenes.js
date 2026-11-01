@@ -27,7 +27,7 @@
   const FEATURES = Object.freeze({
     wash: true,
     sideways: true,
-    ghosts: true,
+    ghosts: false,
     rise: true,
     counts: false,
     draw: true,
