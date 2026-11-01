@@ -19,12 +19,12 @@ window.SITE_CONFIG = {
   },
 
   // The big "Latest work" feature on the home page.
-  latestId: 'A041',
+  latestId: 'A044',
 
   // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs
   // and ceramics are shown in their own sections of the gallery; the six Horizon monotypes stay in their series.
   selectedIds: [
-    'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
+    'A044', 'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
   ],
 
   // Kept off the gallery's grid view, but still hung on the wall and shown in Three Ways of Seeing: two of
