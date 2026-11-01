@@ -445,33 +445,6 @@ html:not(.has-menu) .theme-toggle--slot {
     cursor: pointer;
   }
 
-  /* Two bars that turn into a cross. */
-  .menu-toggle__bars,
-  .menu-toggle__bars::before {
-    display: block;
-    width: 1rem;
-    height: 1.5px;
-    background: currentColor;
-    transition: transform 0.35s var(--ease-out);
-  }
-
-  .menu-toggle__bars {
-    transform: translateY(-3px);
-  }
-
-  .menu-toggle__bars::before {
-    content: '';
-    transform: translateY(6px);
-  }
-
-  .is-menu-open .menu-toggle__bars {
-    transform: rotate(45deg);
-  }
-
-  .is-menu-open .menu-toggle__bars::before {
-    transform: rotate(-90deg);
-  }
-
   .has-menu .site-nav {
     position: fixed;
     inset: 0;
@@ -6787,5 +6760,497 @@ body[data-gallery-view='wall'] .hint {
     transition: none;
     animation: none;
     transform: none;
+  }
+}
+
+/* ---------- Motion: menu, buttons and footer ----------
+   One easing for all of it, quick to leave and soft to land. Menus drop in like cards with a slight tilt and
+   settle; a label slides aside for an arrow; an arrow leaves as its copy arrives. */
+:root {
+  --ease-card: cubic-bezier(0.4, 0, 0.1, 1);
+  --ease-slide: cubic-bezier(0.35, 0, 0, 1);
+}
+
+/* The arrow site-menu.js adds to every menu link; shown only where a link has room for it. */
+.nav-arrow {
+  display: none;
+}
+
+/* Wide screens: Gallery's and Series' menus drop in tilted and straighten as they arrive. Each choice is a soft
+   pill that swells into place under the pointer, with an arrow at its end. */
+@media (min-width: 40.0625rem) {
+  .site-nav .site-nav__menu {
+    transform: translate(-50%, 1rem) rotate(2.5deg);
+    transform-origin: 50% 0;
+    transition: opacity 0.3s var(--ease), transform 0.5s var(--ease-card), visibility 0s linear 0.5s;
+  }
+
+  .site-nav .site-nav__menu a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .site-nav .site-nav__menu a::before {
+    clip-path: none;
+    background: currentColor;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.3s var(--ease), transform 0.4s var(--ease-card);
+  }
+
+  .site-nav .site-nav__menu a:hover::before,
+  .site-nav .site-nav__menu a:focus-visible::before {
+    clip-path: none;
+    opacity: 0.08;
+    transform: scale(1);
+  }
+
+  .site-nav .site-nav__menu a:hover {
+    color: inherit;
+  }
+
+  .site-nav__menu .nav-arrow {
+    display: block;
+    flex: none;
+    width: 0.85rem;
+    height: 0.85rem;
+    transform: scale(0);
+    transition: transform 0.2s var(--ease-card);
+  }
+
+  .site-nav__menu a:hover .nav-arrow,
+  .site-nav__menu a:focus-visible .nav-arrow {
+    transform: scale(1);
+    transition: transform 0.2s 0.15s var(--ease-card);
+  }
+}
+
+@media (min-width: 40.0625rem) and (hover: hover) {
+  .site-nav__group:hover .site-nav__menu,
+  .site-nav__group:focus-within .site-nav__menu {
+    transform: translate(-50%, 0);
+    transition: opacity 0.3s var(--ease), transform 0.5s var(--ease-card), visibility 0s;
+  }
+}
+
+/* Phones: a pill reading MENU beside two dots. The dots turn upright on hover and when open, and the word rolls
+   over to CLOSE. The menu opens as two cards dropping in over the page, tilted, one after the other: the pages
+   on the paper colour, and the light-or-dark window on ink. */
+@media (max-width: 40rem) {
+  .has-menu .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: auto;
+    padding: 0 0.85rem 0 1.05rem;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: background-color 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease);
+  }
+
+  .is-menu-open .menu-toggle {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--on-ink);
+  }
+
+  /* Both words share one cell, so the pill is as wide as the longer one. */
+  .menu-toggle__label {
+    display: grid;
+    overflow: hidden;
+    line-height: 1.25;
+  }
+
+  .menu-toggle__word {
+    grid-area: 1 / 1;
+    transition: transform 0.3s var(--ease-card);
+  }
+
+  .menu-toggle__word + .menu-toggle__word {
+    transform: translateY(105%);
+  }
+
+  .is-menu-open .menu-toggle__word {
+    transform: translateY(-105%);
+  }
+
+  .is-menu-open .menu-toggle__word + .menu-toggle__word {
+    transform: translateY(0);
+  }
+
+  .menu-toggle__dots {
+    position: relative;
+    width: 0.95rem;
+    height: 0.95rem;
+    transform: rotate(180deg);
+    transition: transform 0.4s var(--ease-card);
+  }
+
+  .menu-toggle__dots i {
+    position: absolute;
+    top: 50%;
+    width: 0.26rem;
+    height: 0.26rem;
+    margin-top: -0.13rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .menu-toggle__dots i:first-child {
+    left: 0.08rem;
+  }
+
+  .menu-toggle__dots i:last-child {
+    right: 0.08rem;
+  }
+
+  .menu-toggle:hover .menu-toggle__dots,
+  .is-menu-open .menu-toggle__dots {
+    transform: rotate(270deg);
+  }
+
+  /* The panel itself is only a shade over the page; it stays visible until the cards have left. */
+  .has-menu .site-nav {
+    justify-content: flex-start;
+    gap: 0.6rem;
+    padding: 4.6rem var(--gutter) 2rem;
+    background: transparent;
+    -webkit-mask-image: none;
+    mask-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    opacity: 1;
+    transition: background-color 0.4s var(--ease), visibility 0s linear 0.6s;
+  }
+
+  .is-menu-open .site-nav {
+    background: color-mix(in srgb, var(--ink) 22%, transparent);
+    transition: background-color 0.4s var(--ease), visibility 0s;
+  }
+
+  .has-menu .site-nav > ul,
+  .has-menu .site-nav__theme {
+    flex: none;
+    border-radius: 1rem;
+    box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.5);
+    opacity: 0;
+    transform-origin: 100% 0;
+    transition: transform 0.5s var(--ease-card), opacity 0.5s var(--ease-card);
+  }
+
+  .has-menu .site-nav > ul {
+    gap: 0;
+    margin-block: 0;
+    padding: 0.4rem;
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateY(5.5rem) rotate(3.5deg);
+    transition-delay: 0.06s; /* closing: the second card leaves first */
+  }
+
+  .has-menu .site-nav__theme {
+    margin-top: 0;
+    padding: 1.1rem 1.4rem;
+    border-top: 0;
+    background: var(--ink);
+    color: var(--on-ink);
+    transform: translateY(7.75rem) rotate(-3.5deg);
+  }
+
+  .is-menu-open .site-nav > ul,
+  .is-menu-open .site-nav__theme {
+    opacity: 1;
+    transform: none;
+  }
+
+  .is-menu-open .site-nav > ul {
+    transition-delay: 0.04s;
+  }
+
+  .is-menu-open .site-nav__theme {
+    transition-delay: 0.12s;
+  }
+
+  /* The cards move as a whole, so the links inside no longer arrive one by one. */
+  .has-menu .site-nav > ul > li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .has-menu .site-nav > ul > li > a {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    padding: 0.85rem 3rem 0.85rem 1.15rem;
+    border-radius: 999px;
+    font-family: var(--font-text);
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  /* A soft pill swells into place behind the link under a finger or the pointer. */
+  .has-menu .site-nav > ul > li > a::before {
+    content: '';
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.3s var(--ease), transform 0.4s var(--ease-card);
+  }
+
+  .has-menu .site-nav > ul > li > a:hover::before,
+  .has-menu .site-nav > ul > li > a:focus-visible::before {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+
+  /* The current page is marked by the accent dot at the end of its line, which gives way to the arrow. */
+  .has-menu .site-nav > ul > li > a[aria-current='page'] {
+    color: inherit;
+  }
+
+  .has-menu .site-nav > ul > li > a[aria-current='page']::after {
+    display: block;
+    top: 50%;
+    right: 1.35rem;
+    bottom: auto;
+    left: auto;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin: -0.225rem 0 0;
+    transition: transform 0.3s var(--ease-card);
+  }
+
+  .has-menu .site-nav > ul > li > a[aria-current='page']:hover::after {
+    transform: scale(0);
+  }
+
+  .has-menu .site-nav > ul > li > a > .nav-arrow {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 1.1rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: -0.525rem;
+    transform: scale(0);
+    transition: transform 0.2s var(--ease-card);
+  }
+
+  .has-menu .site-nav > ul > li > a:hover > .nav-arrow,
+  .has-menu .site-nav > ul > li > a:focus-visible > .nav-arrow {
+    transform: scale(1);
+    transition: transform 0.2s 0.15s var(--ease-card);
+  }
+
+  /* Under Gallery, Series and Projects, their links as a line of small italics inside the card. */
+  .has-menu .site-nav .site-nav__menu {
+    margin: 0 0 0.6rem;
+    padding: 0 1.15rem;
+  }
+
+  .has-menu .site-nav .site-nav__menu a {
+    font-size: 1.05rem;
+  }
+}
+
+/* Buttons: the label sits between an arrow, hidden off the left edge, and a dot. On hover the dot shrinks away,
+   the label slides into its place and the arrow slides in behind it (js/interactions.js builds the parts). */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.95rem 1.5rem 0.95rem 1.8rem;
+}
+
+.button__label {
+  display: block;
+  transition: transform 0.4s var(--ease-card);
+}
+
+.button__dot {
+  flex: none;
+  width: 0.38em;
+  height: 0.38em;
+  border-radius: 50%;
+  background: currentColor;
+  transition: transform 0.2s var(--ease-card);
+}
+
+.button__arrow {
+  position: absolute;
+  top: 50%;
+  left: 1.25rem;
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: -0.55em;
+  transform: translateX(-3rem);
+  transition: transform 0.4s var(--ease-card);
+}
+
+.button__arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.button:hover .button__label,
+.button:focus-visible .button__label {
+  transform: translateX(1.15em); /* the dot's width and the gap: the label ends where the dot was */
+}
+
+.button:hover .button__dot,
+.button:focus-visible .button__dot {
+  transform: scale(0);
+}
+
+.button:hover .button__arrow,
+.button:focus-visible .button__arrow {
+  transform: translateX(0);
+}
+
+/* Footer. "Say hello": the arrow flies off to the right as a copy arrives from the left. */
+.footer__arrow {
+  display: inline-grid;
+  overflow: hidden;
+  padding-inline: 0.04em;
+  vertical-align: bottom;
+}
+
+.footer__arrow > span {
+  grid-area: 1 / 1;
+  transition: transform 0.5s var(--ease-card);
+}
+
+.footer__arrow > span + span {
+  transform: translateX(-115%);
+}
+
+.footer__hello:hover .footer__arrow,
+.footer__hello:focus-visible .footer__arrow {
+  transform: none;
+}
+
+.footer__hello:hover .footer__arrow > span,
+.footer__hello:focus-visible .footer__arrow > span {
+  transform: translateX(115%);
+}
+
+.footer__hello:hover .footer__arrow > span + span,
+.footer__hello:focus-visible .footer__arrow > span + span {
+  transform: translateX(0);
+}
+
+/* Elsewhere: the name steps aside for an arrow that slides in from the left. (Explore keeps its underline.) */
+.footer__elsewhere .footer__list a {
+  position: relative;
+  overflow: hidden;
+  vertical-align: top; /* clipped, an inline block would otherwise sit on its bottom edge and open the line gaps */
+  padding-right: 1.6em;
+  background: none;
+}
+
+.footer__elsewhere .footer__list a::before {
+  content: '\2192';
+  position: absolute;
+  top: 0.15rem;
+  left: 0;
+  transform: translateX(-1.6em);
+  transition: transform 0.4s var(--ease-slide);
+}
+
+.footer__slide {
+  display: inline-block;
+  transition: transform 0.4s var(--ease-slide);
+}
+
+.footer__elsewhere .footer__list a:hover .footer__slide,
+.footer__elsewhere .footer__list a:focus-visible .footer__slide {
+  transform: translateX(1.6em);
+}
+
+.footer__elsewhere .footer__list a:hover::before,
+.footer__elsewhere .footer__list a:focus-visible::before {
+  transform: translateX(0);
+}
+
+/* Back to top: a white circle whose arrow leaves upward as another rises into it. */
+.footer__bottom {
+  align-items: center;
+}
+
+.footer__top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer__up {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  transition: background-color 0.3s var(--ease);
+}
+
+.footer__up > span {
+  grid-area: 1 / 1;
+  transition: transform 0.4s var(--ease-slide);
+}
+
+.footer__up > span + span {
+  transform: translateY(2.4rem);
+}
+
+.footer__top-link:hover .footer__up,
+.footer__top-link:focus-visible .footer__up {
+  background: var(--footer-accent);
+}
+
+.footer__top-link:hover .footer__up > span,
+.footer__top-link:focus-visible .footer__up > span {
+  transform: translateY(-2.4rem);
+}
+
+.footer__top-link:hover .footer__up > span + span,
+.footer__top-link:focus-visible .footer__up > span + span {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav .site-nav__menu,
+  .has-menu .site-nav > ul,
+  .has-menu .site-nav__theme,
+  .menu-toggle__word,
+  .menu-toggle__dots,
+  .nav-arrow,
+  .button__label,
+  .button__dot,
+  .button__arrow,
+  .footer__arrow > span,
+  .footer__slide,
+  .footer__elsewhere .footer__list a::before,
+  .footer__up > span {
+    transition: none;
   }
 }

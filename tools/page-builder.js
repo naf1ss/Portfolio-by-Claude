@@ -137,9 +137,11 @@ function escapeAttribute(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
-function renderLinkItems(links) {
+function renderLinkItems(links, { slide = false } = {}) {
+  // `slide`: the label gets its own span, so CSS can slide it aside for an arrow (the footer's Elsewhere links).
+  const text = (label) => (slide ? `<span class="footer__slide">${label}</span>` : label);
   return links
-    .map(({ label, href }) => `          <li><a href="${escapeAttribute(href)}">${label}</a></li>`)
+    .map(({ label, href }) => `          <li><a href="${escapeAttribute(href)}">${text(label)}</a></li>`)
     .join('\n');
 }
 
@@ -150,7 +152,7 @@ function renderElsewhere(links) {
     '      <nav class="footer__elsewhere" aria-label="Elsewhere">',
     '        <h2 class="footer__heading">Elsewhere</h2>',
     '        <ul class="footer__list">',
-    renderLinkItems(links),
+    renderLinkItems(links, { slide: true }),
     '        </ul>',
     '      </nav>',
   ].join('\n');

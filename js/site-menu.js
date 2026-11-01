@@ -1,5 +1,5 @@
 /**
- * Phone menu: on narrow screens the header links fold behind a Menu button and open as a full-screen panel.
+ * Phone menu: on narrow screens the header links fold behind a Menu button and open as cards over the page.
  *
  * Runs in <head> (not deferred) so `has-menu` is set before the first paint and the links never flash open.
  * Without JavaScript the class is never set and the links simply stay visible in the header.
@@ -9,6 +9,10 @@
 
   const root = document.documentElement;
   root.classList.add('has-menu');
+
+  const ARROW_SVG =
+    '<svg class="nav-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+    '<path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 
   document.addEventListener('DOMContentLoaded', () => {
     const button = document.querySelector('.menu-toggle');
@@ -66,7 +70,17 @@
       heading.after(toggle);
     });
 
+    // Every menu link carries a small arrow that grows in on hover (css: .nav-arrow). Added here, after
+    // interactions.js has rolled the labels, so the arrow sits beside the label rather than inside it.
+    nav.querySelectorAll('.site-nav > ul > li > a, .site-nav__menu a').forEach((link) => {
+      link.insertAdjacentHTML('beforeend', ARROW_SVG);
+    });
+
     button.addEventListener('click', () => setOpen(!isOpen()));
+    // On phones the open menu is a stack of cards over the page: a tap on the page around them closes it.
+    nav.addEventListener('click', (event) => {
+      if (event.target === nav && isOpen()) setOpen(false);
+    });
     // A link to the page already open (or to another filter of it) should still close the panel.
     nav.addEventListener('click', (event) => {
       if (event.target.closest('a')) setOpen(false);

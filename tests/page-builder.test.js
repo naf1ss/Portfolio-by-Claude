@@ -114,7 +114,7 @@ test('the footer lists the nav, the year and the contact links', () => {
   const html = renderPage('about', page('title: t\ndescription: d'), { ...parts, contactLinks });
   assert.match(html, /<li><a href="work\.html">Work<\/a><\/li>/);
   assert.match(html, /aria-label="Elsewhere"/);
-  assert.match(html, /href="mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;">Email/, 'attribute values are escaped');
+  assert.match(html, /href="mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;"><span class="footer__slide">Email<\/span>/, 'attribute values are escaped; the label can slide');
   assert.match(html, /\(c\) 2026 mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;/, 'the hello link points at the email address');
 });
 

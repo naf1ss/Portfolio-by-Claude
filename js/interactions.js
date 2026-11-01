@@ -1,7 +1,8 @@
 /**
  * Pointer interactions for buttons and the header controls:
  *  - a circle of colour that grows from where the pointer entered (--mx / --my)
- *  - a label that rolls up to reveal a copy of itself
+ *  - a label that rolls up to reveal a copy of itself (header links)
+ *  - on buttons, a dot that gives way to an arrow as the label slides across
  *  - a slight magnetic pull on buttons
  *  - a progress line along the top of the page
  * All of it is decoration; the controls work the same without it.
@@ -9,8 +10,10 @@
 (function () {
   'use strict';
 
-  const PILL_SELECTOR = '.button, .site-nav .site-nav__menu a, .filter';
-  const ROLL_SELECTOR = '.button, .site-nav a';
+  const PILL_SELECTOR = '.button, .filter';
+  const ROLL_SELECTOR = '.site-nav a';
+  const BUTTON_ARROW_SVG =
+    '<svg viewBox="0 0 16 16" focusable="false"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
   const MAGNET_PULL = 0.25; // fraction of the pointer's offset from the button centre
   const MAGNET_MAX_PX = 7;
 
@@ -32,6 +35,26 @@
     control.replaceChildren(roll);
   }
 
+  /**
+   * A button's label between an arrow (hidden off its left edge) and a dot. On hover the dot shrinks, the label
+   * slides into its place and the arrow slides in behind it (css: .button__label, __dot, __arrow).
+   */
+  function decorateButton(button) {
+    const label = button.textContent.trim();
+    if (!label || button.querySelector('.button__label')) return;
+    const text = document.createElement('span');
+    text.className = 'button__label';
+    text.textContent = label;
+    const dot = document.createElement('span');
+    dot.className = 'button__dot';
+    dot.setAttribute('aria-hidden', 'true');
+    const arrow = document.createElement('span');
+    arrow.className = 'button__arrow';
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.innerHTML = BUTTON_ARROW_SVG;
+    button.replaceChildren(arrow, text, dot);
+  }
+
   function setPointerOrigin(control, event) {
     const rect = control.getBoundingClientRect();
     control.style.setProperty('--mx', `${event.clientX - rect.left}px`);
@@ -48,6 +71,7 @@
 
   function initPointerEffects() {
     document.querySelectorAll(ROLL_SELECTOR).forEach(wrapLabel);
+    document.querySelectorAll('.button').forEach(decorateButton);
 
     // Delegated, so controls that are built later (the filter pills) work too.
     document.addEventListener('pointerover', (event) => {
