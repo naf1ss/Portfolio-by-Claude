@@ -5,8 +5,8 @@
  *   [data-wash]          the page takes this element's colour while it holds the middle of the screen. The colour
  *                        is `data-wash-color`, or is sampled from the picture at `data-wash-src` and deepened
  *                        into a wall colour with light text.
- *   [data-ghost]         a huge outlined word slides sideways behind the element's heading and fills with the
- *                        painting at `data-ghost-paint` as the element reaches the middle of the screen.
+ *   [data-ghost]         huge, faint outlined words behind the element ("ONE|WORD|PER|LINE"), drifting sideways
+ *                        as it scrolls, and catching an iridescent light under the pointer.
  *   [data-sideways]      a tall section whose `.sideways__track` is pinned and moved sideways as you scroll down.
  *   .rise                headings whose words rise into place from below a hairline as they come into view.
  *   [data-count]         a number that counts up from zero when it comes into view.
@@ -27,10 +27,10 @@
   const FEATURES = Object.freeze({
     wash: true,
     sideways: true,
-    ghosts: false,
+    ghosts: true,
     rise: true,
     counts: false,
-    draw: false,
+    draw: true,
     nextPage: true,
   });
 
@@ -114,7 +114,16 @@
       sunken: `hsl(${hue} ${sat}% 18%)`,
       rule: `hsl(${hue} ${Math.round(sat * 0.6)}% 27%)`,
       ink: `hsl(${hue} 30% 94%)`,
+      dark: true,
     };
+  }
+
+  /** A wall in exactly the colour given (a dark one), for sections whose colour is chosen rather than sampled. */
+  function wallExact(hex) {
+    const [h, s] = rgbToHsl(hexToRgb(hex));
+    const hue = Math.round(h);
+    const sat = Math.round(s * 100);
+    return { paper: hex, sunken: `hsl(${hue} ${sat}% 9%)`, rule: `hsl(${hue} ${Math.min(sat, 20)}% 20%)`, ink: `hsl(${hue} 15% 93%)`, dark: true };
   }
 
   const washes = new Map(); // element -> wall colours (null until sampled)
@@ -125,7 +134,7 @@
     root.classList.add('has-wash');
     washes.set(element, null);
     if (element.dataset.washColor) {
-      washes.set(element, wallFrom(hexToRgb(element.dataset.washColor)));
+      washes.set(element, wallExact(element.dataset.washColor));
       return;
     }
     const src = element.dataset.washSrc;
@@ -147,6 +156,7 @@
     if (wall === currentWash) return;
     currentWash = wall;
     root.classList.toggle('is-washed', Boolean(wall));
+    root.classList.toggle('is-wash-dark', Boolean(wall && wall.dark));
     const props = { '--paper': 'paper', '--paper-sunken': 'sunken', '--rule': 'rule', '--ink': 'ink' };
     Object.entries(props).forEach(([property, key]) => {
       if (wall) root.style.setProperty(property, wall[key]);
@@ -175,38 +185,123 @@
   }
 
   // ---------- Giant words ----------
+  // Huge outlined words behind a section, so faint they never compete with the text in front: a hairline of
+  // dark metal that breathes slowly, with a hint of iridescence along it. Each line drifts sideways as the page
+  // scrolls, alternate lines in opposite directions. A lens follows the pointer: under it the metal catches the
+  // light, iridescent, with a thin split of red and blue at its edges. Drawn in SVG, so the outline can carry a
+  // gradient and the lens can be a soft mask.
 
-  const ghosts = [];
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const ghosts = []; // one entry per line of a giant word
+  const pointer = { x: -1e4, y: -1e4 };
+  let ghostId = 0;
+
+  function svgElement(tag, attributes = {}) {
+    const node = document.createElementNS(SVG_NS, tag);
+    Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, value));
+    return node;
+  }
+
+  function gradientStops(gradient, stops) {
+    // Theme tokens (var(--…)) work only through a style, not as an SVG attribute.
+    stops.forEach(([offset, color]) => {
+      const stop = color.startsWith('var(') ? svgElement('stop', { offset, style: `stop-color: ${color}` }) : svgElement('stop', { offset, 'stop-color': color });
+      gradient.append(stop);
+    });
+    return gradient;
+  }
+
+  /** One line of a giant word: its outline, and the lit metal shown only under the lens. */
+  function ghostLine(word, index) {
+    ghostId += 1;
+    const id = `ghost-${ghostId}`;
+    const svg = svgElement('svg', { class: 'ghost__line', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
+    const defs = svgElement('defs');
+    // The outline's faint iridescence: steel, bronze, violet, gold and teal, all very close to the background.
+    defs.append(gradientStops(svgElement('linearGradient', { id: `${id}-edge`, x1: '0', y1: '0', x2: '1', y2: '0.35' }), [
+      ['0', 'var(--ghost-steel)'], ['0.22', 'var(--ghost-bronze)'], ['0.45', 'var(--ghost-violet)'],
+      ['0.68', 'var(--ghost-gold)'], ['0.86', 'var(--ghost-teal)'], ['1', 'var(--ghost-steel)'],
+    ]));
+    // The lit metal under the lens: bright and iridescent, shifted as the lens moves along the word.
+    const shine = gradientStops(svgElement('linearGradient', { id: `${id}-shine`, x1: '0', y1: '0', x2: '1', y2: '0.5', spreadMethod: 'reflect' }), [
+      ['0', '#f4f5ff'], ['0.16', '#aab4ff'], ['0.3', '#5c4bff'], ['0.44', '#ff5a40'], ['0.56', '#ffd27e'],
+      ['0.66', '#ffffff'], ['0.8', '#86e4ff'], ['1', '#f4f5ff'],
+    ]);
+    defs.append(shine);
+    defs.append(gradientStops(svgElement('radialGradient', { id: `${id}-lens` }), [
+      ['0', '#fff'], ['0.45', 'rgb(255 255 255 / 0.55)'], ['1', 'rgb(255 255 255 / 0)'],
+    ]));
+    const mask = svgElement('mask', { id: `${id}-mask`, maskUnits: 'userSpaceOnUse', x: '-50%', y: '-50%', width: '200%', height: '200%' });
+    const lens = svgElement('circle', { cx: '-9999', cy: '-9999', r: '0', fill: `url(#${id}-lens)` });
+    mask.append(lens);
+    defs.append(mask);
+
+    const text = (className, extra = {}) => {
+      const node = svgElement('text', { class: className, x: '0', y: '0.8em', ...extra });
+      node.textContent = word;
+      return node;
+    };
+    const lit = svgElement('g', { class: 'ghost__lit', mask: `url(#${id}-mask)` });
+    lit.append(
+      text('ghost__split ghost__split--red', { dx: '2' }),
+      text('ghost__split ghost__split--blue', { dx: '-2' }),
+      text('ghost__shine', { fill: `url(#${id}-shine)` }),
+      text('ghost__lit-edge', { stroke: `url(#${id}-edge)` })
+    );
+    svg.append(defs, text('ghost__edge', { stroke: `url(#${id}-edge)` }), lit);
+    return { svg, lens, shine, direction: index % 2 === 0 ? -1 : 1, strength: 0, x: 0, y: 0 };
+  }
 
   function registerGhost(host) {
     if (host.querySelector(':scope > .ghost')) return;
-    const word = host.dataset.ghost;
     const ghost = document.createElement('div');
     ghost.className = 'ghost';
     ghost.setAttribute('aria-hidden', 'true');
-    const outline = document.createElement('span');
-    outline.className = 'ghost__word ghost__word--outline';
-    outline.textContent = word;
-    const paint = document.createElement('span');
-    paint.className = 'ghost__word ghost__word--paint';
-    paint.textContent = word;
-    if (host.dataset.ghostPaint) paint.style.backgroundImage = `url("${host.dataset.ghostPaint}")`;
-    ghost.append(outline, paint);
+    host.dataset.ghost.split('|').filter(Boolean).forEach((word, index) => {
+      const line = ghostLine(word, index);
+      ghost.append(line.svg);
+      ghosts.push({ host, ...line });
+    });
     host.prepend(ghost);
     host.classList.add('has-ghost');
-    ghosts.push({ host, ghost, paint });
   }
 
+  /** Moves each line with the scroll and the lens with the pointer; returns whether any lens is still easing. */
   function updateGhosts(viewport) {
-    ghosts.forEach(({ host, ghost, paint }) => {
-      const rect = host.getBoundingClientRect();
-      if (rect.bottom < -viewport || rect.top > viewport * 2) return;
-      const progress = travel(rect, viewport);
-      // Slides from right to left across the whole pass; fills with paint around the middle of it.
-      ghost.style.transform = `translate3d(${(18 - progress * 46).toFixed(2)}vw, 0, 0)`;
-      const fill = clamp01(1 - Math.abs(progress - 0.42) / 0.16);
-      paint.style.clipPath = `inset(0 ${((1 - fill) * 100).toFixed(1)}% 0 0)`;
+    let easing = false;
+    ghosts.forEach((line) => {
+      const hostRect = line.host.getBoundingClientRect();
+      if (hostRect.bottom < -viewport * 0.25 || hostRect.top > viewport * 1.25) return;
+      // Alternate lines drift in opposite directions as the section passes through the screen.
+      const drift = (travel(hostRect, viewport) - 0.5) * 22 * line.direction;
+      line.svg.style.transform = `translate3d(${drift.toFixed(2)}vw, 0, 0)`;
+
+      const rect = line.svg.getBoundingClientRect();
+      const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
+      const localX = pointer.x - rect.left;
+      const localY = pointer.y - rect.top;
+      const over = localY > -size * 0.3 && localY < rect.height + size * 0.3 && pointer.x >= hostRect.left - 40;
+      const target = over ? 1 : 0;
+      line.strength += (target - line.strength) * (target ? 0.14 : 0.07);
+      if (over) {
+        line.x = localX;
+        line.y = localY;
+      }
+      if (Math.abs(target - line.strength) > 0.01) easing = true;
+      const radius = size * 0.85 * line.strength;
+      line.lens.setAttribute('cx', line.x.toFixed(1));
+      line.lens.setAttribute('cy', line.y.toFixed(1));
+      line.lens.setAttribute('r', radius.toFixed(1));
+      // The metal's colours slide past as the lens moves, the way light moves on a turned surface.
+      line.shine.setAttribute('gradientTransform', `translate(${(line.x / Math.max(1, rect.width) * 0.6).toFixed(3)} 0)`);
     });
+    return easing;
+  }
+
+  function trackPointer(event) {
+    if (event.pointerType && event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
   }
 
   // ---------- Sideways ----------
@@ -433,8 +528,9 @@
     const viewport = window.innerHeight;
     updateWash(viewport);
     if (!reduceMotion) {
-      updateGhosts(viewport);
       updateSideways();
+      // A lens that is still growing or fading asks for another frame.
+      if (ghosts.length && updateGhosts(viewport)) requestFrame();
     }
   }
 
@@ -478,6 +574,12 @@
     refresh();
     if (FEATURES.nextPage) buildNextPage();
     window.addEventListener('scroll', requestFrame, { passive: true });
+    if (ghosts.length) {
+      window.addEventListener('pointermove', (event) => {
+        trackPointer(event);
+        requestFrame();
+      }, { passive: true });
+    }
     window.addEventListener('resize', () => {
       sideways.forEach(measureSideways);
       requestFrame();

@@ -493,6 +493,7 @@
     const article = document.getElementById('project-case');
 
     if (!chosen) {
+      if (window.ScrollScenes && window.ScrollScenes.features.ghosts) index.dataset.ghost = 'INTERDISCIPLINARY|PROJECTS';
       // Projects marked `secondary` are listed after the main ones, in a smaller section of their own.
       const main = projects.filter((project) => !project.secondary);
       const more = projects.filter((project) => project.secondary);
@@ -549,47 +550,30 @@
     document.getElementById('contact-empty').hidden = count > 0;
   }
 
-  // Each section of the resume: the word set huge behind it and the painting that fills that word.
-  const RESUME_WORDS = {
-    'skills-heading': ['Skills', 'a041-aggressive-happiness'],
-    'education-heading': ['Education', 'a042-quarry'],
-    'projects-heading': ['Projects', 'a044-rachel-does-plein-air'],
-    'research-heading': ['Research', 'a043-old-master-study-the-milkmaid'],
-    'teaching-heading': ['Teaching', 'a030-almost-happy'],
-    'artistic-heading': ['Practice', 'a027-the-irony-of-waves'],
-    'leadership-heading': ['Leadership', 'a002-rain-in-nyc'],
-    'honors-heading': ['Honors', 'a019-monoprint-horizon-1'],
-    'sports-heading': ['Sports', 'a029-a-sky-full-of-stars'],
-  };
+  // The resume's sections are read on a near-black wall, where the giant words glow (js/scroll-scenes.js).
+  const RESUME_WALL = '#0a0a0e';
+
+  /** A heading's own words, in capitals, one per line of its giant word: "Honors & Awards" -> "HONORS|AWARDS". */
+  function ghostWords(text) {
+    return text
+      .split(/[\s,&]+/)
+      .filter((word) => word.length > 1)
+      .map((word) => word.toUpperCase())
+      .join('|');
+  }
 
   function initResume() {
     const links = document.getElementById('resume-links');
     links.hidden = renderContactLinks(links, { showValue: false }) === 0;
 
-    // The giant words and counts are a scroll scene that can be switched off (js/scroll-scenes.js).
     const scenes = window.ScrollScenes;
     if (!scenes || !scenes.features.ghosts) return;
     document.querySelectorAll('.resume-block').forEach((block) => {
       const heading = block.querySelector('.resume-block__title');
-      const word = heading && RESUME_WORDS[heading.id];
-      if (!word) return;
-      block.dataset.ghost = word[0];
-      block.dataset.ghostPaint = `images/artwork/${word[1]}-1200.jpg`;
-      heading.dataset.rise = '';
-      // How many entries the section holds, counted up beside its heading.
-      const entries = block.querySelectorAll('.ledger-row').length || block.querySelectorAll('li').length;
-      if (entries > 0) {
-        const count = document.createElement('span');
-        count.className = 'resume-count';
-        count.setAttribute('aria-hidden', 'true');
-        count.innerHTML = '<svg viewBox="0 0 24 24" focusable="false"><g fill="currentColor">' +
-          [0, 30, 60, 90, 120, 150].map((angle) => `<ellipse cx="12" cy="12" rx="2.2" ry="10" transform="rotate(${angle} 12 12)"/>`).join('') +
-          '</g></svg>';
-        const number = document.createElement('span');
-        number.dataset.count = String(entries);
-        count.append(number);
-        (block.querySelector('.resume-block__bar') || heading).after(count);
-      }
+      if (!heading) return;
+      block.dataset.ghost = ghostWords(heading.textContent);
+      block.dataset.wash = '';
+      block.dataset.washColor = RESUME_WALL;
       block.querySelectorAll('.ledger-row').forEach((row) => { row.dataset.draw = ''; });
     });
   }

@@ -7413,82 +7413,126 @@ body {
   }
 }
 
-/* ----- The resume: a giant word behind each section, filling with a painting as it passes ----- */
-.resume-block.has-ghost {
-  --ghost-size: clamp(5rem, 17vw, 17rem);
+/* ----- Giant words behind a section (any element with data-ghost; js/scroll-scenes.js) -----
+   Faint enough never to compete with the text in front: a hairline of metal, one word per line, that breathes
+   slowly and catches an iridescent light under the pointer. Tones are set for light and dark walls. */
+:root {
+  --ghost-steel: #5f6478;
+  --ghost-bronze: #8c5f43;
+  --ghost-violet: #5a4bd2;
+  --ghost-gold: #8a7136;
+  --ghost-teal: #2f7581;
+  --ghost-edge: 0.2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ghost-steel: #a3a8c0;
+    --ghost-bronze: #b98d6c;
+    --ghost-violet: #8e80ff;
+    --ghost-gold: #cdb47c;
+    --ghost-teal: #74b7c4;
+    --ghost-edge: 0.17;
+  }
+}
+
+:root[data-theme='dark'],
+:root.is-wash-dark {
+  --ghost-steel: #a3a8c0;
+  --ghost-bronze: #b98d6c;
+  --ghost-violet: #8e80ff;
+  --ghost-gold: #cdb47c;
+  --ghost-teal: #74b7c4;
+  --ghost-edge: 0.17;
+}
+
+.has-ghost {
+  --ghost-size: clamp(6rem, 21vw, 24rem);
   position: relative;
-  padding-top: calc(var(--ghost-size) * 0.6);
   isolation: isolate;
 }
 
-.resume-block.has-ghost > :not(.ghost, .resume-count) {
+.has-ghost > :not(.ghost) {
   position: relative;
   z-index: 1;
 }
 
-.resume-block.has-ghost > .resume-count {
-  z-index: 1;
+/* The heading sits across the lower half of the first word, as on a poster. */
+.resume-block.has-ghost {
+  padding-top: calc(var(--ghost-size) * 0.42);
 }
 
 .ghost {
   position: absolute;
-  top: clamp(1.5rem, 3vw, 2.5rem);
+  top: clamp(1rem, 2vw, 2rem);
+  bottom: 0;
   left: calc(50% - 50vw);
   z-index: 0;
-  display: grid;
   width: 100vw;
+  overflow: hidden;
   padding-left: var(--gutter);
   font-family: var(--font-text);
   font-size: var(--ghost-size);
-  font-weight: 800;
-  letter-spacing: -0.045em;
-  line-height: 0.78;
-  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1;
   pointer-events: none;
   user-select: none;
+}
+
+.ghost__line {
+  display: block;
+  width: 100%;
+  height: 0.84em;
+  overflow: visible;
   will-change: transform;
 }
 
-.ghost__word {
-  grid-area: 1 / 1;
-  white-space: nowrap;
-  color: transparent;
+.ghost__edge {
+  fill: none;
+  stroke-width: 1;
+  opacity: var(--ghost-edge);
+  animation: ghost-breathe 7s ease-in-out infinite alternate;
 }
 
-.ghost__word--outline {
-  -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 30%, transparent);
+@keyframes ghost-breathe {
+  from {
+    opacity: calc(var(--ghost-edge) * 0.5);
+  }
+
+  to {
+    opacity: var(--ghost-edge);
+  }
 }
 
-.ghost__word--paint {
-  background-position: 50% 50%;
-  background-size: cover;
-  -webkit-background-clip: text;
-  background-clip: text;
-  clip-path: inset(0 100% 0 0);
+.ghost__shine {
+  opacity: 0.92;
 }
 
-/* A section's size, counted up beside its heading. */
-.resume-count {
-  position: absolute;
-  top: calc(var(--ghost-size, 0px) * 0.6 + 0.4rem);
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-family: var(--font-text);
-  font-size: clamp(1rem, 0.8rem + 0.8vw, 1.6rem);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
+/* Under the light the outline itself shows clearly, so the lit letters keep their edge on a pale wall too. */
+.ghost__lit-edge {
+  fill: none;
+  stroke-width: 1.2;
+  opacity: 0.85;
 }
 
-.resume-count svg {
-  width: 1.4em;
-  height: 1.4em;
-  color: var(--accent);
+.ghost__split {
+  fill: none;
+  stroke-width: 1.5;
 }
 
-.resume-block__bar + .resume-count {
-  display: none; /* sections with an Open all switch keep that switch there instead */
+.ghost__split--red {
+  stroke: rgb(255 72 60 / 0.75);
+}
+
+.ghost__split--blue {
+  stroke: rgb(70 120 255 / 0.75);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost__edge {
+    animation: none;
+  }
 }
 
 /* ----- The next page, at the foot of every page: scroll on past the bottom to open it ----- */
