@@ -3617,7 +3617,7 @@ html {
   color-scheme: dark;
 }
 
-:root[data-mood='city'] {
+:root[data-mood='architecture'] {
   --paper: #17181a;
   --paper-sunken: #222327;
   --ink: #ececec;
@@ -4354,11 +4354,12 @@ body[data-treatment='fog']::after {
   filter: brightness(0);
 }
 
-/* --- City (grid): a dense block. The title is set like signage, the photographs are packed edge to edge
-   in rows like streets, each numbered like a door; pointing at one dims the rest of the block. --- */
+/* --- Architecture (grid): a dense block. The title is set like signage across the full width, the photographs
+   are packed edge to edge like a facade, each numbered like a door; pointing at one dims the rest of the block.
+   The title's size is set so the whole word fits on one line from phone to desktop. --- */
 .exhibit[data-treatment='grid'] .exhibit__title {
   font-family: var(--font-text);
-  font-size: clamp(4.5rem, 1.5rem + 13vw, 14rem);
+  font-size: min(12rem, calc((100vw - 2 * var(--gutter) - 1rem) / 7.6)); /* the word is about 7.2em wide */
   font-weight: 800;
   line-height: 0.82;
   letter-spacing: -0.04em;

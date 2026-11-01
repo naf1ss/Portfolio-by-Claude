@@ -52,7 +52,7 @@ const PAGES = [
   { url: 'series-negligible.html', tap: ['.exhibit__link', '.series-back .view-switch button'] },
   { url: 'series-negligible.html', tap: ['.exhibit__grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
   { url: 'series-through-the-window.html' },
-  { url: 'series-city.html', tap: ['.exhibit__link'] },
+  { url: 'series-architecture.html', tap: ['.exhibit__link'] },
   { url: 'projects.html' },
   { url: 'project-planet-walk.html' },
   { url: 'artist-statement.html' },

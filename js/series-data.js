@@ -63,6 +63,14 @@
     note: 'Most of every frame is sky. What sits inside it is small enough to miss: an aeroplane, a lamp post, birds on a wire, a plastic bag carried across an English sky, and sometimes nothing but cloud. I let the subject shrink until it is almost gone, because that is its true size. Against the sky, and everything beyond it, a single thing is negligible. So are we.',
   },
   {
+    id: 'architecture',
+    title: 'Architecture',
+    medium: 'Photography',
+    galleryOnly: true,
+    treatment: 'grid',
+    note: 'Buildings in New York, London, Liverpool and Philadelphia, looked at from below, from inside and from high above. Some frames are black and white, where a facade becomes a pattern of windows and a tower is reduced to a line against the sky. Others keep the colour of the hour: a ribbed hall glowing orange at night, a spiral stair seen from the top, London lit at dusk from far above the river.',
+  },
+  {
     id: 'the-light-hits',
     title: 'The Light Hits',
     medium: 'Photography',
@@ -77,14 +85,6 @@
     galleryOnly: true,
     treatment: 'fog',
     note: 'These photographs share one colour: the cold, low grade of an old ghost film. Fog around a streetlamp, a house lit on an empty night, bare trees under a pale sky, a clock tower lost in cloud. Looking at them, I am taken straight into a ghost story.',
-  },
-  {
-    id: 'asymmetrical',
-    title: 'Asymmetrical',
-    medium: 'Photography',
-    galleryOnly: true,
-    treatment: 'axis',
-    note: 'The title is ironic. Nearly every photograph here is symmetrical: a tunnel, a staircase, a nave, a window, each built around a centre line. I named the series for the opposite of what it shows, on purpose.',
   },
   {
     id: 'through-the-window',
@@ -103,11 +103,11 @@
     note: 'Dancers on a dark stage, each held in a single pool of coloured light. The stage is black; the light decides who appears.',
   },
   {
-    id: 'city',
-    title: 'City',
+    id: 'asymmetrical',
+    title: 'Asymmetrical',
     medium: 'Photography',
     galleryOnly: true,
-    treatment: 'grid',
-    note: 'New York and London, photographed from the street and from above. Most of these frames look up: towers cut out against cloud, a street closing into a canyon of glass, the Shard and One World Trade held in black and white. The weather and the hour change a city more than its buildings do, so there is a storm over Tower Bridge, Big Ben in low sun, the Washington Square arch lit at night, and, in one frame, a skyline that exists only as a reflection in a dark window.',
+    treatment: 'axis',
+    note: 'The title is ironic. Nearly every photograph here is symmetrical: a tunnel, a staircase, a nave, a window, each built around a centre line. I named the series for the opposite of what it shows, on purpose.',
   },
 ]);

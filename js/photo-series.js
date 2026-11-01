@@ -17,7 +17,7 @@
  *     window  Through the Window: scrolling down slides the photographs sideways past the screen, like views
  *             going by outside a train window, with a counter for where you are
  *     stage   Stage Light: a black stage; each photograph is lit by its own spotlight as it comes on
- *     grid    City: a dense block of photographs, tightly packed like streets, numbered like doors
+ *     grid    Architecture: a dense block of photographs, packed like a facade, numbered like doors
  *
  * Every photograph links to its place in the viewer (a[data-work-id]), so pages.js opens the lightbox on click.
  * Exposes window.PhotoSeries.
