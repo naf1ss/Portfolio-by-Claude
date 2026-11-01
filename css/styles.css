@@ -7493,13 +7493,20 @@ body {
   height: 0.84em;
 }
 
+/* Each layer is a strip of repeated words, as wide as the strip; it is only moved, never redrawn. */
 .ghost__line {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   display: block;
-  width: 100%;
   height: 100%;
   overflow: visible;
+  will-change: transform;
+}
+
+/* The outline breathes as a whole layer, so the letters are not redrawn for it. */
+.ghost__line--edge {
+  animation: ghost-breathe 7s ease-in-out infinite alternate;
 }
 
 /* The lit letters show only inside the lens: a soft circle that js/scroll-scenes.js moves (--lx, --ly) and
@@ -7512,8 +7519,6 @@ body {
 .ghost__edge {
   fill: none;
   stroke-width: 1;
-  opacity: var(--ghost-edge);
-  animation: ghost-breathe 7s ease-in-out infinite alternate;
 }
 
 @keyframes ghost-breathe {
@@ -7538,8 +7543,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ghost__edge {
+  .ghost__line--edge {
     animation: none;
+    opacity: var(--ghost-edge);
   }
 }
 

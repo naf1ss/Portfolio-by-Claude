@@ -27,11 +27,11 @@
   const FEATURES = Object.freeze({
     wash: true,
     sideways: true,
-    ghosts: false,
+    ghosts: true,
     rise: true,
     counts: false,
-    draw: false,
-    nextPage: false,
+    draw: true,
+    nextPage: true,
   });
 
   // Headings that rise into place: every page title, and the section titles of the resume, the series write-ups
@@ -41,8 +41,11 @@
   const root = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const WASH_LINE = 0.5; // the part of the screen (from the top) whose element sets the page colour
-  const PULL_TO_OPEN = 900; // pixels of scrolling past the bottom that fill the next-page bar
-  const PULL_DECAY_PER_S = 1.4; // how fast an unfinished pull empties again, in bars per second
+  const PULL_TO_OPEN = 1400; // pixels of deliberate scrolling past the bottom that fill the next-page bar
+  const PULL_STEP_MAX = 45; // the most one wheel event can add, so a single hard flick cannot fill it
+  const PULL_PAUSE_MS = 350; // the pause, after reaching the bottom, before scrolling on starts to count
+  const PULL_HOLD_MS = 250; // an unfinished pull starts emptying this long after scrolling stops
+  const PULL_DECAY_PER_S = 1.5; // and then empties at this rate, in bars per second
 
   const clamp01 = (value) => Math.min(1, Math.max(0, value));
 
@@ -227,7 +230,7 @@
     const id = `ghost-${ghostId}`;
     const row = document.createElement('div');
     row.className = 'ghost__row';
-    const svg = svgElement('svg', { class: 'ghost__line', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
+    const svg = svgElement('svg', { class: 'ghost__line ghost__line--edge', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
     const defs = svgElement('defs');
     defs.append(gradientStops(svgElement('linearGradient', { id: `${id}-edge`, x1: '0', y1: '0', x2: '1', y2: '0.35' }), [
       ['0', 'var(--ghost-steel)'], ['0.22', 'var(--ghost-bronze)'], ['0.45', 'var(--ghost-violet)'],
@@ -241,7 +244,7 @@
     const track = svgElement('g', { class: 'ghost__track' });
     svg.append(defs, track);
 
-    const litSvg = svgElement('svg', { class: 'ghost__line ghost__line--lit', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
+    const litSvg = svgElement('svg', { class: 'ghost__line ghost__line--lit', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false', style: 'visibility: hidden' });
     const litTrack = svgElement('g', { class: 'ghost__track' });
     litSvg.append(litTrack);
     row.append(svg, litSvg);
@@ -249,7 +252,7 @@
       word, id, row, svg, litSvg, track, litTrack, shine,
       direction: index % 2 === 0 ? -1 : 1,
       position: Math.random() * 1000, // lines start at different points of their word
-      unit: 0, strength: 0, lensX: 0, lensY: 0, shownRadius: -1,
+      unit: 0, size: 100, strength: 0, lensX: 0, lensY: 0, shownRadius: 0,
     };
   }
 
@@ -260,24 +263,32 @@
   }
 
   /** Lays the repeats of a line's word end to end, enough to cover the screen while it drifts. */
+  /**
+   * Lays the repeats of a line's word end to end, enough to cover the screen while it drifts, and sizes each
+   * layer to exactly that strip. The strips are then only ever moved with a CSS transform, which the browser
+   * does without redrawing the letters.
+   */
   function layoutGhostLine(line) {
     const probe = wordText(line, 'ghost__edge', 0, {});
     line.track.replaceChildren(probe);
-    const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
+    line.size = parseFloat(getComputedStyle(line.row).fontSize) || 100;
     const width = probe.getComputedTextLength();
     if (!width) return;
-    line.unit = width + size * GHOST_GAP_EM;
-    const count = Math.ceil((window.innerWidth * 1.15) / line.unit) + 2;
+    line.unit = width + line.size * GHOST_GAP_EM;
+    const count = Math.ceil(window.innerWidth / line.unit) + 3;
     const edges = [];
     const lit = [];
     for (let i = 0; i < count; i += 1) {
-      const x = (i - 1) * line.unit;
+      const x = i * line.unit;
       edges.push(wordText(line, 'ghost__edge', x, { stroke: `url(#${line.id}-edge)` }));
       lit.push(wordText(line, 'ghost__shine', x, { fill: `url(#${line.id}-shine)` }));
       lit.push(wordText(line, 'ghost__lit-edge', x, { stroke: `url(#${line.id}-edge)` }));
     }
     line.track.replaceChildren(...edges);
     line.litTrack.replaceChildren(...lit);
+    const stripWidth = `${Math.ceil(count * line.unit)}px`;
+    line.svg.style.width = stripWidth;
+    line.litSvg.style.width = stripWidth;
   }
 
   function registerGhost(host) {
@@ -309,30 +320,35 @@
     let onScreen = false;
     ghosts.forEach((line) => {
       if (!line.unit) return;
-      const hostRect = line.host.getBoundingClientRect();
-      if (hostRect.bottom < 0 || hostRect.top > viewport) return;
+      const rect = line.row.getBoundingClientRect();
+      if (rect.bottom < -line.size || rect.top > viewport + line.size) return;
       onScreen = true;
       line.position += line.direction * (GHOST_SPEED * dt + Math.abs(scrolled) * GHOST_SCROLL_PULL);
-      const offset = ((line.position % line.unit) + line.unit) % line.unit;
-      const shift = `translate(${(-offset).toFixed(2)} 0)`;
-      line.track.setAttribute('transform', shift);
-      line.litTrack.setAttribute('transform', shift);
+      // The strip starts a word to the left of the line, so the screen's edge is always covered.
+      const shift = -(((line.position % line.unit) + line.unit) % line.unit) - line.unit;
+      const transform = `translate3d(${shift.toFixed(2)}px, 0, 0)`;
+      line.svg.style.transform = transform;
 
-      const rect = line.row.getBoundingClientRect();
-      const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
       const localY = pointer.y - rect.top;
-      const over = localY > -size * 0.25 && localY < rect.height + size * 0.25 && pointer.x > rect.left - 40;
+      const over = localY > -line.size * 0.25 && localY < rect.height + line.size * 0.25 && pointer.x > rect.left - 40;
       const target = over ? 1 : 0;
       line.strength += (target - line.strength) * (target ? 0.14 : 0.07);
       if (over) {
         line.lensX = pointer.x - rect.left;
         line.lensY = localY;
       }
-      // The lens sits on the line's own box, so it stays under the pointer while the letters slide past it.
-      const radius = line.strength < 0.01 ? 0 : size * 0.85 * line.strength;
-      if (radius === 0 && line.shownRadius === 0) return;
+      const radius = line.strength < 0.01 ? 0 : line.size * 0.85 * line.strength;
+      if (radius === 0) {
+        // Out of the light: the lit layer is hidden, so nothing about it is drawn at all.
+        if (line.shownRadius !== 0) line.litSvg.style.visibility = 'hidden';
+        line.shownRadius = 0;
+        return;
+      }
+      if (line.shownRadius === 0 || line.shownRadius === -1) line.litSvg.style.visibility = '';
       line.shownRadius = radius;
-      line.litSvg.style.setProperty('--lx', `${line.lensX.toFixed(1)}px`);
+      line.litSvg.style.transform = transform;
+      // The lens is placed in the lit strip's own coordinates, which move with it.
+      line.litSvg.style.setProperty('--lx', `${(line.lensX - shift).toFixed(1)}px`);
       line.litSvg.style.setProperty('--ly', `${line.lensY.toFixed(1)}px`);
       line.litSvg.style.setProperty('--lr', `${radius.toFixed(1)}px`);
       line.shine.setAttribute('gradientTransform', `translate(${((line.lensX / Math.max(1, rect.width)) * 0.6).toFixed(3)} 0)`);
@@ -526,19 +542,22 @@
       link.classList.toggle('is-pulling', pull > 0.02);
       hint.textContent = pull > 0.02 ? 'Keep going' : 'Keep scrolling';
     };
+    let lastPullAt = 0;
+    // An unfinished pull holds while scrolling goes on, and empties once it stops.
     const decay = (now) => {
       const dt = lastTick ? (now - lastTick) / 1000 : 0;
       lastTick = now;
       if (leaving) return;
-      pull = Math.max(0, pull - PULL_DECAY_PER_S * dt * (pull > 0.85 ? 0.4 : 1));
+      if (now - lastPullAt > PULL_HOLD_MS) pull = Math.max(0, pull - PULL_DECAY_PER_S * dt);
       draw();
       if (pull > 0) requestAnimationFrame(decay);
       else lastTick = 0;
     };
     const add = (pixels) => {
-      if (leaving || pixels <= 0 || !atBottom()) return;
+      if (leaving || pixels <= 0) return;
+      lastPullAt = performance.now();
       const wasIdle = pull === 0;
-      pull = clamp01(pull + pixels / PULL_TO_OPEN);
+      pull = clamp01(pull + Math.min(pixels, PULL_STEP_MAX) / PULL_TO_OPEN);
       draw();
       if (pull >= 1) {
         leaving = true;
@@ -549,9 +568,29 @@
       if (wasIdle) requestAnimationFrame(decay);
     };
 
-    window.addEventListener('wheel', (event) => add(event.deltaY), { passive: true });
+    // Only a deliberate pull counts. A trackpad keeps sending scroll movement for a second or more after a
+    // flick, so arriving at the bottom must be followed by a pause before scrolling on fills the bar.
+    let lastWheelAt = 0;
+    let armed = false;
+    window.addEventListener('wheel', (event) => {
+      const now = performance.now();
+      const quietBefore = now - lastWheelAt;
+      lastWheelAt = now;
+      if (!atBottom()) {
+        armed = false;
+        return;
+      }
+      if (!armed && quietBefore > PULL_PAUSE_MS) armed = true;
+      if (armed) add(event.deltaY);
+    }, { passive: true });
+    window.addEventListener('scroll', () => {
+      if (!atBottom()) armed = false;
+    }, { passive: true });
+    // On a touch screen the finger must already be at the bottom when the pull begins.
     let touchY = null;
-    window.addEventListener('touchstart', (event) => { touchY = event.touches[0].clientY; }, { passive: true });
+    window.addEventListener('touchstart', (event) => {
+      touchY = atBottom() ? event.touches[0].clientY : null;
+    }, { passive: true });
     window.addEventListener('touchmove', (event) => {
       if (touchY === null) return;
       const y = event.touches[0].clientY;
