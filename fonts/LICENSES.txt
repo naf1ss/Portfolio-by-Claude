@@ -11,3 +11,6 @@ https://fontsource.org/fonts/bodoni-moda/license
 https://fontsource.org/fonts/manrope/license
 https://fontsource.org/fonts/cormorant-garamond/license
 https://fontsource.org/fonts/kaushan-script/license
+
+manrope-outline-400.woff2 is Manrope Regular with overlapping outlines merged (tools/make-outline-font.py),
+under the same license.

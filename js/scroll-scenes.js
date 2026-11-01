@@ -5,8 +5,8 @@
  *   [data-wash]          the page takes this element's colour while it holds the middle of the screen. The colour
  *                        is `data-wash-color`, or is sampled from the picture at `data-wash-src` and deepened
  *                        into a wall colour with light text.
- *   [data-ghost]         huge, faint outlined words behind the element ("ONE|WORD|PER|LINE"), drifting sideways
- *                        as it scrolls, and catching an iridescent light under the pointer.
+ *   [data-ghost]         huge, faint outlined words behind the element ("ONE|WORD|PER|LINE"), always drifting
+ *                        sideways (faster while scrolling), and catching an iridescent light under the pointer.
  *   [data-sideways]      a tall section whose `.sideways__track` is pinned and moved sideways as you scroll down.
  *   .rise                headings whose words rise into place from below a hairline as they come into view.
  *   [data-count]         a number that counts up from zero when it comes into view.
@@ -186,15 +186,21 @@
 
   // ---------- Giant words ----------
   // Huge outlined words behind a section, so faint they never compete with the text in front: a hairline of
-  // dark metal that breathes slowly, with a hint of iridescence along it. Each line drifts sideways as the page
-  // scrolls, alternate lines in opposite directions. A lens follows the pointer: under it the metal catches the
-  // light, iridescent, with a thin split of red and blue at its edges. Drawn in SVG, so the outline can carry a
-  // gradient and the lens can be a soft mask.
+  // metal with a hint of iridescence that breathes slowly. Each line is a word repeated end to end that keeps
+  // drifting sideways on its own, alternate lines in opposite directions, and runs faster while the page is
+  // scrolled. A lens follows the pointer; under it the metal lights up, iridescent. Drawn in SVG, so the outline
+  // can carry a gradient and the lens can be a soft mask, in an outline cut of Manrope whose letters are single
+  // shapes (the ordinary cut builds letters from overlapping pieces, which an outline shows as stray lines).
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
-  const ghosts = []; // one entry per line of a giant word
+  const GHOST_SPEED = 26; // drift in pixels a second
+  const GHOST_SCROLL_PULL = 0.4; // extra drift per pixel scrolled
+  const GHOST_GAP_EM = 0.4; // space between repeats of a word
+  const ghosts = []; // one entry per line
   const pointer = { x: -1e4, y: -1e4 };
   let ghostId = 0;
+  let lastScrollY = window.scrollY;
+  let lastFrameAt = 0;
 
   function svgElement(tag, attributes = {}) {
     const node = document.createElementNS(SVG_NS, tag);
@@ -211,18 +217,16 @@
     return gradient;
   }
 
-  /** One line of a giant word: its outline, and the lit metal shown only under the lens. */
+  /** One line of a giant word: a track of repeated outlines, and the same repeats lit under the lens. */
   function ghostLine(word, index) {
     ghostId += 1;
     const id = `ghost-${ghostId}`;
     const svg = svgElement('svg', { class: 'ghost__line', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
     const defs = svgElement('defs');
-    // The outline's faint iridescence: steel, bronze, violet, gold and teal, all very close to the background.
     defs.append(gradientStops(svgElement('linearGradient', { id: `${id}-edge`, x1: '0', y1: '0', x2: '1', y2: '0.35' }), [
       ['0', 'var(--ghost-steel)'], ['0.22', 'var(--ghost-bronze)'], ['0.45', 'var(--ghost-violet)'],
       ['0.68', 'var(--ghost-gold)'], ['0.86', 'var(--ghost-teal)'], ['1', 'var(--ghost-steel)'],
     ]));
-    // The lit metal under the lens: bright and iridescent, shifted as the lens moves along the word.
     const shine = gradientStops(svgElement('linearGradient', { id: `${id}-shine`, x1: '0', y1: '0', x2: '1', y2: '0.5', spreadMethod: 'reflect' }), [
       ['0', '#f4f5ff'], ['0.16', '#aab4ff'], ['0.3', '#5c4bff'], ['0.44', '#ff5a40'], ['0.56', '#ffd27e'],
       ['0.66', '#ffffff'], ['0.8', '#86e4ff'], ['1', '#f4f5ff'],
@@ -231,25 +235,49 @@
     defs.append(gradientStops(svgElement('radialGradient', { id: `${id}-lens` }), [
       ['0', '#fff'], ['0.45', 'rgb(255 255 255 / 0.55)'], ['1', 'rgb(255 255 255 / 0)'],
     ]));
-    const mask = svgElement('mask', { id: `${id}-mask`, maskUnits: 'userSpaceOnUse', x: '-50%', y: '-50%', width: '200%', height: '200%' });
-    const lens = svgElement('circle', { cx: '-9999', cy: '-9999', r: '0', fill: `url(#${id}-lens)` });
+    const mask = svgElement('mask', { id: `${id}-mask`, maskUnits: 'userSpaceOnUse', x: '-100000', y: '-5000', width: '200000', height: '10000' });
+    const lens = svgElement('circle', { cx: '-99999', cy: '-99999', r: '0', fill: `url(#${id}-lens)` });
     mask.append(lens);
     defs.append(mask);
 
-    const text = (className, extra = {}) => {
-      const node = svgElement('text', { class: className, x: '0', y: '0.8em', ...extra });
-      node.textContent = word;
-      return node;
-    };
+    const track = svgElement('g', { class: 'ghost__track' });
+    const edges = svgElement('g');
     const lit = svgElement('g', { class: 'ghost__lit', mask: `url(#${id}-mask)` });
-    lit.append(
-      text('ghost__split ghost__split--red', { dx: '2' }),
-      text('ghost__split ghost__split--blue', { dx: '-2' }),
-      text('ghost__shine', { fill: `url(#${id}-shine)` }),
-      text('ghost__lit-edge', { stroke: `url(#${id}-edge)` })
-    );
-    svg.append(defs, text('ghost__edge', { stroke: `url(#${id}-edge)` }), lit);
-    return { svg, lens, shine, direction: index % 2 === 0 ? -1 : 1, strength: 0, x: 0, y: 0 };
+    track.append(edges, lit);
+    svg.append(defs, track);
+    return {
+      word, id, svg, track, edges, lit, lens, shine,
+      direction: index % 2 === 0 ? -1 : 1,
+      position: Math.random() * 1000, // lines start at different points of their word
+      unit: 0, strength: 0, lensX: 0, lensY: 0,
+    };
+  }
+
+  function wordText(line, className, x, paint) {
+    const node = svgElement('text', { class: className, x: x.toFixed(1), y: '0.8em', ...paint });
+    node.textContent = line.word;
+    return node;
+  }
+
+  /** Lays the repeats of a line's word end to end, enough to cover the screen while it drifts. */
+  function layoutGhostLine(line) {
+    const probe = wordText(line, 'ghost__edge', 0, {});
+    line.edges.replaceChildren(probe);
+    const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
+    const width = probe.getComputedTextLength();
+    if (!width) return;
+    line.unit = width + size * GHOST_GAP_EM;
+    const count = Math.ceil((window.innerWidth * 1.15) / line.unit) + 2;
+    const edges = [];
+    const lit = [];
+    for (let i = 0; i < count; i += 1) {
+      const x = (i - 1) * line.unit;
+      edges.push(wordText(line, 'ghost__edge', x, { stroke: `url(#${line.id}-edge)` }));
+      lit.push(wordText(line, 'ghost__shine', x, { fill: `url(#${line.id}-shine)` }));
+      lit.push(wordText(line, 'ghost__lit-edge', x, { stroke: `url(#${line.id}-edge)` }));
+    }
+    line.edges.replaceChildren(...edges);
+    line.lit.replaceChildren(...lit);
   }
 
   function registerGhost(host) {
@@ -257,45 +285,54 @@
     const ghost = document.createElement('div');
     ghost.className = 'ghost';
     ghost.setAttribute('aria-hidden', 'true');
-    host.dataset.ghost.split('|').filter(Boolean).forEach((word, index) => {
-      const line = ghostLine(word, index);
-      ghost.append(line.svg);
-      ghosts.push({ host, ...line });
-    });
     host.prepend(ghost);
     host.classList.add('has-ghost');
+    host.dataset.ghost.split('|').filter(Boolean).forEach((word, index) => {
+      const line = ghostLine(word, index);
+      line.host = host;
+      ghost.append(line.svg);
+      layoutGhostLine(line);
+      ghosts.push(line);
+    });
   }
 
-  /** Moves each line with the scroll and the lens with the pointer; returns whether any lens is still easing. */
-  function updateGhosts(viewport) {
-    let easing = false;
+  function relayoutGhosts() {
+    ghosts.forEach(layoutGhostLine);
+  }
+
+  /** Drifts every line on screen and moves the lens; returns whether any line is on screen. */
+  function updateGhosts(viewport, now) {
+    const dt = lastFrameAt ? Math.min(0.1, (now - lastFrameAt) / 1000) : 0;
+    lastFrameAt = now;
+    const scrolled = window.scrollY - lastScrollY;
+    lastScrollY = window.scrollY;
+    let onScreen = false;
     ghosts.forEach((line) => {
+      if (!line.unit) return;
       const hostRect = line.host.getBoundingClientRect();
-      if (hostRect.bottom < -viewport * 0.25 || hostRect.top > viewport * 1.25) return;
-      // Alternate lines drift in opposite directions as the section passes through the screen.
-      const drift = (travel(hostRect, viewport) - 0.5) * 22 * line.direction;
-      line.svg.style.transform = `translate3d(${drift.toFixed(2)}vw, 0, 0)`;
+      if (hostRect.bottom < 0 || hostRect.top > viewport) return;
+      onScreen = true;
+      line.position += line.direction * (GHOST_SPEED * dt + Math.abs(scrolled) * GHOST_SCROLL_PULL);
+      const offset = ((line.position % line.unit) + line.unit) % line.unit;
+      line.track.setAttribute('transform', `translate(${(-offset).toFixed(2)} 0)`);
 
       const rect = line.svg.getBoundingClientRect();
       const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
-      const localX = pointer.x - rect.left;
       const localY = pointer.y - rect.top;
-      const over = localY > -size * 0.3 && localY < rect.height + size * 0.3 && pointer.x >= hostRect.left - 40;
+      const over = localY > -size * 0.25 && localY < rect.height + size * 0.25 && pointer.x > rect.left - 40;
       const target = over ? 1 : 0;
       line.strength += (target - line.strength) * (target ? 0.14 : 0.07);
       if (over) {
-        line.x = localX;
-        line.y = localY;
+        line.lensX = pointer.x - rect.left;
+        line.lensY = localY;
       }
-      if (Math.abs(target - line.strength) > 0.01) easing = true;
-      const radius = size * 0.85 * line.strength;
-      line.lens.setAttribute('cx', line.x.toFixed(1));
-      line.lens.setAttribute('cy', line.y.toFixed(1));
-      line.lens.setAttribute('r', radius.toFixed(1));
-      // The metal's colours slide past as the lens moves, the way light moves on a turned surface.
-      line.shine.setAttribute('gradientTransform', `translate(${(line.x / Math.max(1, rect.width) * 0.6).toFixed(3)} 0)`);
+      // The lens is placed on the track, which is shifted by `offset`.
+      line.lens.setAttribute('cx', (line.lensX + offset).toFixed(1));
+      line.lens.setAttribute('cy', line.lensY.toFixed(1));
+      line.lens.setAttribute('r', (size * 0.85 * line.strength).toFixed(1));
+      line.shine.setAttribute('gradientTransform', `translate(${((line.lensX / Math.max(1, rect.width)) * 0.6).toFixed(3)} 0)`);
     });
-    return easing;
+    return onScreen;
   }
 
   function trackPointer(event) {
@@ -523,14 +560,15 @@
 
   let frameRequested = false;
 
-  function frame() {
+  function frame(now) {
     frameRequested = false;
     const viewport = window.innerHeight;
     updateWash(viewport);
     if (!reduceMotion) {
       updateSideways();
-      // A lens that is still growing or fading asks for another frame.
-      if (ghosts.length && updateGhosts(viewport)) requestFrame();
+      // The giant words keep drifting while any of them is on screen.
+      if (ghosts.length && updateGhosts(viewport, now)) requestFrame();
+      else lastFrameAt = 0;
     }
   }
 
@@ -580,7 +618,10 @@
         requestFrame();
       }, { passive: true });
     }
+    // The repeats are measured in the outline font, so they are laid out again once it has loaded.
+    if (ghosts.length && document.fonts && document.fonts.ready) document.fonts.ready.then(relayoutGhosts);
     window.addEventListener('resize', () => {
+      relayoutGhosts();
       sideways.forEach(measureSideways);
       requestFrame();
     });
