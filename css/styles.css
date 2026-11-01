@@ -7254,3 +7254,310 @@ body[data-gallery-view='wall'] .hint {
     transition: none;
   }
 }
+
+/* ---------- Scroll scenes (js/scroll-scenes.js) ----------
+   Effects that follow the page as it is scrolled. The browser's own scrolling is untouched. */
+
+/* Wide pieces (the giant words, the sideways day) reach the screen's edges; nothing may widen the page. */
+body {
+  overflow-x: clip;
+}
+
+/* The page's colour: while a work holds the middle of the screen, the walls take its colour. */
+.has-wash body {
+  transition: background-color 0.9s var(--ease), color 0.9s var(--ease);
+}
+
+/* Headings rise into place, word by word, from below a hairline. */
+.rise__mask {
+  display: inline-block;
+  overflow: hidden;
+  padding-block: 0.1em 0.14em;
+  margin-block: -0.1em -0.14em;
+  vertical-align: top;
+}
+
+.rise__word {
+  display: inline-block;
+  transform: translateY(108%);
+  transition: transform 1s var(--ease-card) calc(var(--rise-i, 0) * 0.07s);
+}
+
+.rise.is-risen .rise__word {
+  transform: none;
+}
+
+/* Rows whose rule draws itself in from the left. */
+.ledger-row[data-draw] {
+  position: relative;
+  border-top-color: transparent;
+}
+
+.ledger-row[data-draw]::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--rule);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 1.2s var(--ease-card);
+}
+
+.ledger-row[data-draw].is-drawn::before {
+  transform: none;
+}
+
+/* ----- Horizon: the six prints pass sideways while the page scrolls down ----- */
+.sideways {
+  position: relative;
+  margin-block: clamp(2rem, 6vw, 5rem);
+  margin-inline: calc(50% - 50vw);
+}
+
+.sideways__pin {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1rem, 3vh, 2rem);
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.sideways__kicker {
+  padding-inline: var(--gutter);
+}
+
+.sideways__track {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(2rem, 6vw, 6rem);
+  width: max-content;
+  padding-inline: max(var(--gutter), 20vw);
+  will-change: transform;
+}
+
+.sideways__panel {
+  display: grid;
+  gap: 0.9rem;
+  width: min(56vw, 105vh);
+  margin: 0;
+}
+
+.sideways__panel a {
+  display: block;
+}
+
+.sideways__panel img {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+
+.sideways__panel figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.sideways__panel figcaption span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.sideways__panel figcaption b {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1rem + 1.5vw, 2.2rem);
+  font-weight: 500;
+}
+
+.sideways__progress {
+  height: 2px;
+  margin-inline: var(--gutter);
+  background: var(--rule);
+}
+
+.sideways__progress span {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  transform: scaleX(var(--sideways-progress, 0));
+  transform-origin: 0 50%;
+}
+
+@media (max-width: 40rem) {
+  .sideways__panel {
+    width: 80vw;
+  }
+
+  .sideways__track {
+    padding-inline: 10vw;
+  }
+}
+
+/* Without motion the row is simply scrolled across by hand. */
+@media (prefers-reduced-motion: reduce) {
+  .sideways__pin {
+    position: static;
+    height: auto;
+    overflow-x: auto;
+  }
+}
+
+/* ----- The resume: a giant word behind each section, filling with a painting as it passes ----- */
+.resume-block.has-ghost {
+  --ghost-size: clamp(5rem, 17vw, 17rem);
+  position: relative;
+  padding-top: calc(var(--ghost-size) * 0.6);
+  isolation: isolate;
+}
+
+.resume-block.has-ghost > :not(.ghost, .resume-count) {
+  position: relative;
+  z-index: 1;
+}
+
+.resume-block.has-ghost > .resume-count {
+  z-index: 1;
+}
+
+.ghost {
+  position: absolute;
+  top: clamp(1.5rem, 3vw, 2.5rem);
+  left: calc(50% - 50vw);
+  z-index: 0;
+  display: grid;
+  width: 100vw;
+  padding-left: var(--gutter);
+  font-family: var(--font-text);
+  font-size: var(--ghost-size);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.78;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.ghost__word {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  color: transparent;
+}
+
+.ghost__word--outline {
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 30%, transparent);
+}
+
+.ghost__word--paint {
+  background-position: 50% 50%;
+  background-size: cover;
+  -webkit-background-clip: text;
+  background-clip: text;
+  clip-path: inset(0 100% 0 0);
+}
+
+/* A section's size, counted up beside its heading. */
+.resume-count {
+  position: absolute;
+  top: calc(var(--ghost-size, 0px) * 0.6 + 0.4rem);
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--font-text);
+  font-size: clamp(1rem, 0.8rem + 0.8vw, 1.6rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.resume-count svg {
+  width: 1.4em;
+  height: 1.4em;
+  color: var(--accent);
+}
+
+.resume-block__bar + .resume-count {
+  display: none; /* sections with an Open all switch keep that switch there instead */
+}
+
+/* ----- The next page, at the foot of every page: scroll on past the bottom to open it ----- */
+.next-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1rem 2rem;
+  padding-block: clamp(2rem, 5vw, 3.25rem) clamp(2.25rem, 5vw, 3.5rem);
+  border-top: 1px solid #333;
+  color: var(--footer-ink);
+  text-decoration: none;
+}
+
+.next-page__label {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--footer-accent);
+}
+
+.next-page__hint {
+  color: #8c8c8c;
+}
+
+.next-page__title {
+  grid-column: 1 / -1;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 1.4rem + 5vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.next-page__title::after {
+  content: ' \2192';
+  color: var(--footer-accent);
+}
+
+.next-page__bar {
+  position: relative;
+  grid-column: 1 / -1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #2a2a2a;
+}
+
+.next-page__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--footer-accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.next-page.is-leaving .next-page__fill {
+  transform: none;
+  transition: transform 0.4s var(--ease-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise__word,
+  .ledger-row[data-draw]::before,
+  .has-wash body {
+    transition: none;
+  }
+}

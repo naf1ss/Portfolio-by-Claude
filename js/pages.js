@@ -67,8 +67,12 @@
 
     const latest = byId.get(config.latestId);
     const latestSection = document.getElementById('latest-section');
-    if (latest) window.Gallery.renderLatest(document.getElementById('latest'), latest, { href: hrefFor(latest) });
-    else latestSection.hidden = true;
+    if (latest) {
+      window.Gallery.renderLatest(document.getElementById('latest'), latest, { href: hrefFor(latest) });
+      // The page takes on the painting's colour while it holds the screen (js/scroll-scenes.js).
+      latestSection.dataset.wash = '';
+      latestSection.dataset.washSrc = U.imageUrl(latest, 600);
+    } else latestSection.hidden = true;
 
     // Each medium's row shows one of its works: the chosen best on a first visit, a random one after that.
     const picks = U.pickMediumWorks(all, config.mediumPicks || [], { showBest: isFirstHomeVisit() });
@@ -412,6 +416,7 @@
       gallery.hidden = true;
       note.hidden = true;
       window.SeriesStory.render(storyBox, story, { note: series.note, byId });
+      if (series.sideways) addSidewaysDay(storyBox, story, byId, U);
       viewerHost = storyBox;
     } else {
       window.Gallery.renderGallery(gallery, works, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
@@ -421,6 +426,56 @@
     lightbox.setWorks(works);
     const linkedId = U.workIdFromHash(location.hash, works);
     if (linkedId) lightbox.open(linkedId, 'load');
+  }
+
+  /** Horizon's six prints in a row that passes sideways as the page scrolls down: one day, from golden hour to daylight. */
+  function addSidewaysDay(storyBox, story, byId, U) {
+    const chapters = (story.chapters || []).filter((chapter) => byId.get(chapter.workId));
+    if (chapters.length < 2) return;
+    const section = document.createElement('section');
+    section.className = 'sideways';
+    section.dataset.sideways = '';
+    section.setAttribute('aria-label', `The ${chapters.length} prints in order`);
+    const pin = document.createElement('div');
+    pin.className = 'sideways__pin';
+    const kicker = document.createElement('p');
+    kicker.className = 'eyebrow sideways__kicker';
+    kicker.textContent = 'One day, six prints';
+    const track = document.createElement('div');
+    track.className = 'sideways__track';
+    chapters.forEach((chapter, i) => {
+      const work = byId.get(chapter.workId);
+      const panel = document.createElement('figure');
+      panel.className = 'sideways__panel';
+      panel.dataset.wash = '';
+      panel.dataset.washSrc = U.imageUrl(work, 600);
+      const link = document.createElement('a');
+      link.href = `#${chapter.id}`;
+      const image = document.createElement('img');
+      image.src = U.imageUrl(work, 1200);
+      image.srcset = U.buildSrcset(work);
+      image.sizes = '(min-width: 56rem) 56vw, 80vw';
+      image.width = work.w;
+      image.height = work.h;
+      image.alt = chapter.caption || chapter.title;
+      link.append(image);
+      const caption = document.createElement('figcaption');
+      const number = document.createElement('span');
+      number.textContent = String(i + 1).padStart(2, '0');
+      const name = document.createElement('b');
+      name.textContent = chapter.label || chapter.title;
+      caption.append(number, name);
+      panel.append(link, caption);
+      track.append(panel);
+    });
+    const progress = document.createElement('div');
+    progress.className = 'sideways__progress';
+    progress.setAttribute('aria-hidden', 'true');
+    progress.append(document.createElement('span'));
+    pin.append(kicker, track, progress);
+    section.append(pin);
+    const after = storyBox.querySelector('.story__process') || storyBox.firstElementChild;
+    after.after(section);
   }
 
   /** Lists every project, or (on a project's own page) shows its case study. */
@@ -494,9 +549,49 @@
     document.getElementById('contact-empty').hidden = count > 0;
   }
 
+  // Each section of the resume: the word set huge behind it and the painting that fills that word.
+  const RESUME_WORDS = {
+    'skills-heading': ['Skills', 'a041-aggressive-happiness'],
+    'education-heading': ['Education', 'a042-quarry'],
+    'projects-heading': ['Projects', 'a044-rachel-does-plein-air'],
+    'research-heading': ['Research', 'a043-old-master-study-the-milkmaid'],
+    'teaching-heading': ['Teaching', 'a030-almost-happy'],
+    'artistic-heading': ['Practice', 'a027-the-irony-of-waves'],
+    'leadership-heading': ['Leadership', 'a002-rain-in-nyc'],
+    'honors-heading': ['Honors', 'a019-monoprint-horizon-1'],
+    'sports-heading': ['Sports', 'a029-a-sky-full-of-stars'],
+  };
+
   function initResume() {
     const links = document.getElementById('resume-links');
     links.hidden = renderContactLinks(links, { showValue: false }) === 0;
+
+    // The giant words and counts are a scroll scene that can be switched off (js/scroll-scenes.js).
+    const scenes = window.ScrollScenes;
+    if (!scenes || !scenes.features.ghosts) return;
+    document.querySelectorAll('.resume-block').forEach((block) => {
+      const heading = block.querySelector('.resume-block__title');
+      const word = heading && RESUME_WORDS[heading.id];
+      if (!word) return;
+      block.dataset.ghost = word[0];
+      block.dataset.ghostPaint = `images/artwork/${word[1]}-1200.jpg`;
+      heading.dataset.rise = '';
+      // How many entries the section holds, counted up beside its heading.
+      const entries = block.querySelectorAll('.ledger-row').length || block.querySelectorAll('li').length;
+      if (entries > 0) {
+        const count = document.createElement('span');
+        count.className = 'resume-count';
+        count.setAttribute('aria-hidden', 'true');
+        count.innerHTML = '<svg viewBox="0 0 24 24" focusable="false"><g fill="currentColor">' +
+          [0, 30, 60, 90, 120, 150].map((angle) => `<ellipse cx="12" cy="12" rx="2.2" ry="10" transform="rotate(${angle} 12 12)"/>`).join('') +
+          '</g></svg>';
+        const number = document.createElement('span');
+        number.dataset.count = String(entries);
+        count.append(number);
+        (block.querySelector('.resume-block__bar') || heading).after(count);
+      }
+      block.querySelectorAll('.ledger-row').forEach((row) => { row.dataset.draw = ''; });
+    });
   }
 
   const pages = { home: initHome, gallery: initGallery, series: initSeries, projects: initProjects, contact: initContact, resume: initResume };

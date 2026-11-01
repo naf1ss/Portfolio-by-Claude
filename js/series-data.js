@@ -45,7 +45,7 @@
     hangTogether: true,
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
-  { id: 'horizon', title: 'Horizon', medium: 'Monotype', note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
+  { id: 'horizon', title: 'Horizon', medium: 'Monotype', sideways: true, note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
   {
     id: 'eiffel-tower',
     title: 'Eiffel Tower',
