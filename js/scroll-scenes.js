@@ -28,11 +28,15 @@
     wash: true,
     sideways: true,
     ghosts: false,
-    rise: false,
+    rise: true,
     counts: false,
     draw: false,
-    nextPage: false,
+    nextPage: true,
   });
+
+  // Headings that rise into place: every page title, and the section titles of the resume, the series write-ups
+  // and the home page's latest work.
+  const RISING_HEADINGS = 'h1, [data-rise], .resume-block__title, .story__title, .latest__title';
 
   const root = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -451,7 +455,7 @@
       }
     }
     if (FEATURES.rise) {
-      document.querySelectorAll('h1, [data-rise]').forEach((heading) => {
+      document.querySelectorAll(RISING_HEADINGS).forEach((heading) => {
         if (!heading.closest('.visually-hidden, .hero, .exhibit') && !heading.classList.contains('visually-hidden')) registerRise(heading);
       });
     }
