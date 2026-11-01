@@ -205,6 +205,38 @@
   let lastScrollY = window.scrollY;
   let lastFrameAt = 0;
 
+  // How much of the effect this computer gets. It starts from what the browser tells about the machine and
+  // steps down for good if the words cannot hold a smooth frame rate while they are on screen:
+  //   full   drifting words, and the light under the pointer
+  //   calm   drifting words without the light, which is the costly part
+  //   still  words at rest, moving only as the page is scrolled
+  const QUALITY_LEVELS = ['full', 'calm', 'still'];
+  const SLOW_FRAME_MS = 26; // a typical frame slower than this (under ~38 frames a second) steps down
+  const SAMPLE_FRAMES = 90;
+  const frameSamples = [];
+  let quality = startingQuality();
+
+  function startingQuality() {
+    const cores = navigator.hardwareConcurrency || 8;
+    const memory = navigator.deviceMemory || 8; // reported by Chrome and Edge only
+    const saveData = Boolean(navigator.connection && navigator.connection.saveData);
+    if (saveData || cores <= 2 || memory <= 2) return 'still';
+    if (cores <= 4 || memory <= 4) return 'calm';
+    return 'full';
+  }
+
+  function watchFrameRate(frameMs) {
+    // A long gap is the tab in the background or the page loading, not a slow computer.
+    if (quality === 'still' || frameMs <= 0 || frameMs > 250) return;
+    frameSamples.push(frameMs);
+    if (frameSamples.length < SAMPLE_FRAMES) return;
+    const sorted = frameSamples.splice(0).sort((a, b) => a - b);
+    if (sorted[sorted.length >> 1] > SLOW_FRAME_MS) {
+      quality = QUALITY_LEVELS[QUALITY_LEVELS.indexOf(quality) + 1];
+      root.dataset.ghostQuality = quality;
+    }
+  }
+
   function svgElement(tag, attributes = {}) {
     const node = document.createElementNS(SVG_NS, tag);
     Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, value));
@@ -252,7 +284,7 @@
       word, id, row, svg, litSvg, track, litTrack, shine,
       direction: index % 2 === 0 ? -1 : 1,
       position: Math.random() * 1000, // lines start at different points of their word
-      unit: 0, size: 100, strength: 0, lensX: 0, lensY: 0, shownRadius: 0,
+      unit: 0, size: 100, strength: 0, lensX: 0, lensY: 0, shownRadius: 0, live: false,
     };
   }
 
@@ -292,6 +324,7 @@
   }
 
   function registerGhost(host) {
+    root.dataset.ghostQuality = quality;
     if (host.querySelector(':scope > .ghost')) return;
     const ghost = document.createElement('div');
     ghost.className = 'ghost';
@@ -313,17 +346,26 @@
 
   /** Drifts every line on screen and moves the lens; returns whether any line is on screen. */
   function updateGhosts(viewport, now) {
-    const dt = lastFrameAt ? Math.min(0.1, (now - lastFrameAt) / 1000) : 0;
+    const frameMs = lastFrameAt ? now - lastFrameAt : 0;
+    const dt = Math.min(0.1, frameMs / 1000);
     lastFrameAt = now;
     const scrolled = window.scrollY - lastScrollY;
     lastScrollY = window.scrollY;
+    const drifting = quality !== 'still';
+    const lit = quality === 'full';
     let onScreen = false;
     ghosts.forEach((line) => {
       if (!line.unit) return;
       const rect = line.row.getBoundingClientRect();
-      if (rect.bottom < -line.size || rect.top > viewport + line.size) return;
+      const visible = rect.bottom > -line.size && rect.top < viewport + line.size;
+      // Only lines near the screen keep their own layer, so a long page does not hold every strip in memory.
+      if (visible !== line.live) {
+        line.live = visible;
+        line.row.classList.toggle('is-live', visible);
+      }
+      if (!visible) return;
       onScreen = true;
-      line.position += line.direction * (GHOST_SPEED * dt + Math.abs(scrolled) * GHOST_SCROLL_PULL);
+      line.position += line.direction * ((drifting ? GHOST_SPEED * dt : 0) + Math.abs(scrolled) * GHOST_SCROLL_PULL);
       // The strip starts a word to the left of the line, so the screen's edge is always covered.
       const shift = -(((line.position % line.unit) + line.unit) % line.unit) - line.unit;
       const transform = `translate3d(${shift.toFixed(2)}px, 0, 0)`;
@@ -331,7 +373,7 @@
 
       const localY = pointer.y - rect.top;
       const over = localY > -line.size * 0.25 && localY < rect.height + line.size * 0.25 && pointer.x > rect.left - 40;
-      const target = over ? 1 : 0;
+      const target = over && lit ? 1 : 0;
       line.strength += (target - line.strength) * (target ? 0.14 : 0.07);
       if (over) {
         line.lensX = pointer.x - rect.left;
@@ -353,7 +395,9 @@
       line.litSvg.style.setProperty('--lr', `${radius.toFixed(1)}px`);
       line.shine.setAttribute('gradientTransform', `translate(${((line.lensX / Math.max(1, rect.width)) * 0.6).toFixed(3)} 0)`);
     });
-    return onScreen;
+    if (onScreen && drifting) watchFrameRate(frameMs);
+    // At rest ("still") the words wait for the next scroll instead of asking for every frame.
+    return onScreen && (drifting || ghosts.some((line) => line.shownRadius > 0));
   }
 
   function trackPointer(event) {

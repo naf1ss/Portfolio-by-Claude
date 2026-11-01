@@ -7501,6 +7501,9 @@ body {
   display: block;
   height: 100%;
   overflow: visible;
+}
+
+.ghost__row.is-live .ghost__line {
   will-change: transform;
 }
 
