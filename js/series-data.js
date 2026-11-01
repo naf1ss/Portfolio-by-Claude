@@ -68,7 +68,7 @@
     medium: 'Photography',
     galleryOnly: true,
     treatment: 'grid',
-    note: 'Buildings in New York, London, Liverpool and Philadelphia, looked at from below, from inside and from high above. Some frames are black and white, where a facade becomes a pattern of windows and a tower is reduced to a line against the sky. Others keep the colour of the hour: a ribbed hall glowing orange at night, a spiral stair seen from the top, London lit at dusk from far above the river.',
+    note: 'A building is made of repetition: a window, then the same window again; a rib of steel, then the next; a stair turning on itself. That rhythm is what I photograph. Looking up, a facade becomes a pattern; looking down a stairwell, a spiral. The cities change, but what I am looking for does not.',
   },
   {
     id: 'through-the-window',
