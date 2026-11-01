@@ -484,6 +484,7 @@
   }
 
   window.ScrollScenes = { refresh, features: FEATURES };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  // A deferred script runs before DOMContentLoaded, but before pages.js has marked its scenes: wait for it.
+  if (document.readyState === 'complete') start();
+  else document.addEventListener('DOMContentLoaded', start);
 })();
