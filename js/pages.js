@@ -417,6 +417,7 @@
       note.hidden = true;
       window.SeriesStory.render(storyBox, story, { note: series.note, byId });
       if (series.sideways) addSidewaysDay(storyBox, story, byId, U);
+      if (window.ScrollScenes && window.ScrollScenes.features.wash) tintChapters(storyBox);
       viewerHost = storyBox;
     } else {
       window.Gallery.renderGallery(gallery, works, { hrefFor: (work) => U.hashForWork(work), eagerCount: 6 });
@@ -426,6 +427,17 @@
     lightbox.setWorks(works);
     const linkedId = U.workIdFromHash(location.hash, works);
     if (linkedId) lightbox.open(linkedId, 'load');
+  }
+
+  /** A faint tint of each chapter's picture over the page while that chapter is read (js/scroll-scenes.js). */
+  function tintChapters(storyBox) {
+    storyBox.querySelectorAll('.story__pair').forEach((section) => {
+      const image = section.querySelector('img');
+      if (!image) return;
+      section.dataset.wash = '';
+      section.dataset.washTone = 'soft';
+      section.dataset.washSrc = image.getAttribute('src');
+    });
   }
 
   /** Horizon's six prints in a row that passes sideways as the page scrolls down: one day, from golden hour to daylight. */
@@ -549,18 +561,19 @@
     document.getElementById('contact-empty').hidden = count > 0;
   }
 
-  // Each section of the resume: the word set huge behind it and the painting that fills that word.
+  // Each section of the resume and the word set huge behind it.
   const RESUME_WORDS = {
-    'skills-heading': ['Skills', 'a041-aggressive-happiness'],
-    'education-heading': ['Education', 'a042-quarry'],
-    'projects-heading': ['Projects', 'a044-rachel-does-plein-air'],
-    'research-heading': ['Research', 'a043-old-master-study-the-milkmaid'],
-    'teaching-heading': ['Teaching', 'a030-almost-happy'],
-    'artistic-heading': ['Practice', 'a027-the-irony-of-waves'],
-    'leadership-heading': ['Leadership', 'a002-rain-in-nyc'],
-    'honors-heading': ['Honors', 'a019-monoprint-horizon-1'],
-    'sports-heading': ['Sports', 'a029-a-sky-full-of-stars'],
+    'skills-heading': ['Skills'],
+    'education-heading': ['Education'],
+    'projects-heading': ['Projects'],
+    'research-heading': ['Research'],
+    'teaching-heading': ['Teaching'],
+    'artistic-heading': ['Practice'],
+    'leadership-heading': ['Leadership'],
+    'honors-heading': ['Honors'],
+    'sports-heading': ['Sports'],
   };
+  const RESUME_WALL = '#0d0b26';
 
   function initResume() {
     const links = document.getElementById('resume-links');
@@ -574,7 +587,9 @@
       const word = heading && RESUME_WORDS[heading.id];
       if (!word) return;
       block.dataset.ghost = word[0];
-      block.dataset.ghostPaint = `images/artwork/${word[1]}-1200.jpg`;
+      // The sections are read on a night-blue wall, where the metal words glow.
+      block.dataset.wash = '';
+      block.dataset.washColor = RESUME_WALL;
       heading.dataset.rise = '';
       // How many entries the section holds, counted up beside its heading.
       const entries = block.querySelectorAll('.ledger-row').length || block.querySelectorAll('li').length;

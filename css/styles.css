@@ -7455,16 +7455,43 @@ body {
   color: transparent;
 }
 
+/* The outline: a thin line of metal that breathes, glowing up and dimming again. */
 .ghost__word--outline {
-  -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 30%, transparent);
+  -webkit-text-stroke: 1px rgb(196 204 255 / 0.3);
+  text-shadow: 0 0 22px rgb(130 140 255 / 0.18);
+  animation: ghost-breathe 6s ease-in-out infinite alternate;
 }
 
-.ghost__word--paint {
-  background-position: 50% 50%;
-  background-size: cover;
+@keyframes ghost-breathe {
+  from {
+    -webkit-text-stroke-color: rgb(196 204 255 / 0.18);
+    text-shadow: 0 0 14px rgb(130 140 255 / 0.06);
+  }
+
+  to {
+    -webkit-text-stroke-color: rgb(214 220 255 / 0.42);
+    text-shadow: 0 0 28px rgb(130 140 255 / 0.24);
+  }
+}
+
+/* The light: where it falls, the letters turn to polished, iridescent metal, with a slight split of red and blue
+   at their edges. js/scroll-scenes.js moves it (--lx, --ly) and sets its strength (opacity). */
+.ghost__word--metal {
+  background-image: linear-gradient(105deg, #f4f6ff 0%, #aeb8ff 12%, #5b49ff 24%, #ff4e3a 36%, #ffd07a 46%, #ffffff 54%, #82e3ff 66%, #3622ff 80%, #f4f6ff 100%);
+  background-position: calc(var(--shine, 0.5) * 100%) 50%;
+  background-size: 260% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  clip-path: inset(0 100% 0 0);
+  filter: drop-shadow(2px 0 0 rgb(255 70 70 / 0.45)) drop-shadow(-2px 0 0 rgb(70 120 255 / 0.45));
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(circle min(22vw, 18rem) at var(--lx, -999px) var(--ly, -999px), #000 0%, rgb(0 0 0 / 0.6) 38%, transparent 72%);
+  mask-image: radial-gradient(circle min(22vw, 18rem) at var(--lx, -999px) var(--ly, -999px), #000 0%, rgb(0 0 0 / 0.6) 38%, transparent 72%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost__word--outline {
+    animation: none;
+  }
 }
 
 /* A section's size, counted up beside its heading. */

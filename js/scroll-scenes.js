@@ -4,9 +4,9 @@
  *
  *   [data-wash]          the page takes this element's colour while it holds the middle of the screen. The colour
  *                        is `data-wash-color`, or is sampled from the picture at `data-wash-src` and deepened
- *                        into a wall colour with light text.
- *   [data-ghost]         a huge outlined word slides sideways behind the element's heading and fills with the
- *                        painting at `data-ghost-paint` as the element reaches the middle of the screen.
+ *                        into a wall colour with light text. `data-wash-tone="soft"` asks for a faint tint instead.
+ *   [data-ghost]         a huge outlined word slides sideways behind the element's heading. Its metal outline
+ *                        glows faintly, and turns iridescent where a light, following the pointer, falls on it.
  *   [data-sideways]      a tall section whose `.sideways__track` is pinned and moved sideways as you scroll down.
  *   .rise                headings whose words rise into place from below a hairline as they come into view.
  *   [data-count]         a number that counts up from zero when it comes into view.
@@ -27,11 +27,11 @@
   const FEATURES = Object.freeze({
     wash: true,
     sideways: true,
-    ghosts: false,
-    rise: false,
-    counts: false,
-    draw: false,
-    nextPage: false,
+    ghosts: true,
+    rise: true,
+    counts: true,
+    draw: true,
+    nextPage: true,
   });
 
   const root = document.documentElement;
@@ -100,35 +100,51 @@
     return [h * 60, s, l];
   }
 
-  /** A deep wall colour in the picture's hue, with the tones a page needs to sit on it. */
-  function wallFrom(rgb) {
+  const isDarkTheme = () =>
+    root.dataset.theme === 'dark' || (!root.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  /**
+   * The wall colour in the picture's hue, with the tones a page needs to sit on it.
+   *   deep   a dark wall with light text, whatever the theme (the latest work, Horizon's day)
+   *   soft   a faint tint of the page's own colour, light or dark with the theme, so the text stays as it was
+   */
+  function wallFrom(rgb, tone = 'deep') {
     const [h, s] = rgbToHsl(rgb);
-    const sat = Math.round(Math.min(0.55, Math.max(0.18, s * 0.7)) * 100);
     const hue = Math.round(h);
+    if (tone === 'soft') {
+      const sat = Math.round(Math.min(0.4, Math.max(0.12, s * 0.5)) * 100);
+      return isDarkTheme()
+        ? { paper: `hsl(${hue} ${sat}% 11%)`, sunken: `hsl(${hue} ${sat}% 15%)`, rule: `hsl(${hue} ${sat}% 22%)`, ink: `hsl(${hue} 20% 93%)`, dark: true }
+        : { paper: `hsl(${hue} ${sat}% 95%)`, sunken: `hsl(${hue} ${sat}% 91%)`, rule: `hsl(${hue} ${sat}% 84%)`, ink: `hsl(${hue} 25% 9%)`, dark: false };
+    }
+    const sat = Math.round(Math.min(0.55, Math.max(0.18, s * 0.7)) * 100);
     return {
       paper: `hsl(${hue} ${sat}% 14%)`,
       sunken: `hsl(${hue} ${sat}% 18%)`,
       rule: `hsl(${hue} ${Math.round(sat * 0.6)}% 27%)`,
       ink: `hsl(${hue} 30% 94%)`,
+      dark: true,
     };
   }
 
-  const washes = new Map(); // element -> wall colours (null until sampled)
+  const washes = new Map(); // element -> { rgb, tone } (rgb null until sampled)
   let currentWash = null;
+  let currentKey = '';
 
   function registerWash(element) {
     if (washes.has(element)) return;
     root.classList.add('has-wash');
-    washes.set(element, null);
+    const entry = { rgb: null, tone: element.dataset.washTone || 'deep' };
+    washes.set(element, entry);
     if (element.dataset.washColor) {
-      washes.set(element, wallFrom(hexToRgb(element.dataset.washColor)));
+      entry.rgb = hexToRgb(element.dataset.washColor);
       return;
     }
     const src = element.dataset.washSrc;
     if (src) {
       sampleColour(src).then((rgb) => {
         if (!rgb) return;
-        washes.set(element, wallFrom(rgb));
+        entry.rgb = rgb;
         requestFrame();
       });
     }
@@ -139,8 +155,12 @@
     return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
   }
 
-  function applyWash(wall) {
-    if (wall === currentWash) return;
+  function applyWash(entry) {
+    // The same wash under a different theme is a different colour, so the theme is part of the key.
+    const key = entry ? `${entry.rgb.join(',')}|${entry.tone}|${isDarkTheme()}` : '';
+    if (key === currentKey) return;
+    currentKey = key;
+    const wall = entry ? wallFrom(entry.rgb, entry.tone) : null;
     currentWash = wall;
     root.classList.toggle('is-washed', Boolean(wall));
     const props = { '--paper': 'paper', '--paper-sunken': 'sunken', '--rule': 'rule', '--ink': 'ink' };
@@ -148,7 +168,7 @@
       if (wall) root.style.setProperty(property, wall[key]);
       else root.style.removeProperty(property);
     });
-    root.style.colorScheme = wall ? 'dark' : '';
+    root.style.colorScheme = wall ? (wall.dark ? 'dark' : 'light') : '';
   }
 
   function updateWash(viewport) {
@@ -156,7 +176,7 @@
     let active = null;
     const across = window.innerWidth / 2;
     washes.forEach((wall, element) => {
-      if (!wall) return;
+      if (!wall.rgb) return;
       const rect = element.getBoundingClientRect();
       const pinned = element.closest('.sideways__pin');
       if (pinned) {
@@ -171,8 +191,13 @@
   }
 
   // ---------- Giant words ----------
+  // Outlined letters that glow faintly on their own. A light follows the pointer across them and turns the metal
+  // iridescent where it falls; without a pointer (phones, or the pointer elsewhere) the light drifts slowly along.
 
   const ghosts = [];
+  const pointer = { x: -1e4, y: -1e4, at: 0 };
+  const POINTER_REACH = 0.35; // how close (as a share of the screen's height) the pointer must be to take the light
+  const IDLE_AFTER_MS = 1600;
 
   function registerGhost(host) {
     if (host.querySelector(':scope > .ghost')) return;
@@ -183,26 +208,56 @@
     const outline = document.createElement('span');
     outline.className = 'ghost__word ghost__word--outline';
     outline.textContent = word;
-    const paint = document.createElement('span');
-    paint.className = 'ghost__word ghost__word--paint';
-    paint.textContent = word;
-    if (host.dataset.ghostPaint) paint.style.backgroundImage = `url("${host.dataset.ghostPaint}")`;
-    ghost.append(outline, paint);
+    const metal = document.createElement('span');
+    metal.className = 'ghost__word ghost__word--metal';
+    metal.textContent = word;
+    ghost.append(outline, metal);
     host.prepend(ghost);
     host.classList.add('has-ghost');
-    ghosts.push({ host, ghost, paint });
+    // The light's place on the word (x, y in pixels) and its strength, eased toward their targets every frame.
+    ghosts.push({ host, ghost, metal, x: 0, y: 0, strength: 0, phase: Math.random() * Math.PI * 2 });
   }
 
-  function updateGhosts(viewport) {
-    ghosts.forEach(({ host, ghost, paint }) => {
-      const rect = host.getBoundingClientRect();
-      if (rect.bottom < -viewport || rect.top > viewport * 2) return;
-      const progress = travel(rect, viewport);
-      // Slides from right to left across the whole pass; fills with paint around the middle of it.
-      ghost.style.transform = `translate3d(${(18 - progress * 46).toFixed(2)}vw, 0, 0)`;
-      const fill = clamp01(1 - Math.abs(progress - 0.42) / 0.16);
-      paint.style.clipPath = `inset(0 ${((1 - fill) * 100).toFixed(1)}% 0 0)`;
+  function updateGhosts(viewport, now) {
+    let moving = false;
+    const pointerFresh = now - pointer.at < IDLE_AFTER_MS;
+    ghosts.forEach((entry) => {
+      const rect = entry.host.getBoundingClientRect();
+      if (rect.bottom < -viewport * 0.5 || rect.top > viewport * 1.5) return;
+      moving = true;
+      // Slides from right to left as the section passes through the screen.
+      entry.ghost.style.transform = `translate3d(${(18 - travel(rect, viewport) * 46).toFixed(2)}vw, 0, 0)`;
+      const box = entry.metal.getBoundingClientRect();
+      const near = pointerFresh && Math.abs(pointer.y - (box.top + box.height / 2)) < viewport * POINTER_REACH;
+      let targetX;
+      let targetY;
+      let targetStrength;
+      if (near) {
+        targetX = pointer.x - box.left;
+        targetY = pointer.y - box.top;
+        targetStrength = 1;
+      } else {
+        const t = now / 1000 / 3.2 + entry.phase;
+        targetX = box.width * (0.5 + 0.48 * Math.sin(t));
+        targetY = box.height * (0.5 + 0.25 * Math.sin(t * 1.7));
+        targetStrength = 0.45;
+      }
+      entry.x += (targetX - entry.x) * 0.12;
+      entry.y += (targetY - entry.y) * 0.12;
+      entry.strength += (targetStrength - entry.strength) * 0.06;
+      entry.metal.style.setProperty('--lx', `${entry.x.toFixed(1)}px`);
+      entry.metal.style.setProperty('--ly', `${entry.y.toFixed(1)}px`);
+      entry.metal.style.setProperty('--shine', (entry.x / Math.max(1, box.width)).toFixed(3));
+      entry.metal.style.opacity = entry.strength.toFixed(3);
     });
+    return moving;
+  }
+
+  function trackPointer(event) {
+    if (event.pointerType && event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    pointer.at = performance.now();
   }
 
   // ---------- Sideways ----------
@@ -424,13 +479,14 @@
 
   let frameRequested = false;
 
-  function frame() {
+  function frame(now) {
     frameRequested = false;
     const viewport = window.innerHeight;
     updateWash(viewport);
     if (!reduceMotion) {
-      updateGhosts(viewport);
       updateSideways();
+      // The metal's light keeps moving on its own, so frames continue while a giant word is near the screen.
+      if (ghosts.length && updateGhosts(viewport, now)) requestFrame();
     }
   }
 
@@ -474,6 +530,10 @@
     refresh();
     if (FEATURES.nextPage) buildNextPage();
     window.addEventListener('scroll', requestFrame, { passive: true });
+    window.addEventListener('pointermove', (event) => {
+      trackPointer(event);
+      requestFrame();
+    }, { passive: true });
     window.addEventListener('resize', () => {
       sideways.forEach(measureSideways);
       requestFrame();
@@ -484,6 +544,7 @@
   }
 
   window.ScrollScenes = { refresh, features: FEATURES };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  // A deferred script runs before DOMContentLoaded, but before pages.js has marked its scenes: wait for it.
+  if (document.readyState === 'complete') start();
+  else document.addEventListener('DOMContentLoaded', start);
 })();
