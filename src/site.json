@@ -55,11 +55,12 @@
     {"file": "contact", "requires": ["contact-utils", "site-config"]},
     {"file": "resume-ledger"},
     {"file": "interactions"},
+    {"file": "scroll-scenes"},
     {"file": "magnifier-utils"},
     {"file": "magnifier"},
     {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "interactions", "painted-text"],
+  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "interactions", "scroll-scenes", "painted-text"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",
