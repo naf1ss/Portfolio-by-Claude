@@ -189,7 +189,7 @@
   // metal with a hint of iridescence that breathes slowly. Each line is a word repeated end to end that keeps
   // drifting sideways on its own, alternate lines in opposite directions, and runs faster while the page is
   // scrolled. A lens follows the pointer; under it the metal lights up, iridescent. Drawn in SVG, so the outline
-  // can carry a gradient and the lens can be a soft mask, in an outline cut of Manrope whose letters are single
+  // can carry a gradient, in an outline cut of Manrope whose letters are single
   // shapes (the ordinary cut builds letters from overlapping pieces, which an outline shows as stray lines).
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -217,10 +217,16 @@
     return gradient;
   }
 
-  /** One line of a giant word: a track of repeated outlines, and the same repeats lit under the lens. */
+  /**
+   * One line of a giant word: a track of repeated outlines, and over it the same repeats lit, shown only under
+   * the lens. The lens is a CSS mask on the lit layer, moved with two custom properties; an SVG mask, redrawn
+   * every frame over letters this large, would now and then drop a frame and flash.
+   */
   function ghostLine(word, index) {
     ghostId += 1;
     const id = `ghost-${ghostId}`;
+    const row = document.createElement('div');
+    row.className = 'ghost__row';
     const svg = svgElement('svg', { class: 'ghost__line', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
     const defs = svgElement('defs');
     defs.append(gradientStops(svgElement('linearGradient', { id: `${id}-edge`, x1: '0', y1: '0', x2: '1', y2: '0.35' }), [
@@ -232,24 +238,18 @@
       ['0.66', '#ffffff'], ['0.8', '#86e4ff'], ['1', '#f4f5ff'],
     ]);
     defs.append(shine);
-    defs.append(gradientStops(svgElement('radialGradient', { id: `${id}-lens` }), [
-      ['0', '#fff'], ['0.45', 'rgb(255 255 255 / 0.55)'], ['1', 'rgb(255 255 255 / 0)'],
-    ]));
-    const mask = svgElement('mask', { id: `${id}-mask`, maskUnits: 'userSpaceOnUse', x: '-100000', y: '-5000', width: '200000', height: '10000' });
-    const lens = svgElement('circle', { cx: '-99999', cy: '-99999', r: '0', fill: `url(#${id}-lens)` });
-    mask.append(lens);
-    defs.append(mask);
-
     const track = svgElement('g', { class: 'ghost__track' });
-    const edges = svgElement('g');
-    const lit = svgElement('g', { class: 'ghost__lit', mask: `url(#${id}-mask)` });
-    track.append(edges, lit);
     svg.append(defs, track);
+
+    const litSvg = svgElement('svg', { class: 'ghost__line ghost__line--lit', overflow: 'visible', 'aria-hidden': 'true', focusable: 'false' });
+    const litTrack = svgElement('g', { class: 'ghost__track' });
+    litSvg.append(litTrack);
+    row.append(svg, litSvg);
     return {
-      word, id, svg, track, edges, lit, lens, shine,
+      word, id, row, svg, litSvg, track, litTrack, shine,
       direction: index % 2 === 0 ? -1 : 1,
       position: Math.random() * 1000, // lines start at different points of their word
-      unit: 0, strength: 0, lensX: 0, lensY: 0,
+      unit: 0, strength: 0, lensX: 0, lensY: 0, shownRadius: -1,
     };
   }
 
@@ -262,7 +262,7 @@
   /** Lays the repeats of a line's word end to end, enough to cover the screen while it drifts. */
   function layoutGhostLine(line) {
     const probe = wordText(line, 'ghost__edge', 0, {});
-    line.edges.replaceChildren(probe);
+    line.track.replaceChildren(probe);
     const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
     const width = probe.getComputedTextLength();
     if (!width) return;
@@ -276,8 +276,8 @@
       lit.push(wordText(line, 'ghost__shine', x, { fill: `url(#${line.id}-shine)` }));
       lit.push(wordText(line, 'ghost__lit-edge', x, { stroke: `url(#${line.id}-edge)` }));
     }
-    line.edges.replaceChildren(...edges);
-    line.lit.replaceChildren(...lit);
+    line.track.replaceChildren(...edges);
+    line.litTrack.replaceChildren(...lit);
   }
 
   function registerGhost(host) {
@@ -290,7 +290,7 @@
     host.dataset.ghost.split('|').filter(Boolean).forEach((word, index) => {
       const line = ghostLine(word, index);
       line.host = host;
-      ghost.append(line.svg);
+      ghost.append(line.row);
       layoutGhostLine(line);
       ghosts.push(line);
     });
@@ -314,9 +314,11 @@
       onScreen = true;
       line.position += line.direction * (GHOST_SPEED * dt + Math.abs(scrolled) * GHOST_SCROLL_PULL);
       const offset = ((line.position % line.unit) + line.unit) % line.unit;
-      line.track.setAttribute('transform', `translate(${(-offset).toFixed(2)} 0)`);
+      const shift = `translate(${(-offset).toFixed(2)} 0)`;
+      line.track.setAttribute('transform', shift);
+      line.litTrack.setAttribute('transform', shift);
 
-      const rect = line.svg.getBoundingClientRect();
+      const rect = line.row.getBoundingClientRect();
       const size = parseFloat(getComputedStyle(line.svg).fontSize) || 100;
       const localY = pointer.y - rect.top;
       const over = localY > -size * 0.25 && localY < rect.height + size * 0.25 && pointer.x > rect.left - 40;
@@ -326,10 +328,13 @@
         line.lensX = pointer.x - rect.left;
         line.lensY = localY;
       }
-      // The lens is placed on the track, which is shifted by `offset`.
-      line.lens.setAttribute('cx', (line.lensX + offset).toFixed(1));
-      line.lens.setAttribute('cy', line.lensY.toFixed(1));
-      line.lens.setAttribute('r', (size * 0.85 * line.strength).toFixed(1));
+      // The lens sits on the line's own box, so it stays under the pointer while the letters slide past it.
+      const radius = line.strength < 0.01 ? 0 : size * 0.85 * line.strength;
+      if (radius === 0 && line.shownRadius === 0) return;
+      line.shownRadius = radius;
+      line.litSvg.style.setProperty('--lx', `${line.lensX.toFixed(1)}px`);
+      line.litSvg.style.setProperty('--ly', `${line.lensY.toFixed(1)}px`);
+      line.litSvg.style.setProperty('--lr', `${radius.toFixed(1)}px`);
       line.shine.setAttribute('gradientTransform', `translate(${((line.lensX / Math.max(1, rect.width)) * 0.6).toFixed(3)} 0)`);
     });
     return onScreen;

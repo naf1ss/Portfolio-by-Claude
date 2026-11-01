@@ -7488,11 +7488,25 @@ body {
   user-select: none;
 }
 
+.ghost__row {
+  position: relative;
+  height: 0.84em;
+}
+
 .ghost__line {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: 0.84em;
+  height: 100%;
   overflow: visible;
+}
+
+/* The lit letters show only inside the lens: a soft circle that js/scroll-scenes.js moves (--lx, --ly) and
+   grows or shrinks (--lr). */
+.ghost__line--lit {
+  -webkit-mask-image: radial-gradient(circle var(--lr, 0px) at var(--lx, -999px) var(--ly, -999px), #000 0%, rgb(0 0 0 / 0.55) 45%, transparent 100%);
+  mask-image: radial-gradient(circle var(--lr, 0px) at var(--lx, -999px) var(--ly, -999px), #000 0%, rgb(0 0 0 / 0.55) 45%, transparent 100%);
 }
 
 .ghost__edge {

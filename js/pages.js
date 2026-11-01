@@ -553,6 +553,13 @@
   // The resume's sections are read on a near-black wall, where the giant words glow (js/scroll-scenes.js).
   const RESUME_WALL = '#0a0a0e';
 
+  // Long headings stand behind their section as one of their words.
+  const RESUME_GHOST_WORDS = {
+    'teaching-heading': 'EXPERIENCE',
+    'artistic-heading': 'ENGAGEMENT',
+    'leadership-heading': 'LEADERSHIP',
+  };
+
   /** A heading's own words, in capitals, one per line of its giant word: "Honors & Awards" -> "HONORS|AWARDS". */
   function ghostWords(text) {
     return text
@@ -571,7 +578,7 @@
     document.querySelectorAll('.resume-block').forEach((block) => {
       const heading = block.querySelector('.resume-block__title');
       if (!heading) return;
-      block.dataset.ghost = ghostWords(heading.textContent);
+      block.dataset.ghost = RESUME_GHOST_WORDS[heading.id] || ghostWords(heading.textContent);
       block.dataset.wash = '';
       block.dataset.washColor = RESUME_WALL;
       block.querySelectorAll('.ledger-row').forEach((row) => { row.dataset.draw = ''; });
