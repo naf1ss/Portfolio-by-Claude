@@ -27,11 +27,11 @@
   const FEATURES = Object.freeze({
     wash: true,
     sideways: true,
-    ghosts: true,
+    ghosts: false,
     rise: true,
     counts: false,
-    draw: true,
-    nextPage: true,
+    draw: false,
+    nextPage: false,
   });
 
   // Headings that rise into place: every page title, and the section titles of the resume, the series write-ups
