@@ -147,5 +147,10 @@
   'stage-light-img-7056': 0.058,
   'stage-light-img-7057': 0.152,
   'stage-light-img-7062': 0.113,
-  'stage-light-img-7064': 0.079
+  'stage-light-img-7064': 0.079,
+  'portraits-a7404286': 0.135,
+  'portraits-a7404314': 0.124,
+  'portraits-portrait-mitu-13': 0.128,
+  'portraits-portrait-mitu-5': 0.035,
+  'portraits-portrait-mitu': 0.051
 });

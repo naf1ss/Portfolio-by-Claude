@@ -205,6 +205,17 @@
         { file: 'img-7064', year: 2026, w: 1800, h: 2700 },
       ],
     },
+    {
+      series: 'portraits',
+      title: 'Portraits',
+      frames: [
+        { file: 'a7404286', year: 2026, w: 1800, h: 2700 },
+        { file: 'a7404314', year: 2026, w: 1800, h: 2700 },
+        { file: 'portrait-mitu-13', year: 2026, w: 1800, h: 2700 },
+        { file: 'portrait-mitu-5', year: 2026, w: 1800, h: 2700 },
+        { file: 'portrait-mitu', year: 2026, w: 1800, h: 2700 },
+      ],
+    },
   ];
 
   function fileFields(seriesId, frame) {

@@ -3607,6 +3607,14 @@ html {
   color-scheme: dark;
 }
 
+:root[data-mood='portraits'] {
+  --paper: #0d0a0f;
+  --paper-sunken: #17121a;
+  --ink: #f1ebef;
+  --rule: #2c2430;
+  color-scheme: dark;
+}
+
 :root[data-mood] {
   background: var(--paper);
 }

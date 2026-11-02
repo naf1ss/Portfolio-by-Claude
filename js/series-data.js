@@ -110,4 +110,12 @@
     treatment: 'axis',
     note: 'The title is ironic. Nearly every photograph here is symmetrical: a tunnel, a staircase, a nave, a window, each built around a centre line. I named the series for the opposite of what it shows, on purpose.',
   },
+  {
+    id: 'portraits',
+    title: 'Portraits',
+    medium: 'Photography',
+    galleryOnly: true,
+    treatment: 'light',
+    note: 'Portraits made in low light, where a single light finds the face and the rest of the frame falls into shadow. One sitter is framed in black and white; one laughs under a crown against a curtain of small lights; one sitting moves through red and violet light, and behind a mask.',
+  },
 ]);
