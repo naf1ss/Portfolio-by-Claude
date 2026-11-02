@@ -3485,6 +3485,16 @@ html {
   font-variant-numeric: tabular-nums;
 }
 
+/* A rectangle grid (js/justify.js) sets each picture's width itself, so every row, the last too, runs edge to edge. */
+.is-justified::after {
+  display: none;
+}
+
+.is-justified > .gallery__item,
+.is-justified > .exhibit__frame {
+  flex: none;
+}
+
 /* Keeps a short last row from stretching across the whole width. */
 .gallery::after {
   content: '';

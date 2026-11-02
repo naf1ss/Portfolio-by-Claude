@@ -315,6 +315,9 @@
 
     article.append(intro, body, nav);
     container.replaceChildren(article);
+    // Grids are laid out as clean rectangles, every row edge to edge (js/justify.js).
+    if (asGrid) justify(body, '.gallery__item', 'var(--row-height)');
+    else if (treatment === 'grid') justify(body, '.exhibit__frame', 'var(--row)');
     if (asGrid) delete document.body.dataset.treatment;
     else document.body.dataset.treatment = treatment;
 
@@ -345,6 +348,11 @@
       return section;
     });
     container.replaceChildren(...sections);
+    sections.forEach((section) => justify(section.querySelector('.gallery'), '.gallery__item', 'var(--row-height)'));
+  }
+
+  function justify(list, itemSelector, rowHeight) {
+    if (window.Justify) window.Justify.attach(list, { itemSelector, rowHeight });
   }
 
   window.PhotoSeries = { renderIndex, renderSeriesGrid, renderRoom, setMood };
