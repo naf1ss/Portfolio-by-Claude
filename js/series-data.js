@@ -116,6 +116,6 @@
     medium: 'Photography',
     galleryOnly: true,
     treatment: 'light',
-    note: 'Portraits made in low light, where a single light finds the face and the rest of the frame falls into shadow. One sitter is framed in black and white; one laughs under a crown against a curtain of small lights; one sitting moves through red and violet light, and behind a mask.',
+    note: 'A face is the first thing we recognise and the last thing we look at closely. A portrait gives time to do both. I wait for the moment someone stops arranging themselves for the camera, and keep what remains: an expression they did not plan to show.',
   },
 ]);
