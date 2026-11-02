@@ -82,6 +82,31 @@
     return title;
   }
 
+  /**
+   * Sets with a shared note (works-data.js `setNote`) hang together on the wall like a small series: one label,
+   * one note, and no series page to link to.
+   */
+  function wallSets(works) {
+    const members = new Map();
+    works.forEach((work) => {
+      if (work.set) members.set(work.set, [...(members.get(work.set) || []), work]);
+    });
+    const groups = [];
+    members.forEach((list, set) => {
+      const noted = list.find((work) => work.setNote);
+      if (!noted || list.length < 2) return;
+      groups.push({
+        id: `set-${set}`,
+        title: noted.setTitle || noted.title,
+        note: noted.setNote,
+        hangTogether: true,
+        isSet: true,
+        workIds: list.map((work) => work.id),
+      });
+    });
+    return groups;
+  }
+
   /** The wall label: what a gallery prints beside a work (or beside a series hung together). */
   function createLabel(section, categoryLabel) {
     const label = element('div', 'room__label');
@@ -99,7 +124,8 @@
       if (size) facts.append(size);
       addFact(lead.year ? String(lead.year) : '');
     } else if (section.series) {
-      label.append(element('p', 'room__kicker', `${categoryLabel} · Series of ${works.length}`));
+      const group = section.series.isSet ? (works.length === 2 ? 'Pair' : `Set of ${works.length}`) : `Series of ${works.length}`;
+      label.append(element('p', 'room__kicker', `${categoryLabel} · ${group}`));
       label.append(createTitle(section.series.title));
       const media = new Set(works.map((work) => work.medium));
       const sizes = new Set(works.map((work) => work.dimensions));
@@ -116,8 +142,8 @@
       addFact(lead.year ? String(lead.year) : '');
     }
     label.append(element('span', 'room__rule'), facts);
-    if (section.part) label.append(seriesLink(section.series));
-    else if (section.series) label.append(...seriesDetails(section));
+    if (section.part && !section.series.isSet) label.append(seriesLink(section.series));
+    else if (section.series && !section.part) label.append(...seriesDetails(section));
     return label;
   }
 
@@ -144,7 +170,7 @@
       });
       details.push(element('p', 'room__works-heading', R.groupGrid(section.works).rows === 1 ? 'Left to right' : 'In order'), list);
     }
-    details.push(seriesLink(section.series));
+    if (!section.series.isSet) details.push(seriesLink(section.series));
     return details;
   }
 
@@ -160,7 +186,9 @@
     const notes = single ? section.works[0].notes : section.series.note;
     if (!notes) return null;
     const block = element('div', 'room__notes');
-    block.append(element('p', 'room__kicker', single ? 'About the work' : 'About the series'), element('p', 'room__notes-text', notes));
+    const allPaintings = section.works.every((work) => work.category === 'painting');
+    const kicker = single ? 'About the work' : !section.series.isSet ? 'About the series' : allPaintings ? 'About the paintings' : 'About the works';
+    block.append(element('p', 'room__kicker', kicker), element('p', 'room__notes-text', notes));
     return block;
   }
 
@@ -303,7 +331,7 @@
 
     function buildWall(works) {
       hung = works;
-      sections = R.wallSections(works, series, { together: !phone.matches });
+      sections = R.wallSections(works, [...series, ...wallSets(works)], { together: !phone.matches });
       const categoryLabel = labels.get(works[0] && works[0].category) || 'Work';
       // An empty stretch of wall at each end, so the first and last works are not at the edge of the world.
       const segments = [element('div', 'room__segment room__segment--end')];
