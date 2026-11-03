@@ -262,6 +262,42 @@
     },
   },
   // From the Monotype Series brief (Intro to Printmaking, 2026) and the six prints themselves.
+  // From the artist's own account of the print and the mug (2026).
+  'the-irony-of-waves': {
+    intro: {
+      lead: [
+        'The title rests on a contradiction. In life, a high is happiness and a low is struggle, and each gives way to the other in turn. At sea the reverse holds: the high wave is the danger, the low water the safety. The same form carries opposite meanings depending on where one stands.',
+      ],
+    },
+    chapters: [
+      {
+        id: 'the-print',
+        label: 'The print',
+        kicker: 'Intaglio on paper \u00b7 2026',
+        title: 'The print',
+        workId: 'A027',
+        caption: 'The Irony of Waves, intaglio on paper.',
+        text: ['The print came first, its lines rising and falling across the plate.'],
+      },
+      {
+        id: 'the-mug',
+        label: 'The mug',
+        kicker: 'Ceramics \u00b7 Glaze: Mamo lavender \u00b7 2026',
+        title: 'The mug',
+        workId: 'ceramics-22',
+        caption: 'The same waves, carved around the mug.',
+        text: [
+          'I made the mug intending to carry them onto it. On paper the line begins and ends; around a cylinder it closes on itself, and the rise and fall becomes a continuous cycle. The blue glaze answers the sea in colour and gathers in the carved lines, so the surface appears to move.',
+        ],
+      },
+    ],
+    closing: {
+      reflectionTitle: 'In use',
+      reflection: [
+        'A mug is filled and emptied, lifted and set down. Here the waves are held rather than viewed, and the idea enters the daily rhythm it describes.',
+      ],
+    },
+  },
   horizon: {
     intro: {
       workId: 'A016',

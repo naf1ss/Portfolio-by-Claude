@@ -53,6 +53,12 @@
     hangTogether: true,
     workIds: ['A001', 'A034', 'A038', 'A012'],
   },
+  {
+    id: 'the-irony-of-waves',
+    title: 'The Irony of Waves',
+    note: 'One line of waves, in print and in clay.',
+    workIds: ['A027', 'ceramics-22'],
+  },
   // ---------- Photography: each series has its own room, hung according to its idea ----------
   {
     id: 'negligible',
