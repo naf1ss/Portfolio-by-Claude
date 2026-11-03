@@ -88,7 +88,8 @@
     const selected = (config.selectedIds || []).map((id) => byId.get(id)).filter(Boolean);
     if (selected.length) {
       document.getElementById('selected-section').hidden = false;
-      window.Gallery.renderGallery(document.getElementById('selected'), selected, { hrefFor, eagerCount: 0 });
+      // Each selected work stands on its own here, even one that shares a tile with its set in the gallery.
+      window.Gallery.renderGallery(document.getElementById('selected'), selected, { hrefFor, eagerCount: 0, groupSets: false });
     }
 
     window.Motion.reveal(document.querySelectorAll('#latest > *'));

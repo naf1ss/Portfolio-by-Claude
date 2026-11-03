@@ -139,12 +139,13 @@
    * each other (WorksUtils.groupSets) and share a single tile. The first `eagerCount` images load immediately;
    * the rest are lazy.
    */
-  function renderGallery(list, works, { hrefFor, eagerCount = 4 }) {
+  function renderGallery(list, works, { hrefFor, eagerCount = 4, groupSets = true }) {
     const tiles = [];
     for (let i = 0; i < works.length; i += 1) {
       const work = works[i];
       const options = { hrefFor, eager: tiles.length < eagerCount };
-      if (!work.set) {
+      // With `groupSets: false` the works of a set get a tile each, with their own titles.
+      if (!work.set || !groupSets) {
         tiles.push(createTile(work, tiles.length + 1, options));
         continue;
       }
