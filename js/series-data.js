@@ -25,17 +25,24 @@
   }
 })(typeof self !== 'undefined' ? self : this, [
   {
-    id: 'cross-wired',
-    title: 'Cross-Wired',
-    note: 'A ceramic study of form, surface and influence: a plate, a bowl and a mug, each guided by a different maker.',
-    workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
-  },
-  {
     id: 'degrees-of-happiness',
     title: 'Degrees of Happiness',
     note: 'Two abstract paintings that treat happiness as colour, in the line of Abstract Expressionism and Colour Field painting. Yellow, and the orange it becomes, is held at a different intensity in each: in one the feeling is still arriving; in the other it pushes back.',
     hangTogether: true,
     workIds: ['A030', 'A041'],
+  },
+  {
+    id: 'eiffel-tower',
+    title: 'Eiffel Tower',
+    note: 'Paintings of the Eiffel Tower made over nearly a decade: a study of how it is built that became a practice I keep returning to.',
+    hangTogether: true,
+    workIds: ['A001', 'A034', 'A038', 'A012'],
+  },
+  {
+    id: 'cross-wired',
+    title: 'Cross-Wired',
+    note: 'A ceramic study of form, surface and influence: a plate, a bowl and a mug, each guided by a different maker.',
+    workIds: ['ceramics-41', 'ceramics-33', 'ceramics-34', 'ceramics-32', 'ceramics-37', 'ceramics-39', 'ceramics-43'],
   },
   {
     id: 'three-ways-of-seeing',
@@ -45,20 +52,13 @@
     hangTogether: true,
     workIds: ['still-life-setup', 'A007', 'A008', 'A009'],
   },
-  { id: 'horizon', title: 'Horizon', medium: 'Monotype', sideways: true, note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
-  {
-    id: 'eiffel-tower',
-    title: 'Eiffel Tower',
-    note: 'Paintings of the Eiffel Tower made over nearly a decade: a study of how it is built that became a practice I keep returning to.',
-    hangTogether: true,
-    workIds: ['A001', 'A034', 'A038', 'A012'],
-  },
   {
     id: 'the-irony-of-waves',
     title: 'The Irony of Waves',
     note: 'One line of waves, in print and in clay.',
     workIds: ['A027', 'ceramics-22'],
   },
+  { id: 'horizon', title: 'Horizon', medium: 'Monotype', sideways: true, note: 'Six monotypes of a single horizon, followed from golden light through dusk and night to clear day.', hangTogether: true, workIds: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A016'] },
   // ---------- Photography: each series has its own room, hung according to its idea ----------
   {
     id: 'negligible',

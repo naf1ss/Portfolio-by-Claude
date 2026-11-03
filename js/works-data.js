@@ -110,7 +110,7 @@
   { id: 'ceramics-6', title: 'Bowl', year: 2026, medium: 'Glaze: Korean celadon, two coats', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-6', ws: [600, 1200, 1800], w: 1800, h: 2069 },
   { id: 'ceramics-7', title: null, year: 2026, medium: 'Ceramics', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-7', ws: [600, 1200, 1800], w: 1800, h: 2079 },
   { id: 'ceramics-11', title: 'Two bowls', year: 2026, medium: 'Glazes: GEB white, two coats (left); Mamo lavender, two coats (right)', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-11', ws: [600, 1200, 1800], w: 1800, h: 1766 },
-  { id: 'ceramics-22', title: 'Mug', year: 2026, medium: 'Glaze: Mamo lavender', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-22', ws: [600, 1200, 1800], w: 1800, h: 2235 },
+  { id: 'ceramics-22', title: 'The Irony of Waves Mug', year: 2026, medium: 'Glaze: Mamo lavender', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-22', ws: [600, 1200, 1800], w: 1800, h: 2235 },
   { id: 'ceramics-25', title: 'Two mugs', year: 2026, medium: 'Glazes: GEB white, two coats (left); Mamo lavender (right)', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-25', ws: [600, 1200, 1800], w: 1800, h: 1444 },
   { id: 'ceramics-28', title: 'Mug', year: 2026, medium: 'Glazes: yellow salt and chun', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-28', ws: [600, 1200, 1800], w: 1800, h: 1993 },
   { id: 'ceramics-29', title: 'Two mugs', year: 2026, medium: 'Glazes: black slip, GEB white at the foot and chun above (left); yellow salt and chun (right)', dimensions: null, category: 'ceramics', base: 'ceramics/ceramics-29', ws: [600, 1200, 1800], w: 1800, h: 1431 },
