@@ -5,7 +5,8 @@
  *   id        catalogue id (also the URL hash, lower-cased)
  *   category  painting | drawing | print | digital | design | ceramics | wall-magazine (photography lives in works-photography.js)
  *   set, setTitle   optional: works sharing a `set` id show as one tile in the grid that turns through them, titled
- *                   `setTitle`; the viewer then steps through them together (WorksUtils.groupSets)
+ *                   `setTitle` (when their pictures have the same shape; otherwise side by side, one tile each);
+ *                   the viewer then steps through them together (WorksUtils.groupSets)
  *   setNote   optional, on one work of a set: the set then hangs together on the gallery wall as a pair (or group)
  *             under `setTitle`, with this note beside it in place of each work's own
  *   base      image path without size suffix, relative to /images

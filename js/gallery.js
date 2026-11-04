@@ -136,25 +136,40 @@
 
   /**
    * Replaces the contents of `list` (a <ul>) with one tile per work, and one per set: a set's members follow
-   * each other (WorksUtils.groupSets) and share a single tile. The first `eagerCount` images load immediately;
+   * each other (WorksUtils.groupSets) and share a single tile when their pictures have the same shape. The first `eagerCount` images load immediately;
    * the rest are lazy.
    */
+  const SAME_SHAPE_TOLERANCE = 1.02; // proportions within 2% count as the same
+
   function renderGallery(list, works, { hrefFor, eagerCount = 4, groupSets = true }) {
     const tiles = [];
     for (let i = 0; i < works.length; i += 1) {
       const work = works[i];
       const options = { hrefFor, eager: tiles.length < eagerCount };
-      // With `groupSets: false` the works of a set get a tile each, with their own titles.
-      if (!work.set || !groupSets) {
-        tiles.push(createTile(work, tiles.length + 1, options));
-        continue;
+      if (work.set && groupSets) {
+        let end = i;
+        while (end + 1 < works.length && works[end + 1].set === work.set) end += 1;
+        const members = works.slice(i, end + 1);
+        if (members.length > 1 && sameShape(members)) {
+          tiles.push(createSetTile(members, tiles.length + 1, options));
+          i = end;
+          continue;
+        }
       }
-      let end = i;
-      while (end + 1 < works.length && works[end + 1].set === work.set) end += 1;
-      tiles.push(createSetTile(works.slice(i, end + 1), tiles.length + 1, options));
-      i = end;
+      // A work outside a set, a set shown with `groupSets: false`, or a set whose pictures differ in shape:
+      // one tile each, with its own title.
+      tiles.push(createTile(work, tiles.length + 1, options));
     }
     list.replaceChildren(...tiles);
+  }
+
+  /**
+   * Whether pictures can share one tile that turns through them: only when they have the same proportions, since
+   * a shorter picture fading in over a taller one would leave the taller one showing beneath it.
+   */
+  function sameShape(works) {
+    const ratios = works.map((work) => U.aspectRatio(work));
+    return Math.max(...ratios) / Math.min(...ratios) < SAME_SHAPE_TOLERANCE;
   }
 
   /**
