@@ -23,6 +23,7 @@
   'negligible-20250314-img-1497': 0.565,
   'negligible-20250315-img-1719': 0.412,
   'negligible-archseries-116': 0.651,
+  'negligible-gradpics-18': 0.504,
   'architecture-archseries-3': 0.483,
   'architecture-archseries-5': 0.219,
   'architecture-archseries-6': 0.291,
