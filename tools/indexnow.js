@@ -20,7 +20,10 @@ const { execFileSync } = require('node:child_process');
 const { pageHref } = require('../js/works-utils.js');
 
 const ROOT = path.join(__dirname, '..');
-const ENDPOINT = 'https://api.indexnow.org/indexnow';
+// The shared endpoint first; engines pass submissions on to each other, so when one has not yet verified the key
+// (Bing can take a while after the first submission) another can take the list instead.
+const ENDPOINTS = ['https://api.indexnow.org/indexnow', 'https://yandex.com/indexnow'];
+const ACCEPTED = new Set([200, 202]); // 202: accepted while the key is still being checked
 const KEY_FILE = /^[0-9a-f]{32}\.txt$/;
 // Pages are drawn in the browser from these shared files, so a change here can alter any page.
 const SHARED_PREFIXES = ['js/', 'css/', 'images/', 'fonts/', 'src/partials/', 'src/layout.html', 'src/site.json'];
@@ -91,16 +94,18 @@ async function submit({ siteUrl, key, urls }) {
   const keyLocation = `${siteUrl}${key}.txt`;
   const live = await fetch(`${keyLocation}?nc=${Date.now()}`).then((response) => (response.ok ? response.text() : ''));
   if (live.trim() !== key) throw new Error(`The key file is not live yet at ${keyLocation}; wait for the deploy.`);
-  const response = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    body: JSON.stringify({ host: new URL(siteUrl).host, key, keyLocation, urlList: urls }),
-  });
-  // 200 and 202 both mean accepted; 202 means the key is still being checked, normal for a first submission.
-  if (response.status !== 200 && response.status !== 202) {
-    throw new Error(`IndexNow answered ${response.status}: ${await response.text()}`);
+  const body = JSON.stringify({ host: new URL(siteUrl).host, key, keyLocation, urlList: urls });
+  const refusals = [];
+  for (const endpoint of ENDPOINTS) {
+    const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' }, body });
+    if (ACCEPTED.has(response.status)) {
+      // Shown as a warning on the GitHub run, so a refusal that lasts is noticed without failing every deploy.
+      refusals.forEach((refusal) => console.log(`::warning::IndexNow ${refusal}`));
+      return { endpoint, status: response.status };
+    }
+    refusals.push(`${new URL(endpoint).host} answered ${response.status}: ${await response.text()}`);
   }
-  return response.status;
+  throw new Error(`IndexNow refused the list everywhere:\n${refusals.join('\n')}`);
 }
 
 async function main(argv) {
@@ -110,8 +115,8 @@ async function main(argv) {
   const urls = argv.includes('--all') ? listed : changedUrls(sinceAt >= 0 ? argv[sinceAt + 1] : 'HEAD~1', listed, siteUrl);
   if (!urls.length) return console.log('No listed pages changed; nothing to send.');
   if (argv.includes('--dry-run')) return console.log(urls.join('\n'));
-  const status = await submit({ siteUrl, key: findKey(), urls });
-  console.log(`IndexNow accepted ${urls.length} page${urls.length === 1 ? '' : 's'} (HTTP ${status}).`);
+  const { endpoint, status } = await submit({ siteUrl, key: findKey(), urls });
+  console.log(`IndexNow (${new URL(endpoint).host}) accepted ${urls.length} page${urls.length === 1 ? '' : 's'} (HTTP ${status}).`);
 }
 
 if (require.main === module) {
