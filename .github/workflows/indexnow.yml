@@ -3,8 +3,7 @@
 name: Notify search engines
 
 on:
-  # GitHub Pages marks its deployment successful once the site is live.
-  deployment_status:
+  # The Pages deploy is a dynamic workflow, listed under either name depending on where GitHub shows it.
   workflow_run:
     workflows: [pages-build-deployment, pages build and deployment]
     types: [completed]
@@ -25,16 +24,13 @@ concurrency:
 
 jobs:
   indexnow:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success' ||
-      (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.event.deployment.sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -45,7 +41,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SEND_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.all }}
-          DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha || github.event.deployment.sha || github.sha }}
+          DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           if [ "$SEND_ALL" = "true" ]; then
             node tools/indexnow.js --all
