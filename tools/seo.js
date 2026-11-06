@@ -13,8 +13,8 @@
 const { pageHref, pageFile, projectPage, seriesPage, worksInSeries, largestUrl } = require('../js/works-utils.js');
 
 const ARTIST = {
+  // Shown text uses the full name or "Nafis", never both together; the other forms are for search engines only.
   name: 'Md Nafisul Hasan Sami',
-  shortName: 'Nafisul Hasan Sami',
   alternateNames: ['Nafis', 'Nafisul Hasan Sami'],
 };
 const DESCRIPTION_MAX = 160; // about what a search result shows
@@ -43,7 +43,7 @@ function richText(text) {
   return escapeHtml(text).replace(/\*([^*]+)\*/g, '<em>$1</em>');
 }
 
-const pageTitle = (title) => `${title} — ${ARTIST.shortName}`;
+const pageTitle = (title) => `${title} — ${ARTIST.name}`;
 
 function frontMatter(fields) {
   const lines = Object.entries(fields)
@@ -65,8 +65,8 @@ function personJsonLd(site, sameAs = []) {
     name: ARTIST.name,
     alternateName: ARTIST.alternateNames,
     url: site.url,
-    jobTitle: 'Artist',
-    description: 'Artist and student of mathematics and studio art at Gettysburg College, working across painting, ceramics, printmaking, photography, digital art and graphic design.',
+    jobTitle: 'Multidisciplinary artist',
+    description: 'Multidisciplinary artist and student of mathematics and studio art at Gettysburg College, working across painting, ceramics, printmaking, photography, digital art and graphic design.',
     affiliation: { '@type': 'CollegeOrUniversity', name: 'Gettysburg College' },
     sameAs,
   };
@@ -130,7 +130,7 @@ function projectPageSource(project, templateSource) {
 
 /** A series' own page: series.html with the series' title and note already in place. */
 function seriesPageSource(series, templateSource) {
-  const description = snippet(series.note || `${series.title}, a series by ${ARTIST.shortName}.`);
+  const description = snippet(series.note || `${series.title}, a series by ${ARTIST.name}.`);
   const source =
     frontMatter({
       title: pageTitle(series.title),
@@ -215,7 +215,7 @@ function llms(site, { projects, series }) {
   return [
     '# nuances by nafis',
     '',
-    `> Portfolio of ${ARTIST.name} (Nafis), an artist studying mathematics and studio art, with a minor in data science, at Gettysburg College. Painting, drawing, printmaking, ceramics, photography, digital art and graphic design, and interdisciplinary projects joining art with science and data.`,
+    `> Portfolio of ${ARTIST.name}, a multidisciplinary artist studying mathematics and studio art, with a minor in data science, at Gettysburg College. Painting, drawing, printmaking, ceramics, photography, digital art and graphic design, and interdisciplinary projects joining art with science and data.`,
     '',
     '## Pages',
     '',

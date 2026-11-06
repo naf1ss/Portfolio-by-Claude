@@ -61,7 +61,7 @@ function card({ kicker, title, images }) {
       <p class="mark">n<span>.</span></p>
       <p class="kicker">${plain(kicker)}</p>
       <h1>${plain(title)}</h1>
-      <p class="by">${ARTIST.shortName}</p>
+      <p class="by">${ARTIST.name}</p>
       <p class="site">nuancesbynafis.com</p>
     </div>
   </body></html>`;
