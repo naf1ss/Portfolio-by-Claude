@@ -1,0 +1,58 @@
+# After each GitHub Pages deploy goes live, tells Bing and the other IndexNow engines which pages changed since
+# the deploy before it (tools/indexnow.js decides which). Run it by hand from the Actions tab to send every page.
+name: Notify search engines
+
+on:
+  workflow_run:
+    workflows: [pages build and deployment]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      all:
+        description: Send every page in the sitemap
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  indexnow:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Send the changed pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SEND_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.all }}
+          DEPLOY_PATH: ${{ github.event.workflow_run.path }}
+          DEPLOY_NUMBER: ${{ github.event.workflow_run.run_number }}
+        run: |
+          if [ "$SEND_ALL" = "true" ]; then
+            node tools/indexnow.js --all
+            exit 0
+          fi
+          # The commit of the newest successful deploy older than this one.
+          previous=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=success&per_page=50" --jq \
+            "[.workflow_runs[] | select(.path == \"$DEPLOY_PATH\" and .run_number < $DEPLOY_NUMBER)][0].head_sha // empty")
+          if [ -n "$previous" ] && git cat-file -e "${previous}^{commit}" 2>/dev/null; then
+            node tools/indexnow.js --since "$previous"
+          else
+            echo "No earlier deploy in this history; sending every page."
+            node tools/indexnow.js --all
+          fi
