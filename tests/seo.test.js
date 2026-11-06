@@ -57,3 +57,17 @@ test('a project page lists every picture its case study names, once', () => {
   const project = { hero: { workId: 'a' }, chapters: [{ blocks: [{ type: 'row', items: [{ workId: 'b' }, { workId: 'a' }] }] }] };
   assert.deepEqual(seo.projectWorkIds(project), ['a', 'b']);
 });
+
+test('every page names a preview picture that exists, with its size, type and a description', () => {
+  fs.readdirSync(ROOT).filter((file) => file.endsWith('.html') && !/http-equiv="refresh"/.test(read(file))).forEach((file) => {
+    const html = read(file);
+    const image = /property="og:image" content="https:\/\/nuancesbynafis\.com\/([^"]+)"/.exec(html);
+    assert.ok(image && fs.existsSync(path.join(ROOT, image[1])), `${file}: preview picture missing`);
+    assert.match(html, /property="og:image:type" content="image\/jpeg"/, file);
+    assert.match(html, /property="og:image:alt" content="[^"]{8,}"/, file);
+  });
+});
+
+test('a description does not stop at a title such as "Dr."', () => {
+  assert.equal(seo.snippet('A project with Dr. Gan Yu. Second sentence that is long.', 40), 'A project with Dr. Gan Yu.');
+});

@@ -18,12 +18,15 @@ const ARTIST = {
   alternateNames: ['Nafis', 'Nafisul Hasan Sami'],
 };
 const DESCRIPTION_MAX = 160; // about what a search result shows
+const ABBREVIATION = /\b(Dr|Mr|Mrs|Ms|Prof|St|vs|No)\./g;
 
 /** Plain text from the site's light markup (*italics*), safe for an attribute and trimmed to a search snippet. */
 function snippet(text, max = DESCRIPTION_MAX) {
   const plain = String(text || '').replace(/\*/g, '').replace(/"/g, '”').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
   if (plain.length <= max) return plain;
-  const sentences = plain.match(/[^.!?]+[.!?]+/g) || [];
+  // A title such as "Dr." does not end a sentence: its point is held aside while the text is split.
+  const held = plain.replace(ABBREVIATION, '$1\u2024');
+  const sentences = (held.match(/[^.!?]+[.!?]+/g) || []).map((sentence) => sentence.replace(/\u2024/g, '.'));
   let kept = '';
   for (const sentence of sentences) {
     if ((kept + sentence).trim().length > max) break;
@@ -42,6 +45,9 @@ function escapeHtml(text) {
 function richText(text) {
   return escapeHtml(text).replace(/\*([^*]+)\*/g, '<em>$1</em>');
 }
+
+/** A title as plain attribute text: no markup, no straight quotes. */
+const plainTitle = (title) => snippet(title, 200);
 
 const pageTitle = (title) => `${title} — ${ARTIST.name}`;
 
@@ -107,6 +113,7 @@ function projectPageSource(project, templateSource) {
       description,
       'og-title': project.title.replace(/"/g, '”'),
       'og-image': `images/og/project-${project.id}.jpg`,
+      'og-image-alt': `${plainTitle(project.title)}, a project by ${ARTIST.name}`,
       scripts: scriptsOf(templateSource),
     }) +
     [
@@ -137,6 +144,7 @@ function seriesPageSource(series, templateSource) {
       description,
       'og-title': series.title,
       'og-image': `images/og/series-${series.id}.jpg`,
+      'og-image-alt': `${plainTitle(series.title)}, a series by ${ARTIST.name}`,
       scripts: scriptsOf(templateSource),
     }) +
     [

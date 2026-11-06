@@ -55,9 +55,10 @@ function fillTemplate(template, values) {
   });
 }
 
+/** Front matter text for an attribute or <title>: quotes and angle brackets are refused, a bare "&" is escaped. */
 function assertAttributeSafe(name, value) {
   if (/["<>]/.test(value)) throw new Error(`Front matter "${name}" must not contain quotes or angle brackets.`);
-  return value;
+  return value.replace(/&(?!#?\w+;)/g, '&amp;');
 }
 
 /**
@@ -227,6 +228,8 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] },
         `  <meta property="og:image" content="${site.url}${assertAttributeSafe('og-image', ogImage)}">`,
         '  <meta property="og:image:width" content="1200">',
         '  <meta property="og:image:height" content="630">',
+        '  <meta property="og:image:type" content="image/jpeg">',
+        `  <meta property="og:image:alt" content="${assertAttributeSafe('og-image-alt', meta['og-image'] ? meta['og-image-alt'] || meta['og-title'] || meta.title : site.ogImageAlt || meta.title)}">`,
       ].join('\n')
     : '';
   const bodyData = Object.entries(extras.bodyData || {})
@@ -238,7 +241,7 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] },
 
   const scripts = splitList(meta.scripts);
   const head = fillTemplate(partials.head.replace(/\n$/, ''), {
-    title: meta.title,
+    title: assertAttributeSafe('title', meta.title),
     description: assertAttributeSafe('description', meta.description),
     ogTitle: assertAttributeSafe('og-title', meta['og-title'] || meta.title),
     ogDescription: assertAttributeSafe('og-description', meta['og-description'] || meta.description),
