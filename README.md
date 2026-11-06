@@ -35,6 +35,7 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `images/room/`, `tools/room-textures.html` | The room's plaster and oak-floor textures, and the seeded generator that drew them (open it in a browser to redraw) |
 | `images/` | Web-sized copies of the artwork (`artwork/`, `ceramics/`, `photography/`), three widths each (photos: 600, 1100 and 1600 px wide) |
 | `fonts/` | Self-hosted Bodoni Moda (headings), Cormorant Garamond (reading text) and Manrope (labels), all SIL OFL |
+| `tools/indexnow.js`, `<key>.txt` | After a deploy is live, `npm run indexnow` tells Bing and the other IndexNow engines which pages changed (`--all` for every page, `--dry-run` to list them). The 32-character `.txt` file at the root is the site's IndexNow key; keep it |
 | `tools/stamp-assets.js` | Content-hash stamps for css/js addresses (used by the build) |
 | `tools/optimize_images.py` | Makes web-sized, metadata-free copies of new photos |
 | `tools/cutout-portrait.py` | Cuts a subject out of a black backdrop into transparent, optionally sharpened WebP files (`images/about/`, `images/gallery/`) |

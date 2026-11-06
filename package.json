@@ -6,6 +6,7 @@
     "build": "node tools/build-pages.js",
     "test": "node --test",
     "pretest": "node tools/build-pages.js --check",
-    "check:phone": "node tools/check-phone.js"
+    "check:phone": "node tools/check-phone.js",
+    "indexnow": "node tools/indexnow.js"
   }
 }
