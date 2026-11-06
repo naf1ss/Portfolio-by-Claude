@@ -179,7 +179,7 @@
   function renderMediumList(list, categories, { counts, pickFor }) {
     const rows = categories.map((category) => {
       const link = element('a');
-      link.href = `gallery.html?c=${category.id}`;
+      link.href = `gallery?c=${category.id}`;
       const count = counts[category.id];
       link.append(element('span', 'medium-list__name', category.label));
       const work = pickFor(category.id);

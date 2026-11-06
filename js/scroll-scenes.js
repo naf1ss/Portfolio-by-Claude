@@ -538,23 +538,23 @@
       const place = listed.findIndex((series) => series.id === seriesId);
       if (place === -1) return null; // photography rooms lead on to the next room themselves
       const next = listed[place + 1];
-      return next && U ? { label: next.title, href: U.seriesPage(next.id) } : { label: 'Interdisciplinary projects', href: 'projects.html' };
+      return next && U ? { label: next.title, href: U.seriesPage(next.id) } : { label: 'Interdisciplinary projects', href: 'projects' };
     }
     if (page === 'projects' && projectId) {
       const projects = window.PORTFOLIO_PROJECTS || [];
       const place = projects.findIndex((project) => project.id === projectId);
       const next = projects[place + 1];
-      return next && U ? { label: next.title, href: U.projectPage(next.id) } : { label: 'Artist statement', href: 'artist-statement.html' };
+      return next && U ? { label: next.title, href: U.projectPage(next.id) } : { label: 'Artist statement', href: 'artist-statement' };
     }
     const order = {
-      home: { label: 'Gallery', href: 'gallery.html' },
-      gallery: { label: 'Series', href: 'series.html' },
-      series: { label: 'Interdisciplinary projects', href: 'projects.html' },
-      projects: { label: 'Artist statement', href: 'artist-statement.html' },
-      'artist-statement': { label: 'Resume', href: 'resume.html' },
-      about: { label: 'Resume', href: 'resume.html' },
-      resume: { label: 'Contact', href: 'contact.html' },
-      contact: { label: 'Home', href: 'index.html' },
+      home: { label: 'Gallery', href: 'gallery' },
+      gallery: { label: 'Series', href: 'series' },
+      series: { label: 'Interdisciplinary projects', href: 'projects' },
+      projects: { label: 'Artist statement', href: 'artist-statement' },
+      'artist-statement': { label: 'Resume', href: 'resume' },
+      about: { label: 'Resume', href: 'resume' },
+      resume: { label: 'Contact', href: 'contact' },
+      contact: { label: 'Home', href: './' },
     };
     return order[page] || null;
   }

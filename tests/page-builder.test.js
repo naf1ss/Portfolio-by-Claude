@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { parsePage, fillTemplate, renderPage, resolveNav, renderNav } = require('../tools/page-builder.js');
 
 const site = {
-  nav: [{ label: 'Work', href: 'work.html' }, { label: 'About', href: 'about.html' }],
+  nav: [{ label: 'Work', href: 'work' }, { label: 'About', href: 'about' }],
   scripts: [
     { file: 'theme', defer: false },
     { file: 'config' },
@@ -52,19 +52,19 @@ test('fillTemplate drops an empty placeholder line together with its blank line'
 });
 
 test('renderNav marks only the current page', () => {
-  const html = renderNav(site.nav, 'about.html');
-  assert.match(html, /<a href="about\.html" aria-current="page">About<\/a>/);
-  assert.doesNotMatch(html, /work\.html" aria-current/);
+  const html = renderNav(site.nav, 'about');
+  assert.match(html, /<a href="about" aria-current="page">About<\/a>/);
+  assert.doesNotMatch(html, /work" aria-current/);
 });
 
 test('renderNav gives an entry with children a menu of links', () => {
   const html = renderNav(
-    [{ label: 'Gallery', href: 'gallery.html', menuLabel: 'Gallery by medium', children: [{ label: 'Prints', href: 'gallery.html?c=print' }] }],
-    'gallery.html'
+    [{ label: 'Gallery', href: 'gallery', menuLabel: 'Gallery by medium', children: [{ label: 'Prints', href: 'gallery?c=print' }] }],
+    'gallery'
   );
-  assert.match(html, /<li class="site-nav__group"><a href="gallery\.html" aria-current="page">Gallery<\/a>/);
+  assert.match(html, /<li class="site-nav__group"><a href="gallery" aria-current="page">Gallery<\/a>/);
   assert.match(html, /<ul class="site-nav__menu" aria-label="Gallery by medium">/);
-  assert.match(html, /<li><a href="gallery\.html\?c=print">Prints<\/a><\/li>/);
+  assert.match(html, /<li><a href="gallery\?c=print">Prints<\/a><\/li>/);
 });
 
 test('renderPage fills metadata, defaults the social tags and marks the nav', () => {
@@ -112,7 +112,7 @@ test('a script pulls in the scripts it requires, in site.json order', () => {
 test('the footer lists the nav, the year and the contact links', () => {
   const contactLinks = [{ label: 'Email', href: 'mailto:a@b.c?x=1&y="2"' }];
   const html = renderPage('about', page('title: t\ndescription: d'), { ...parts, contactLinks });
-  assert.match(html, /<li><a href="work\.html">Work<\/a><\/li>/);
+  assert.match(html, /<li><a href="work">Work<\/a><\/li>/);
   assert.match(html, /aria-label="Elsewhere"/);
   assert.match(html, /href="mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;"><span class="footer__slide">Email<\/span>/, 'attribute values are escaped; the label can slide');
   assert.match(html, /\(c\) 2026 mailto:a@b\.c\?x=1&amp;y=&quot;2&quot;/, 'the hello link points at the email address');
@@ -122,7 +122,7 @@ test('the footer omits the Elsewhere column when no contact details are set', ()
   const html = renderPage('about', page('title: t\ndescription: d'), parts);
   assert.doesNotMatch(html, /Elsewhere/);
   assert.doesNotMatch(html, /\n\n\(c\)/, 'no blank line is left behind');
-  assert.match(html, /\(c\) 2026 contact\.html/, 'without an email, hello goes to the contact page');
+  assert.match(html, /\(c\) 2026 contact/, 'without an email, hello goes to the contact page');
 });
 
 test('a page with a base front matter key gets a <base> tag, and others do not', () => {
@@ -134,32 +134,32 @@ test('a page with a base front matter key gets a <base> tag, and others do not',
 });
 
 test('resolveNav leaves out series kept to the gallery', () => {
-  const nav = resolveNav([{ label: 'Series', href: 'series.html', childrenFrom: 'series' }], {
+  const nav = resolveNav([{ label: 'Series', href: 'series', childrenFrom: 'series' }], {
     series: [{ id: 'horizon', title: 'Horizon' }, { id: 'city', title: 'City', galleryOnly: true }],
   });
-  assert.deepEqual(nav[0].children, [{ label: 'Horizon', href: 'series-horizon.html' }]);
+  assert.deepEqual(nav[0].children, [{ label: 'Horizon', href: 'series-horizon' }]);
 });
 
 test('resolveNav lists every series under an entry with childrenFrom: "series"', () => {
   const nav = resolveNav(
-    [{ label: 'Gallery', href: 'gallery.html' }, { label: 'Series', href: 'series.html', childrenFrom: 'series' }],
+    [{ label: 'Gallery', href: 'gallery' }, { label: 'Series', href: 'series', childrenFrom: 'series' }],
     { series: [{ id: 'horizon', title: 'Horizon' }, { id: 'three ways', title: 'Three Ways' }] }
   );
-  assert.deepEqual(nav[0], { label: 'Gallery', href: 'gallery.html' });
+  assert.deepEqual(nav[0], { label: 'Gallery', href: 'gallery' });
   assert.deepEqual(nav[1], {
     label: 'Series',
-    href: 'series.html',
+    href: 'series',
     children: [
-      { label: 'Horizon', href: 'series-horizon.html' },
-      { label: 'Three Ways', href: 'series-three ways.html' },
+      { label: 'Horizon', href: 'series-horizon' },
+      { label: 'Three Ways', href: 'series-three ways' },
     ],
   });
-  assert.throws(() => resolveNav([{ label: 'X', href: 'x.html', childrenFrom: 'nope' }]), /unknown childrenFrom/);
+  assert.throws(() => resolveNav([{ label: 'X', href: 'x', childrenFrom: 'nope' }]), /unknown childrenFrom/);
 });
 
 test('resolveNav lists every project under an entry with childrenFrom: "projects"', () => {
-  const nav = resolveNav([{ label: 'Projects', href: 'projects.html', childrenFrom: 'projects' }], {
+  const nav = resolveNav([{ label: 'Projects', href: 'projects', childrenFrom: 'projects' }], {
     projects: [{ id: 'planet-walk', title: 'Planet Walk' }],
   });
-  assert.deepEqual(nav[0].children, [{ label: 'Planet Walk', href: 'project-planet-walk.html' }]);
+  assert.deepEqual(nav[0].children, [{ label: 'Planet Walk', href: 'project-planet-walk' }]);
 });

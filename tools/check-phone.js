@@ -12,13 +12,11 @@
  *     npm run check:phone
  *
  * Needs Playwright (`npm install --no-save playwright && npx playwright install chromium` once, if it is not
- * already installed). It serves the folder itself, so no other server is needed.
+ * already installed). It serves the folder itself (tools/static-server.js, with clean addresses as on GitHub Pages).
  */
 'use strict';
 
-const http = require('node:http');
-const fs = require('node:fs');
-const path = require('node:path');
+const { serve } = require('./static-server.js');
 
 let chromium;
 try {
@@ -28,7 +26,6 @@ try {
   process.exit(2);
 }
 
-const ROOT = path.resolve(__dirname, '..');
 const PHONES = [
   { name: 'phone 390×844', width: 390, height: 844 },
   { name: 'small phone 375×667', width: 375, height: 667 },
@@ -37,44 +34,28 @@ const PHONES = [
 // Every page, with the controls on it that must take a tap. `tap` selectors are checked only when present;
 // `storage` seeds localStorage first (a view the visitor chose on an earlier visit).
 const PAGES = [
-  { url: 'index.html' },
-  { url: 'gallery.html', tap: ['.room__segment.is-here .room__frame', '.room__cord', '.room__walk button', '.menu-toggle'] },
-  { url: 'gallery.html?c=drawing', tap: ['.room__segment.is-here .room__frame', '.room__cord'] },
-  { url: 'gallery.html?c=print', tap: ['.room__segment.is-here .room__frame'] },
-  { url: 'gallery.html?c=digital', tap: ['#gallery .tile'] },
-  { url: 'gallery.html?c=design', tap: ['#gallery .tile'] },
-  { url: 'gallery.html?c=ceramics', tap: ['#gallery .tile'] },
-  { url: 'gallery.html?c=photography', tap: ['.pindex__link', '.medium-capsule .view-switch button'] },
-  { url: 'gallery.html?c=photography', tap: ['#photo-grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
-  { url: 'series.html', tap: ['.ticker'] },
-  { url: 'series-eiffel-tower.html' },
-  { url: 'series-cross-wired.html', tap: ['#gallery .tile'] },
-  { url: 'series-negligible.html', tap: ['.exhibit__link', '.series-back .view-switch button'] },
-  { url: 'series-negligible.html', tap: ['.exhibit__grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
-  { url: 'series-through-the-window.html' },
-  { url: 'series-architecture.html', tap: ['.exhibit__link'] },
-  { url: 'projects.html' },
-  { url: 'project-planet-walk.html' },
-  { url: 'artist-statement.html' },
-  { url: 'resume.html' },
-  { url: 'contact.html' },
+  { url: '' },
+  { url: 'gallery', tap: ['.room__segment.is-here .room__frame', '.room__cord', '.room__walk button', '.menu-toggle'] },
+  { url: 'gallery?c=drawing', tap: ['.room__segment.is-here .room__frame', '.room__cord'] },
+  { url: 'gallery?c=print', tap: ['.room__segment.is-here .room__frame'] },
+  { url: 'gallery?c=digital', tap: ['#gallery .tile'] },
+  { url: 'gallery?c=design', tap: ['#gallery .tile'] },
+  { url: 'gallery?c=ceramics', tap: ['#gallery .tile'] },
+  { url: 'gallery?c=photography', tap: ['.pindex__link', '.medium-capsule .view-switch button'] },
+  { url: 'gallery?c=photography', tap: ['#photo-grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
+  { url: 'series', tap: ['.ticker'] },
+  { url: 'series-eiffel-tower' },
+  { url: 'series-cross-wired', tap: ['#gallery .tile'] },
+  { url: 'series-negligible', tap: ['.exhibit__link', '.series-back .view-switch button'] },
+  { url: 'series-negligible', tap: ['.exhibit__grid .tile'], storage: { 'nuances.photographyView': 'grid' } },
+  { url: 'series-through-the-window' },
+  { url: 'series-architecture', tap: ['.exhibit__link'] },
+  { url: 'projects' },
+  { url: 'project-planet-walk' },
+  { url: 'artist-statement' },
+  { url: 'resume' },
+  { url: 'contact' },
 ];
-
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.jpg': 'image/jpeg', '.png': 'image/png',
-  '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.json': 'application/json', '.ico': 'image/x-icon' };
-
-function serve() {
-  const server = http.createServer((request, response) => {
-    const file = path.join(ROOT, decodeURIComponent(new URL(request.url, 'http://x').pathname));
-    if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
-      response.writeHead(404).end();
-      return;
-    }
-    response.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream' });
-    fs.createReadStream(file).pipe(response);
-  });
-  return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)));
-}
 
 /** In the page: whether a tap at the middle of each control reaches it (or something inside it). */
 function blockedTaps(selectors) {

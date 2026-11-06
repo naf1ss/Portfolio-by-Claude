@@ -63,7 +63,7 @@
 
   function initHome() {
     const { U, all, byId } = loadWorks();
-    const hrefFor = (work) => `gallery.html${U.hashForWork(work)}`;
+    const hrefFor = (work) => `gallery${U.hashForWork(work)}`;
 
     const latest = byId.get(config.latestId);
     const latestSection = document.getElementById('latest-section');
@@ -355,7 +355,7 @@
     const photoPlace = photoSeries.findIndex((entry) => entry.series.id === series.id);
     if (photoPlace !== -1 && window.PhotoSeries) {
       const roomBox = document.getElementById('photo-room');
-      const indexHref = 'gallery.html?c=photography';
+      const indexHref = 'gallery?c=photography';
       title.hidden = true;
       note.hidden = true;
       list.hidden = true;

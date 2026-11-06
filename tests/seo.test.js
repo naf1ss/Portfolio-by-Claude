@@ -7,7 +7,7 @@ const path = require('node:path');
 const seo = require('../tools/seo.js');
 const PROJECTS = require('../js/projects-data.js');
 const SERIES = require('../js/series-data.js');
-const { projectPage, seriesPage } = require('../js/works-utils.js');
+const { pageFile, projectPage, seriesPage } = require('../js/works-utils.js');
 
 const ROOT = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -26,7 +26,7 @@ test('every project and series has its own page, with its title, address and an 
     ...SERIES.map((item) => ({ item, file: seriesPage(item.id), data: `data-series="${item.id}"` })),
   ];
   pages.forEach(({ item, file, data }) => {
-    const html = read(file);
+    const html = read(pageFile(file));
     assert.ok(html.includes(data), `${file}: body does not name its ${data}`);
     assert.ok(html.includes(`<link rel="canonical" href="https://nuancesbynafis.com/${file}">`), `${file}: no canonical`);
     const image = /property="og:image" content="https:\/\/nuancesbynafis\.com\/([^"]+)"/.exec(html);
@@ -37,10 +37,11 @@ test('every project and series has its own page, with its title, address and an 
 
 test('the sitemap lists every public page and leaves out the 404 page and redirects', () => {
   const sitemap = read('sitemap.xml');
-  ['', 'gallery.html', 'projects.html', projectPage('planet-walk'), seriesPage('negligible')].forEach((file) => {
+  ['', 'gallery', 'projects', projectPage('planet-walk'), seriesPage('negligible')].forEach((file) => {
     assert.ok(sitemap.includes(`<loc>https://nuancesbynafis.com/${file}</loc>`), `sitemap: ${file || 'home'} missing`);
   });
-  ['404.html', 'about.html', 'work.html'].forEach((file) => assert.ok(!sitemap.includes(file), `sitemap lists ${file}`));
+  ['404', 'about', 'work'].forEach((name) => assert.ok(!sitemap.includes(`/${name}<`), `sitemap lists ${name}`));
+  assert.doesNotMatch(sitemap, /\.html/, 'every address is the clean one');
   assert.match(read('robots.txt'), /Sitemap: https:\/\/nuancesbynafis\.com\/sitemap\.xml/);
 });
 

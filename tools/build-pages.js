@@ -20,6 +20,7 @@ const seo = require('./seo.js');
 const SERIES = require('../js/series-data.js');
 const PROJECTS = require('../js/projects-data.js');
 const { stampHtml } = require('./stamp-assets.js');
+const { pageFile } = require('../js/works-utils.js');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
@@ -75,7 +76,7 @@ function build() {
       file: made.file,
       image: `images/og/${made.file.replace(/\.html$/, '')}.jpg`,
     });
-    const html = renderPage(name, made.source, parts, { file: made.file, bodyData: data, navCurrent: `${name}.html`, jsonLd });
+    const html = renderPage(name, made.source, parts, { file: made.file, bodyData: data, navCurrent: name, jsonLd });
     return { file: made.file, html: stampHtml(html) };
   });
   pages.push(...ownPages);
@@ -83,7 +84,7 @@ function build() {
   const pageFiles = new Set(pages.map(({ file }) => file));
   const redirects = (parts.site.redirects || []).map(({ from, to }) => {
     if (pageFiles.has(from)) throw new Error(`redirects: ${from} is also a page.`);
-    if (!pageFiles.has(to)) throw new Error(`redirects: ${from} points to ${to}, which is not a page.`);
+    if (!pageFiles.has(pageFile(to))) throw new Error(`redirects: ${from} points to ${to}, which is not a page.`);
     return { file: from, html: renderRedirect(to) };
   });
 

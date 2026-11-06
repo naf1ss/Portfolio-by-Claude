@@ -41,6 +41,13 @@ A plain static site: HTML, CSS and a little JavaScript. No framework and no thir
 | `tools/cutout-portrait.py` | Cuts a subject out of a black backdrop into transparent, optionally sharpened WebP files (`images/about/`, `images/gallery/`) |
 | `tests/` | Unit tests and catalogue checks |
 
+## Addresses
+
+Pages are linked by their clean address: `gallery`, `series-horizon`, and `./` for the home page, never `….html`.
+GitHub Pages serves `/gallery` from `gallery.html`, so the files keep their extension. `pageHref` and `pageFile`
+in `js/works-utils.js` convert between the two. An old link ending in `.html` still works, and a line in the page
+head swaps it for the clean address in the address bar.
+
 ## Colours
 
 Text is only black, white or the accent: blue on the white light theme, red on the black dark theme (`--ink`, `--on-ink`, `--accent` in the tokens at the top of `css/styles.css`; the footer is always black
@@ -50,7 +57,7 @@ To bring back a softer grey, change that one token.
 ## Preview locally
 
 ```sh
-python3 -m http.server 8000   # then open http://localhost:8000
+npm run serve   # then open http://localhost:8000 (serves /gallery from gallery.html, as GitHub Pages does)
 ```
 
 ## Tests

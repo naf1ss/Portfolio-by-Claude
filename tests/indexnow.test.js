@@ -7,7 +7,7 @@ const path = require('node:path');
 const { sitemapUrls, urlForFile, urlsToSubmit } = require('../tools/indexnow.js');
 
 const SITE = 'https://example.com/';
-const LISTED = [`${SITE}`, `${SITE}gallery.html`, `${SITE}series-horizon.html`];
+const LISTED = [`${SITE}`, `${SITE}gallery`, `${SITE}series-horizon`];
 
 test('reads the sitemap addresses in order', () => {
   const xml = `<urlset><url><loc>${LISTED[0]}</loc></url><url><loc>${LISTED[1]}</loc></url></urlset>`;
@@ -16,13 +16,13 @@ test('reads the sitemap addresses in order', () => {
 
 test('maps a built page to its address, and nothing else to one', () => {
   assert.equal(urlForFile('index.html', SITE), SITE);
-  assert.equal(urlForFile('gallery.html', SITE), `${SITE}gallery.html`);
+  assert.equal(urlForFile('gallery.html', SITE), `${SITE}gallery`);
   assert.equal(urlForFile('src/pages/gallery.html', SITE), null);
   assert.equal(urlForFile('README.md', SITE), null);
 });
 
 test('sends only the listed pages whose own HTML changed', () => {
-  assert.deepEqual(urlsToSubmit(['series-horizon.html', 'index.html', 'README.md'], LISTED, SITE), [SITE, `${SITE}series-horizon.html`]);
+  assert.deepEqual(urlsToSubmit(['series-horizon.html', 'index.html', 'README.md'], LISTED, SITE), [SITE, `${SITE}series-horizon`]);
   assert.deepEqual(urlsToSubmit(['404.html', 'about.html', 'tests/x.test.js'], LISTED, SITE), []);
 });
 

@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const { projectPage, seriesPage } = require('../js/works-utils.js');
+const { pageHref, pageFile, projectPage, seriesPage } = require('../js/works-utils.js');
 
 const ARTIST = {
   name: 'Md Nafisul Hasan Sami',
@@ -89,7 +89,7 @@ function workJsonLd(site, { name, description, file, image }) {
     '@type': 'CreativeWork',
     name,
     description,
-    url: `${site.url}${file}`,
+    url: `${site.url}${pageHref(file)}`,
     image: `${site.url}${image}`,
     author: { '@type': 'Person', '@id': `${site.url}#artist`, name: ARTIST.name, url: site.url },
   };
@@ -112,7 +112,7 @@ function projectPageSource(project, templateSource) {
     [
       '  <main id="main" class="wrap">',
       '    <div id="projects-index" hidden></div>',
-      '    <p class="series-back" id="project-back"><a href="projects.html">&larr; All projects</a></p>',
+      '    <p class="series-back" id="project-back"><a href="projects">&larr; All projects</a></p>',
       '    <article class="pcase" id="project-case">',
       '      <header class="pcase__hero">',
       '        <div class="pcase__intro">',
@@ -125,7 +125,7 @@ function projectPageSource(project, templateSource) {
       '    <noscript><p class="muted">Please enable JavaScript to read the full case study.</p></noscript>',
       '  </main>',
     ].join('\n');
-  return { file: projectPage(project.id), source, description };
+  return { file: pageFile(projectPage(project.id)), source, description };
 }
 
 /** A series' own page: series.html with the series' title and note already in place. */
@@ -141,7 +141,7 @@ function seriesPageSource(series, templateSource) {
     }) +
     [
       '  <main id="main" class="wrap">',
-      '    <p class="series-back" id="series-back"><a href="series.html">&larr; All series</a></p>',
+      '    <p class="series-back" id="series-back"><a href="series">&larr; All series</a></p>',
       `    <h1 class="page-title" id="series-title">${escapeHtml(series.title)}</h1>`,
       `    <p class="series-note" id="series-note">${richText(series.note || '')}</p>`,
       '    <ul class="series-list" id="series-list" hidden></ul>',
@@ -152,11 +152,11 @@ function seriesPageSource(series, templateSource) {
       '    <noscript><p class="muted">Please enable JavaScript to view the series.</p></noscript>',
       '  </main>',
     ].join('\n');
-  return { file: seriesPage(series.id), source, description };
+  return { file: pageFile(seriesPage(series.id)), source, description };
 }
 
 function sitemap(site, files) {
-  const urls = files.map((file) => `  <url><loc>${site.url}${file === 'index.html' ? '' : file}</loc></url>`);
+  const urls = files.map((file) => `  <url><loc>${site.url}${file === 'index.html' ? '' : pageHref(file)}</loc></url>`);
   return ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', ...urls, '</urlset>', ''].join('\n');
 }
 
@@ -174,12 +174,12 @@ function llms(site, { projects, series }) {
     '',
     '## Pages',
     '',
-    link('Gallery', 'gallery.html', 'All works by medium, on a gallery wall or as a grid.'),
-    link('Series', 'series.html', 'Bodies of work built around one idea.'),
-    link('Interdisciplinary projects', 'projects.html', 'Case studies, from the question to the result.'),
-    link('Artist statement', 'artist-statement.html'),
-    link('Resume', 'resume.html'),
-    link('Contact', 'contact.html'),
+    link('Gallery', 'gallery', 'All works by medium, on a gallery wall or as a grid.'),
+    link('Series', 'series', 'Bodies of work built around one idea.'),
+    link('Interdisciplinary projects', 'projects', 'Case studies, from the question to the result.'),
+    link('Artist statement', 'artist-statement'),
+    link('Resume', 'resume'),
+    link('Contact', 'contact'),
     '',
     '## Projects',
     '',

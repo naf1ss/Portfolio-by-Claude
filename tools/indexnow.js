@@ -16,6 +16,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
+const { pageHref } = require('../js/works-utils.js');
 
 const ROOT = path.join(__dirname, '..');
 const ENDPOINT = 'https://api.indexnow.org/indexnow';
@@ -28,10 +29,10 @@ function sitemapUrls(xml) {
   return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1]);
 }
 
-/** The address a built file is served at, or null when the file is not a page. */
+/** The clean address a built file is served at, or null when the file is not a page. */
 function urlForFile(file, siteUrl) {
   if (!file.endsWith('.html') || file.includes('/')) return null;
-  return file === 'index.html' ? siteUrl : siteUrl + file;
+  return file === 'index.html' ? siteUrl : siteUrl + pageHref(file);
 }
 
 /**

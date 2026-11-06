@@ -347,7 +347,7 @@ test('series: meta line gives the count and the year or span of years', () => {
 test('series: every page links to the Series page and series.html exists', () => {
   ['index', 'gallery', 'artist-statement', 'contact', 'resume', 'series', '404'].forEach((page) => {
     const html = fs.readFileSync(path.join(ROOT, `${page}.html`), 'utf8');
-    assert.match(html, /<li><a href="series\.html"/, page);
+    assert.match(html, /<li><a href="series"/, page);
   });
 });
 

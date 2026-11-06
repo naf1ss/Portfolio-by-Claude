@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const { projectPage, seriesPage } = require('../js/works-utils.js');
+const { pageHref, projectPage, seriesPage } = require('../js/works-utils.js');
 
 const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 const SLOT_MARKER = /^<!-- @slot (\w+) -->\n/gm;
@@ -161,7 +161,7 @@ function renderElsewhere(links) {
 function renderFooter(template, site, contactLinks) {
   const email = contactLinks.find((link) => link.label === 'Email');
   return fillTemplate(template.replace(/\n$/, ''), {
-    helloHref: escapeAttribute(email ? email.href : 'contact.html'),
+    helloHref: escapeAttribute(email ? email.href : 'contact'),
     exploreLinks: renderLinkItems(site.nav),
     elsewhere: renderElsewhere(contactLinks),
     year: String(site.copyrightYear),
@@ -198,7 +198,7 @@ function splitList(value) {
 
 /** The page's address on the live site: the home page is the site itself. */
 function pageUrl(site, file) {
-  return `${site.url}${file === 'index.html' ? '' : file}`;
+  return `${site.url}${file === 'index.html' ? '' : pageHref(file)}`;
 }
 
 /** JSON for a <script type="application/ld+json"> block; "<" is escaped so no text can close the script. */
@@ -256,7 +256,7 @@ function renderPage(name, source, { layout, partials, site, contactLinks = [] },
     page: name === 'index' ? 'home' : name,
     bodyData,
     intro: slots.intro || '',
-    header: fillTemplate(partials.header, { nav: renderNav(site.nav, extras.navCurrent || `${name}.html`) }).replace(/\n$/, ''),
+    header: fillTemplate(partials.header, { nav: renderNav(site.nav, extras.navCurrent || pageHref(`${name}.html`)) }).replace(/\n$/, ''),
     main: slots.main,
     footer: renderFooter(partials.footer, site, contactLinks),
     // The image viewer is only needed on pages that load the lightbox script.

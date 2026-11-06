@@ -4,23 +4,23 @@
   "nav": [
     {
       "label": "Gallery",
-      "href": "gallery.html",
+      "href": "gallery",
       "menuLabel": "Gallery by medium",
       "children": [
-        {"label": "Painting", "href": "gallery.html?c=painting"},
-        {"label": "Drawing", "href": "gallery.html?c=drawing"},
-        {"label": "Prints", "href": "gallery.html?c=print"},
-        {"label": "Digital", "href": "gallery.html?c=digital"},
-        {"label": "Graphic design", "href": "gallery.html?c=design"},
-        {"label": "Photography", "href": "gallery.html?c=photography"},
-        {"label": "Ceramics", "href": "gallery.html?c=ceramics"}
+        {"label": "Painting", "href": "gallery?c=painting"},
+        {"label": "Drawing", "href": "gallery?c=drawing"},
+        {"label": "Prints", "href": "gallery?c=print"},
+        {"label": "Digital", "href": "gallery?c=digital"},
+        {"label": "Graphic design", "href": "gallery?c=design"},
+        {"label": "Photography", "href": "gallery?c=photography"},
+        {"label": "Ceramics", "href": "gallery?c=ceramics"}
       ]
     },
-    {"label": "Series", "href": "series.html", "menuLabel": "Series", "childrenFrom": "series"},
-    {"label": "Interdisciplinary projects", "page": "Projects", "href": "projects.html", "menuLabel": "Interdisciplinary projects", "childrenFrom": "projects"},
-    {"label": "Artist statement", "href": "artist-statement.html"},
-    {"label": "Resume", "href": "resume.html"},
-    {"label": "Contact", "href": "contact.html"}
+    {"label": "Series", "href": "series", "menuLabel": "Series", "childrenFrom": "series"},
+    {"label": "Interdisciplinary projects", "page": "Projects", "href": "projects", "menuLabel": "Interdisciplinary projects", "childrenFrom": "projects"},
+    {"label": "Artist statement", "href": "artist-statement"},
+    {"label": "Resume", "href": "resume"},
+    {"label": "Contact", "href": "contact"}
   ],
   "scripts": [
     {"file": "theme-utils", "defer": false},
@@ -69,8 +69,8 @@
     "kaushan-script-latin-400-normal.woff2"
   ],
   "redirects": [
-    {"from": "work.html", "to": "gallery.html"},
-    {"from": "about.html", "to": "artist-statement.html"}
+    {"from": "work.html", "to": "gallery"},
+    {"from": "about.html", "to": "artist-statement"}
   ],
   "copyrightYear": 2026
 }

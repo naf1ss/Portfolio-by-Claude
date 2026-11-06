@@ -1,6 +1,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 {{base}}
+  <script>/* An old link ending in .html shows its clean address instead; both are served. */ if (/\.html$/.test(location.pathname)) history.replaceState(history.state, '', location.pathname.replace(/(index)?\.html$/, '') + location.search + location.hash);</script>
   <title>{{title}}</title>
   <meta name="description" content="{{description}}">
   <meta name="color-scheme" content="light dark">
