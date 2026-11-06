@@ -131,9 +131,11 @@ The build also writes, from the site's own data:
 - a page for every project and series (`project-<id>.html`, `series-<id>.html`) with its own title, description, address
   and preview picture, its heading already in the HTML, and structured data (tools/seo.js); old links
   (`projects.html?p=<id>`, `series.html?s=<id>`) forward to them
-- `sitemap.xml`, `robots.txt` and `llms.txt`
+- `sitemap.xml`, `robots.txt` and `llms.txt`. The sitemap lists the pictures each page shows (for image search) and
+  the date each page's content last changed, kept in `src/lastmod.json` (tools/lastmod.js): a page's date moves only
+  when its head, its `<main>` or the data it is drawn from changes. Commit that file with the build
 
 Titles carry the artist's full name. The preview pictures (images/og/) are made separately, after adding or renaming a
 project or series: `node tools/make-og-images.js` (needs Playwright). `npm test` fails if a page's preview picture is
-missing. Search Console: add the verification tag Google gives you to `src/partials/head.html`, build, and submit
-`https://nuancesbynafis.com/sitemap.xml`.
+missing. Google Search Console is verified by the tag in `src/partials/head.html` (keep it) and reads `sitemap.xml`; Bing
+imports it from Search Console.

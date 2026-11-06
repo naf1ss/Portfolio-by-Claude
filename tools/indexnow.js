@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Tells IndexNow search engines (Bing, Yandex, Seznam, Naver, …) which pages changed, so they recrawl them now
- * instead of rediscovering the change on their own. Run it after a deploy is live:
+ * instead of rediscovering the change on their own. A page changed when its fingerprint in src/lastmod.json did
+ * (see tools/lastmod.js). Run it after a deploy is live (the GitHub workflow does):
  *
  *   node tools/indexnow.js                 pages changed by the last commit
  *   node tools/indexnow.js --since <ref>   pages changed since a commit (e.g. the previous deploy)
@@ -46,6 +47,36 @@ function urlsToSubmit(changedFiles, listedUrls, siteUrl) {
   return listedUrls.filter((url) => changed.has(url));
 }
 
+/**
+ * The listed pages whose content changed between two lastmod manifests (src/lastmod.json, kept by the build),
+ * which is exact: a style tweak or new menu entry changes no page's fingerprint.
+ */
+function urlsFromManifests(before, after, listedUrls, siteUrl) {
+  const changed = new Set(
+    Object.keys(after)
+      .filter((file) => !before[file] || before[file].hash !== after[file].hash)
+      .map((file) => urlForFile(file, siteUrl))
+  );
+  return listedUrls.filter((url) => changed.has(url));
+}
+
+/** src/lastmod.json as it was at a commit, or null when it did not exist yet. */
+function manifestAt(ref) {
+  try {
+    return JSON.parse(execFileSync('git', ['show', `${ref}:src/lastmod.json`], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
+  } catch {
+    return null;
+  }
+}
+
+/** The pages to send for the changes since `ref`: by manifest when both ends have one, else by changed files. */
+function changedUrls(ref, listedUrls, siteUrl) {
+  const before = manifestAt(ref);
+  const after = manifestAt('HEAD');
+  if (before && after) return urlsFromManifests(before, after, listedUrls, siteUrl);
+  return urlsToSubmit(changedSince(ref), listedUrls, siteUrl);
+}
+
 function findKey() {
   const file = fs.readdirSync(ROOT).find((name) => KEY_FILE.test(name));
   if (!file) throw new Error('No IndexNow key file (<32 hex characters>.txt) at the site root.');
@@ -76,7 +107,7 @@ async function main(argv) {
   const siteUrl = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/site.json'), 'utf8')).url;
   const listed = sitemapUrls(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8'));
   const sinceAt = argv.indexOf('--since');
-  const urls = argv.includes('--all') ? listed : urlsToSubmit(changedSince(sinceAt >= 0 ? argv[sinceAt + 1] : 'HEAD~1'), listed, siteUrl);
+  const urls = argv.includes('--all') ? listed : changedUrls(sinceAt >= 0 ? argv[sinceAt + 1] : 'HEAD~1', listed, siteUrl);
   if (!urls.length) return console.log('No listed pages changed; nothing to send.');
   if (argv.includes('--dry-run')) return console.log(urls.join('\n'));
   const status = await submit({ siteUrl, key: findKey(), urls });
@@ -90,4 +121,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { sitemapUrls, urlForFile, urlsToSubmit };
+module.exports = { sitemapUrls, urlForFile, urlsToSubmit, urlsFromManifests };

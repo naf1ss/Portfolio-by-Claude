@@ -52,3 +52,8 @@ test('the home page tells search engines who the artist is', () => {
   assert.equal(person.name, 'Md Nafisul Hasan Sami');
   assert.ok(person.sameAs.some((url) => url.includes('instagram.com')));
 });
+
+test('a project page lists every picture its case study names, once', () => {
+  const project = { hero: { workId: 'a' }, chapters: [{ blocks: [{ type: 'row', items: [{ workId: 'b' }, { workId: 'a' }] }] }] };
+  assert.deepEqual(seo.projectWorkIds(project), ['a', 'b']);
+});

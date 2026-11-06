@@ -20,10 +20,17 @@ const seo = require('./seo.js');
 const SERIES = require('../js/series-data.js');
 const PROJECTS = require('../js/projects-data.js');
 const { stampHtml } = require('./stamp-assets.js');
-const { pageFile } = require('../js/works-utils.js');
+const { pageFile, projectPage, seriesPage, worksInSeries } = require('../js/works-utils.js');
+const { fingerprint, nextManifest, datesOf } = require('./lastmod.js');
+const WORKS = require('../js/works-data.js');
+const PHOTOS = require('../js/works-photography.js');
+const STORIES = require('../js/series-stories.js');
+const { execFileSync } = require('node:child_process');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
+const LASTMOD_FILE = 'src/lastmod.json';
+const CATALOGUE = WORKS.concat(PHOTOS);
 
 /** Reads js/site-config.js (a browser script) so contact details have one source of truth. */
 function readContactLinks() {
@@ -49,6 +56,41 @@ function readSources() {
     site: withResolvedNav(JSON.parse(read('site.json'))),
     contactLinks: readContactLinks(),
   };
+}
+
+/** The data a listed page is drawn from, besides its own HTML (see tools/lastmod.js). */
+function pageData(file) {
+  const siteConfig = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
+  const byId = new Map(CATALOGUE.map((work) => [work.id, work]));
+  const series = SERIES.find((entry) => pageFile(seriesPage(entry.id)) === file);
+  if (series) return { series, story: STORIES[series.id] || null, works: worksInSeries(series, CATALOGUE) };
+  const project = PROJECTS.find((entry) => pageFile(projectPage(entry.id)) === file);
+  if (project) return { project, works: seo.projectWorkIds(project).map((id) => byId.get(id)) };
+  switch (file) {
+    case 'index.html': return { siteConfig, works: CATALOGUE };
+    case 'gallery.html': return { works: CATALOGUE };
+    case 'series.html': return SERIES.map((entry) => ({ entry, works: worksInSeries(entry, CATALOGUE).map((work) => work.id) }));
+    case 'projects.html': return PROJECTS;
+    case 'contact.html': return { siteConfig };
+    default: return null;
+  }
+}
+
+/** Today in New York, where the site is kept (YYYY-MM-DD). */
+const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+
+/** The date a built file was last committed, for a page the manifest has not seen yet. */
+function committedDate(file) {
+  try {
+    return execFileSync('git', ['log', '-1', '--format=%cs', '--', file], { cwd: ROOT, encoding: 'utf8' }).trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function readManifest() {
+  const file = path.join(ROOT, LASTMOD_FILE);
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
 }
 
 function build() {
@@ -90,8 +132,13 @@ function build() {
 
   // Search engines: every public page except the 404 page and the redirects.
   const listed = pages.map(({ file }) => file).filter((file) => file !== '404.html');
+  const htmlOf = new Map(pages.map(({ file, html }) => [file, html]));
+  const hashes = Object.fromEntries(listed.map((file) => [file, fingerprint(htmlOf.get(file), pageData(file))]));
+  const manifest = nextManifest(readManifest(), hashes, { today: today(), seed: committedDate });
+  const images = seo.pageImages({ works: CATALOGUE, series: SERIES, projects: PROJECTS });
   const files = [
-    { file: 'sitemap.xml', html: seo.sitemap(parts.site, listed) },
+    { file: LASTMOD_FILE, html: `${JSON.stringify(manifest, null, 2)}\n` },
+    { file: 'sitemap.xml', html: seo.sitemap(parts.site, listed, { lastmod: datesOf(manifest), images }) },
     { file: 'robots.txt', html: seo.robots(parts.site) },
     { file: 'llms.txt', html: seo.llms(parts.site, { projects: PROJECTS, series: SERIES }) },
   ];

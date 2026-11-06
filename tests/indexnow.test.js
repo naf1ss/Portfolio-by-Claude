@@ -38,3 +38,11 @@ test('exactly one key file sits at the site root, holding its own name', () => {
   assert.equal(keys.length, 1);
   assert.equal(fs.readFileSync(path.join(root, keys[0]), 'utf8').trim(), keys[0].slice(0, -4));
 });
+
+test('with lastmod manifests on both sides, sends exactly the pages whose content changed', () => {
+  const { urlsFromManifests } = require('../tools/indexnow.js');
+  const before = { 'index.html': { hash: 'a' }, 'gallery.html': { hash: 'b' } };
+  const after = { 'index.html': { hash: 'a' }, 'gallery.html': { hash: 'c' }, 'series-horizon.html': { hash: 'd' } };
+  assert.deepEqual(urlsFromManifests(before, after, LISTED, SITE), [`${SITE}gallery`, `${SITE}series-horizon`]);
+  assert.deepEqual(urlsFromManifests(after, after, LISTED, SITE), []);
+});

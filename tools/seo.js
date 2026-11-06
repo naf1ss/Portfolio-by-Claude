@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const { pageHref, pageFile, projectPage, seriesPage } = require('../js/works-utils.js');
+const { pageHref, pageFile, projectPage, seriesPage, worksInSeries, largestUrl } = require('../js/works-utils.js');
 
 const ARTIST = {
   name: 'Md Nafisul Hasan Sami',
@@ -155,9 +155,54 @@ function seriesPageSource(series, templateSource) {
   return { file: pageFile(seriesPage(series.id)), source, description };
 }
 
-function sitemap(site, files) {
-  const urls = files.map((file) => `  <url><loc>${site.url}${file === 'index.html' ? '' : pageHref(file)}</loc></url>`);
-  return ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', ...urls, '</urlset>', ''].join('\n');
+const xmlText = (text) => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** Every workId named anywhere in a project's case study (hero, figures, rows, grids). */
+function projectWorkIds(project) {
+  const ids = [];
+  const visit = (value) => {
+    if (Array.isArray(value)) value.forEach(visit);
+    else if (value && typeof value === 'object') {
+      if (typeof value.workId === 'string') ids.push(value.workId);
+      Object.values(value).forEach(visit);
+    }
+  };
+  visit(project);
+  return [...new Set(ids)];
+}
+
+/**
+ * The pictures each page shows, for the image sitemap (so image search finds work that the page draws with
+ * JavaScript): the gallery shows every visible work, a series page its works, a project page its figures.
+ * Returns Map(file -> [image path]), the largest file of each picture.
+ */
+function pageImages({ works, series, projects }) {
+  const byId = new Map(works.map((work) => [work.id, work]));
+  const paths = (list) => list.filter(Boolean).map((work) => largestUrl(work));
+  const images = new Map([['gallery.html', paths(works.filter((work) => !work.hidden))]]);
+  series.forEach((entry) => images.set(pageFile(seriesPage(entry.id)), paths(worksInSeries(entry, works))));
+  projects.forEach((project) => images.set(pageFile(projectPage(project.id)), paths(projectWorkIds(project).map((id) => byId.get(id)))));
+  return images;
+}
+
+/**
+ * sitemap.xml: every listed page at its clean address, with the date its content last changed (`lastmod`,
+ * file -> YYYY-MM-DD) and the pictures it shows (`images`, file -> [path]), when known.
+ */
+function sitemap(site, files, { lastmod = {}, images = new Map() } = {}) {
+  const urls = files.map((file) => {
+    const lines = [`    <loc>${xmlText(site.url + (file === 'index.html' ? '' : pageHref(file)))}</loc>`];
+    if (lastmod[file]) lines.push(`    <lastmod>${lastmod[file]}</lastmod>`);
+    (images.get(file) || []).forEach((image) => lines.push(`    <image:image><image:loc>${xmlText(site.url + image)}</image:loc></image:image>`));
+    return ['  <url>', ...lines, '  </url>'].join('\n');
+  });
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+    ...urls,
+    '</urlset>',
+    '',
+  ].join('\n');
 }
 
 function robots(site) {
@@ -192,4 +237,4 @@ function llms(site, { projects, series }) {
   ].join('\n');
 }
 
-module.exports = { ARTIST, snippet, pageTitle, projectPageSource, seriesPageSource, homeJsonLd, workJsonLd, sitemap, robots, llms };
+module.exports = { ARTIST, snippet, pageTitle, projectPageSource, seriesPageSource, homeJsonLd, workJsonLd, projectWorkIds, pageImages, sitemap, robots, llms };
