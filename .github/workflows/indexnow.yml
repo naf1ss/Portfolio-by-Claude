@@ -3,8 +3,10 @@
 name: Notify search engines
 
 on:
+  # GitHub Pages marks its deployment successful once the site is live.
+  deployment_status:
   workflow_run:
-    workflows: [pages build and deployment]
+    workflows: [pages-build-deployment, pages build and deployment]
     types: [completed]
   workflow_dispatch:
     inputs:
@@ -23,13 +25,16 @@ concurrency:
 
 jobs:
   indexnow:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success' ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha || github.event.deployment.sha || github.sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -40,16 +45,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SEND_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.all }}
-          DEPLOY_PATH: ${{ github.event.workflow_run.path }}
-          DEPLOY_NUMBER: ${{ github.event.workflow_run.run_number }}
+          DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha || github.event.deployment.sha || github.sha }}
         run: |
           if [ "$SEND_ALL" = "true" ]; then
             node tools/indexnow.js --all
             exit 0
           fi
-          # The commit of the newest successful deploy older than this one.
+          # The commit of the newest successful Pages deploy of another commit (runs are listed newest first).
           previous=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=success&per_page=50" --jq \
-            "[.workflow_runs[] | select(.path == \"$DEPLOY_PATH\" and .run_number < $DEPLOY_NUMBER)][0].head_sha // empty")
+            "[.workflow_runs[] | select(.path == \"dynamic/pages/pages-build-deployment\" and .head_sha != \"$DEPLOYED_SHA\")][0].head_sha // empty")
           if [ -n "$previous" ] && git cat-file -e "${previous}^{commit}" 2>/dev/null; then
             node tools/indexnow.js --since "$previous"
           else
