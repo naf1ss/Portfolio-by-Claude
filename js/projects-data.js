@@ -227,7 +227,7 @@
             type: 'text',
             paragraphs: [
               'The website was not in the original plan; it grew out of the walk itself. A walk this long needs something to keep visitors going from one station to the next.',
-              'The site opens on the solar system itself: scrolling carries the visitor through the Milky Way to the Sun and its planets, and choosing any world opens its page, with the planet, a few facts and where its marker sits on campus.',
+              'The site opens in deep space under its title: scrolling carries the visitor through the Milky Way to the Sun and its planets, and choosing any world opens its page, with the planet, a few facts and where its marker sits on campus.',
             ],
           },
           { type: 'figure', workId: 'pw-site-solar', caption: 'The home page: the solar system in 3D. Choosing a world opens its page.' },
@@ -244,6 +244,7 @@
               { workId: 'pw-site-tracker', caption: 'The walk tracker on a phone, partway along the walk' },
             ],
           },
+          { type: 'figure', workId: 'pw-site-map', caption: 'The map: the route from the Planetarium to the Observatory, with all eleven stops.' },
           { type: 'link', text: 'Open the Planet Walk website', url: 'https://planet-walk.vercel.app/' },
         ],
       },
