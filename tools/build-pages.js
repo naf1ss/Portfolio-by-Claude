@@ -127,7 +127,7 @@ function build() {
   const redirects = (parts.site.redirects || []).map(({ from, to }) => {
     if (pageFiles.has(from)) throw new Error(`redirects: ${from} is also a page.`);
     if (!pageFiles.has(pageFile(to))) throw new Error(`redirects: ${from} points to ${to}, which is not a page.`);
-    return { file: from, html: renderRedirect(to) };
+    return { file: from, html: renderRedirect(to, `${parts.site.url}${to}`) };
   });
 
   // Search engines: every public page except the 404 page and the redirects.

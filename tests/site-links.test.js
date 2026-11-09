@@ -66,3 +66,11 @@ test('the local server finds files as GitHub Pages does, and never outside the s
   assert.equal(resolveFile(ROOT, '/no-such-page'), null);
   assert.equal(resolveFile(ROOT, '/%2e%2e/%2e%2e/etc/passwd'), null);
 });
+
+test('a built redirect page names its new address in full and does not also say noindex', () => {
+  ['work.html', 'about.html'].forEach((file) => {
+    const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    assert.match(html, /<link rel="canonical" href="https:\/\/nuancesbynafis\.com\/[a-z-]+">/, file);
+    assert.doesNotMatch(html, /noindex/, file);
+  });
+});

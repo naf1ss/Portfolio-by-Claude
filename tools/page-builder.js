@@ -113,7 +113,12 @@ function renderFontPreloads(fonts) {
  * A tiny page that sends visitors from an address that used to exist to its new one,
  * keeping any ?query and #fragment (a script does that; the meta refresh is the fallback).
  */
-function renderRedirect(target) {
+/**
+ * A page left at an old address that sends visitors on to `target`. Search engines read the instant refresh as a
+ * permanent redirect; the canonical link names the new address in full (`canonicalUrl`), and there is no
+ * "noindex", which would contradict it.
+ */
+function renderRedirect(target, canonicalUrl = target) {
   const href = escapeAttribute(target);
   return [
     '<!doctype html>',
@@ -121,8 +126,7 @@ function renderRedirect(target) {
     '<head>',
     '  <meta charset="utf-8">',
     '  <title>Moved \u2014 nuances by nafis</title>',
-    '  <meta name="robots" content="noindex">',
-    `  <link rel="canonical" href="${href}">`,
+    `  <link rel="canonical" href="${escapeAttribute(canonicalUrl)}">`,
     `  <meta http-equiv="refresh" content="0; url=${href}">`,
     `  <script>location.replace(${JSON.stringify(target).replace(/</g, '\\u003c')} + location.search + location.hash);</script>`,
     '</head>',
