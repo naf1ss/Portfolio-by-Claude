@@ -27,7 +27,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=9543de79">
+  <link rel="stylesheet" href="css/styles.css?v=c0eb99ac">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=1b99e41c"></script>
   <script src="js/site-menu.js?v=fea090eb"></script>
@@ -38,14 +38,14 @@
   <script src="js/works-data.js?v=59a9f21c" defer></script>
   <script src="js/works-photography.js?v=4e357e49" defer></script>
   <script src="js/photo-brightness.js?v=f5447711" defer></script>
+  <script src="js/projects-data.js?v=1929b6e9" defer></script>
   <script src="js/painted-text.js?v=652abef6" defer></script>
-  <script src="js/site-config.js?v=762db8f9" defer></script>
-  <script src="js/hero-window-utils.js?v=71388292" defer></script>
-  <script src="js/hero-window.js?v=4d3dee85" defer></script>
+  <script src="js/site-config.js?v=29d19cb7" defer></script>
   <script src="js/gallery.js?v=fdde54ed" defer></script>
+  <script src="js/home-reveal.js?v=ef6ec69d" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
   <script src="js/hints.js?v=9e5ddd6b" defer></script>
-  <script src="js/pages.js?v=774e2dee" defer></script>
+  <script src="js/pages.js?v=2e95839c" defer></script>
   <script src="js/interactions.js?v=eab1e99c" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -106,52 +106,47 @@
   </header>
 
   <main id="main">
-    <section class="hero" aria-labelledby="hero-title" data-hero>
-      <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
-      <h1 class="hero__title visually-hidden" id="hero-title">nuances by nafis</h1>
-      <div class="hero__stage" data-hero-stage>
-        <noscript>
-          <p class="hero__fallback">nuances<span class="hero__dot">.</span><span class="hero__by">by nafis</span></p>
-        </noscript>
+    <!-- The opening: a painting seen through "nuances", which the page flies into as you scroll (js/home-reveal.js). -->
+    <section class="opening" id="opening" aria-labelledby="opening-title">
+      <div class="opening__stage">
+        <img class="opening__art" alt="" decoding="async" data-opening-art>
+        <svg class="opening__paper" aria-hidden="true" data-opening-paper></svg>
+        <div class="opening__trails" aria-hidden="true" data-opening-trails></div>
+        <h1 class="visually-hidden" id="opening-title">nuances by nafis</h1>
+        <div class="opening__words">
+          <p class="opening__intro">Multidisciplinary artist. Painting, printmaking, ceramics, photography and interdisciplinary projects.</p>
+          <div class="opening__actions">
+            <a class="button button--solid" href="#works">Explore my work</a>
+            <span class="opening__cue" aria-hidden="true">Scroll <span>&darr;</span></span>
+          </div>
+        </div>
+        <p class="opening__fact" data-opening-fact>Fun fact: I am ambidextrous. For now, so is your cursor.</p>
+        <p class="opening__caption" data-opening-caption>
+          <span class="opening__caption-title"></span>
+          <span class="opening__caption-facts"></span>
+        </p>
       </div>
-      <div class="hero__foot">
-        <p class="hero__lede">Fun fact: I am ambidextrous.</p>
-        <div class="hero__actions">
-          <a class="button button--solid" href="gallery">Explore</a>
+    </section>
+
+    <section class="wrap section features" id="works" aria-labelledby="works-heading">
+      <div class="section__head">
+        <h2 class="eyebrow" id="works-heading">Selected work</h2>
+        <a class="text-link" href="gallery">All work &rarr;</a>
+      </div>
+      <div class="features__list" data-features></div>
+    </section>
+
+    <section class="project-feature" aria-labelledby="project-feature-title">
+      <div class="wrap project-feature__inner">
+        <p class="eyebrow">Interdisciplinary project</p>
+        <div class="project-feature__media unfold" data-arrive="unfold" data-project-media></div>
+        <div class="project-feature__text">
+          <p class="project-feature__kicker" data-project-kicker></p>
+          <h2 class="project-feature__title" id="project-feature-title" data-project-title></h2>
+          <p class="project-feature__summary" data-project-summary></p>
+          <a class="button button--solid" data-project-link href="projects">Read the project</a>
         </div>
       </div>
-      <p class="hero__credit">
-        <span class="hero__count" data-hero-count>01 / 01</span>
-        <a class="hero__title-link" data-hero-title href="gallery">Selected work</a>
-        <button class="hero__next" type="button" data-hero-next aria-label="Show the next work">Next &rarr;</button>
-      </p>
-    </section>
-
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee__track">
-        <ul class="marquee__group">
-          <li>Painting</li><li>Ceramics</li><li>Prints</li><li>Photography</li><li>Digital</li><li>Graphic design</li><li>Drawing</li>
-        </ul>
-        <ul class="marquee__group">
-          <li>Painting</li><li>Ceramics</li><li>Prints</li><li>Photography</li><li>Digital</li><li>Graphic design</li><li>Drawing</li>
-        </ul>
-      </div>
-    </div>
-
-    <section class="wrap section" id="latest-section" aria-labelledby="latest-heading">
-      <div class="section__head" data-reveal-on-load>
-        <h2 class="eyebrow" id="latest-heading">Latest work</h2>
-        <a class="text-link" href="gallery">All work &rarr;</a>
-      </div>
-      <div class="latest" id="latest"></div>
-    </section>
-
-    <section class="wrap section" id="selected-section" aria-labelledby="selected-heading" hidden>
-      <div class="section__head" data-reveal-on-load>
-        <h2 class="eyebrow" id="selected-heading">Selected work</h2>
-        <a class="text-link" href="gallery">All work &rarr;</a>
-      </div>
-      <ul class="gallery" id="selected"></ul>
     </section>
 
     <section class="wrap section" aria-labelledby="mediums-heading">

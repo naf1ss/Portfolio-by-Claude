@@ -63,16 +63,32 @@
 
   function initHome() {
     const { U, all, byId } = loadWorks();
-    const hrefFor = (work) => `gallery${U.hashForWork(work)}`;
+    const home = config.home || {};
+    const visible = all.filter((work) => !work.hidden);
+    const project = (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === home.projectId);
 
-    const latest = byId.get(config.latestId);
-    const latestSection = document.getElementById('latest-section');
-    if (latest) {
-      window.Gallery.renderLatest(document.getElementById('latest'), latest, { href: hrefFor(latest) });
-      // The page takes on the painting's colour while it holds the screen (js/scroll-scenes.js).
-      latestSection.dataset.wash = '';
-      latestSection.dataset.washSrc = U.imageUrl(latest, 600);
-    } else latestSection.hidden = true;
+    window.HomeReveal.mount(
+      {
+        opening: document.getElementById('opening'),
+        features: document.getElementById('works'),
+        project: document.querySelector('.project-feature'),
+      },
+      {
+        U,
+        heroWork: byId.get(home.heroId || config.latestId),
+        featureWorks: (home.features || [])
+          .map(({ id, reveal }) => ({ work: byId.get(id), reveal }))
+          .filter(({ work }) => work),
+        // The two hands: paintings under the cursor, photographs under its mirror image.
+        trailWorks: {
+          paintings: U.pickRandom(visible.filter((work) => work.category === 'painting'), 14),
+          photographs: U.pickRandom(visible.filter((work) => work.category === 'photography'), 14),
+        },
+        projectData: project,
+        projectCover: project ? byId.get(project.cover) : null,
+        hrefFor: (work) => `gallery${U.hashForWork(work)}`,
+      }
+    );
 
     // Each medium's row shows one of its works: the chosen best on a first visit, a random one after that.
     const picks = U.pickMediumWorks(all, config.mediumPicks || [], { showBest: isFirstHomeVisit() });
@@ -84,15 +100,6 @@
       { counts, pickFor: (id) => pickByCategory.get(id) || null }
     );
 
-    // Selected work: a hand-picked grid after the latest work; each picture opens in the gallery's close-up.
-    const selected = (config.selectedIds || []).map((id) => byId.get(id)).filter(Boolean);
-    if (selected.length) {
-      document.getElementById('selected-section').hidden = false;
-      // Each selected work stands on its own here, even one that shares a tile with its set in the gallery.
-      window.Gallery.renderGallery(document.getElementById('selected'), selected, { hrefFor, eagerCount: 0, groupSets: false });
-    }
-
-    window.Motion.reveal(document.querySelectorAll('#latest > *'));
     window.Motion.reveal(document.querySelectorAll('#medium-list li'));
 
     // First visit: point out the window in the header. On phones it lives in the menu.
