@@ -3,10 +3,12 @@
  *
  *   HomeReveal.mount({ opening, features, project }, { heroWork, featureWorks, trailWorks, project, hrefFor, U })
  *
- * The opening: "nuances" is cut out of the page, and a painting shows through the letters. Scrolling flies the
- * page into one of the letters until the painting fills the screen. Before you scroll, moving the cursor leaves
- * two trails, one of paintings where the cursor is and one of photographs where its mirror image would be: two
- * hands at work, the way the artist is ambidextrous.
+ * The opening: "nuances" is cut out of the page. At rest the letters hold a solid colour; a painting waits behind
+ * it. The page has thickness: each letter is a short tunnel whose walls are seen in perspective from wherever the cursor is, and
+ * the view drifts by itself when the cursor rests. Scrolling lifts the colour and flies the page into one of the
+ * letters until the painting fills the screen. Before you scroll, moving the cursor also leaves two trails, one of paintings where
+ * the cursor is and one of photographs where its mirror image would be: two hands at work, the way the artist is
+ * ambidextrous.
  *
  * The featured works below each arrive in their own way as they scroll into view (data-arrive on the article):
  * paint spreads, a photograph develops, a ceramic piece turns to face you, and the interdisciplinary project
@@ -22,6 +24,18 @@
   const TRAIL_STEP = 90; // px of cursor travel between pictures in the trails
   const TRAIL_LIFE_MS = 1100;
   const UNFOLD_SLICES = 8;
+  const SCRIPT_FACE = 'Pinyon Script'; // the "by nafis" signature
+
+  // The depth of the cut letters. Each wall layer is the word shrunk a little further toward the viewpoint, which
+  // is how the far end of a tunnel looks; stacked from deep to shallow they shade the inside of each letter.
+  const WALL_LAYERS = 6;
+  const DEPTH = 0.034; // how much smaller the far end of a letter is than its face
+  const PRESS_DEPTH = 0.03; // extra depth while the pointer is held down
+  const LIFT = 0.012; // the dot and the signature float this far above the page
+  const REACH = { x: 0.42, y: 0.6 }; // how far the viewpoint follows the cursor, as a share of its distance from the word
+  const VIEW_EASE = 0.085; // share of the remaining distance the viewpoint covers each frame
+  const POINTER_REST_MS = 2600; // after this long without moving, the view drifts by itself again
+  const EMERGE_MS = 1500; // the depth grows from flat when the page opens
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
@@ -85,35 +99,56 @@
       paper.setAttribute('viewBox', `0 0 ${width} ${height}`);
       paper.replaceChildren();
 
-      const fontSize = Math.min((width * 0.86) / 3.55, height * 0.36); // Bodoni's "nuances" is about 3.55 em wide
+      const fontSize = Math.min((width * 0.88) / 3.83, height * 0.36); // Bodoni's "nuances." is about 3.83 em wide
       const font = `500 ${fontSize}px 'Bodoni Moda'`;
       const measure = document.createElement('canvas').getContext('2d');
       measure.font = font;
       const wordWidth = measure.measureText(WORD).width;
-      const left = (width - wordWidth) / 2;
+      const left = (width - wordWidth - measure.measureText('.').width) / 2; // the dot counts toward the centring
       const baseline = height * 0.47 + fontSize * 0.28;
 
-      const mask = svgElement('mask', { id: 'opening-cut', maskUnits: 'userSpaceOnUse', x: -width, y: -height, width: width * 3, height: height * 3 });
-      mask.append(
-        svgElement('rect', { x: -width, y: -height, width: width * 3, height: height * 3, fill: '#fff' }),
-        svgElement('text', { x: left, y: baseline, fill: '#000', 'font-family': 'Bodoni Moda', 'font-weight': 500, 'font-size': fontSize }, WORD)
-      );
+      const wordAttributes = { x: left, y: baseline, fill: '#000', 'font-family': 'Bodoni Moda', 'font-weight': 500, 'font-size': fontSize };
+      const everywhere = { x: -width, y: -height, width: width * 3, height: height * 3 };
+      // The walls only ever show through the letters, so their layers cover the word's box, not the whole page.
+      const pad = fontSize * 0.2;
+      const wordBox = { x: left - pad, y: baseline - fontSize - pad, width: wordWidth + pad * 2, height: fontSize * 1.3 + pad * 2 };
+
+      const defs = svgElement('defs');
+      const mask = svgElement('mask', { id: 'opening-cut', maskUnits: 'userSpaceOnUse', ...everywhere });
+      mask.append(svgElement('rect', { ...everywhere, fill: '#fff' }), svgElement('text', wordAttributes, WORD));
+      defs.append(mask);
+
       const group = svgElement('g', { class: 'opening__flight' });
-      group.append(
-        svgElement('rect', { class: 'opening__page', x: -width, y: -height, width: width * 3, height: height * 3, mask: 'url(#opening-cut)' }),
+      const walls = svgElement('g', { class: 'opening__walls' });
+      const wallWords = [];
+      for (let layer = WALL_LAYERS; layer >= 1; layer -= 1) { // deepest first, so shallower layers lie over it
+        const wallMask = svgElement('mask', { id: `opening-wall-${layer}`, maskUnits: 'userSpaceOnUse', ...wordBox });
+        const word = svgElement('text', wordAttributes, WORD);
+        wallMask.append(svgElement('rect', { ...wordBox, fill: '#fff' }), word);
+        defs.append(wallMask);
+        const wall = svgElement('rect', { class: 'opening__wall', ...wordBox, mask: `url(#opening-wall-${layer})` });
+        wall.style.setProperty('--deep', (layer / WALL_LAYERS).toFixed(3));
+        walls.append(wall);
+        wallWords.push({ word, share: layer / WALL_LAYERS });
+      }
+
+      const scriptSize = fontSize * 0.46;
+      const lifted = svgElement('g', { class: 'opening__lift' });
+      lifted.append(
         svgElement('text', { class: 'opening__dot', x: left + wordWidth, y: baseline, 'font-family': 'Bodoni Moda', 'font-weight': 500, 'font-size': fontSize }, '.'),
         svgElement('text', {
           class: 'opening__script',
           x: left + wordWidth,
-          y: baseline + fontSize * 0.42,
+          y: baseline + scriptSize * 0.98,
           'text-anchor': 'end',
-          'font-family': 'Kaushan Script',
-          'font-size': fontSize * 0.34,
-          transform: `rotate(-3 ${left + wordWidth} ${baseline + fontSize * 0.42})`,
+          'font-family': SCRIPT_FACE,
+          'font-size': scriptSize,
         }, 'by nafis')
       );
-      paper.append(svgElement('defs', {}, null), group);
-      paper.firstChild.append(mask);
+      // The letters rest in a solid colour; this veil lifts as the flight begins, and the painting is behind it.
+      const veil = svgElement('rect', { class: 'opening__veil', ...wordBox });
+      group.append(veil, walls, svgElement('rect', { class: 'opening__page', ...everywhere, mask: 'url(#opening-cut)' }), lifted);
+      paper.append(defs, group);
 
       const stroke = thickestStroke(font, fontSize, wordWidth);
       const origin = { x: left + stroke.x, y: baseline - fontSize + stroke.y };
@@ -124,7 +159,83 @@
         Math.hypot(width - origin.x, height - origin.y)
       );
       zoom = { group, origin, endScale: (farthest / Math.max(stroke.half, 2)) * 1.25 };
+      depth.scene = {
+        wallWords,
+        lifted,
+        centre: { x: left + wordWidth / 2, y: baseline - fontSize * 0.3 },
+        drift: { x: wordWidth * 0.3, y: fontSize * 0.5 },
+        width,
+      };
+      if (!depth.view) depth.view = { ...depth.scene.centre };
       update();
+      look();
+    }
+
+    /**
+     * The 3D of the letters. One viewpoint (where the eye is looking from) sets every wall layer: each is the word
+     * scaled toward that point, so letters far from it show more wall, as real cut-outs would. The viewpoint
+     * follows the cursor, drifts when the cursor rests, and squares up to the letter being flown into.
+     */
+    const depth = { scene: null, view: null, pointer: null, pointerAt: 0, pressed: false, press: 0, born: performance.now(), frame: 0 };
+
+    function viewTarget(now, flight) {
+      const { centre, drift } = depth.scene;
+      let target;
+      if (depth.pointer && now - depth.pointerAt < POINTER_REST_MS) {
+        target = { x: centre.x + (depth.pointer.x - centre.x) * REACH.x, y: centre.y + (depth.pointer.y - centre.y) * REACH.y };
+      } else {
+        const t = now / 1000;
+        target = { x: centre.x + Math.cos(t * 0.5) * drift.x, y: centre.y + Math.sin(t * 0.37) * drift.y };
+      }
+      const square = clamp(flight * 5); // flying in: look straight down the letter
+      return { x: target.x + (zoom.origin.x - target.x) * square, y: target.y + (zoom.origin.y - target.y) * square };
+    }
+
+    function look() {
+      const { scene } = depth;
+      if (!scene) return;
+      const now = performance.now();
+      const flight = Number(stage.style.getPropertyValue('--flight')) || 0;
+      if (reduceMotion) {
+        depth.view = { x: scene.centre.x - scene.drift.x * 0.5, y: scene.centre.y - scene.drift.y * 0.6 };
+      } else {
+        const target = viewTarget(now, flight);
+        depth.view.x += (target.x - depth.view.x) * VIEW_EASE;
+        depth.view.y += (target.y - depth.view.y) * VIEW_EASE;
+        depth.press += ((depth.pressed ? 1 : 0) - depth.press) * 0.16;
+      }
+      const emerged = reduceMotion ? 1 : 1 - (1 - clamp((now - depth.born) / EMERGE_MS)) ** 3;
+      const reach = (DEPTH + PRESS_DEPTH * depth.press) * emerged;
+      const { x, y } = depth.view;
+      const about = (scale) => `translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${scale.toFixed(5)}) translate(${(-x).toFixed(2)} ${(-y).toFixed(2)})`;
+      scene.wallWords.forEach(({ word, share }) => word.setAttribute('transform', about(1 - reach * share)));
+      scene.lifted.setAttribute('transform', about(1 + LIFT * emerged));
+      // The painting lies deepest, so it shifts the other way a little.
+      stage.style.setProperty('--look-x', (((scene.centre.x - x) / scene.width) * 100 * 0.05).toFixed(3));
+      stage.style.setProperty('--look-y', (((scene.centre.y - y) / scene.width) * 100 * 0.05).toFixed(3));
+    }
+
+    /** Runs the view while the letters are on screen; rests once the flight is through them. */
+    function watch() {
+      if (depth.frame || reduceMotion) return;
+      const tick = () => {
+        depth.frame = 0;
+        look();
+        if (!stage.classList.contains('is-through') && !document.hidden) depth.frame = requestAnimationFrame(tick);
+      };
+      depth.frame = requestAnimationFrame(tick);
+    }
+
+    if (!reduceMotion) {
+      stage.addEventListener('pointermove', (event) => {
+        if (event.pointerType === 'touch') return; // a finger is scrolling, not pointing
+        const box = stage.getBoundingClientRect();
+        depth.pointer = { x: event.clientX - box.left, y: event.clientY - box.top };
+        depth.pointerAt = performance.now();
+      });
+      stage.addEventListener('pointerdown', () => { depth.pressed = true; });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach((type) => stage.addEventListener(type, () => { depth.pressed = false; }));
+      document.addEventListener('visibilitychange', watch);
     }
 
     /** How far through the opening the page has scrolled, 0 to 1. */
@@ -144,6 +255,7 @@
       stage.style.setProperty('--flight', flight.toFixed(3));
       stage.classList.toggle('is-through', flight >= 0.98);
       document.documentElement.classList.toggle('is-opening-dark', flight > 0.45);
+      watch();
     }
 
     let frame = 0;
@@ -160,7 +272,7 @@
     });
 
     // The SVG draws its type in the site's faces, so they must be loaded before the word is measured.
-    const faces = ["500 40px 'Bodoni Moda'", "400 40px 'Kaushan Script'"].map((face) => document.fonts.load(face).catch(() => {}));
+    const faces = ["500 40px 'Bodoni Moda'", `400 40px '${SCRIPT_FACE}'`].map((face) => document.fonts.load(face).catch(() => {}));
     Promise.all(faces).then(draw);
 
     if (!reduceMotion) mountTrails(stage, trailWorks, U, () => progress() < 0.04);

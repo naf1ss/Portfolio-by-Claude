@@ -31,6 +31,13 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'Pinyon Script';
+  src: url('../fonts/pinyon-script-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Kaushan Script';
   src: url('../fonts/kaushan-script-latin-400-normal.woff2') format('woff2');
   font-weight: 400;
@@ -7674,6 +7681,8 @@ body[data-page='home'] .site-header {
   height: 100%;
   object-fit: cover;
   scale: calc(1.18 - 0.18 * var(--flight));
+  /* The painting is the deepest layer, so it slides a little against the viewpoint (--look-*, set by the script). */
+  translate: calc(var(--look-x, 0) * (1 - var(--flight)) * 1%) calc(var(--look-y, 0) * (1 - var(--flight)) * 1%);
 }
 
 .opening__paper {
@@ -7686,6 +7695,29 @@ body[data-page='home'] .site-header {
 
 .opening__page {
   fill: var(--paper);
+}
+
+/* The solid colour the letters rest in. It clears early in the flight, so the painting is found by scrolling. */
+.opening__veil {
+  fill: var(--ink);
+  opacity: calc(1.2 - var(--flight) * 4);
+}
+
+/* The inside walls of the cut letters: the deeper the layer (--deep, 0 to 1), the more it falls into shadow.
+   On the dark page they catch the light instead, or they would vanish into it. */
+.opening__wall {
+  fill: color-mix(in oklab, var(--paper), #1a1d24 calc(14% + var(--deep) * 62%));
+  fill: color-mix(in oklab, var(--paper), light-dark(#1a1d24, #9aa1ad) calc(14% + var(--deep) * 62%));
+}
+
+/* Up close the shading would show its steps, so the walls thin out as the flight carries you through them. */
+.opening__walls {
+  opacity: calc(1 - var(--flight) * 3);
+}
+
+/* The dot and the signature float just above the page. */
+.opening__lift {
+  filter: drop-shadow(0 0.3rem 0.45rem rgb(0 0 0 / 0.16));
 }
 
 .opening__dot,
