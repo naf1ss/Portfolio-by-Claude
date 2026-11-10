@@ -44,6 +44,7 @@
     {"file": "hero-window-utils"},
     {"file": "hero-window"},
     {"file": "gallery"},
+    {"file": "home-reveal", "requires": ["works-utils"]},
     {"file": "medium-picker", "requires": ["works-utils"]},
     {"file": "series-story", "requires": ["works-utils"]},
     {"file": "justify"},

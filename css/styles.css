@@ -31,6 +31,13 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'Pinyon Script';
+  src: url('../fonts/pinyon-script-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Kaushan Script';
   src: url('../fonts/kaushan-script-latin-400-normal.woff2') format('woff2');
   font-weight: 400;
@@ -7638,5 +7645,431 @@ body {
   .ledger-row[data-draw]::before,
   .has-wash body {
     transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Home: the opening (js/home-reveal.js)
+   "nuances" is cut out of the page with a painting behind it; scrolling flies into one letter until the painting
+   fills the screen. The section is tall; its stage holds the screen while the flight lasts.
+   --------------------------------------------------------------------------- */
+
+body[data-page='home'] .site-header {
+  position: relative;
+  z-index: 5;
+}
+
+.opening {
+  position: relative;
+  height: 260svh;
+  margin-top: calc(-1 * var(--header-h, 5.5rem)); /* the stage starts under the header, so the first screen is whole */
+}
+
+.opening__stage {
+  --flight: 0;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.opening__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  scale: calc(1.18 - 0.18 * var(--flight));
+  /* The painting is the deepest layer, so it slides a little against the viewpoint (--look-*, set by the script). */
+  translate: calc(var(--look-x, 0) * (1 - var(--flight)) * 1%) calc(var(--look-y, 0) * (1 - var(--flight)) * 1%);
+}
+
+.opening__paper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.opening__page {
+  fill: var(--paper);
+}
+
+/* The solid colour the letters rest in. It clears early in the flight, so the painting is found by scrolling. */
+.opening__veil {
+  fill: var(--ink);
+  opacity: calc(1.2 - var(--flight) * 4);
+}
+
+/* The inside walls of the cut letters: the deeper the layer (--deep, 0 to 1), the more it falls into shadow.
+   On the dark page they catch the light instead, or they would vanish into it. */
+.opening__wall {
+  fill: color-mix(in oklab, var(--paper), #1a1d24 calc(14% + var(--deep) * 62%));
+  fill: color-mix(in oklab, var(--paper), light-dark(#1a1d24, #9aa1ad) calc(14% + var(--deep) * 62%));
+}
+
+/* Up close the shading would show its steps, so the walls thin out as the flight carries you through them. */
+.opening__walls {
+  opacity: calc(1 - var(--flight) * 3);
+}
+
+/* The dot and the signature float just above the page. */
+.opening__lift {
+  filter: drop-shadow(0 0.3rem 0.45rem rgb(0 0 0 / 0.16));
+}
+
+.opening__dot,
+.opening__script {
+  fill: var(--accent);
+}
+
+/* The word's companions leave as the flight begins. */
+.opening__dot,
+.opening__script,
+.opening__words,
+.opening__fact {
+  opacity: calc(1 - var(--flight) * 5);
+}
+
+.opening__words {
+  position: absolute;
+  z-index: 3;
+  left: var(--edge);
+  right: var(--edge);
+  bottom: clamp(1.6rem, 5vh, 3.2rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem 2rem;
+}
+
+.opening__stage,
+.opening__words {
+  --edge: max(var(--gutter), calc((100% - var(--page-max)) / 2 + var(--gutter)));
+}
+
+.opening__intro {
+  max-width: 34rem;
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: clamp(1.15rem, 1rem + 0.5vw, 1.45rem);
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.opening__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.opening__cue {
+  font: 600 0.74rem/1 var(--font-text);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.opening__cue span {
+  display: inline-block;
+  margin-left: 0.3rem;
+  animation: opening-cue 1.8s ease-in-out infinite;
+}
+
+@keyframes opening-cue {
+  50% {
+    translate: 0 0.3rem;
+  }
+}
+
+/* The fun fact turns up once the cursor starts leaving its two trails. */
+.opening__fact {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--header-h, 5.5rem) + 0.5rem);
+  left: 50%;
+  margin: 0;
+  translate: -50% -0.4rem;
+  font-family: var(--font-prose);
+  font-size: 1.05rem;
+  font-style: italic;
+  white-space: nowrap;
+  visibility: hidden;
+}
+
+.opening__fact.is-shown {
+  visibility: visible;
+  translate: -50% 0;
+  transition: translate 0.5s ease;
+}
+
+.opening__trails {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.trail {
+  position: absolute;
+  width: clamp(5.5rem, 8vw, 8rem);
+  height: auto;
+  translate: -50% -50%;
+  rotate: var(--tilt);
+  box-shadow: 0 0.8rem 1.6rem -0.6rem rgb(0 0 0 / 0.45);
+  animation: trail 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes trail {
+  0% {
+    opacity: 0;
+    scale: 0.4;
+  }
+
+  18% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+/* At the end of the flight the painting is the screen; its title arrives at the foot. */
+.opening__caption {
+  position: absolute;
+  z-index: 3;
+  left: var(--edge);
+  bottom: clamp(1.6rem, 5vh, 3.2rem);
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  background: rgb(0 0 0 / 0.42);
+  color: #f4f1ea;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  translate: 0 0.8rem;
+  transition: opacity 0.5s ease, translate 0.5s ease;
+}
+
+.opening__stage.is-through .opening__caption {
+  opacity: 1;
+  translate: none;
+}
+
+.opening__caption-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+  line-height: 1.05;
+}
+
+.opening__caption-facts {
+  font-size: 0.88rem;
+  opacity: 0.85;
+}
+
+/* Over the painting, the header's words turn light. */
+html.is-opening-dark:not(.is-menu-open) body[data-page='home'] .site-header {
+  --ink: #f4f1ea;
+  color: #f4f1ea;
+}
+
+/* ---------------------------------------------------------------------------
+   Home: featured works, each arriving in its own way. --p runs from 0 (entering) to 1 (settled).
+   --------------------------------------------------------------------------- */
+
+.features__list {
+  display: grid;
+  gap: clamp(5rem, 12vw, 10rem);
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+
+.feature {
+  --p: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 4rem);
+}
+
+.feature--flip {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+}
+
+.feature--flip .feature__media {
+  order: 2;
+}
+
+.feature__media {
+  display: grid;
+  place-items: center;
+  perspective: 1400px;
+}
+
+.feature__media img {
+  width: 100%;
+  max-height: 78svh;
+  object-fit: contain;
+}
+
+.feature__text {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  opacity: var(--p);
+  translate: 0 calc((1 - var(--p)) * 1.5rem);
+}
+
+.feature__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.3rem + 2.4vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.feature__facts {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* Paint spreads: three blots open out from different places at different speeds. */
+.feature--paint img {
+  --blot: calc(var(--p) * 95%);
+  -webkit-mask-image:
+    radial-gradient(circle at 24% 30%, #000 calc(var(--blot) * 0.9), transparent calc(var(--blot) * 0.9 + 8%)),
+    radial-gradient(circle at 74% 62%, #000 calc(var(--blot) * 0.75), transparent calc(var(--blot) * 0.75 + 10%)),
+    radial-gradient(circle at 46% 92%, #000 calc(var(--blot) * 0.65), transparent calc(var(--blot) * 0.65 + 12%));
+  mask-image:
+    radial-gradient(circle at 24% 30%, #000 calc(var(--blot) * 0.9), transparent calc(var(--blot) * 0.9 + 8%)),
+    radial-gradient(circle at 74% 62%, #000 calc(var(--blot) * 0.75), transparent calc(var(--blot) * 0.75 + 10%)),
+    radial-gradient(circle at 46% 92%, #000 calc(var(--blot) * 0.65), transparent calc(var(--blot) * 0.65 + 12%));
+}
+
+/* A photograph develops: from a pale, soft, colourless print to the full image. */
+.feature--develop img {
+  filter: grayscale(calc(1 - var(--p))) sepia(calc((1 - var(--p)) * 0.5)) brightness(calc(2.3 - 1.3 * var(--p)))
+    contrast(calc(0.35 + 0.65 * var(--p))) blur(calc((1 - var(--p)) * 5px));
+}
+
+/* An object turns to face you. */
+.feature--turn img {
+  transform: rotateY(calc((1 - var(--p)) * -62deg)) rotateX(calc((1 - var(--p)) * 10deg)) scale(calc(0.78 + 0.22 * var(--p)));
+  opacity: calc(0.2 + 0.8 * var(--p));
+}
+
+/* ---------------------------------------------------------------------------
+   Home: the interdisciplinary project, its panorama unfolding like a folded screen.
+   --------------------------------------------------------------------------- */
+
+.project-feature {
+  margin-top: clamp(5rem, 12vw, 9rem);
+  padding-block: clamp(4rem, 9vw, 7rem);
+  background: #111215;
+  color: #f1ece1;
+}
+
+.project-feature__inner {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.project-feature .eyebrow {
+  color: #b5bccb;
+}
+
+.unfold {
+  --p: 1;
+  display: flex;
+  width: 100%;
+  perspective: 1600px;
+}
+
+.unfold__slice {
+  flex: 1;
+  background-repeat: no-repeat;
+  /* home-reveal.js sets each panel's hinge and --fold (1 or -1), so neighbours fold opposite ways. */
+  transform: rotateY(calc((1 - var(--p)) * 80deg * var(--fold, 1)));
+  filter: brightness(calc(0.55 + 0.45 * var(--p)));
+}
+
+.project-feature__text {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 0.8rem clamp(1.5rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.project-feature__kicker {
+  grid-column: 1;
+  margin: 0;
+  color: #b5bccb;
+  font-size: 0.92rem;
+}
+
+.project-feature__title {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 1.4rem + 3vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.project-feature__summary {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+  line-height: 1.5;
+}
+
+.project-feature .button {
+  grid-column: 1;
+  justify-self: start;
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 47.99rem) {
+  .feature,
+  .feature--flip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feature--flip .feature__media {
+    order: 0;
+  }
+
+  .project-feature__text {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .project-feature__summary {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .opening__fact {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening__cue span {
+    animation: none;
   }
 }

@@ -21,6 +21,19 @@ window.SITE_CONFIG = {
   // The big "Latest work" feature on the home page.
   latestId: 'A044',
 
+  // The home page's opening, curated: the painting seen through the letters of "nuances", then a few works from
+  // different disciplines, each arriving in its own way (paint spreads, a photograph develops, an object turns),
+  // then one interdisciplinary project.
+  home: {
+    heroId: 'A044',
+    features: [
+      { id: 'A041', reveal: 'paint' },
+      { id: 'stage-light-img-7025', reveal: 'develop' },
+      { id: 'ceramics-22', reveal: 'turn' },
+    ],
+    projectId: 'digital-moving-mountain',
+  },
+
   // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs
   // and ceramics are shown in their own sections of the gallery; the six Horizon monotypes stay in their series.
   selectedIds: [
