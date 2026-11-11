@@ -466,7 +466,11 @@
         if (previous && previous.classList && previous.classList.contains('rise__mask')) {
           previous.querySelector('.rise__word').append(node);
         } else {
-          node.replaceWith(wrap(node.cloneNode(true)));
+          // Move the element itself, never a copy: other scripts hold on to it (the painted lettering fills
+          // its letters with pictures), and a copy would leave them working on an element no longer shown.
+          const parent = node.parentNode;
+          const next = node.nextSibling;
+          parent.insertBefore(wrap(node), next);
         }
       }
     });
