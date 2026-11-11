@@ -7748,7 +7748,6 @@ body[data-page='home'] .site-header {
   position: absolute;
   left: 0;
   top: 0;
-  backface-visibility: hidden;
 }
 
 .word3d__face {
@@ -7757,8 +7756,15 @@ body[data-page='home'] .site-header {
 }
 
 .word3d__side {
+  color: var(--accent); /* for browsers without color-mix */
   color: color-mix(in oklab, var(--accent), #000 calc(var(--z) * 38%));
   transform: translateZ(calc(var(--z) * var(--depth, 1) * -1 * var(--extrude)));
+}
+
+/* Slower computers (the script sets data-detail when frames run late): first thinner sides, then none. */
+.word3d[data-detail='light'] .word3d__side:nth-child(even),
+.word3d[data-detail='flat'] .word3d__side {
+  display: none;
 }
 
 .word3d__letter--dot .word3d__face {
@@ -7766,6 +7772,7 @@ body[data-page='home'] .site-header {
 }
 
 .word3d__letter--dot .word3d__side {
+  color: var(--accent);
   color: color-mix(in oklab, var(--accent), #000 calc(30% + var(--z) * 30%));
 }
 
@@ -7786,10 +7793,14 @@ body[data-page='home'] .site-header {
   animation-delay: calc(var(--i, 8) * 70ms + 150ms);
 }
 
+/* Opacity is back to 1 early: while a letter is see-through the browser has to flatten its sides. */
 @keyframes word3d-arrive {
   from {
     opacity: 0;
     transform: translate3d(0, 0.18em, -0.5em) rotateY(-68deg);
+  }
+  35% {
+    opacity: 1;
   }
 }
 

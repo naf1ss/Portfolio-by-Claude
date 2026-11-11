@@ -37,6 +37,8 @@
   const SQUARE_BY = 0.06; // share of the flight by which the word has squared up and handed over to the cut page
   const VIEW_EASE = 0.085; // share of the remaining distance the viewpoint covers each frame
   const POINTER_REST_MS = 2600; // after this long without moving, the word sways by itself again
+  // Slower computers: if the word cannot keep this pace it sheds detail (see keepPace).
+  const PACE = { frames: 40, slowMs: 36, settleMs: 2600 }; // 36 ms: slower than the 30 a second some phones cap at to save power
   const COLOUR_GONE = 0.3; // share of the flight by which the letters' colour has lifted off the painting
 
   const TRAIL_STEP = 90; // px of cursor travel between pictures in the trails
@@ -363,13 +365,38 @@
     function viewTarget(now) {
       const { centre, drift } = scene;
       if (state.pointer && now - state.pointerAt < POINTER_REST_MS) return state.pointer;
+      if (pace.level >= 2) return centre; // a computer this slow gets a word that rests when the cursor does
       const t = now / 1000;
       return { x: centre.x + Math.cos(t * 0.5) * drift.x, y: centre.y + Math.sin(t * 0.37) * drift.y };
     }
 
+    /**
+     * Keeps the word smooth on computers that cannot draw it at full detail. Once the letters have arrived, the
+     * time between frames is sampled; if the typical frame is slow the word steps down, first to thinner sides,
+     * then to a flat word that only turns when the cursor moves. It never steps back up, so it cannot flicker.
+     */
+    const pace = { level: 0, since: 0, last: 0, samples: [] };
+    function keepPace(now) {
+      if (pace.level >= 2) return;
+      const gap = now - pace.last;
+      pace.last = now;
+      if (!pace.since) pace.since = now;
+      if (now - pace.since < PACE.settleMs || gap > 250) return; // still arriving, or the tab was away
+      pace.samples.push(gap);
+      if (pace.samples.length < PACE.frames) return;
+      const typical = pace.samples.sort((a, b) => a - b)[PACE.frames >> 1];
+      pace.samples = [];
+      if (typical <= PACE.slowMs) return;
+      pace.level += 1;
+      pace.since = now - PACE.settleMs + 500; // a short pause, then judge the lighter word afresh
+      layers.word.dataset.detail = pace.level === 1 ? 'light' : 'flat';
+    }
+
     /** One frame of the view: ease toward the cursor (or the drift) and turn the word if it would move. */
     function look() {
-      const target = viewTarget(performance.now());
+      const now = performance.now();
+      keepPace(now);
+      const target = viewTarget(now);
       state.view.x += (target.x - state.view.x) * VIEW_EASE;
       state.view.y += (target.y - state.view.y) * VIEW_EASE;
       state.press += ((state.pressed ? 1 : 0) - state.press) * 0.16;
