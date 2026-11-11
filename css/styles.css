@@ -7692,32 +7692,116 @@ body[data-page='home'] .site-header {
   pointer-events: none;
 }
 
-img.opening__layer:not([src]) {
-  visibility: hidden;
-}
-
-/* The inside of the letters: pictures of the word, which the script only ever moves. */
-.opening__letters {
+/* The colour filling the cut-out word once the flight is under way; it lifts off the painting (js/home-reveal.js). */
+.opening__colour {
+  position: absolute;
+  background: var(--ink);
+  pointer-events: none;
   will-change: transform, opacity;
 }
 
-.opening__letters > * {
-  position: absolute;
-  transform-origin: 0 0;
-  will-change: transform;
+/* At rest the page is whole, and the 3D word stands on it. */
+.opening__blank {
+  background: var(--paper);
 }
 
-/* The dot and signature float above the page in a box of their own; the script only moves it.
+/* The dot and signature as a flat picture, standing in for their 3D selves during the flight.
    Its colour is the accent they are drawn in. */
 .opening__lift {
   position: absolute;
   color: var(--accent);
   pointer-events: none;
+  visibility: hidden;
   will-change: transform;
 }
 
-.opening__lift:not([src]) {
-  visibility: hidden;
+/* The word in 3D. Each letter is text with copies of itself stacked behind it (--z: 0 at the face, 1 at the
+   back), which read as its solid side when the word turns. The script turns .word3d__body and sets --depth
+   (1 standing, 0 flattened for the flight) and each letter's --pop (0 to 1, how near the cursor is). */
+.word3d {
+  --extrude: 0.11em;
+  perspective: 1500px;
+  will-change: transform;
+}
+
+.word3d__body {
+  position: absolute;
+  inset: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.word3d__letter {
+  position: absolute;
+  display: block;
+  white-space: pre;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--pop, 0) * var(--depth, 1) * 0.16em));
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.word3d__face,
+.word3d__side {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.word3d__face {
+  position: relative;
+  color: var(--ink);
+}
+
+.word3d__side {
+  color: var(--accent); /* for browsers without color-mix */
+  color: color-mix(in oklab, var(--accent), #000 calc(var(--z) * 38%));
+  transform: translateZ(calc(var(--z) * var(--depth, 1) * -1 * var(--extrude)));
+}
+
+/* Slower computers (the script sets data-detail when frames run late): first thinner sides, then none. */
+.word3d[data-detail='light'] .word3d__side:nth-child(even),
+.word3d[data-detail='flat'] .word3d__side {
+  display: none;
+}
+
+.word3d__letter--dot .word3d__face {
+  color: var(--accent);
+}
+
+.word3d__letter--dot .word3d__side {
+  color: var(--accent);
+  color: color-mix(in oklab, var(--accent), #000 calc(30% + var(--z) * 30%));
+}
+
+.word3d__script {
+  position: absolute;
+  font-family: 'Pinyon Script', cursive;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--accent);
+  transform: translateZ(calc(var(--depth, 1) * 0.1em));
+}
+
+/* Arriving: each letter swings round to face you, one after another. */
+.word3d.is-entering .word3d__letter,
+.word3d.is-entering .word3d__script {
+  animation: word3d-arrive 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: calc(var(--i, 8) * 70ms + 150ms);
+}
+
+/* Opacity is back to 1 early: while a letter is see-through the browser has to flatten its sides. */
+@keyframes word3d-arrive {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.18em, -0.5em) rotateY(-68deg);
+  }
+  35% {
+    opacity: 1;
+  }
 }
 
 /* The word's companions leave as the flight begins (--leave runs 1 to 0, set by the script). */

@@ -3,22 +3,19 @@
  *
  *   HomeReveal.mount({ opening, features, project }, { heroWork, featureWorks, trailWorks, projectData, projectCover, hrefFor, U })
  *
- * The opening: "nuances" is cut out of the page. At rest the letters hold a solid colour; a painting waits behind
- * it. The page has thickness: each letter is a short tunnel whose walls are seen in perspective from wherever the
- * cursor is, and the view drifts by itself when the cursor rests. Scrolling lifts the colour and flies the page
- * into one of the letters until the painting fills the screen. Before you scroll, moving the cursor also leaves
- * two trails, one of paintings where the cursor is and one of photographs where its mirror image would be: two
- * hands at work, the way the artist is ambidextrous.
+ * The opening: "nuances" stands on the page as solid 3D letters. The word turns to face the cursor, the letters
+ * nearest it step forward, and it sways by itself when the cursor rests. Scrolling squares the word up to the
+ * page, where it turns out to be cut clean through: the colour lifts and the page flies into one of the letters
+ * until the painting behind fills the screen. Before you scroll, moving the cursor also leaves two trails, one of
+ * paintings where the cursor is and one of photographs where its mirror image would be: two hands at work, the
+ * way the artist is ambidextrous.
  *
- * How it stays smooth. Nothing is redrawn while the view moves; pictures made once are only moved, which the
- * browser does on the graphics card:
+ * How it stays smooth. Nothing is redrawn while the word moves:
  *
- *   letters  the inside of the letters: pictures of the word stacked from the face of the page to the far end,
- *            each a shade deeper and placed a little nearer the viewpoint. They are made once; moving the view
- *            only re-places them.
- *   paper    the page with the word cut out of it: a picture at rest, and a canvas while the flight zooms it,
- *            redrawn only when the page scrolls (one fill).
- *   lift     a picture of the dot and the signature, made once, then only moved.
+ *   word    real text, each letter with copies of itself stacked behind it as its solid side. The browser draws
+ *           them once; turning the word changes one transform, which the graphics card applies.
+ *   paper   the page with the word cut out of it: a canvas, redrawn only when the page scrolls (one fill).
+ *   lift    a picture of the dot and the signature, made once, for the flight.
  *
  * SVG masks and CSS filters redrawn every frame are what make such a page stutter, least forgivingly in Safari.
  * The featured works below arrive once, as they come into view, using transitions of transform and opacity only,
@@ -33,20 +30,16 @@
   const ZOOM_SHARE = 0.78; // of the opening's scroll spent flying through the letter; the rest rests on the painting
   const MAX_PIXEL_RATIO = 2; // sharper than this costs frames and cannot be seen in motion
 
-  // The depth of the cut letters. Looking into a letter you see its wall, shading from the face of the page down
-  // to the far end. That is drawn as copies of the word, each one shade deeper and shrunk a little further toward
-  // the viewpoint, which is how the far end of a tunnel looks.
-  const WALL_LAYERS = 5; // each is a full layer for the graphics card to blend, so no more than the shading needs
-  const WALL_PICTURE_WIDTH = 1600; // px: the shading is soft, so its pictures need not be sharper than this
-  const DEPTH = 0.034; // how much smaller the far end of a letter is than its face
-  const PRESS_DEPTH = 0.03; // extra depth while the pointer is held down
-  const LIFT = 0.012; // the dot and the signature float this far above the page
-  const REACH = { x: 0.42, y: 0.6 }; // how far the viewpoint follows the cursor, as a share of its distance from the word
+  // The 3D word.
+  const EXTRUDE_LAYERS = 5; // copies behind each letter; together they read as its solid side
+  const TURN = { x: 9, y: 17 }; // degrees the word turns, at most, to face the cursor
+  const PRESS_PX = 40; // how far the word sinks back while the pointer is held down
+  const SQUARE_BY = 0.06; // share of the flight by which the word has squared up and handed over to the cut page
   const VIEW_EASE = 0.085; // share of the remaining distance the viewpoint covers each frame
-  const POINTER_REST_MS = 2600; // after this long without moving, the view drifts by itself again
-  const EMERGE_MS = 1500; // the depth grows from flat when the page opens
+  const POINTER_REST_MS = 2600; // after this long without moving, the word sways by itself again
+  // Slower computers: if the word cannot keep this pace it sheds detail (see keepPace).
+  const PACE = { frames: 40, slowMs: 36, settleMs: 2600 }; // 36 ms: slower than the 30 a second some phones cap at to save power
   const COLOUR_GONE = 0.3; // share of the flight by which the letters' colour has lifted off the painting
-  const WALL_SHADE = { light: [26, 29, 36], dark: [154, 161, 173] }; // what the walls fall toward, per theme
 
   const TRAIL_STEP = 90; // px of cursor travel between pictures in the trails
   const TRAIL_GAP_MS = 80; // and at least this long, so a fast sweep cannot outrun the pool of pictures
@@ -58,8 +51,6 @@
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
   const plain = (text) => String(text || '').replace(/\*/g, '');
 
-  /** "rgb(12, 34, 56)" to [12, 34, 56]. */
-  const channels = (colour) => (colour.match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map(Number);
   /** A canvas as a picture element, ready to show. Unlike a live canvas, a picture costs nothing to keep on screen. */
   function pictureOf(canvas) {
     return new Promise((resolve) => {
@@ -72,10 +63,6 @@
       });
     });
   }
-
-  const release = (pictures) => pictures.forEach((picture) => URL.revokeObjectURL(picture.src));
-
-  const mix = (from, to, share) => `rgb(${from.map((value, i) => Math.round(value + (to[i] - value) * share)).join(' ')})`;
 
   /** Calls back at most once a frame, however often it is asked. */
   function oncePerFrame(callback) {
@@ -119,42 +106,42 @@
     return { x: best.centre, y: row, half: best.half };
   }
 
-  /** The opening: the word cut out of the page, its depth, the flight into it, and the two trails. */
+  /** The opening: the word standing in 3D, the page it is cut from, the flight into it, and the two trails. */
   function mountOpening(section, { heroWork, trailWorks, U }) {
     const stage = section.querySelector('.opening__stage');
     const art = section.querySelector('[data-opening-art]');
     const caption = section.querySelector('[data-opening-caption]');
     const layers = {
-      letters: section.querySelector('[data-opening-letters]'),
+      colour: section.querySelector('[data-opening-colour]'),
       paper: section.querySelector('[data-opening-paper]'),
-      paperAtRest: section.querySelector('[data-opening-paper-rest]'),
+      blank: section.querySelector('[data-opening-blank]'),
+      word: section.querySelector('[data-opening-word]'),
       lift: section.querySelector('[data-opening-lift]'),
     };
     const pen = layers.paper.getContext('2d');
-    let depths = []; // the copies of the word inside the letters: { picture, share of the full depth }
-    const face = document.createElement('div'); // what fills the letters beneath the copies
-    layers.letters.append(face);
+    const body = document.createElement('div'); // the part of the 3D word that turns
+    body.className = 'word3d__body';
+    layers.word.append(body);
+    let letters = []; // the 3D letters, with where each sits: { node, centre }
 
     art.src = U.imageUrl(heroWork, window.innerWidth * (window.devicePixelRatio || 1) > 1400 ? 1800 : 1200);
     art.alt = plain(U.altText(heroWork));
     caption.querySelector('.opening__caption-title').textContent = plain(heroWork.title);
     caption.querySelector('.opening__caption-facts').textContent = U.captionParts(heroWork).meta;
 
-    // Everything measured from the screen: where the word sits, where the flight aims, the colours in force.
+    // Everything measured from the screen: where the word sits and where the flight aims.
     let scene = null;
     const state = {
       flight: -1, // 0 at rest, 1 once the painting fills the screen; -1 until first measured
       scale: 1,
-      view: null, // where the letters are being looked at from
-      placedView: null,
+      view: null, // the point the word turns to face
+      placed: null,
       pointer: null,
       pointerAt: 0,
       pressed: false,
       press: 0,
-      born: Infinity, // when the depth began to grow; set once the letters are built
       onScreen: true,
       frame: 0,
-      paperAtRest: false, // whether the picture of the page is ready to stand in for the canvas
     };
 
     function measure() {
@@ -164,7 +151,7 @@
       layers.paper.width = Math.round(width * ratio);
       layers.paper.height = Math.round(height * ratio);
 
-      const fontSize = Math.min((width * 0.88) / 3.83, height * 0.36); // Bodoni's "nuances." is about 3.83 em wide
+      const fontSize = Math.min((width * 0.84) / 3.83, height * 0.36); // room at the sides for the word to turn; Bodoni's "nuances." is about 3.83 em wide
       const font = `500 ${fontSize}px '${WORD_FACE}'`;
       pen.font = font;
       const wordWidth = pen.measureText(WORD).width;
@@ -180,6 +167,18 @@
         Math.hypot(width - origin.x, height - origin.y)
       );
       const scriptSize = fontSize * 0.46;
+      // Where a line of this type puts its baseline below the top of its box, so letters set as text land
+      // exactly on the word the canvas cuts out of the page.
+      const lineTop = (face, size, y) => {
+        pen.font = `${face.weight} ${size}px '${face.family}'`;
+        const metrics = pen.measureText('n');
+        const ascent = metrics.fontBoundingBoxAscent || size * 0.95;
+        const descent = metrics.fontBoundingBoxDescent || size * 0.3;
+        return y - ascent - (size - ascent - descent) / 2;
+      };
+      const glyphTop = lineTop({ family: WORD_FACE, weight: 500 }, fontSize, baseline);
+      const scriptTop = lineTop({ family: SCRIPT_FACE, weight: 400 }, scriptSize, baseline + scriptSize * 0.98);
+      pen.font = font;
       scene = {
         width,
         height,
@@ -192,164 +191,101 @@
         origin,
         endScale: (farthest / Math.max(stroke.half, 2)) * 1.25,
         centre: { x: left + wordWidth / 2, y: baseline - fontSize * 0.3 },
-        drift: { x: wordWidth * 0.3, y: fontSize * 0.5 },
-        script: { size: scriptSize, x: left + wordWidth, y: baseline + scriptSize * 0.98 },
-        // The letters' box, with room around it for the copies to shift without showing an edge.
+        drift: { x: width * 0.2, y: height * 0.16 },
+        glyphTop,
+        // Each letter's left edge, measured as the width of the word before it, so the spacing is the word's own.
+        lefts: [...`${WORD}.`].map((_, i) => left + pen.measureText(WORD.slice(0, i)).width),
+        script: { size: scriptSize, x: left + wordWidth, y: baseline + scriptSize * 0.98, top: scriptTop },
+        // The letters' box, with a margin: the colour that fills the cut-out word during the flight.
         box: { x: left - fontSize * 0.2, y: baseline - fontSize * 1.2, width: wordWidth + fontSize * 0.4, height: fontSize * 1.7 },
-        // The box of the dot and the signature, shadow included.
         liftBox: { x: left + wordWidth * 0.4, y: baseline - fontSize * 0.4, width: wordWidth * 0.6 + fontSize * 0.5, height: fontSize * 0.4 + scriptSize * 1.7 },
         colours: null,
       };
-      layers.letters.style.transformOrigin = `${origin.x}px ${origin.y}px`;
+      Object.assign(layers.colour.style, { left: `${scene.box.x}px`, top: `${scene.box.y}px`, width: `${scene.box.width}px`, height: `${scene.box.height}px` });
+      layers.colour.style.transformOrigin = `${origin.x - scene.box.x}px ${origin.y - scene.box.y}px`;
       if (!state.view) state.view = reduceMotion
-        ? { x: scene.centre.x - scene.drift.x * 0.5, y: scene.centre.y - scene.drift.y * 0.6 }
+        ? { x: scene.centre.x - scene.drift.x * 0.6, y: scene.centre.y - scene.drift.y * 0.5 }
         : { ...scene.centre };
+      buildWord();
       readColours();
       state.flight = -1; // forces the scroll-driven layers to redraw at the new size
       onScroll();
+      placeWord();
     }
 
-    /** The theme's colours, read from the page so the canvases follow light, dark and any room colour. */
+    /**
+     * The word in 3D. Each letter is real text with copies of itself stacked behind it, a hair apart in depth, which
+     * read as its solid side once the word turns. The browser draws each copy once and from then on only moves it.
+     */
+    function buildWord() {
+      const { fontSize, lefts, glyphTop, centre, origin, script } = scene;
+      const first = !letters.length;
+      layers.word.style.transformOrigin = `${origin.x}px ${origin.y}px`; // it zooms about the flight's aim
+      layers.word.style.perspectiveOrigin = `${centre.x}px ${centre.y}px`;
+      body.style.transformOrigin = `${centre.x}px ${centre.y}px`;
+      body.style.fontSize = `${fontSize}px`;
+      const glyphs = [...`${WORD}.`];
+      letters = glyphs.map((glyph, i) => {
+        const node = document.createElement('span');
+        node.className = `word3d__letter${glyph === '.' ? ' word3d__letter--dot' : ''}`;
+        node.style.left = `${lefts[i]}px`;
+        node.style.top = `${glyphTop}px`;
+        node.style.setProperty('--i', i);
+        for (let layer = EXTRUDE_LAYERS; layer >= 0; layer -= 1) { // deepest first; layer 0 is the face
+          const copy = document.createElement('span');
+          copy.className = layer ? 'word3d__side' : 'word3d__face';
+          copy.textContent = glyph;
+          copy.style.setProperty('--z', (layer / EXTRUDE_LAYERS).toFixed(3));
+          node.append(copy);
+        }
+        const next = lefts[i + 1] === undefined ? lefts[i] + fontSize * 0.28 : lefts[i + 1];
+        return { node, centre: (lefts[i] + next) / 2 };
+      });
+      const signature = document.createElement('span');
+      signature.className = 'word3d__script';
+      signature.textContent = 'by nafis';
+      Object.assign(signature.style, { right: `${scene.width - script.x}px`, top: `${script.top}px`, fontSize: `${script.size}px` });
+      body.replaceChildren(...letters.map((letter) => letter.node), signature);
+      layers.word.classList.toggle('is-entering', first && !reduceMotion);
+    }
+
+    /** The theme's colours, read from the page so the canvas and the picture follow light, dark and any room colour. */
     function readColours() {
       if (!scene) return;
       const style = getComputedStyle(stage);
-      const paper = channels(style.backgroundColor);
-      const ink = channels(style.color);
-      const isDark = paper[0] + paper[1] + paper[2] < 384;
-      const shade = isDark ? WALL_SHADE.dark : WALL_SHADE.light;
-      scene.colours = {
-        paper: mix(paper, paper, 0),
-        ink: mix(ink, ink, 0),
-        // Wall 0 is just under the face of the page; the last is the deepest.
-        walls: Array.from({ length: WALL_LAYERS }, (_, layer) => mix(paper, shade, 0.14 + (layer / (WALL_LAYERS - 1)) * 0.62)),
-      };
-      buildLetters();
+      scene.colours = { paper: style.backgroundColor };
       buildLift();
-      buildPaperAtRest();
     }
 
     /** The page, with the word cut clean out of it, as seen at a zoom about the flight's aim. */
-    function drawPaper(onto, zoom) {
+    function drawPaper(zoom) {
       const { ratio, origin, colours, font, left, baseline } = scene;
-      onto.setTransform(1, 0, 0, 1, 0, 0);
-      onto.globalCompositeOperation = 'source-over';
-      onto.clearRect(0, 0, onto.canvas.width, onto.canvas.height);
-      if (state.flight >= 1 && onto === pen) return; // the hole is wider than the screen: no page left to draw
-      onto.fillStyle = colours.paper;
-      onto.fillRect(0, 0, onto.canvas.width, onto.canvas.height);
-      onto.setTransform(ratio * zoom, 0, 0, ratio * zoom, ratio * origin.x * (1 - zoom), ratio * origin.y * (1 - zoom));
-      onto.globalCompositeOperation = 'destination-out';
-      onto.font = font;
-      onto.fillText(WORD, left, baseline);
+      pen.setTransform(1, 0, 0, 1, 0, 0);
+      pen.globalCompositeOperation = 'source-over';
+      pen.clearRect(0, 0, pen.canvas.width, pen.canvas.height);
+      if (state.flight >= 1) return; // the hole is wider than the screen: no page left to draw
+      pen.fillStyle = colours.paper;
+      pen.fillRect(0, 0, pen.canvas.width, pen.canvas.height);
+      pen.setTransform(ratio * zoom, 0, 0, ratio * zoom, ratio * origin.x * (1 - zoom), ratio * origin.y * (1 - zoom));
+      pen.globalCompositeOperation = 'destination-out';
+      pen.font = font;
+      pen.fillText(WORD, left, baseline);
     }
 
     /**
-     * The page as a picture, for while nothing is scrolling. A live canvas can cost a little every frame it is on
-     * screen, and the view moves every frame; a picture costs nothing.
+     * The dot and the signature as one flat picture. It stands in for their 3D selves once the flight is under
+     * way, when all they do is grow and fade.
      */
-    function buildPaperAtRest() {
-      const builtFor = scene.colours;
-      const { canvas, brush } = canvasFor({ x: 0, y: 0, width: scene.width, height: scene.height }, scene.ratio);
-      drawPaper(brush, 1);
-      state.paperAtRest = false;
-      showPaper();
-      pictureOf(canvas).then((picture) => {
-        if (scene.colours === builtFor) {
-          if (layers.paperAtRest.src) URL.revokeObjectURL(layers.paperAtRest.src);
-          layers.paperAtRest.src = picture.src;
-          state.paperAtRest = true;
-          showPaper();
-        } else {
-          release([picture]);
-        }
-      });
-    }
-
-    /** At rest the picture of the page shows; in flight, the canvas. */
-    function showPaper() {
-      const resting = state.paperAtRest && state.flight === 0;
-      layers.paperAtRest.style.visibility = resting ? 'visible' : 'hidden';
-      layers.paper.style.visibility = resting ? 'hidden' : 'visible';
-    }
-
-    /** A canvas the size of a box on the stage, with a pen set to draw in the stage's own coordinates. */
-    function canvasFor(box, sharpness) {
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(box.width * sharpness);
-      canvas.height = Math.round(box.height * sharpness);
-      const brush = canvas.getContext('2d');
-      brush.setTransform(sharpness, 0, 0, sharpness, -box.x * sharpness, -box.y * sharpness);
-      return { canvas, brush };
-    }
-
-    const placeIn = (box, node) => Object.assign(node.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.width}px`, height: `${box.height}px` });
-
-    /**
-     * The inside of the letters, built once per size and theme. From the bottom of the stack up: the shallowest
-     * wall shade filling the box, a picture of the word in each deeper shade, and the word in the solid colour of
-     * the far end. The page above hides all of it except what shows through the letters.
-     *
-     * Until the pictures are ready the box is simply the solid colour, which is how the letters look flat; the
-     * depth then grows in from there. Only the solid word's edge is seen sharp, so the shades are smaller pictures.
-     */
-    function buildLetters() {
-      const builtFor = scene.colours;
-      const { box, ratio, font, left, baseline } = scene;
-      const { walls: shades, ink } = builtFor;
-      placeIn(box, face);
-      if (!depths.length) face.style.background = ink;
-
-      const soft = Math.min(1, WALL_PICTURE_WIDTH / box.width);
-      const copies = [];
-      for (let layer = 1; layer <= WALL_LAYERS; layer += 1) {
-        const deepest = layer === WALL_LAYERS;
-        const { canvas, brush } = canvasFor(box, deepest ? ratio : soft);
-        brush.font = font;
-        brush.fillStyle = deepest ? ink : shades[layer];
-        brush.fillText(WORD, left, baseline);
-        copies.push(pictureOf(canvas).then((picture) => ({ picture, share: layer / WALL_LAYERS })));
-      }
-      Promise.all(copies).then((built) => {
-        if (scene.colours !== builtFor) { // the screen or theme changed while these were being made
-          release(built.map((copy) => copy.picture));
-          return;
-        }
-        release(depths.map((copy) => copy.picture));
-        depths = built; // shallowest first, so deeper copies lie over shallower ones
-        depths.forEach((copy) => placeIn(box, copy.picture));
-        face.style.background = shades[0];
-        layers.letters.replaceChildren(face, ...depths.map((copy) => copy.picture));
-        if (state.born === Infinity) state.born = performance.now();
-        placeLetters();
-        watch();
-      });
-    }
-
-    /** Sets each copy of the word for the current viewpoint: shrunk toward it, the deeper the more. Nothing is redrawn. */
-    function placeLetters() {
-      const { box } = scene;
-      const emerged = reduceMotion ? 1 : 1 - (1 - clamp((performance.now() - state.born) / EMERGE_MS)) ** 3;
-      const reach = (DEPTH + PRESS_DEPTH * state.press) * emerged;
-      const { x, y } = state.view;
-      depths.forEach(({ picture, share }) => {
-        const shrink = 1 - reach * share;
-        const dx = (x - box.x) * (1 - shrink);
-        const dy = (y - box.y) * (1 - shrink);
-        picture.style.transform = `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0) scale(${shrink.toFixed(5)})`;
-      });
-      state.placedView = { x, y, reach };
-    }
-
-    /** The dot and the signature with their shadow: one picture in a small box of its own, from then on only moved. */
     function buildLift() {
       const builtFor = scene;
-      const { liftBox, origin, ratio, font, fontSize, left, baseline, wordWidth, script } = scene;
+      const { liftBox, origin, ratio, font, left, baseline, wordWidth, script } = scene;
       const lift = layers.lift;
-      const { canvas, brush } = canvasFor(liftBox, ratio);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(liftBox.width * ratio);
+      canvas.height = Math.round(liftBox.height * ratio);
+      const brush = canvas.getContext('2d');
+      brush.setTransform(ratio, 0, 0, ratio, -liftBox.x * ratio, -liftBox.y * ratio);
       brush.fillStyle = getComputedStyle(lift).color; // the accent, which follows the theme
-      brush.shadowColor = 'rgb(0 0 0 / 0.16)';
-      brush.shadowBlur = fontSize * 0.03 * ratio;
-      brush.shadowOffsetY = fontSize * 0.018 * ratio;
       brush.font = font;
       brush.fillText('.', left + wordWidth, baseline);
       brush.font = `400 ${script.size}px '${SCRIPT_FACE}'`;
@@ -357,22 +293,34 @@
       brush.fillText('by nafis', script.x, script.y);
       pictureOf(canvas).then((picture) => {
         if (scene !== builtFor) {
-          release([picture]);
+          URL.revokeObjectURL(picture.src);
           return;
         }
         if (lift.src) URL.revokeObjectURL(lift.src);
-        placeIn(liftBox, lift);
+        Object.assign(lift.style, { left: `${liftBox.x}px`, top: `${liftBox.y}px`, width: `${liftBox.width}px`, height: `${liftBox.height}px` });
         lift.style.transformOrigin = `${origin.x - liftBox.x}px ${origin.y - liftBox.y}px`; // it zooms about the flight's aim
         lift.src = picture.src;
       });
     }
 
-    /** Floats the dot and signature above the page: they shift against the viewpoint, and zoom with the flight. */
-    function placeLift() {
-      const { liftBox } = scene;
-      const dx = (liftBox.x + liftBox.width / 2 - state.view.x) * LIFT;
-      const dy = (liftBox.y + liftBox.height / 2 - state.view.y) * LIFT;
-      layers.lift.style.transform = `scale(${state.scale.toFixed(4)}) translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
+    /** Turns the word to face the viewpoint. Only one transform changes; nothing is redrawn. */
+    function placeWord() {
+      const { centre, width, height } = scene;
+      const squared = 1 - clamp(state.flight / SQUARE_BY); // flying in, the word squares up to the page
+      const turnY = clamp((state.view.x - centre.x) / (width / 2), -1, 1) * TURN.y * squared;
+      const turnX = clamp((centre.y - state.view.y) / (height / 2), -1, 1) * TURN.x * squared;
+      body.style.transform = `translateZ(${(-state.press * PRESS_PX).toFixed(1)}px) rotateX(${turnX.toFixed(3)}deg) rotateY(${turnY.toFixed(3)}deg)`;
+      state.placed = { x: state.view.x, y: state.view.y, press: state.press };
+    }
+
+    /** Brings the letters nearest the cursor a little forward. The stylesheet eases each one to its new place. */
+    function popLetters() {
+      const { fontSize, baseline } = scene;
+      const near = state.pointer && Math.abs(state.pointer.y - (baseline - fontSize * 0.35)) < fontSize * 0.75;
+      letters.forEach(({ node, centre }) => {
+        const distance = near ? Math.abs(state.pointer.x - centre) / (fontSize * 0.55) : Infinity;
+        node.style.setProperty('--pop', Math.exp(-distance * distance).toFixed(2));
+      });
     }
 
     /** How far through the opening the page has scrolled, 0 to 1. */
@@ -390,56 +338,77 @@
       state.flight = flight;
       // Scale grows exponentially, so the flight feels steady rather than slow then sudden; easing in adds a lunge.
       state.scale = Math.exp(Math.log(scene.endScale) * flight ** 1.6);
+      const scaled = `scale(${state.scale.toFixed(4)})`;
 
-      drawPaper(pen, state.scale);
-      showPaper();
-      placeLift();
+      // At rest the 3D word stands on a blank page. As the flight begins it squares up and flattens until it
+      // matches the word cut out of the page exactly; then the cut page takes over, its letters filled with the
+      // same colour, which lifts off the painting a little further in.
+      const standing = flight < SQUARE_BY;
+      drawPaper(state.scale);
+      layers.word.style.visibility = standing ? 'visible' : 'hidden';
+      layers.blank.style.visibility = standing ? 'visible' : 'hidden';
+      layers.lift.style.visibility = standing ? 'hidden' : 'visible';
+      layers.word.style.transform = scaled;
+      layers.word.style.setProperty('--depth', (1 - clamp(flight / SQUARE_BY)).toFixed(3));
+      layers.lift.style.transform = scaled;
+      layers.colour.style.transform = scaled;
+      layers.colour.style.opacity = clamp(1.2 - (flight / COLOUR_GONE) * 1.2).toFixed(3);
+      layers.colour.style.visibility = flight < COLOUR_GONE ? 'visible' : 'hidden';
       art.style.transform = `scale(${(1.18 - 0.18 * flight).toFixed(4)})`;
-      // The letters' colour zooms with the page and lifts off the painting early in the flight.
-      layers.letters.style.transform = `scale(${state.scale.toFixed(4)})`;
-      layers.letters.style.opacity = clamp(1.2 - (flight / COLOUR_GONE) * 1.2).toFixed(3);
-      layers.letters.style.visibility = flight < COLOUR_GONE ? 'visible' : 'hidden';
       stage.style.setProperty('--leave', clamp(1 - flight * 5).toFixed(3)); // the word's companions leave early
       stage.classList.toggle('is-through', flight >= 0.98);
       document.documentElement.classList.toggle('is-opening-dark', flight > 0.45);
+      if (standing) placeWord();
       watch();
     }
 
     function viewTarget(now) {
-      const { centre, drift, origin } = scene;
-      let target;
-      if (state.pointer && now - state.pointerAt < POINTER_REST_MS) {
-        target = { x: centre.x + (state.pointer.x - centre.x) * REACH.x, y: centre.y + (state.pointer.y - centre.y) * REACH.y };
-      } else {
-        const t = now / 1000;
-        target = { x: centre.x + Math.cos(t * 0.5) * drift.x, y: centre.y + Math.sin(t * 0.37) * drift.y };
-      }
-      const square = clamp(state.flight * 5); // flying in: look straight down the letter
-      return { x: target.x + (origin.x - target.x) * square, y: target.y + (origin.y - target.y) * square };
+      const { centre, drift } = scene;
+      if (state.pointer && now - state.pointerAt < POINTER_REST_MS) return state.pointer;
+      if (pace.level >= 2) return centre; // a computer this slow gets a word that rests when the cursor does
+      const t = now / 1000;
+      return { x: centre.x + Math.cos(t * 0.5) * drift.x, y: centre.y + Math.sin(t * 0.37) * drift.y };
     }
 
-    /** One frame of the view: ease toward the cursor (or the drift) and re-place the layers if they would move. */
+    /**
+     * Keeps the word smooth on computers that cannot draw it at full detail. Once the letters have arrived, the
+     * time between frames is sampled; if the typical frame is slow the word steps down, first to thinner sides,
+     * then to a flat word that only turns when the cursor moves. It never steps back up, so it cannot flicker.
+     */
+    const pace = { level: 0, since: 0, last: 0, samples: [] };
+    function keepPace(now) {
+      if (pace.level >= 2) return;
+      const gap = now - pace.last;
+      pace.last = now;
+      if (!pace.since) pace.since = now;
+      if (now - pace.since < PACE.settleMs || gap > 250) return; // still arriving, or the tab was away
+      pace.samples.push(gap);
+      if (pace.samples.length < PACE.frames) return;
+      const typical = pace.samples.sort((a, b) => a - b)[PACE.frames >> 1];
+      pace.samples = [];
+      if (typical <= PACE.slowMs) return;
+      pace.level += 1;
+      pace.since = now - PACE.settleMs + 500; // a short pause, then judge the lighter word afresh
+      layers.word.dataset.detail = pace.level === 1 ? 'light' : 'flat';
+    }
+
+    /** One frame of the view: ease toward the cursor (or the drift) and turn the word if it would move. */
     function look() {
       const now = performance.now();
+      keepPace(now);
       const target = viewTarget(now);
       state.view.x += (target.x - state.view.x) * VIEW_EASE;
       state.view.y += (target.y - state.view.y) * VIEW_EASE;
       state.press += ((state.pressed ? 1 : 0) - state.press) * 0.16;
-
-      const placed = state.placedView;
-      const emerging = now - state.born < EMERGE_MS + 100;
-      const reach = DEPTH + PRESS_DEPTH * state.press;
-      const moved = !placed || emerging || Math.abs(placed.x - state.view.x) > 0.2 || Math.abs(placed.y - state.view.y) > 0.2 || Math.abs(placed.reach - reach) > 0.0004;
-      if (moved) {
-        placeLetters();
-        placeLift();
-      }
+      const placed = state.placed;
+      const moved = !placed || Math.abs(placed.x - state.view.x) > 0.3 || Math.abs(placed.y - state.view.y) > 0.3 || Math.abs(placed.press - state.press) > 0.004;
+      if (moved) placeWord();
     }
 
-    /** Runs the view while the letters can be seen; rests while they are covered, off screen or in a hidden tab. */
+    /** Runs the view while the 3D word can be seen; rests while it is replaced, off screen or in a hidden tab. */
     function watch() {
-      const lettersShow = state.onScreen && state.flight < COLOUR_GONE && !document.hidden;
-      if (state.frame || reduceMotion || !scene || !lettersShow) return;
+      const wordShows = state.onScreen && state.flight < SQUARE_BY && !document.hidden;
+      if (state.frame || reduceMotion || !scene || !wordShows) return;
       state.frame = requestAnimationFrame(() => {
         state.frame = 0;
         look();
@@ -459,27 +428,33 @@
     }).observe(stage);
     document.addEventListener('visibilitychange', watch);
 
-    // The canvases are painted in the theme's colours, so they are repainted when the theme or room changes.
+    // The canvas and the picture are painted in the theme's colours, so they are repainted when it changes.
     const repaint = () => {
       if (!scene) return;
       readColours();
-      drawPaper(pen, state.scale);
+      drawPaper(state.scale);
     };
     new MutationObserver(repaint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-mood'] });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', repaint);
 
     if (!reduceMotion) {
+      const pop = oncePerFrame(popLetters);
       stage.addEventListener('pointermove', (event) => {
         if (event.pointerType === 'touch') return; // a finger is scrolling, not pointing
         const box = stage.getBoundingClientRect();
         state.pointer = { x: event.clientX - box.left, y: event.clientY - box.top };
         state.pointerAt = performance.now();
+        pop();
       }, { passive: true });
+      stage.addEventListener('pointerleave', () => {
+        state.pointer = null;
+        pop();
+      });
       stage.addEventListener('pointerdown', () => { state.pressed = true; });
       ['pointerup', 'pointercancel', 'pointerleave'].forEach((type) => stage.addEventListener(type, () => { state.pressed = false; }));
     }
 
-    // The canvases draw their type in the site's faces, so those must be loaded before the word is measured.
+    // The word is measured and cut out in the site's faces, so those must be loaded first.
     const faces = [`500 40px '${WORD_FACE}'`, `400 40px '${SCRIPT_FACE}'`].map((face) => document.fonts.load(face).catch(() => {}));
     Promise.all(faces).then(measure);
 
