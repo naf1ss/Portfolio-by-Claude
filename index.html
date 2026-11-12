@@ -27,7 +27,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=75d89ab5">
+  <link rel="stylesheet" href="css/styles.css?v=da464cd9">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=1b99e41c"></script>
   <script src="js/site-menu.js?v=fea090eb"></script>
@@ -40,12 +40,14 @@
   <script src="js/photo-brightness.js?v=f5447711" defer></script>
   <script src="js/projects-data.js?v=1929b6e9" defer></script>
   <script src="js/painted-text.js?v=652abef6" defer></script>
-  <script src="js/site-config.js?v=cabee47b" defer></script>
+  <script src="js/site-config.js?v=0888d1c0" defer></script>
   <script src="js/gallery.js?v=fdde54ed" defer></script>
-  <script src="js/home-reveal.js?v=54be01d6" defer></script>
+  <script src="js/museum-utils.js?v=ae6eab7c" defer></script>
+  <script src="js/museum.js?v=8516f639" defer></script>
+  <script src="js/home-reveal.js?v=ad128d3f" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
   <script src="js/hints.js?v=9e5ddd6b" defer></script>
-  <script src="js/pages.js?v=2e95839c" defer></script>
+  <script src="js/pages.js?v=71dadcdb" defer></script>
   <script src="js/interactions.js?v=eab1e99c" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -106,13 +108,10 @@
   </header>
 
   <main id="main">
-    <!-- The opening: a painting seen through "nuances", which the page flies into as you scroll (js/home-reveal.js). -->
+    <!-- The opening: the "nuances" wordmark, and the walk into the museum that scrolling begins (js/home-reveal.js, js/museum.js). -->
     <section class="opening" id="opening" aria-labelledby="opening-title">
       <div class="opening__stage">
-        <img class="opening__art" alt="" decoding="async" data-opening-art>
-        <div class="opening__colour" aria-hidden="true" data-opening-colour></div>
-        <canvas class="opening__layer" aria-hidden="true" data-opening-paper></canvas>
-        <img class="opening__lift" alt="" aria-hidden="true" data-opening-lift>
+        <canvas class="opening__layer" aria-hidden="true" data-opening-museum></canvas>
         <div class="opening__layer opening__blank" aria-hidden="true" data-opening-blank></div>
         <div class="opening__layer word3d" aria-hidden="true" data-opening-word></div>
         <div class="opening__trails" aria-hidden="true" data-opening-trails></div>

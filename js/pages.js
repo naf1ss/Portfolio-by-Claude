@@ -75,7 +75,7 @@
       },
       {
         U,
-        heroWork: byId.get(home.heroId || config.latestId),
+        museum: { revealText: 'Selected Works', ...home.museum },
         featureWorks: (home.features || [])
           .map(({ id, reveal }) => ({ work: byId.get(id), reveal }))
           .filter(({ work }) => work),

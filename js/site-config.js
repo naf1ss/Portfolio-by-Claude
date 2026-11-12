@@ -22,11 +22,15 @@ window.SITE_CONFIG = {
   // The big "Latest work" feature on the home page.
   latestId: 'A046',
 
-  // The home page's opening, curated: the painting seen through the letters of "nuances", then a few works from
-  // different disciplines, each arriving in its own way (paint spreads, a photograph develops, an object turns),
-  // then one interdisciplinary project.
+  // The home page. Scrolling from the "nuances" wordmark walks into a museum (js/museum.js) and arrives at
+  // `museum.revealText` behind its curtains; then come a few works from different disciplines, each arriving
+  // in its own way (paint spreads, a photograph develops, an object turns), then one interdisciplinary project.
   home: {
-    heroId: 'A046', // the latest painting
+    museum: {
+      revealText: 'Nafis — Selected Works',
+      curtainDefault: 'red', // 'red' or 'navy' (the choice between them comes in a later stage)
+      posterWorkId: null, // a work to hang as the exhibition banner by the doors; none for now
+    },
     features: [
       { id: 'A041', reveal: 'paint' },
       { id: 'stage-light-img-7025', reveal: 'develop' },

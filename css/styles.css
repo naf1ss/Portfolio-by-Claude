@@ -7661,8 +7661,13 @@ body[data-page='home'] .site-header {
 
 .opening {
   position: relative;
-  height: 260svh;
+  height: 100svh;
   margin-top: calc(-1 * var(--header-h, 5.5rem)); /* the stage starts under the header, so the first screen is whole */
+}
+
+/* With the museum, the opening is as long as the walk: the stage stays put while five screens scroll by. */
+.opening.has-museum {
+  height: 600svh;
 }
 
 .opening__stage {
@@ -7673,22 +7678,7 @@ body[data-page='home'] .site-header {
   background: var(--paper);
 }
 
-/* The painting is shown whole, never cropped: it sits inside the screen, clear of the header, on a dark wall
-   that fills whatever space its proportions leave (the padding and the letterbox show the background). */
-.opening__art {
-  position: absolute;
-  inset: 0;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  padding: calc(var(--header-h, 5.5rem) + 0.5rem) var(--edge) clamp(1.5rem, 6vh, 3.5rem);
-  background: #0e0e10;
-  object-fit: contain;
-  transform: scale(1.18); /* eases to 1 through the flight (js/home-reveal.js) */
-  will-change: transform;
-}
-
-/* Over the painting: the inside of the letters, then the page with the word cut out. Each fills the stage. */
+/* The stage's layers, bottom to top: the museum (a canvas), the page, the wordmark. Each fills the stage. */
 .opening__layer {
   position: absolute;
   inset: 0;
@@ -7697,36 +7687,19 @@ body[data-page='home'] .site-header {
   pointer-events: none;
 }
 
-/* The colour filling the cut-out word once the flight is under way; it lifts off the painting (js/home-reveal.js). */
-.opening__colour {
-  position: absolute;
-  background: var(--ink);
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-/* At rest the page is whole, and the 3D word stands on it. */
+/* The page the wordmark stands on. It fades as the walk begins, and the museum is behind it. */
 .opening__blank {
   background: var(--paper);
 }
 
-/* The dot and signature as a flat picture, standing in for their 3D selves during the flight.
-   Its colour is the accent they are drawn in. */
-.opening__lift {
-  position: absolute;
-  color: var(--accent);
-  pointer-events: none;
-  visibility: hidden;
-  will-change: transform;
-}
-
 /* The word in 3D. Each letter is text with copies of itself stacked behind it (--z: 0 at the face, 1 at the
    back), which read as its solid side when the word turns. The script turns .word3d__body and sets --depth
-   (1 standing, 0 flattened for the flight) and each letter's --pop (0 to 1, how near the cursor is). */
+   (1 standing, 0 flattened for the walk) and each letter's --pop (0 to 1, how near the cursor is). */
 .word3d {
   --extrude: 0.11em;
   perspective: 1500px;
-  will-change: transform;
+  transform-origin: 0 0; /* the script shrinks it onto the museum's frieze from the top left */
+  will-change: transform, opacity;
 }
 
 .word3d__body {
@@ -7809,8 +7782,9 @@ body[data-page='home'] .site-header {
   }
 }
 
-/* The word's companions leave as the flight begins (--leave runs 1 to 0, set by the script). */
-.opening__lift,
+/* The word's companions leave as the walk begins (--leave runs 1 to 0, set by the script). The signature goes
+   with them: only the word itself travels to the museum's frieze. */
+.word3d__script,
 .opening__words,
 .opening__fact {
   opacity: var(--leave, 1);
@@ -7905,12 +7879,6 @@ body[data-page='home'] .site-header {
   opacity: 0;
   box-shadow: 0 0.8rem 1.6rem -0.6rem rgb(0 0 0 / 0.45);
   will-change: transform, opacity;
-}
-
-/* Over the dark wall, the header's words turn light. */
-html.is-opening-dark:not(.is-menu-open) body[data-page='home'] .site-header {
-  --ink: #f4f1ea;
-  color: #f4f1ea;
 }
 
 /* ---------------------------------------------------------------------------
