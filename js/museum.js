@@ -1,19 +1,23 @@
 /**
  * The museum the home page walks into, drawn in 3D on a canvas (three.js, loaded only when it is needed).
  *
- *   const museum = await Museum.create({ canvas, word, revealText, colours, onFrame });
+ *   const museum = await Museum.create({ canvas, word, signSuffix, revealText, curtain, colours, onFrame });
  *   museum.setProgress(0.4);   // how far through the walk, 0 to 1; the scene eases toward it
  *
  * Scrolling is the only clock: one number, 0 to 1, places the camera on its path, swings the doors and draws
- * the curtains (the timeline and floor plan are in js/museum-utils.js; the surfaces are painted by
- * js/museum-textures.js). A frame is drawn only while something is still moving, so a page at rest costs nothing.
+ * the curtains. A frame is drawn only while something is still moving, so a page at rest costs nothing (the
+ * one exception is the dust in the foyer's light, which drifts while you stand there).
+ *
+ * The parts:
+ *   js/museum-utils.js      the floor plan, the scroll timeline, the camera's stops (pure maths)
+ *   js/museum-textures.js   every surface, painted in code
+ *   js/museum.js            this file: the renderer, the shared kit, the outside of the building, the light, the walk
+ *   js/museum-foyer.js      the inside: the foyer, the curtains, the room behind them
  *
  * How it is lit, cheaply. It is dusk: a cool sky light, and one low cool key light whose shadows are worked
  * out once, since the building never moves. The warmth is mostly painted on rather than computed: lamps are
  * glowing sprites, and the columns are lit from their feet by a gradient that makes the stone itself glow.
  * Only two real lamps exist: one behind the doors, and one that hangs in the porch and then lights the foyer.
- *
- * So far the outside is finished and the inside is still a greybox.
  *
  * `create` resolves to null where the scene cannot run (no WebGL 2, or the library fails to load); the page
  * then keeps its plain opening.
@@ -32,7 +36,6 @@
   const FOLLOW_MS = 110; // how quickly the scene catches up with the scroll: long enough to smooth a wheel's steps
   const GAZE = { yaw: 0.07, pitch: 0.04, ease: 0.08 }; // radians the view turns toward the cursor, at most
   const DOOR_SWING = 1.5; // radians
-  const CURTAIN_GRID = { across: 44, down: 10 };
   const SHADOW_MAP = 2048;
 
   // Metres of wall one sheet of each texture covers.
@@ -47,11 +50,6 @@
     lampPost: 0x2e261d,
     lamp: 0xffe1ae,
     warm: 0xffa25a, // lamplight
-    foyerWall: 0x8e8b85,
-    foyerFloor: 0x716e6a,
-    ceiling: 0x77746f,
-    curtain: 0x7b1f2b,
-    bench: 0x4b443c,
   };
 
   /** What this browser can do: `webgl` if a WebGL 2 context can be made, `software` if no graphics card backs it. */
@@ -74,7 +72,7 @@
     }
   }
 
-  async function create({ canvas, word, revealText, colours, onFrame = () => {} }) {
+  async function create({ canvas, word, signSuffix = '', revealText, curtain, colours, onFrame = () => {} }) {
     if (!support().webgl) return null;
     let THREE;
     let renderer;
@@ -140,12 +138,7 @@
       bronze: lambert({ color: 0x4a3420 }),
       lampPost: lambert({ color: COLOUR.lampPost }),
       lamp: painted({ color: COLOUR.lamp, fog: false }),
-      foyerWall: lambert({ color: COLOUR.foyerWall }),
-      foyerFloor: lambert({ color: COLOUR.foyerFloor }),
-      ceiling: lambert({ color: COLOUR.ceiling }),
-      curtain: lambert({ color: COLOUR.curtain, side: THREE.DoubleSide }),
-      bench: lambert({ color: COLOUR.bench }),
-      // The wall behind the curtains is the page itself, in the page's own colour, so the walk ends on it.
+      // The room behind the curtains is the page itself, in the page's own colour, so the walk ends on it.
       page: painted({ color: colours.paper }),
     };
 
@@ -187,11 +180,11 @@
     }
 
     /** A lamp's halo: a glow that always faces the viewer. */
-    function halo(size, [x, y, z], opacity = 0.9) {
+    function halo(size, [x, y, z], opacity = 0.9, parent = outside) {
       const sprite = new THREE.Sprite(new THREE.SpriteMaterial(light(COLOUR.warm, opacity)));
       sprite.scale.set(size, size, 1);
       sprite.position.set(x, y, z);
-      outside.add(sprite);
+      parent.add(sprite);
       return sprite;
     }
 
@@ -463,72 +456,12 @@
       };
     }
 
-    // ---------- inside (still a greybox) ----------
-
-    function buildInside() {
-      const { foyer, wall, proscenium } = PLAN;
-      const within = { parent: inside };
-      const front = wall.z - wall.thickness;
-      const length = front - foyer.back;
-      const midZ = (front + foyer.back) / 2;
-      const midY = floor + foyer.height / 2;
-      [-1, 1].forEach((side) => {
-        box(materials.foyerWall, [0.3, foyer.height, length], [side * (foyer.halfWidth + 0.15), midY, midZ], within);
-        // The piers either side of the opening the curtains hang in.
-        const pier = foyer.halfWidth - proscenium.width / 2;
-        box(materials.foyerWall, [pier, foyer.height, proscenium.thickness], [side * (proscenium.width / 2 + pier / 2), midY, proscenium.z], within);
-        box(materials.bench, [2.6, 0.45, 0.6], [side * 4.7, floor + 0.225, -11], within);
-      });
-      const header = foyer.height - proscenium.height;
-      box(materials.foyerWall, [proscenium.width, header, proscenium.thickness], [0, floor + proscenium.height + header / 2, proscenium.z], within);
-      box(materials.ceiling, [foyer.halfWidth * 2 + 0.6, 0.3, length], [0, floor + foyer.height + 0.15, midZ], within);
-      sheetOf(materials.foyerFloor, [foyer.halfWidth * 2, length], [0, floor + 0.01, midZ], within);
-      sheetOf(materials.page, [foyer.halfWidth * 2, foyer.height], [0, midY, foyer.back], { flat: false, parent: inside });
-    }
-
-    /** Two curtains as grids of points, re-hung each time `open` changes. */
-    function buildCurtains() {
-      const { across, down } = CURTAIN_GRID;
-      const indices = [];
-      const row = across + 1;
-      for (let j = 0; j < down; j += 1) {
-        for (let i = 0; i < across; i += 1) {
-          const a = j * row + i;
-          indices.push(a, a + row, a + 1, a + 1, a + row, a + row + 1);
-        }
-      }
-      const panels = [-1, 1].map((side) => {
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(row * (down + 1) * 3), 3));
-        geometry.setIndex(indices);
-        inside.add(new THREE.Mesh(geometry, materials.curtain));
-        return { geometry, side };
-      });
-
-      let hung = -1;
-      return function hang(open) {
-        if (Math.abs(open - hung) < 0.0005) return;
-        hung = open;
-        const { width, height, z } = PLAN.curtain;
-        panels.forEach(({ geometry, side }) => {
-          const position = geometry.attributes.position;
-          for (let j = 0; j <= down; j += 1) {
-            for (let i = 0; i <= across; i += 1) {
-              const point = M.curtainPoint(i / across, j / down, open);
-              position.setXYZ(j * row + i, side * (width - point.x), floor + height * (1 - j / down), z + point.z);
-            }
-          }
-          position.needsUpdate = true;
-          geometry.computeVertexNormals();
-        });
-      };
-    }
-
     // ---------- lettering ----------
 
     /**
-     * The wordmark on the frieze, in gilded letters cut into the stone. Returns where its first letter starts
-     * and its last ends, in the building's space, so the page can fly its own wordmark onto exactly this spot.
+     * The name on the frieze, in gilded letters cut into the stone: the wordmark, then `signSuffix` ("Gallery").
+     * Returns where the wordmark's first letter starts and its last ends, in the building's space, so the page
+     * can fly its own wordmark onto exactly that spot; the rest of the name is already there to meet it.
      */
     function buildSign() {
       const size = 220;
@@ -536,22 +469,20 @@
       const measure = document.createElement('canvas').getContext('2d');
       measure.font = font;
       const wordWidth = measure.measureText(word).width;
+      const name = signSuffix ? `${word} ${signSuffix}` : `${word}.`;
       const margin = Math.round(size * 0.25);
       const baseline = Math.round(size * 1.1);
-      const sheet = { width: wordWidth + measure.measureText('.').width + margin * 2, height: size * 1.5 };
+      const sheet = { width: measure.measureText(name).width + margin * 2, height: size * 1.5 };
       const plane = letteringPlane();
       plane.material.map = lettering(sheet.width, sheet.height, (pen) => {
         pen.font = font;
-        T.gild(pen, (ink) => {
-          ink.fillText(word, margin, baseline);
-          ink.fillText('.', margin + wordWidth, baseline);
-        }, size * 0.022);
+        T.gild(pen, (ink) => ink.fillText(name, margin, baseline), size * 0.022);
       });
 
       const { entablature, columns, sign } = PLAN;
       const metres = sign.width / wordWidth; // per canvas pixel
       const friezeY = floor + columns.height + entablature.architrave + entablature.frieze / 2;
-      const middleOfLetters = baseline - size * 0.23; // lowercase without ascenders: centre on the x-height
+      const middleOfLetters = baseline - size * 0.23; // mostly lowercase: centre on the x-height
       plane.scale.set(sheet.width * metres, sheet.height * metres, 1);
       const z = columns.z + (entablature.depth - 0.1) / 2 + 0.01;
       const y = friezeY - (sheet.height / 2 - middleOfLetters) * metres;
@@ -560,35 +491,6 @@
 
       const start = new THREE.Vector3((-sheet.width / 2 + margin) * metres, y + (sheet.height / 2 - baseline) * metres, z);
       return { start, end: start.clone().setX(start.x + sign.width) };
-    }
-
-    /** "Nafis — Selected Works" on the back wall: one line on a wide screen, two on a tall one. */
-    function buildReveal() {
-      const plane = letteringPlane();
-      plane.position.set(0, floor + PLAN.eye, PLAN.foyer.back + 0.01);
-      inside.add(plane);
-      return function write(aspect, ink) {
-        const lines = aspect < 1 ? revealText.split(/\s+[—–-]\s+/) : [revealText];
-        const size = 150;
-        const font = WORD_FACE.replace('{size}', size);
-        const measure = document.createElement('canvas').getContext('2d');
-        measure.font = font;
-        const widest = Math.max(...lines.map((line) => measure.measureText(line).width));
-        const margin = size * 0.3;
-        const leading = size * 1.12;
-        const sheet = { width: widest + margin * 2, height: leading * lines.length + margin * 2 };
-        if (plane.material.map) plane.material.map.dispose();
-        plane.material.map = lettering(sheet.width, sheet.height, (pen) => {
-          pen.font = font;
-          pen.fillStyle = ink;
-          pen.textAlign = 'center';
-          lines.forEach((line, i) => pen.fillText(line, sheet.width / 2, margin + leading * (i + 0.78)));
-        });
-        plane.material.needsUpdate = true;
-        const share = aspect < 1 ? 0.72 : 0.6; // of the screen's width, once the walk has arrived
-        const metres = (M.arrival(aspect).visibleWidth * share) / widest;
-        plane.scale.set(sheet.width * metres, sheet.height * metres, 1);
-      };
     }
 
     // ---------- light ----------
@@ -608,7 +510,7 @@
       // the porch ceiling, warming the wall and the columns' backs, until the walk passes the doors, and then
       // goes in ahead to light the foyer.
       const porch = { position: new THREE.Vector3(0, floor + 5.6, -0.5), colour: new THREE.Color(COLOUR.warm), intensity: 190 };
-      const foyer = { position: new THREE.Vector3(0, floor + 7, -14), colour: new THREE.Color(0xffe2b8), intensity: 190 };
+      const foyer = { position: new THREE.Vector3(0, floor + 7, -13), colour: new THREE.Color(0xffe2b8), intensity: 140 };
       const lamp = new THREE.PointLight(porch.colour, porch.intensity, 44, 2);
       const doorway = new THREE.PointLight(0xffb469, 0, 34, 2); // just inside: comes up as the doors open
       doorway.position.set(0, floor + 4, -6.5);
@@ -637,11 +539,13 @@
     buildColumns();
     buildEntablature();
     buildWall();
-    buildInside();
     const swingDoors = buildDoors();
-    const hangCurtains = buildCurtains();
     const sign = buildSign();
-    const writeReveal = buildReveal();
+    // The inside is built by its own file, from the same kit of materials and shapes.
+    const foyer = window.MuseumFoyer.build(
+      { THREE, floor, inside, colours, materials, maps, lambert, painted, glowing: light, textureOf, box, sheetOf, halo, lettering, letteringPlane },
+      { revealText, curtain }
+    );
     const setMood = buildLight();
 
     // ---------- the walk ----------
@@ -655,6 +559,7 @@
       gaze: { x: 0, y: 0, toX: 0, toY: 0 },
       last: 0,
       frame: 0,
+      astir: false, // whether the last frame left something moving by itself (dust, a curtain changing colour)
     };
     const eye = new THREE.Vector3();
     const focus = new THREE.Vector3();
@@ -678,9 +583,10 @@
       camera.rotateX(-gaze.y * GAZE.pitch * free);
 
       const open = smoothstep(TIMELINE.doors[0], TIMELINE.doors[1], t);
+      const within = smoothstep(TIMELINE.inside[0], TIMELINE.inside[1], t);
       swingDoors(open);
-      hangCurtains(smoothstep(TIMELINE.curtains[0], TIMELINE.curtains[1], t));
-      setMood(smoothstep(TIMELINE.inside[0], TIMELINE.inside[1], t), open);
+      setMood(within, open);
+      state.astir = foyer.update({ t, within, open: smoothstep(TIMELINE.curtains[0], TIMELINE.curtains[1], t), now: state.last });
       renderer.render(scene, camera);
       onFrame(t);
     }
@@ -698,7 +604,7 @@
       gaze.y += (gaze.toY - gaze.y) * GAZE.ease;
       const settled = state.t === state.target && Math.abs(gaze.toX - gaze.x) < 0.002 && Math.abs(gaze.toY - gaze.y) < 0.002;
       draw();
-      if (!settled) state.frame = requestAnimationFrame(tick);
+      if (!settled || state.astir) state.frame = requestAnimationFrame(tick);
     }
 
     function wake() {
@@ -723,7 +629,7 @@
       const keys = M.cameraKeys(state.aspect);
       const curve = (points) => new THREE.CatmullRomCurve3(points.map((point) => new THREE.Vector3(...point)), false, 'centripetal');
       path = { times: keys.map((key) => key.t), position: curve(keys.map((key) => key.position)), look: curve(keys.map((key) => key.look)) };
-      writeReveal(state.aspect, colours.ink);
+      foyer.fit(state.aspect);
       if (state.t !== null) draw();
     }
 
@@ -754,12 +660,16 @@
         state.gaze.toY = clamp(y, -1, 1);
         wake();
       },
-      /** The page's colours changed (light or dark): the back wall and its lettering follow. */
+      /** The page's colours changed (light or dark): the room behind the curtains, and its lettering, follow. */
       setColours(next) {
         Object.assign(colours, next);
-        materials.page.color.set(colours.paper);
-        writeReveal(state.aspect, colours.ink);
-        if (state.t !== null) draw();
+        foyer.repaint();
+        wake();
+      },
+      /** 'red' or 'navy': the curtains dissolve to the new colour. */
+      setCurtain(name) {
+        foyer.setCurtain(name, performance.now());
+        wake();
       },
       resize,
       /**

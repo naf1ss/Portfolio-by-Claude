@@ -24,6 +24,7 @@
 
   const WORD = 'nuances';
   const WORD_FACE = 'Bodoni Moda';
+  const CURTAIN_KEY = 'nuances.curtain'; // where the visitor's choice of curtain colour is remembered
   const SCRIPT_FACE = 'Pinyon Script'; // the "by nafis" signature
 
   // The 3D word.
@@ -56,6 +57,42 @@
     };
   }
 
+  /**
+   * The visitor's choice of curtain colour: two swatches, shown while the curtains are in view. The choice is
+   * remembered for next time. Returns { chosen(), show(visible) }.
+   */
+  function mountCurtainChoice(control, fallback, onChoose) {
+    const swatches = [...control.querySelectorAll('[data-curtain]')];
+    const names = swatches.map((swatch) => swatch.dataset.curtain);
+    let chosen = names.includes(fallback) ? fallback : names[0];
+    try {
+      const saved = window.localStorage.getItem(CURTAIN_KEY);
+      if (names.includes(saved)) chosen = saved;
+    } catch (error) {
+      // No storage (a private window, say): the default stands.
+    }
+    const mark = () => swatches.forEach((swatch) => swatch.setAttribute('aria-pressed', String(swatch.dataset.curtain === chosen)));
+    mark();
+    swatches.forEach((swatch) => swatch.addEventListener('click', () => {
+      chosen = swatch.dataset.curtain;
+      mark();
+      try {
+        window.localStorage.setItem(CURTAIN_KEY, chosen);
+      } catch (error) {
+        // Not remembered, but the curtains still change.
+      }
+      onChoose(chosen);
+    }));
+    control.hidden = false;
+    return {
+      chosen: () => chosen,
+      show(visible) {
+        control.classList.toggle('is-shown', visible);
+        control.inert = !visible; // out of sight, it is out of the tab order too
+      },
+    };
+  }
+
   /** Whether this browser can draw the museum smoothly enough to be worth walking into. */
   function canWalk() {
     if (!window.Museum) return false;
@@ -71,6 +108,9 @@
       blank: section.querySelector('[data-opening-blank]'),
       word: section.querySelector('[data-opening-word]'),
     };
+    const curtainChoice = mountCurtainChoice(section.querySelector('[data-opening-curtain]'), settings.curtainDefault, (name) => {
+      if (museum) museum.setCurtain(name);
+    });
     const body = document.createElement('div'); // the part of the 3D word that turns
     body.className = 'word3d__body';
     layers.word.append(body);
@@ -244,7 +284,11 @@
       const paper = 1 - smoothstep(TIMELINE.squareBy, TIMELINE.paperGone, t);
       layers.blank.style.opacity = paper.toFixed(3);
       layers.blank.style.visibility = paper > 0 ? 'visible' : 'hidden';
-      stage.style.setProperty('--leave', clamp(1 - t / (TIMELINE.squareBy * 2)).toFixed(3)); // the word's companions leave early
+      const leave = clamp(1 - t / (TIMELINE.squareBy * 2)); // the word's companions leave early
+      stage.style.setProperty('--leave', leave.toFixed(3));
+      stage.classList.toggle('is-walking', leave === 0); // once gone they must not be clicked or tabbed to either
+      // The curtain colours are offered while the curtains are in view: from inside the foyer until the walk passes them.
+      curtainChoice.show(Boolean(museum) && t > TIMELINE.inside[1] + 0.04 && t < TIMELINE.arrive + 0.1);
       if (standing) placeWord();
       watch();
     }
@@ -348,7 +392,9 @@
       window.Museum.create({
         canvas: layers.museum,
         word: WORD,
+        signSuffix: settings.signSuffix,
         revealText: settings.revealText,
+        curtain: curtainChoice.chosen(),
         colours: pageColours(),
         onFrame: walk,
       }).then((built) => {

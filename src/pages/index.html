@@ -3,7 +3,7 @@ title: Md Nafisul Hasan Sami — Multidisciplinary Artist · nuances by nafis
 description: Portfolio of Md Nafisul Hasan Sami, a multidisciplinary artist at Gettysburg College: painting, ceramics, prints, photography, digital art and design.
 og-title: nuances by nafis — Md Nafisul Hasan Sami
 og-description: Painting, ceramics, prints, photography, digital art and graphic design by Md Nafisul Hasan Sami, a multidisciplinary artist.
-scripts: intro-utils, works-utils, works-data, works-photography, projects-data, gallery, museum-utils, museum-textures, museum, home-reveal, hints, pages, magnifier-utils, magnifier, intro
+scripts: intro-utils, works-utils, works-data, works-photography, projects-data, gallery, museum-utils, museum-textures, museum-foyer, museum, home-reveal, hints, pages, magnifier-utils, magnifier, intro
 ---
 <!-- @slot intro -->
   <!-- Opening animation: shown only when js-intro is set (see js/intro.js) -->
@@ -17,6 +17,11 @@ scripts: intro-utils, works-utils, works-data, works-photography, projects-data,
         <canvas class="opening__layer" aria-hidden="true" data-opening-museum></canvas>
         <div class="opening__layer opening__blank" aria-hidden="true" data-opening-blank></div>
         <div class="opening__layer word3d" aria-hidden="true" data-opening-word></div>
+        <div class="curtain-choice" role="group" aria-label="Curtain colour" data-opening-curtain hidden>
+          <span class="curtain-choice__label" aria-hidden="true">Curtains</span>
+          <button class="curtain-choice__swatch" type="button" data-curtain="red" aria-pressed="false" title="Red curtains"><span class="visually-hidden">Red</span></button>
+          <button class="curtain-choice__swatch" type="button" data-curtain="navy" aria-pressed="false" title="Navy curtains"><span class="visually-hidden">Navy</span></button>
+        </div>
         <div class="opening__trails" aria-hidden="true" data-opening-trails></div>
         <h1 class="visually-hidden" id="opening-title">nuances by nafis</h1>
         <div class="opening__words">

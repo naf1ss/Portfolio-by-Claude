@@ -1,5 +1,6 @@
 /**
- * The museum's surfaces, painted in code: stone, masonry, paving, bronze doors, the evening sky. Each function
+ * The museum's surfaces, painted in code: stone, masonry, paving, bronze doors, the evening sky, and indoors
+ * the marble floor, the coffered ceiling and the velvet. Each function
  * returns a canvas, which js/museum.js turns into a texture. Nothing is downloaded, and nothing here needs
  * the 3D library.
  *
@@ -360,5 +361,146 @@
     pen.restore();
   }
 
-  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, seeded, noise };
+  /** Polished marble, near-white, with a few dark veins wandering across it. Tiles roughly, which a floor's joints hide. */
+  function marble(size = 512, seed = 21) {
+    const { canvas, pen } = sheet(size);
+    pen.drawImage(stone(size, seed), 0, 0);
+    pen.fillStyle = 'rgba(255, 255, 255, 0.35)'; // marble is cleaner and brighter than the limestone outside
+    pen.fillRect(0, 0, size, size);
+    const random = seeded(seed + 5);
+    pen.lineCap = 'round';
+    for (let vein = 0; vein < 9; vein += 1) {
+      let x = random() * size;
+      let y = -10;
+      let heading = Math.PI / 2 + (random() - 0.5) * 1.2;
+      pen.beginPath();
+      pen.moveTo(x, y);
+      while (y < size + 10 && x > -10 && x < size + 10) {
+        heading += (random() - 0.5) * 0.7;
+        x += Math.cos(heading) * 14;
+        y += Math.abs(Math.sin(heading)) * 14 + 2;
+        pen.lineTo(x, y);
+      }
+      pen.strokeStyle = `rgba(70, 66, 84, ${0.1 + random() * 0.2})`;
+      pen.lineWidth = 0.6 + random() * 1.8;
+      pen.stroke();
+    }
+    return canvas;
+  }
+
+  /** A floor of marble squares, light and dark by turns, with fine joints. `squares` each way; tiles when even. */
+  function checker({ size = 1024, squares = 4, dark = 'rgba(44, 48, 66, 0.8)', seed = 21 } = {}) {
+    const { canvas, pen } = sheet(size);
+    const slab = marble(512, seed);
+    const side = size / squares;
+    for (let row = 0; row < squares; row += 1) {
+      for (let column = 0; column < squares; column += 1) {
+        const x = column * side;
+        const y = row * side;
+        // Each square shows a different piece of the slab, so no two are alike.
+        pen.drawImage(slab, (column * 97 + row * 53) % (512 - 256), (column * 31 + row * 149) % (512 - 256), 256, 256, x, y, side, side);
+        if ((row + column) % 2) {
+          pen.fillStyle = dark;
+          pen.fillRect(x, y, side, side);
+        }
+        pen.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+        pen.lineWidth = 2;
+        pen.strokeRect(x, y, side, side);
+      }
+    }
+    return canvas;
+  }
+
+  /** A coffered ceiling: beams crossing, and in each square between them a panel stepped back twice, with a rosette. */
+  function coffers({ size = 512, cells = 2 } = {}) {
+    const { canvas, pen } = sheet(size);
+    const side = size / cells;
+    pen.fillStyle = '#ece7de';
+    pen.fillRect(0, 0, size, size);
+    for (let row = 0; row < cells; row += 1) {
+      for (let column = 0; column < cells; column += 1) {
+        const x = column * side;
+        const y = row * side;
+        // Each step back is darker, shadowed along its top and left, lit along its bottom and right.
+        [[0.13, '#bdb7ac'], [0.24, '#9f998e']].forEach(([inset, tone]) => {
+          const at = side * inset;
+          const span = side - at * 2;
+          pen.fillStyle = tone;
+          pen.fillRect(x + at, y + at, span, span);
+          pen.fillStyle = 'rgba(20, 16, 12, 0.5)';
+          pen.fillRect(x + at, y + at, span, 7);
+          pen.fillRect(x + at, y + at, 7, span);
+          pen.fillStyle = 'rgba(255, 252, 245, 0.55)';
+          pen.fillRect(x + at, y + at + span - 4, span, 4);
+          pen.fillRect(x + at + span - 4, y + at, 4, span);
+        });
+        const rosette = pen.createRadialGradient(x + side / 2 - 3, y + side / 2 - 4, 1, x + side / 2, y + side / 2, side * 0.085);
+        rosette.addColorStop(0, '#f1e3b8');
+        rosette.addColorStop(0.6, '#b8975a');
+        rosette.addColorStop(1, '#6d5733');
+        pen.fillStyle = rosette;
+        pen.beginPath();
+        pen.arc(x + side / 2, y + side / 2, side * 0.085, 0, TAU);
+        pen.fill();
+      }
+    }
+    return canvas;
+  }
+
+  /** Velvet's nap: near-white, with soft streaks running down the cloth. */
+  function velvet(size = 256, seed = 41) {
+    const { canvas, pen } = sheet(size);
+    pen.fillStyle = '#e4e4e4';
+    pen.fillRect(0, 0, size, size);
+    const random = seeded(seed);
+    for (let i = 0; i < 520; i += 1) {
+      pen.fillStyle = random() > 0.5 ? `rgba(255, 255, 255, ${random() * 0.07})` : `rgba(0, 0, 0, ${random() * 0.07})`;
+      pen.fillRect(random() * size, 0, 1 + random() * 2.5, size);
+    }
+    return canvas;
+  }
+
+  /** A long carpet: plain pile with a pair of pale lines down each edge. The scene tints it. */
+  function runner({ width = 256, height = 512, seed = 43 } = {}) {
+    const { canvas, pen } = sheet(width, height);
+    pen.drawImage(velvet(256, seed), 0, 0, width, height);
+    pen.fillStyle = 'rgba(0, 0, 0, 0.16)';
+    pen.fillRect(0, 0, width, height);
+    pen.fillStyle = 'rgba(255, 236, 190, 0.9)';
+    [0.07, 0.105].forEach((inset) => {
+      pen.fillRect(width * inset, 0, 3, height);
+      pen.fillRect(width * (1 - inset) - 3, 0, 3, height);
+    });
+    return canvas;
+  }
+
+  /** A gold fringe: a braid along the top and strands hanging from it, on a clear sheet. Tiles sideways. */
+  function fringe({ width = 512, height = 64, seed = 47 } = {}) {
+    const { canvas, pen } = sheet(width, height);
+    const random = seeded(seed);
+    for (let x = 0; x < width; x += 4) {
+      pen.fillStyle = random() > 0.5 ? '#e2c377' : '#b08a43';
+      pen.fillRect(x, 0, 3, height * (0.78 + random() * 0.22));
+    }
+    pen.fillStyle = '#c9a455';
+    pen.fillRect(0, 0, width, height * 0.22);
+    pen.fillStyle = 'rgba(255, 240, 200, 0.6)';
+    pen.fillRect(0, 2, width, 2);
+    return canvas;
+  }
+
+  /** A shaft of light seen from the side: bright where it leaves the lamp (the top of the sheet), thinning to nothing. */
+  function beam(height = 256) {
+    const { canvas, pen } = sheet(8, height);
+    const fade = pen.createLinearGradient(0, 0, 0, height);
+    fade.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+    fade.addColorStop(0.25, 'rgba(255, 255, 255, 0.4)');
+    fade.addColorStop(0.7, 'rgba(255, 255, 255, 0.12)');
+    fade.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    pen.fillStyle = fade;
+    pen.fillRect(0, 0, 8, height);
+    return canvas;
+  }
+
+  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, seeded, noise };
 })();

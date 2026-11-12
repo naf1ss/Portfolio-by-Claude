@@ -27,8 +27,9 @@ window.SITE_CONFIG = {
   // in its own way (paint spreads, a photograph develops, an object turns), then one interdisciplinary project.
   home: {
     museum: {
+      signSuffix: 'Gallery', // follows the wordmark on the building: "nuances Gallery"
       revealText: 'Nafis — Selected Works',
-      curtainDefault: 'red', // 'red' or 'navy' (the choice between them comes in a later stage)
+      curtainDefault: 'red', // 'red' or 'navy'; a visitor's own choice is remembered over this
       posterWorkId: null, // a work to hang as the exhibition banner by the doors; none for now
     },
     features: [
