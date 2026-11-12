@@ -19,13 +19,13 @@ window.SITE_CONFIG = {
   },
 
   // The big "Latest work" feature on the home page.
-  latestId: 'A044',
+  latestId: 'A046',
 
   // The home page's opening, curated: the painting seen through the letters of "nuances", then a few works from
   // different disciplines, each arriving in its own way (paint spreads, a photograph develops, an object turns),
   // then one interdisciplinary project.
   home: {
-    heroId: 'A044',
+    heroId: 'A046', // the latest painting
     features: [
       { id: 'A041', reveal: 'paint' },
       { id: 'stage-light-img-7025', reveal: 'develop' },
@@ -37,7 +37,7 @@ window.SITE_CONFIG = {
   // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs
   // and ceramics are shown in their own sections of the gallery; the six Horizon monotypes stay in their series.
   selectedIds: [
-    'A044', 'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
+    'A046', 'A045', 'A044', 'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
   ],
 
   // Kept off the gallery's grid view, but still hung on the wall and shown in Three Ways of Seeing: two of
