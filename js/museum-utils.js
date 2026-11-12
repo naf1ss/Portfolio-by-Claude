@@ -39,7 +39,7 @@
     arrive: 0.76, // the curtains are open; the last stretch walks between them, up to the wall
   };
 
-  const steps = { count: 11, rise: 0.16, run: 0.42, width: 31, top: 2.4 }; // `top`: z of the platform's front edge
+  const steps = { count: 11, rise: 0.16, run: 0.42, width: 27, top: 2.4 }; // `top`: z of the platform's front edge
   const platform = steps.count * steps.rise;
   const columnHeight = 10.5;
 
@@ -58,6 +58,7 @@
     pediment: { height: 3.6 },
     wall: { z: -3.2, thickness: 0.8, halfWidth: 13 }, // the front wall, behind the columns
     door: { width: 3.0, height: 6.2 },
+    cheek: { width: 2.2 }, // the low walls flanking the steps, which carry the lamps
     foyer: { halfWidth: 7, height: 8.5, back: -24 }, // `back`: the wall behind the curtains
     proscenium: { z: -19, width: 8, height: 5.6, thickness: 0.5 },
     curtain: { z: -19.5, width: 4.35, height: 5.9, gathered: 0.8, folds: 7 },
@@ -66,6 +67,7 @@
     fov: { landscape: 40, portrait: 50 }, // vertical field of view, degrees
   };
   PLAN.frontOfSteps = steps.top + (steps.count - 1) * steps.run;
+  PLAN.frontage = steps.width + PLAN.cheek.width * 2; // the whole width of the front, cheek to cheek
   PLAN.top = platform + columnHeight + PLAN.entablature.architrave + PLAN.entablature.frieze + PLAN.entablature.cornice + PLAN.pediment.height;
 
   const tanHalf = (degrees) => Math.tan((degrees * Math.PI) / 360);
@@ -101,7 +103,7 @@
     // The first view is level, as an architectural photograph is, so the columns stand upright: the camera is
     // raised to the height it looks at, and stands back until the roof (with some sky) and the steps fit.
     const level = PLAN.top * 0.46;
-    const far = distanceToFit({ width: steps.width + 1, height: 2 * (PLAN.top + 1.4 - level), fovDeg, aspect });
+    const far = distanceToFit({ width: PLAN.frontage + 1.5, height: 2 * (PLAN.top + 1.4 - level), fovDeg, aspect });
     const head = floor + eye;
     const end = arrival(aspect);
     return [

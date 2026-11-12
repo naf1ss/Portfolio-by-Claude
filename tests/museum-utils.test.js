@@ -50,7 +50,7 @@ for (const [name, aspect] of [['wide', WIDE], ['tall', TALL]]) {
     const keys = cameraKeys(aspect);
     const half = Math.tan((fieldOfView(aspect) * Math.PI) / 360);
     const start = keys[0].position[2];
-    assert.ok(2 * start * half * aspect >= PLAN.steps.width, 'the steps fit across');
+    assert.ok(2 * start * half * aspect >= PLAN.frontage, 'the whole front fits across');
     const [, level] = keys[0].position;
     assert.equal(level, keys[0].look[1], 'the first view is level');
     assert.ok(level + start * half >= PLAN.top, 'the roof is in view');
