@@ -11,6 +11,7 @@ window.SITE_CONFIG = {
   // The gallery's order within a medium, best first: listed works lead in this order, the rest follow
   // (newest first). Horizon's prints hang together on the wall wherever the first of them falls.
   galleryOrder: {
+    painting: ['A046'], // the latest painting leads; the rest follow, newest first
     print: ['A019', 'A020', 'A021', 'A022', 'A023', 'A024', 'A027', 'A025', 'A026'],
     design: [
       'flyer-mindfulness', 'flyer-hsa-trip', 'flyer-meet-daniel-collins', 'flyer-ash-wednesday', 'flyer-chicken-fingers',
