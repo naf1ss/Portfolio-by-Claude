@@ -110,7 +110,6 @@
   function mountOpening(section, { heroWork, trailWorks, U }) {
     const stage = section.querySelector('.opening__stage');
     const art = section.querySelector('[data-opening-art]');
-    const caption = section.querySelector('[data-opening-caption]');
     const layers = {
       colour: section.querySelector('[data-opening-colour]'),
       paper: section.querySelector('[data-opening-paper]'),
@@ -126,8 +125,6 @@
 
     art.src = U.imageUrl(heroWork, window.innerWidth * (window.devicePixelRatio || 1) > 1400 ? 1800 : 1200);
     art.alt = plain(U.altText(heroWork));
-    caption.querySelector('.opening__caption-title').textContent = plain(heroWork.title);
-    caption.querySelector('.opening__caption-facts').textContent = U.captionParts(heroWork).meta;
 
     // Everything measured from the screen: where the word sits and where the flight aims.
     let scene = null;
