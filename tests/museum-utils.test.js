@@ -164,3 +164,23 @@ test('the catalogue stands in the exhibition room, in front of the pictures', ()
   close(Math.hypot(...facing), 1);
   assert.ok(facing[1] > 0 && facing[2] > 0, 'its cover faces up and toward the visitor');
 });
+
+test('the still pictures of the walk exist for every stop, shape and theme, and match the museum settings', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { STILLS, stillPath } = require('../js/museum-utils.js');
+  const { settingsFingerprint, readManifest } = require('../tools/render-museum-stills.js');
+  const root = path.join(__dirname, '..');
+  STILLS.stops.forEach((stop, i) => {
+    if (i > 0) assert.ok(stop.t > STILLS.stops[i - 1].t, 'the stops are in the order of the walk');
+    Object.keys(STILLS.shapes).forEach((shape) => {
+      [false, true].forEach((dark) => {
+        const file = stillPath(stop, shape, dark);
+        assert.ok(fs.existsSync(path.join(root, file)), `${file} is missing. Run: npm run stills`);
+      });
+    });
+  });
+  const manifest = readManifest();
+  assert.ok(manifest, 'images/museum/stills.json is missing. Run: npm run stills');
+  assert.equal(manifest.settings, settingsFingerprint(), 'home.museum has changed since the stills were rendered. Run: npm run stills');
+});

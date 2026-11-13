@@ -71,7 +71,7 @@
     // the floor, at `scale` times their real size (the room is larger than life), `gap` apart.
     // `gap` leaves room for a label beside each work. The walk stops before the wall between `stand.nearest`
     // and `stand.furthest` metres from it, wherever what it should take in just fits (see cameraKeys).
-    gallery: { hangLine: 2.05, scale: 2.0, gap: 1.3, stand: { nearest: 6.4, furthest: 9.5 } },
+    gallery: { hangLine: 2.05, scale: 3.0, gap: 1.3, stand: { nearest: 6.4, furthest: 9.5 } },
     // The catalogue lies on a stand whose top slopes toward the visitor by `tilt` degrees. Its cover is `long`
     // by `short` metres, turned to suit the screen (see closeUp).
     catalogue: { z: -26.6, height: 1.06, tilt: 28, long: 0.5, short: 0.36 },
@@ -133,6 +133,29 @@
       left += picture.width + gap;
       return { ...picture, x };
     });
+  }
+
+  /**
+   * The walk as still pictures, for computers that cannot draw it. `stops` are the moments pictured, in
+   * order; a `themed` one shows the exhibition room, whose wall differs between the light and dark page, so
+   * it has a picture for each. Each is rendered in two `shapes` (width by height in pixels) by
+   * tools/render-museum-stills.js, and shown by js/home-reveal.js.
+   */
+  const STILLS = {
+    folder: 'images/museum',
+    stops: [
+      { name: 'front', t: 0.13 },
+      { name: 'doors', t: 0.27 },
+      { name: 'foyer', t: 0.46 },
+      { name: 'curtains', t: 0.62, themed: true },
+      { name: 'room', t: 0.84, themed: true },
+    ],
+    shapes: { wide: [1600, 1000], tall: [800, 1400] },
+  };
+
+  /** Where a still is kept: the stop, 'wide' or 'tall', and whether the page is dark. */
+  function stillPath(stop, shape, dark = false) {
+    return `${STILLS.folder}/${stop.name}-${shape}${stop.themed && dark ? '-dark' : ''}.jpg`;
   }
 
   /**
@@ -208,5 +231,5 @@
     };
   }
 
-  return { TIMELINE, PLAN, clamp, lerp, smoothstep, fieldOfView, distanceToFit, closeUp, catalogue, hang, cameraKeys, segmentAt, curtainPoint };
+  return { TIMELINE, PLAN, clamp, lerp, smoothstep, fieldOfView, distanceToFit, closeUp, catalogue, hang, STILLS, stillPath, cameraKeys, segmentAt, curtainPoint };
 })());

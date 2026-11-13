@@ -7678,9 +7678,25 @@ body[data-page='home'] .site-header {
   margin-top: calc(-1 * var(--header-h, 5.5rem)); /* the stage starts under the header, so the first screen is whole */
 }
 
-/* With the museum, the opening is as long as the walk: the stage stays put while five screens scroll by. */
+/* With the museum, the opening is as long as the walk: the stage stays put while the walk scrolls by. Short
+   enough that the paintings come soon; long enough that the doors and curtains are not a blur. */
 .opening.has-museum {
-  height: 600svh;
+  height: 360svh;
+}
+
+/* Where the walk cannot be drawn (no graphics card, or less motion asked for) it is told in still pictures,
+   one fading into the next. */
+.opening.has-stills {
+  height: 300svh;
+}
+
+.opening__stills img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
 }
 
 .opening__stage {
@@ -7711,68 +7727,42 @@ body[data-page='home'] .site-header {
   visibility: hidden;
 }
 
-/* The choice of curtain colour, at the foot of the screen while the curtains are in view (js/home-reveal.js
-   adds .is-shown). It sits over the foyer, which is dim, so it is light on dark in either theme. */
-.curtain-choice {
+/* The way past the walk, at the foot of the screen for as long as it lasts (js/home-reveal.js adds .is-shown).
+   It sits over the museum, which is dim, so it is light on dark in either theme. */
+.opening__skip {
   position: absolute;
   left: 50%;
   bottom: clamp(1.25rem, 4vh, 2.5rem);
   z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.5rem 0.7rem 0.5rem 1rem;
+  padding: 0.6rem 1.1rem;
   border-radius: 999px;
   background: rgb(12 12 16 / 0.62);
   color: #f4f1ea;
-  translate: -50% 0.6rem;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.4s ease, translate 0.4s ease, visibility 0s 0.4s;
-}
-
-.curtain-choice.is-shown {
-  translate: -50% 0;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.4s ease, translate 0.4s ease;
-}
-
-.curtain-choice__label {
   font-family: var(--font-text);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.16em;
+  text-decoration: none;
   text-transform: uppercase;
+  white-space: nowrap;
+  translate: -50% 0.6rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, translate 0.4s ease, background-color 0.2s ease, visibility 0s 0.4s;
 }
 
-.curtain-choice__swatch {
-  width: 1.75rem;
-  height: 1.75rem;
-  padding: 0;
-  border: 2px solid rgb(255 255 255 / 0.35);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: border-color 0.2s ease, scale 0.2s ease;
+.opening__skip.is-shown {
+  translate: -50% 0;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease, translate 0.4s ease, background-color 0.2s ease;
 }
 
-.curtain-choice__swatch[data-curtain='red'] {
-  background: #8f1a2a;
+.opening__skip:hover {
+  background: rgb(12 12 16 / 0.85);
 }
 
-.curtain-choice__swatch[data-curtain='navy'] {
-  background: #263a75;
-}
-
-.curtain-choice__swatch:hover {
-  scale: 1.1;
-}
-
-.curtain-choice__swatch[aria-pressed='true'] {
-  border-color: #fff;
-}
-
-.curtain-choice__swatch:focus-visible {
+.opening__skip:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;
 }

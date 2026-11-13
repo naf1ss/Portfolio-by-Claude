@@ -56,7 +56,7 @@
   };
   const VIEW_MARGIN = 0.6; // wall left clear at the sides of what the walk stops to look at, in all
   const LABEL = { rem: 0.075, columns: 11, title: 1.9, beside: 0.2 }; // a label's rem in metres; its width in rems; its gap from the frame
-  const WALL_TEXT = { rem: 0.115, columns: 13, title: 2.6, beside: 0.6 };
+  const WALL_TEXT = { rem: 0.115, columns: 16, title: 2.6, beside: 0.6 };
   const COLOUR = {
     room: { wall: '#1d2433', ink: '#f1ece1', muted: '#b5bccb' }, // the gallery page's own, until the page hands over its colours
     wood: 0x2a1e16,
@@ -96,6 +96,7 @@
 
     const local = {
       wall: painted({ map: textureOf(T.plasterWall(room().wall), { repeats: true }) }),
+      sideWall: painted({ color: 0xc4c4c4 }),
       skirting: painted(),
       ceiling: painted(),
       floor: painted({ color: COLOUR.unloaded }),
@@ -116,6 +117,8 @@
     function buildRoom() {
       box(local.wall, [wide, height, 0.3], [0, floor + height / 2, back - 0.15], { ...within, tile: PLASTER.tile });
       sheetOf(overlay(textureOf(T.roomShade())), [wide, height], [0, floor + height / 2, back + LAYER.shade], standing);
+      // The side walls are the back wall's paint a shade darker, so the room is one colour and still has corners.
+      [-1, 1].forEach((side) => box(local.sideWall, [0.1, height, depth], [side * (foyer.halfWidth - 0.05), floor + height / 2, midZ], { ...within, tile: PLASTER.tile }));
       box(local.ceiling, [wide + 0.6, 0.3, depth], [0, floor + height + 0.15, midZ], within);
       box(local.skirting, [wide, 1.8 * rem, 0.03], [0, floor + 0.9 * rem, back + 0.015], within);
 
@@ -145,6 +148,8 @@
       const { wall } = room();
       local.wall.map.image = T.plasterWall(wall, plaster);
       local.wall.map.needsUpdate = true;
+      local.sideWall.map = local.wall.map;
+      local.sideWall.needsUpdate = true;
       local.skirting.color.copy(darkened(wall, 0.55));
       local.ceiling.color.copy(darkened(wall, 0.3));
     }
@@ -309,6 +314,7 @@
         });
         y += titleSize * TYPE.title.line;
       });
+      loosen(measure); // or the lines below would be measured tighter than they are drawn
 
       y += TYPE.rule.gap;
       const ruleAt = y;
@@ -435,25 +441,27 @@
       const edge = 2 * (framing.moulding + framing.inner);
       return { widthIn: widthIn + edge, heightIn: heightIn + edge };
     };
-    // Each work has its label on its right, so the row stands half a label to the left: frames and labels
-    // together are then centred on the room.
-    const aside = (LABEL.columns * LABEL.rem + LABEL.beside) / 2;
-    const row = M.hang(exhibits.map(framed)).map((slot) => ({ ...slot, x: slot.x - aside }));
+    // The wall text stands at the start of the row and each work has its label on its right. The whole
+    // group, text to last label, is centred on the room, so the frames alone stand a little off its middle.
+    const labelled = LABEL.beside + LABEL.columns * LABEL.rem; // a label and its gap from the frame
+    const introduced = wallText ? WALL_TEXT.beside + WALL_TEXT.columns * WALL_TEXT.rem : 0;
+    const hung = M.hang(exhibits.map(framed));
+    const ends = hung.length ? [hung[0].x - hung[0].width / 2 - introduced, hung[hung.length - 1].x + hung[hung.length - 1].width / 2 + labelled] : [0, 0];
+    const row = hung.map((slot) => ({ ...slot, x: slot.x - (ends[0] + ends[1]) / 2 }));
     exhibits.forEach((exhibit, i) => hangPicture(exhibit, row[i]));
     if (row.length && wallText) setWords(wallText, WALL_TEXT, { right: row[0].x - row[0].width / 2 - WALL_TEXT.beside });
     const fitCatalogue = buildCatalogue();
     let aspectNow = 1;
-    const labelled = LABEL.beside + LABEL.columns * LABEL.rem; // a label and its gap from the frame
 
     return {
       /**
-       * The stretch of wall to take in when standing before it: the whole row and its labels on a wide
-       * screen; on a tall one, the middle work and its label. `x` is its middle along the wall.
+       * The stretch of wall to take in when standing before it: on a wide screen all of it, from the wall
+       * text to the last label; on a tall one, the middle work and its label. `x` is its middle along the wall.
        */
       view(aspect) {
         if (!row.length) return undefined;
         const [first, last] = aspect < 1 ? Array(2).fill(row[Math.floor(row.length / 2)]) : [row[0], row[row.length - 1]];
-        const left = first.x - first.width / 2;
+        const left = first.x - first.width / 2 - (aspect < 1 ? 0 : introduced);
         const right = last.x + last.width / 2 + labelled;
         return { x: (left + right) / 2, width: right - left + VIEW_MARGIN };
       },

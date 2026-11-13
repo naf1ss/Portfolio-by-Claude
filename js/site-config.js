@@ -29,14 +29,16 @@ window.SITE_CONFIG = {
   home: {
     museum: {
       signSuffix: 'gallery', // follows the wordmark on the building: "nuances gallery"
-      curtainDefault: 'red', // 'red' or 'navy'; a visitor's own choice is remembered over this
+      curtainDefault: 'red', // the curtains' colour: 'red' or 'navy'
       // The pictures on the exhibition's wall, left to right. They hang at true size relative to one another.
-      exhibitIds: ['A030', 'A046', 'A041'],
-      // The wall text at the start of the row. Its heading and date are worked out from the pictures hung
-      // ("Three paintings", "2026"); these are the small line above the heading and the sentence below it.
+      exhibitIds: ['A045', 'A041', 'A017'],
+      // The wall text at the start of the row, introducing the exhibition. Its heading and dates are worked
+      // out from the pictures hung ("Three paintings", "2025–2026"); these are the small line above the
+      // heading and the paragraph below it. After changing anything in `museum`, run `npm run stills`: the
+      // walk's still pictures (for computers that cannot draw it) show these works and words.
       wallText: {
-        kicker: 'On view',
-        body: 'The rest of the work is in the catalogue ahead: prints, ceramics, photographs and interdisciplinary projects.',
+        kicker: 'Introduction',
+        body: 'These three paintings open the exhibition. Two are intimist: a winter dinner with people who are like family to me, and the view from a hotel bed in London. Between them hangs Aggressive Happiness. The rest of the work is in the catalogue ahead.',
       },
       // The catalogue's cover, which the walk ends on.
       cover: { title: 'Nafis — Selected Works', note: 'Exhibition catalogue' },

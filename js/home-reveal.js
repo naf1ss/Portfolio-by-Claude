@@ -24,7 +24,6 @@
 
   const WORD = 'nuances';
   const WORD_FACE = 'Bodoni Moda';
-  const CURTAIN_KEY = 'nuances.curtain'; // where the visitor's choice of curtain colour is remembered
   const SCRIPT_FACE = 'Pinyon Script'; // the "by nafis" signature
 
   // The 3D word.
@@ -42,6 +41,10 @@
   const UNFOLD_SLICES = 8;
   const STROKES = 5; // brushstrokes that uncover the painting
 
+  // The slideshow of stills, as shares of the opening's scroll: the page clears to the first picture by `from`,
+  // the last is reached at `to`, and the page returns over `leave` so what follows starts on plain paper.
+  // `rest` is the share of each step a picture is left alone before the next begins to fade in.
+  const SLIDES = { wordGone: 0.08, from: 0.15, to: 0.82, rest: 0.45, leave: [0.9, 0.99] };
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const { TIMELINE, clamp, lerp, smoothstep } = window.MuseumUtils; // the walk's timeline is shared with the 3D scene
   const plain = (text) => String(text || '').replace(/\*/g, '');
@@ -57,38 +60,48 @@
     };
   }
 
+  /** Whether a colour, as the browser reports it ("rgb(13, 13, 15)"), is a dark one. */
+  function isDark(colour) {
+    const [r = 255, g = 255, b = 255] = (String(colour).match(/[\d.]+/g) || []).map(Number);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128;
+  }
+
   /**
-   * The visitor's choice of curtain colour: two swatches, shown while the curtains are in view. The choice is
-   * remembered for next time. Returns { chosen(), show(visible) }.
+   * The walk as still pictures, for a computer that cannot draw it or a visitor who has asked for less motion:
+   * the front, the doors, the foyer, the curtains parting, the room, each fading into the next as the page
+   * scrolls. The pictures are renders of the real scene (tools/render-museum-stills.js). `paperOf()` gives
+   * the page's colour now, which decides between the light and dark pictures of the room.
+   * Returns { show(p), dress() }: `p` is how far the opening has scrolled, 0 to 1.
    */
-  function mountCurtainChoice(control, fallback, onChoose) {
-    const swatches = [...control.querySelectorAll('[data-curtain]')];
-    const names = swatches.map((swatch) => swatch.dataset.curtain);
-    let chosen = names.includes(fallback) ? fallback : names[0];
-    try {
-      const saved = window.localStorage.getItem(CURTAIN_KEY);
-      if (names.includes(saved)) chosen = saved;
-    } catch (error) {
-      // No storage (a private window, say): the default stands.
-    }
-    const mark = () => swatches.forEach((swatch) => swatch.setAttribute('aria-pressed', String(swatch.dataset.curtain === chosen)));
-    mark();
-    swatches.forEach((swatch) => swatch.addEventListener('click', () => {
-      chosen = swatch.dataset.curtain;
-      mark();
-      try {
-        window.localStorage.setItem(CURTAIN_KEY, chosen);
-      } catch (error) {
-        // Not remembered, but the curtains still change.
-      }
-      onChoose(chosen);
-    }));
-    control.hidden = false;
+  function mountStills(layer, paperOf) {
+    const { STILLS, stillPath } = window.MuseumUtils;
+    const pictures = STILLS.stops.map((stop, i) => {
+      const picture = document.createElement('img');
+      picture.alt = '';
+      picture.decoding = 'async';
+      if (i > 0) picture.fetchPriority = 'low';
+      layer.append(picture);
+      return picture;
+    });
+    // Each picture rests a while, then the next fades in over it.
+    const { from, to, rest } = SLIDES;
+    const centre = (i) => lerp(from, to, i / (pictures.length - 1));
+    const dress = () => {
+      const shape = window.innerHeight > window.innerWidth ? 'tall' : 'wide';
+      const dark = isDark(paperOf());
+      pictures.forEach((picture, i) => {
+        const source = stillPath(STILLS.stops[i], shape, dark);
+        if (picture.getAttribute('src') !== source) picture.src = source;
+      });
+    };
+    dress();
     return {
-      chosen: () => chosen,
-      show(visible) {
-        control.classList.toggle('is-shown', visible);
-        control.inert = !visible; // out of sight, it is out of the tab order too
+      dress,
+      show(p) {
+        pictures.forEach((picture, i) => {
+          const shown = i === 0 ? 1 : smoothstep(lerp(centre(i - 1), centre(i), rest), centre(i), p);
+          picture.style.opacity = shown.toFixed(3);
+        });
       },
     };
   }
@@ -108,21 +121,20 @@
       blank: section.querySelector('[data-opening-blank]'),
       word: section.querySelector('[data-opening-word]'),
     };
-    const curtainChoice = mountCurtainChoice(section.querySelector('[data-opening-curtain]'), settings.curtainDefault, (name) => {
-      if (museum) museum.setCurtain(name);
-    });
+    const skip = section.querySelector('[data-opening-skip]');
     const body = document.createElement('div'); // the part of the 3D word that turns
     body.className = 'word3d__body';
     layers.word.append(body);
     let letters = []; // the 3D letters, with where each sits: { node, centre }
 
-    // The walk needs a graphics card and a visitor who has not asked for less motion; without them the opening
-    // is the wordmark alone, and the page carries on below. Decided now, so the page's length never changes
-    // later. (A computer drawing 3D in software manages a few frames a second, which is worse than no walk.
-    // Adding ?museum to the address walks anyway, for testing on such a machine.)
+    // The walk needs a graphics card and a visitor who has not asked for less motion; without them it is told
+    // in still pictures instead. Decided now, so the page's length never changes later. (A computer drawing
+    // 3D in software manages a few frames a second, which is worse than no walk. Adding ?museum to the
+    // address walks anyway, for testing on such a machine.)
     const walks = !reduceMotion && canWalk();
     section.classList.toggle('has-museum', walks);
     let museum = null; // the 3D scene, once it has loaded
+    let stills = null; // or the walk in still pictures, where it cannot be drawn
 
     // Everything measured from the screen: where the word sits, and where on the building it lands.
     let scene = null;
@@ -184,7 +196,7 @@
         museum.resize();
         scene.sign = museum.signOnScreen();
       }
-      walk(state.t);
+      if (!stills) walk(state.t); // the slideshow places things itself, from onScroll
       placeWord();
       onScroll();
     }
@@ -275,6 +287,36 @@
     /** The scroll position is handed to the museum, which eases toward it and reports each frame to `walk`. */
     function onScroll() {
       if (museum && scene) museum.setProgress(progress());
+      else if (stills && scene) slideshow(progress());
+    }
+
+    /** The walk in still pictures (see mountStills), at `p` of the opening's scroll. */
+    function useStills() {
+      section.classList.add('has-stills');
+      stills = mountStills(section.querySelector('[data-opening-stills]'), () => pageColours().paper);
+      onScroll();
+    }
+
+    /**
+     * The page's side of the slideshow: the wordmark and its companions fade, the page clears to show the
+     * pictures, and at the end the page returns, so what follows starts on plain paper.
+     */
+    function slideshow(p) {
+      state.t = p * TIMELINE.squareBy / (SLIDES.wordGone / 2); // the word squares up over the first half of its fade
+      const word = layers.word.style;
+      word.opacity = (1 - smoothstep(0, SLIDES.wordGone, p)).toFixed(3);
+      word.visibility = p < SLIDES.wordGone ? 'visible' : 'hidden';
+      word.setProperty('--depth', (1 - clamp(state.t / TIMELINE.squareBy)).toFixed(3));
+      const paper = Math.max(1 - smoothstep(SLIDES.wordGone / 2, SLIDES.from, p), smoothstep(SLIDES.leave[0], SLIDES.leave[1], p));
+      layers.blank.style.opacity = paper.toFixed(3);
+      layers.blank.style.visibility = paper > 0 ? 'visible' : 'hidden';
+      const leave = clamp(1 - p / SLIDES.wordGone);
+      stage.style.setProperty('--leave', leave.toFixed(3));
+      stage.classList.toggle('is-walking', leave === 0);
+      skip.classList.toggle('is-shown', leave === 0 && p < SLIDES.leave[0]);
+      stills.show(p);
+      if (state.t < TIMELINE.squareBy) placeWord();
+      watch();
     }
 
     /**
@@ -303,8 +345,8 @@
       const leave = clamp(1 - t / (TIMELINE.squareBy * 2)); // the word's companions leave early
       stage.style.setProperty('--leave', leave.toFixed(3));
       stage.classList.toggle('is-walking', leave === 0); // once gone they must not be clicked or tabbed to either
-      // The curtain colours are offered while the curtains are in view: from inside the foyer until the walk passes them.
-      curtainChoice.show(Boolean(museum) && t > TIMELINE.inside[1] + 0.04 && t < TIMELINE.arrive + 0.015);
+      // The way past the walk is offered for as long as the walk lasts, until the catalogue's cover is the page.
+      skip.classList.toggle('is-shown', leave === 0 && t < TIMELINE.overCatalogue);
       if (standing) placeWord();
       watch();
     }
@@ -367,7 +409,10 @@
     let resizeTimer = 0;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(measureWord, 150);
+      resizeTimer = setTimeout(() => {
+        measureWord();
+        if (stills) stills.dress(); // a turned phone wants the pictures of the other shape
+      }, 150);
     });
     new IntersectionObserver(([entry]) => {
       state.onScreen = entry.isIntersecting;
@@ -376,7 +421,10 @@
     document.addEventListener('visibilitychange', watch);
 
     // The museum's last wall is painted in the page's colours, so it is repainted when the theme changes.
-    const repaint = () => { if (museum) museum.setColours(pageColours()); };
+    const repaint = () => {
+      if (museum) museum.setColours(pageColours());
+      if (stills) stills.dress();
+    };
     new MutationObserver(repaint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-mood'] });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', repaint);
 
@@ -404,13 +452,16 @@
       .map((face) => document.fonts.load(face).catch(() => {}));
     Promise.all(faces).then(() => {
       measureWord();
-      if (!walks) return;
+      if (!walks) {
+        useStills();
+        return;
+      }
       // Loaded once the wordmark is on screen, so the first paint never waits for the 3D library.
       window.Museum.create({
         canvas: layers.museum,
         word: WORD,
         signSuffix: settings.signSuffix,
-        curtain: curtainChoice.chosen(),
+        curtain: settings.curtainDefault,
         exhibits: settings.exhibits,
         wallText: settings.wallText,
         coverText: settings.cover,
@@ -418,7 +469,8 @@
         onFrame: walk,
       }).then((built) => {
         if (!built) {
-          section.classList.remove('has-museum'); // it could not start after all: the plain opening stands
+          section.classList.remove('has-museum'); // it could not start after all: the still pictures stand in
+          useStills();
           return;
         }
         museum = built;

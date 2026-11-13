@@ -27,7 +27,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=2f35ca17">
+  <link rel="stylesheet" href="css/styles.css?v=a03e42c1">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=1b99e41c"></script>
   <script src="js/site-menu.js?v=fea090eb"></script>
@@ -40,15 +40,15 @@
   <script src="js/photo-brightness.js?v=f5447711" defer></script>
   <script src="js/projects-data.js?v=1929b6e9" defer></script>
   <script src="js/painted-text.js?v=652abef6" defer></script>
-  <script src="js/site-config.js?v=99c9c77e" defer></script>
+  <script src="js/site-config.js?v=cadb31be" defer></script>
   <script src="js/gallery.js?v=fdde54ed" defer></script>
-  <script src="js/museum-utils.js?v=8fe720a7" defer></script>
+  <script src="js/museum-utils.js?v=bcdd2cfe" defer></script>
   <script src="js/museum-textures.js?v=f2af4e57" defer></script>
   <script src="js/museum-outside.js?v=048dd7e1" defer></script>
   <script src="js/museum-foyer.js?v=f380a252" defer></script>
-  <script src="js/museum-gallery.js?v=0497948f" defer></script>
+  <script src="js/museum-gallery.js?v=2e4da6b3" defer></script>
   <script src="js/museum.js?v=24f6b0e9" defer></script>
-  <script src="js/home-reveal.js?v=d03e528d" defer></script>
+  <script src="js/home-reveal.js?v=e0e5115d" defer></script>
   <script src="js/gallery-room-utils.js?v=2e33c951" defer></script>
   <script src="js/contact-utils.js?v=9aebded3" defer></script>
   <script src="js/hints.js?v=9e5ddd6b" defer></script>
@@ -117,13 +117,10 @@
     <section class="opening" id="opening" aria-labelledby="opening-title">
       <div class="opening__stage">
         <canvas class="opening__layer" aria-hidden="true" data-opening-museum></canvas>
+        <div class="opening__layer opening__stills" aria-hidden="true" data-opening-stills></div>
         <div class="opening__layer opening__blank" aria-hidden="true" data-opening-blank></div>
         <div class="opening__layer word3d" aria-hidden="true" data-opening-word></div>
-        <div class="curtain-choice" role="group" aria-label="Curtain colour" data-opening-curtain hidden>
-          <span class="curtain-choice__label" aria-hidden="true">Curtains</span>
-          <button class="curtain-choice__swatch" type="button" data-curtain="red" aria-pressed="false" title="Red curtains"><span class="visually-hidden">Red</span></button>
-          <button class="curtain-choice__swatch" type="button" data-curtain="navy" aria-pressed="false" title="Navy curtains"><span class="visually-hidden">Navy</span></button>
-        </div>
+        <a class="opening__skip" href="#works" data-opening-skip>Skip to selected work <span aria-hidden="true">&darr;</span></a>
         <div class="opening__trails" aria-hidden="true" data-opening-trails></div>
         <h1 class="visually-hidden" id="opening-title">nuances by nafis</h1>
         <div class="opening__words">
