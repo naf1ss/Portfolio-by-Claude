@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { TIMELINE, PLAN, smoothstep, fieldOfView, distanceToFit, arrival, cameraKeys, segmentAt, curtainPoint } = require('../js/museum-utils.js');
+const { TIMELINE, PLAN, smoothstep, fieldOfView, distanceToFit, closeUp, catalogue, hang, cameraKeys, segmentAt, curtainPoint } = require('../js/museum-utils.js');
 
 const WIDE = 16 / 9;
 const TALL = 390 / 844;
@@ -19,7 +19,8 @@ test('the timeline runs in order: word, doors, threshold, curtains, arrival', ()
     TIMELINE.doors[0], TIMELINE.doors[1], TIMELINE.inside[1], TIMELINE.curtains[0], TIMELINE.curtains[1],
   ];
   order.forEach((time, i) => i && assert.ok(time >= order[i - 1], `step ${i} comes after step ${i - 1}`));
-  assert.ok(TIMELINE.curtains[1] <= TIMELINE.arrive && TIMELINE.arrive < 1);
+  assert.ok(TIMELINE.curtains[1] <= TIMELINE.arrive && TIMELINE.arrive < TIMELINE.inGallery);
+  assert.ok(TIMELINE.inGallery < TIMELINE.toCatalogue && TIMELINE.toCatalogue < 1);
 });
 
 test('a tall screen gets a wider field of view than a wide one', () => {
@@ -40,13 +41,13 @@ for (const [name, aspect] of [['wide', WIDE], ['tall', TALL]]) {
     keys.forEach((key, i) => {
       if (!i) return;
       assert.ok(key.t > keys[i - 1].t, 'times increase');
-      assert.ok(key.position[2] < keys[i - 1].position[2], 'each stop is further in');
+      if (key.t < 1) assert.ok(key.position[2] < keys[i - 1].position[2], 'each stop is further in');
     });
     assert.equal(keys[0].t, TIMELINE.setOff);
     assert.equal(keys.at(-1).t, 1);
   });
 
-  test(`camera on a ${name} screen: starts with the whole façade in view, ends seeing only the wall`, () => {
+  test(`camera on a ${name} screen: starts with the whole façade in view`, () => {
     const keys = cameraKeys(aspect);
     const half = Math.tan((fieldOfView(aspect) * Math.PI) / 360);
     const start = keys[0].position[2];
@@ -55,13 +56,24 @@ for (const [name, aspect] of [['wide', WIDE], ['tall', TALL]]) {
     assert.equal(level, keys[0].look[1], 'the first view is level');
     assert.ok(level + start * half >= PLAN.top, 'the roof is in view');
     assert.ok(level - start * half <= 0, 'and so is the ground');
+  });
 
-    const end = arrival(aspect);
-    const last = keys.at(-1);
-    assert.ok(Math.abs(last.position[2] - (PLAN.foyer.back + end.distance)) < 1e-9);
-    assert.ok(end.distance * half < PLAN.eye, 'the floor is below the view');
-    assert.ok(end.visibleWidth < PLAN.foyer.halfWidth * 2, 'the side walls are outside the view');
-    assert.equal(last.position[1], last.look[1], 'it faces the wall squarely');
+  test(`camera on a ${name} screen: ends square on the catalogue, its cover filling the view`, () => {
+    const last = cameraKeys(aspect).at(-1);
+    const book = catalogue();
+    const { cover, distance, visibleWidth } = closeUp(aspect);
+    const half = Math.tan((fieldOfView(aspect) * Math.PI) / 360);
+    assert.deepEqual(last.look, book.centre);
+    const away = last.position.map((value, axis) => value - book.centre[axis]);
+    close(Math.hypot(...away), distance);
+    away.forEach((value, axis) => close(value / distance, book.facing[axis], 'it looks straight down the cover\'s own line'));
+    assert.ok(visibleWidth <= cover.width + 1e-9, 'the cover is at least as wide as the view');
+    assert.ok(2 * distance * half <= cover.height + 1e-9, 'and at least as tall');
+    assert.equal(cover.width > cover.height, aspect > 1, 'the cover is turned to suit the screen');
+    assert.ok(distance > 0.15, 'and the camera is not inside the book');
+    const before = cameraKeys(aspect).at(-2);
+    assert.deepEqual(before.look, book.centre);
+    before.position.forEach((value, axis) => close((value - book.centre[axis]) / Math.hypot(...before.position.map((v, a) => v - book.centre[a])), book.facing[axis], 'the last approach is straight in'));
   });
 
   test(`camera on a ${name} screen: passes the doors only after they have opened`, () => {
@@ -110,4 +122,21 @@ test('two closed curtains meet in the middle of the opening and cover it', () =>
   assert.ok(PLAN.curtain.width * 2 >= PLAN.proscenium.width, 'together they are as wide as the opening');
   assert.ok(PLAN.curtain.height >= PLAN.proscenium.height, 'and as tall');
   assert.ok(PLAN.curtain.z < PLAN.proscenium.z, 'they hang behind it');
+});
+
+test('pictures hang in a row, centred, at one scale, evenly spaced', () => {
+  const row = hang([{ widthIn: 18, heightIn: 24 }, { widthIn: 47.75, heightIn: 17.75 }, { widthIn: 24, heightIn: 24 }]);
+  const { scale, gap } = PLAN.gallery;
+  close(row[1].width, 47.75 * 0.0254 * scale);
+  close(row[0].height / row[0].width, 24 / 18, 'each keeps its proportions');
+  close(row[0].x - row[0].width / 2, -(row[2].x + row[2].width / 2), 'the row is centred on the wall');
+  row.forEach((picture, i) => i && close(picture.x - picture.width / 2 - (row[i - 1].x + row[i - 1].width / 2), gap));
+  assert.ok(row[2].x + row[2].width / 2 < PLAN.foyer.halfWidth, 'and fits on it');
+});
+
+test('the catalogue stands in the exhibition room, in front of the pictures', () => {
+  assert.ok(PLAN.catalogue.z < PLAN.curtain.z && PLAN.catalogue.z > PLAN.foyer.back);
+  const { facing } = catalogue();
+  close(Math.hypot(...facing), 1);
+  assert.ok(facing[1] > 0 && facing[2] > 0, 'its cover faces up and toward the visitor');
 });

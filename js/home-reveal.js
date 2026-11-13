@@ -288,7 +288,7 @@
       stage.style.setProperty('--leave', leave.toFixed(3));
       stage.classList.toggle('is-walking', leave === 0); // once gone they must not be clicked or tabbed to either
       // The curtain colours are offered while the curtains are in view: from inside the foyer until the walk passes them.
-      curtainChoice.show(Boolean(museum) && t > TIMELINE.inside[1] + 0.04 && t < TIMELINE.arrive + 0.1);
+      curtainChoice.show(Boolean(museum) && t > TIMELINE.inside[1] + 0.04 && t < TIMELINE.arrive + 0.015);
       if (standing) placeWord();
       watch();
     }
@@ -384,7 +384,8 @@
     }
 
     // The word is measured in the site's faces, and the museum letters its walls in them, so those load first.
-    const faces = [`500 40px '${WORD_FACE}'`, `400 40px '${SCRIPT_FACE}'`].map((face) => document.fonts.load(face).catch(() => {}));
+    const faces = [`500 40px '${WORD_FACE}'`, `600 40px '${WORD_FACE}'`, `italic 500 40px '${WORD_FACE}'`, `400 40px '${SCRIPT_FACE}'`, "500 40px 'Manrope'", "600 40px 'Manrope'"]
+      .map((face) => document.fonts.load(face).catch(() => {}));
     Promise.all(faces).then(() => {
       measureWord();
       if (!walks) return;
@@ -393,8 +394,10 @@
         canvas: layers.museum,
         word: WORD,
         signSuffix: settings.signSuffix,
-        revealText: settings.revealText,
         curtain: curtainChoice.chosen(),
+        exhibits: settings.exhibits,
+        wallText: settings.wallText,
+        coverText: settings.cover,
         colours: pageColours(),
         onFrame: walk,
       }).then((built) => {

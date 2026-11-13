@@ -22,14 +22,24 @@ window.SITE_CONFIG = {
   // The big "Latest work" feature on the home page.
   latestId: 'A046',
 
-  // The home page. Scrolling from the "nuances" wordmark walks into a museum (js/museum.js) and arrives at
-  // `museum.revealText` behind its curtains; then come a few works from different disciplines, each arriving
-  // in its own way (paint spreads, a photograph develops, an object turns), then one interdisciplinary project.
+  // The home page. Scrolling from the "nuances" wordmark walks into a museum (js/museum.js): through its doors
+  // and its foyer, past the curtains, into an exhibition, and up to the exhibition's catalogue. The rest of the
+  // page is that catalogue: a few works from different disciplines, each arriving in its own way (paint
+  // spreads, a photograph develops, an object turns), then one interdisciplinary project.
   home: {
     museum: {
-      signSuffix: 'Gallery', // follows the wordmark on the building: "nuances Gallery"
-      revealText: 'Nafis — Selected Works',
+      signSuffix: 'gallery', // follows the wordmark on the building: "nuances gallery"
       curtainDefault: 'red', // 'red' or 'navy'; a visitor's own choice is remembered over this
+      // The pictures on the exhibition's wall, left to right. They hang at true size relative to one another.
+      exhibitIds: ['A030', 'A046', 'A041'],
+      // The wall text beside them. The years the work spans are added after `intro`.
+      wallText: {
+        title: 'Nafis',
+        subtitle: 'Selected Works',
+        intro: 'Paintings, prints, ceramics, photographs and interdisciplinary projects by a multidisciplinary artist.',
+      },
+      // The catalogue's cover, which the walk ends on.
+      cover: { title: 'Nafis — Selected Works', note: 'Exhibition catalogue' },
       posterWorkId: null, // a work to hang as the exhibition banner by the doors; none for now
     },
     features: [

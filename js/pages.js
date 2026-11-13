@@ -61,6 +61,26 @@
     return true;
   }
 
+  /**
+   * What the museum on the home page needs, worked out from the site's settings and its works: the pictures to
+   * hang (image, label and real size), and the wall text with the years the work spans.
+   */
+  function museumSettings(settings, works, byId, U) {
+    const exhibits = (settings.exhibitIds || []).map((id) => byId.get(id)).filter(Boolean).map((work) => {
+      const size = window.GalleryRoomUtils.sizeInches(work);
+      return { src: U.imageUrl(work, 1200), title: work.title, year: work.year, medium: work.medium, widthIn: size.w, heightIn: size.h };
+    });
+    const years = works.map((work) => work.year).filter(Number.isFinite);
+    const span = years.length ? ` ${Math.min(...years)}–${Math.max(...years)}.` : '';
+    const text = settings.wallText || {};
+    return {
+      ...settings,
+      exhibits,
+      wallText: { title: text.title || '', subtitle: text.subtitle || '', body: `${text.intro || ''}${span}` },
+      cover: { title: 'Selected Works', note: '', ...settings.cover },
+    };
+  }
+
   function initHome() {
     const { U, all, byId } = loadWorks();
     const home = config.home || {};
@@ -75,7 +95,7 @@
       },
       {
         U,
-        museum: { revealText: 'Selected Works', ...home.museum },
+        museum: museumSettings(home.museum || {}, visible, byId, U),
         featureWorks: (home.features || [])
           .map(({ id, reveal }) => ({ work: byId.get(id), reveal }))
           .filter(({ work }) => work),

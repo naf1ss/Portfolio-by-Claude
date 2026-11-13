@@ -324,41 +324,36 @@
   sky.HAZE = '#2a2440';
 
   /**
-   * Fills lettering as gilded letters cut into stone. `write(pen)` must draw the text with `pen.fillText`; it
-   * is called several times with different inks. `depth` is how deep the cut looks, in pixels.
+   * Draws lettering as gilded letters on stone. `write(pen, how)` must draw the text with `pen[how](...)`,
+   * where `how` is 'fillText' or 'strokeText'; it is called several times with different inks. `size` is the
+   * type's size in pixels.
+   *
+   * The sign is read from across a square, where it is only a few dozen pixels tall, so it is kept plain: the
+   * letters' thin strokes are thickened a little (a display face's hairlines vanish at that size), and a soft
+   * dark edge below and to the right lifts the gold off the stone. Fine carved detail would only turn to mud.
    */
-  function gild(pen, write, depth = 4) {
-    const { width, height } = pen.canvas;
-    const gold = pen.createLinearGradient(0, 0, 0, height);
-    gold.addColorStop(0.25, '#ffefbd');
-    gold.addColorStop(0.55, '#f0c877');
-    gold.addColorStop(0.85, '#c7964a');
-    pen.fillStyle = gold;
-    write(pen);
-
-    // The cut's upper wall is in shadow: everything but the letters, shifted down and right, darkens them.
-    const around = sheet(width, height);
-    around.pen.fillStyle = '#000';
-    around.pen.fillRect(0, 0, width, height);
-    around.pen.globalCompositeOperation = 'destination-out';
-    around.pen.font = pen.font;
-    write(around.pen);
+  function gild(pen, write, size) {
+    const { height } = pen.canvas;
+    pen.lineJoin = 'round';
+    pen.lineWidth = size * 0.02; // enough to carry the hairlines
+    const draw = (ink) => {
+      pen.fillStyle = ink;
+      pen.strokeStyle = ink;
+      write(pen, 'strokeText');
+      write(pen, 'fillText');
+    };
     pen.save();
-    pen.globalCompositeOperation = 'source-atop';
-    pen.globalAlpha = 0.38;
-    pen.drawImage(around.canvas, depth * 0.6, depth);
+    pen.shadowColor = 'rgba(32, 20, 8, 0.6)';
+    pen.shadowBlur = size * 0.035;
+    pen.shadowOffsetX = size * 0.012;
+    pen.shadowOffsetY = size * 0.02;
+    draw('#5a3f1c');
     pen.restore();
-
-    // Behind the letters: the stone's lit lip below and to the right, its shadowed lip above and to the left.
-    pen.save();
-    pen.globalCompositeOperation = 'destination-over';
-    pen.fillStyle = 'rgba(255, 244, 220, 0.5)';
-    pen.translate(depth * 0.4, depth * 0.5);
-    write(pen);
-    pen.fillStyle = 'rgba(30, 20, 10, 0.5)';
-    pen.translate(-depth * 0.8, -depth);
-    write(pen);
-    pen.restore();
+    const gold = pen.createLinearGradient(0, height * 0.2, 0, height * 0.85);
+    gold.addColorStop(0, '#ffefc0');
+    gold.addColorStop(0.5, '#f1cb7c');
+    gold.addColorStop(1, '#cf9f52');
+    draw(gold);
   }
 
   /** Polished marble, near-white, with a few dark veins wandering across it. Tiles roughly, which a floor's joints hide. */
@@ -489,18 +484,46 @@
     return canvas;
   }
 
-  /** A shaft of light seen from the side: bright where it leaves the lamp (the top of the sheet), thinning to nothing. */
-  function beam(height = 256) {
-    const { canvas, pen } = sheet(8, height);
-    const fade = pen.createLinearGradient(0, 0, 0, height);
-    fade.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-    fade.addColorStop(0.25, 'rgba(255, 255, 255, 0.4)');
-    fade.addColorStop(0.7, 'rgba(255, 255, 255, 0.12)');
-    fade.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    pen.fillStyle = fade;
-    pen.fillRect(0, 0, 8, height);
+  /**
+   * A shaft of light as a flat sheet: bright where it leaves the lamp (the top), thinning to nothing along its
+   * length, and fading softly to nothing at both sides, so the shaft has no edge.
+   */
+  function beam(size = 128) {
+    const { canvas, pen } = sheet(size);
+    const image = pen.createImageData(size, size);
+    for (let y = 0; y < size; y += 1) {
+      const along = y / (size - 1);
+      const strength = 0.9 * (1 - along) ** 1.6;
+      for (let x = 0; x < size; x += 1) {
+        const across = Math.cos(((x / (size - 1)) - 0.5) * Math.PI) ** 2; // 0 at the sides, 1 down the middle
+        const i = (y * size + x) * 4;
+        image.data[i] = image.data[i + 1] = image.data[i + 2] = 255;
+        image.data[i + 3] = 255 * strength * across;
+      }
+    }
+    pen.putImageData(image, 0, 0);
     return canvas;
   }
 
-  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, seeded, noise };
+  /** A floor of long dark boards, near-white for the scene to tint: grain along each, joints between. Tiles. */
+  function planks({ size = 512, boards = 6, seed = 53 } = {}) {
+    const { canvas, pen } = sheet(size);
+    const random = seeded(seed);
+    const width = size / boards;
+    for (let board = 0; board < boards; board += 1) {
+      const tone = 190 + Math.round(random() * 50);
+      pen.fillStyle = `rgb(${tone}, ${tone - 6}, ${tone - 14})`;
+      pen.fillRect(board * width, 0, width, size);
+      for (let i = 0; i < 46; i += 1) { // grain
+        pen.fillStyle = `rgba(60, 40, 24, ${random() * 0.12})`;
+        pen.fillRect(board * width + random() * width, 0, 1 + random() * 1.5, size);
+      }
+      pen.fillStyle = 'rgba(20, 12, 6, 0.55)';
+      pen.fillRect(board * width, 0, 2, size);
+      pen.fillRect(board * width, Math.floor(random() * size), width, 2); // where one board ends and the next begins
+    }
+    return canvas;
+  }
+
+  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, planks, seeded, noise };
 })();

@@ -35,8 +35,11 @@
     setOff: 0.1, // the walk begins
     doors: [0.235, 0.325],
     inside: [0.31, 0.38], // crossing the threshold: evening light gives way to the foyer's
-    curtains: [0.52, 0.76],
-    arrive: 0.76, // the curtains are open; the last stretch walks between them, up to the wall
+    curtains: [0.5, 0.7],
+    arrive: 0.72, // the curtains are open; the walk goes on between them, into the exhibition
+    inGallery: 0.84, // standing before the wall of pictures
+    toCatalogue: 0.9, // after a pause there, the walk turns to the catalogue on its stand
+    overCatalogue: 0.965, // square over its cover; the rest closes in
   };
 
   const steps = { count: 11, rise: 0.16, run: 0.42, width: 27, top: 2.4 }; // `top`: z of the platform's front edge
@@ -59,11 +62,17 @@
     wall: { z: -3.2, thickness: 0.8, halfWidth: 13 }, // the front wall, behind the columns
     door: { width: 3.0, height: 6.2 },
     cheek: { width: 2.2 }, // the low walls flanking the steps, which carry the lamps
-    foyer: { halfWidth: 7, height: 8.5, back: -24 }, // `back`: the wall behind the curtains
+    foyer: { halfWidth: 7, height: 8.5, back: -30 }, // `back`: the far wall, where the pictures hang
+    // The exhibition room behind the curtains. Pictures hang with their middles on one line, `hangLine` above
+    // the floor, at `scale` times their real size (the room is larger than life), `gap` apart.
+    gallery: { hangLine: 2.05, scale: 2.2, gap: 0.85 },
+    // The catalogue lies on a stand whose top slopes toward the visitor by `tilt` degrees. Its cover is `long`
+    // by `short` metres, turned to suit the screen (see closeUp).
+    catalogue: { z: -26.6, height: 1.06, tilt: 28, long: 0.5, short: 0.36 },
     proscenium: { z: -19, width: 8, height: 5.6, thickness: 0.5 },
     curtain: { z: -19.5, width: 4.35, height: 5.9, gathered: 0.8, folds: 7 },
     eye: 1.65, // eye height above the floor
-    sign: { width: 5.4 }, // the wordmark on the frieze
+    sign: { width: 4.0, gap: 0.34 }, // the wordmark on the frieze: its width in metres, and the space before "gallery" in ems
     fov: { landscape: 40, portrait: 50 }, // vertical field of view, degrees
   };
   PLAN.frontOfSteps = steps.top + (steps.count - 1) * steps.run;
@@ -84,13 +93,38 @@
   }
 
   /**
-   * The last stop: close enough to the back wall that the wall is all there is to see, and the width of wall
-   * that then fills the screen. The floor must stay out of view, which limits the distance by the eye's height.
+   * The last stop: square on to the catalogue's cover, close enough that the cover is all there is to see.
+   * The cover is turned to suit the screen (upright on a tall one), and the distance is the largest at which
+   * it still fills the view both ways. Returns the cover's size, that distance, and the width of cover in view.
    */
-  function arrival(aspect) {
+  function closeUp(aspect) {
+    const { long, short } = PLAN.catalogue;
+    const cover = aspect < 1 ? { width: short, height: long } : { width: long, height: short };
     const half = tanHalf(fieldOfView(aspect));
-    const distance = Math.min(4.4, (PLAN.eye - 0.05) / half);
-    return { distance, visibleWidth: 2 * distance * half * aspect };
+    const distance = Math.min(cover.height, cover.width / aspect) / (2 * half);
+    return { cover, distance, visibleWidth: 2 * distance * half * aspect };
+  }
+
+  /** Where the catalogue's cover is: its middle, and the direction it faces (up, and toward the visitor). */
+  function catalogue() {
+    const tilt = (PLAN.catalogue.tilt * Math.PI) / 180;
+    return { centre: [0, platform + PLAN.catalogue.height, PLAN.catalogue.z], facing: [0, Math.cos(tilt), Math.sin(tilt)], tilt };
+  }
+
+  /**
+   * Hangs pictures in a row, centred on the wall: given each one's real size in inches, returns its width and
+   * height on this wall in metres and the position of its middle along the wall.
+   */
+  function hang(sizes) {
+    const { scale, gap } = PLAN.gallery;
+    const metres = sizes.map(({ widthIn, heightIn }) => ({ width: widthIn * 0.0254 * scale, height: heightIn * 0.0254 * scale }));
+    const total = metres.reduce((sum, picture) => sum + picture.width, 0) + gap * (metres.length - 1);
+    let left = -total / 2;
+    return metres.map((picture) => {
+      const x = left + picture.width / 2;
+      left += picture.width + gap;
+      return { ...picture, x };
+    });
   }
 
   /**
@@ -105,7 +139,10 @@
     const level = PLAN.top * 0.46;
     const far = distanceToFit({ width: PLAN.frontage + 1.5, height: 2 * (PLAN.top + 1.4 - level), fovDeg, aspect });
     const head = floor + eye;
-    const end = arrival(aspect);
+    const book = catalogue();
+    const reach = closeUp(aspect).distance;
+    const wallOfPictures = [0, floor + PLAN.gallery.hangLine, foyer.back];
+    const above = (distance) => book.centre.map((value, axis) => value + book.facing[axis] * distance); // out from the cover, along the way it faces
     return [
       // The whole façade, from across the square.
       { t: TIMELINE.setOff, position: [0, level, far], look: [0, level, 0] },
@@ -119,8 +156,14 @@
       { t: 0.5, position: [0, head, proscenium.z + 10.4], look: [0, floor + 2.6, proscenium.z] },
       // A slow step closer while they open.
       { t: TIMELINE.arrive, position: [0, head, proscenium.z + 8.8], look: [0, floor + 2.2, foyer.back] },
-      // Between the curtains, up to the wall.
-      { t: 1, position: [0, head, foyer.back + end.distance], look: [0, head, foyer.back] },
+      // Between the curtains and into the exhibition, to stand before the pictures.
+      { t: TIMELINE.inGallery, position: [0, head, foyer.back + 7.4], look: wallOfPictures },
+      // A pause there, drifting a little closer.
+      { t: TIMELINE.toCatalogue, position: [0, head, foyer.back + 6.6], look: wallOfPictures },
+      // Down to the catalogue: first to stand square over its cover, a little way off, then straight in along
+      // the cover's own line until it fills the view. Arriving square means the cover never looks skewed.
+      { t: TIMELINE.overCatalogue, position: above(reach * 2.6), look: book.centre },
+      { t: 1, position: above(reach), look: book.centre },
     ];
   }
 
@@ -154,5 +197,5 @@
     };
   }
 
-  return { TIMELINE, PLAN, clamp, lerp, smoothstep, fieldOfView, distanceToFit, arrival, cameraKeys, segmentAt, curtainPoint };
+  return { TIMELINE, PLAN, clamp, lerp, smoothstep, fieldOfView, distanceToFit, closeUp, catalogue, hang, cameraKeys, segmentAt, curtainPoint };
 })());

@@ -1,7 +1,7 @@
 /**
  * The museum the home page walks into, drawn in 3D on a canvas (three.js, loaded only when it is needed).
  *
- *   const museum = await Museum.create({ canvas, word, signSuffix, revealText, curtain, colours, onFrame });
+ *   const museum = await Museum.create({ canvas, word, signSuffix, curtain, exhibits, wallText, coverText, colours, onFrame });
  *   museum.setProgress(0.4);   // how far through the walk, 0 to 1; the scene eases toward it
  *
  * Scrolling is the only clock: one number, 0 to 1, places the camera on its path, swings the doors and draws
@@ -12,12 +12,14 @@
  *   js/museum-utils.js      the floor plan, the scroll timeline, the camera's stops (pure maths)
  *   js/museum-textures.js   every surface, painted in code
  *   js/museum.js            this file: the renderer, the shared kit, the outside of the building, the light, the walk
- *   js/museum-foyer.js      the inside: the foyer, the curtains, the room behind them
+ *   js/museum-foyer.js      the inside, up to the curtains: the foyer and the curtains themselves
+ *   js/museum-gallery.js    the exhibition behind the curtains: the pictures, the labels, the catalogue
  *
  * How it is lit, cheaply. It is dusk: a cool sky light, and one low cool key light whose shadows are worked
  * out once, since the building never moves. The warmth is mostly painted on rather than computed: lamps are
  * glowing sprites, and the columns are lit from their feet by a gradient that makes the stone itself glow.
- * Only two real lamps exist: one behind the doors, and one that hangs in the porch and then lights the foyer.
+ * Only two real lamps exist, and each does two jobs: one hangs in the porch and then lights the foyer; the
+ * other waits behind the doors and then lights the exhibition.
  *
  * `create` resolves to null where the scene cannot run (no WebGL 2, or the library fails to load); the page
  * then keeps its plain opening.
@@ -31,7 +33,7 @@
   // The library sits beside this script; resolving from the script's own address works from any page.
   const LIBRARY = new URL('vendor/three.module.min.js', document.currentScript.src).href;
 
-  const WORD_FACE = "500 {size}px 'Bodoni Moda'";
+  const SIGN_FACE = "600 {size}px 'Bodoni Moda'"; // a little heavier than the page's wordmark: it is read from across a square
   const MAX_PIXEL_RATIO = 2; // sharper than this costs frames and cannot be seen in motion
   const FOLLOW_MS = 110; // how quickly the scene catches up with the scroll: long enough to smooth a wheel's steps
   const GAZE = { yaw: 0.07, pitch: 0.04, ease: 0.08 }; // radians the view turns toward the cursor, at most
@@ -72,7 +74,7 @@
     }
   }
 
-  async function create({ canvas, word, signSuffix = '', revealText, curtain, colours, onFrame = () => {} }) {
+  async function create({ canvas, word, signSuffix = '', curtain, exhibits = [], wallText, coverText, colours, onFrame = () => {} }) {
     if (!support().webgl) return null;
     let THREE;
     let renderer;
@@ -408,13 +410,13 @@
         // A flat pilaster closes each end of the wall, answering the columns.
         box(materials.stone, [1.3, columns.height - 0.3, 0.3], [side * (wall.halfWidth - 0.65), floor + (columns.height - 0.3) / 2, wall.z + 0.15]);
         // The doorway's frame.
-        box(materials.stone, [0.42, door.height + 0.42, 0.3], [side * (door.width / 2 + 0.21), floor + (door.height + 0.42) / 2, wall.z + 0.12]);
+        box(materials.stone, [0.44, door.height + 0.42, 0.3], [side * (door.width / 2 + 0.2), floor + (door.height + 0.42) / 2, wall.z + 0.12]);
         box(materials.stone, [0.26, 0.5, 0.42], [side * (door.width / 2 + 0.29), floor + door.height + 0.67, wall.z + 0.2]); // a bracket under the hood
         sconce(side * (door.width / 2 + 2.2), floor + 4.3);
       });
       box(materials.wall, [door.width, above, wall.thickness], [0, floor + door.height + above / 2, wallZ], masonry);
       box(materials.stone, [wall.halfWidth * 2, 0.7, 0.16], [0, floor + 0.35, wall.z + 0.08]); // the wall's footing
-      box(materials.stone, [door.width + 0.84, 0.42, 0.34], [0, floor + door.height + 0.21, wall.z + 0.14]);
+      box(materials.stone, [door.width + 0.84, 0.44, 0.34], [0, floor + door.height + 0.2, wall.z + 0.14]);
       box(materials.stone, [door.width + 0.84, 0.5, 0.2], [0, floor + door.height + 0.67, wall.z + 0.1]); // a plain band between the brackets
       box(materials.stone, [door.width + 1.5, 0.18, 0.7], [0, floor + door.height + 1.01, wall.z + 0.3]); // the hood over the door
     }
@@ -459,37 +461,46 @@
     // ---------- lettering ----------
 
     /**
-     * The name on the frieze, in gilded letters cut into the stone: the wordmark, then `signSuffix` ("Gallery").
-     * Returns where the wordmark's first letter starts and its last ends, in the building's space, so the page
-     * can fly its own wordmark onto exactly that spot; the rest of the name is already there to meet it.
+     * The name on the frieze, in gilded letters: the wordmark, then `signSuffix` ("gallery"), set as two words
+     * with a measured space between them. Returns where the wordmark's first letter starts and its last ends,
+     * in the building's space, so the page can fly its own wordmark onto exactly that spot; the rest of the
+     * name is already there to meet it.
      */
     function buildSign() {
-      const size = 220;
-      const font = WORD_FACE.replace('{size}', size);
+      const size = 240;
+      const font = SIGN_FACE.replace('{size}', size);
       const measure = document.createElement('canvas').getContext('2d');
       measure.font = font;
       const wordWidth = measure.measureText(word).width;
-      const name = signSuffix ? `${word} ${signSuffix}` : `${word}.`;
+      const gap = size * PLAN.sign.gap; // wider than the face's own word space, which is tight for a sign
+      const suffixAt = wordWidth + gap;
+      const nameWidth = signSuffix ? suffixAt + measure.measureText(signSuffix).width : wordWidth;
+      // How far the letters reach above and below the baseline, so the name can be centred on the frieze by
+      // what is actually drawn (tall letters and tails included), not by the type's nominal size.
+      const ink = measure.measureText(signSuffix ? `${word}${signSuffix}` : word);
+      const reach = { up: ink.actualBoundingBoxAscent, down: ink.actualBoundingBoxDescent };
       const margin = Math.round(size * 0.25);
-      const baseline = Math.round(size * 1.1);
-      const sheet = { width: measure.measureText(name).width + margin * 2, height: size * 1.5 };
+      const baseline = margin + Math.ceil(reach.up);
+      const sheet = { width: nameWidth + margin * 2, height: baseline + Math.ceil(reach.down) + margin };
       const plane = letteringPlane();
       plane.material.map = lettering(sheet.width, sheet.height, (pen) => {
         pen.font = font;
-        T.gild(pen, (ink) => ink.fillText(name, margin, baseline), size * 0.022);
+        T.gild(pen, (inked, how) => {
+          inked[how](word, margin, baseline);
+          if (signSuffix) inked[how](signSuffix, margin + suffixAt, baseline);
+        }, size);
       });
 
       const { entablature, columns, sign } = PLAN;
       const metres = sign.width / wordWidth; // per canvas pixel
       const friezeY = floor + columns.height + entablature.architrave + entablature.frieze / 2;
-      const middleOfLetters = baseline - size * 0.23; // mostly lowercase: centre on the x-height
       plane.scale.set(sheet.width * metres, sheet.height * metres, 1);
       const z = columns.z + (entablature.depth - 0.1) / 2 + 0.01;
-      const y = friezeY - (sheet.height / 2 - middleOfLetters) * metres;
-      plane.position.set(0, y, z);
+      // The sheet's margins are equal all round, so centring the sheet centres the lettering.
+      plane.position.set(0, friezeY, z);
       outside.add(plane);
 
-      const start = new THREE.Vector3((-sheet.width / 2 + margin) * metres, y + (sheet.height / 2 - baseline) * metres, z);
+      const start = new THREE.Vector3((-sheet.width / 2 + margin) * metres, friezeY + (sheet.height / 2 - baseline) * metres, z);
       return { start, end: start.clone().setX(start.x + sign.width) };
     }
 
@@ -512,8 +523,10 @@
       const porch = { position: new THREE.Vector3(0, floor + 5.6, -0.5), colour: new THREE.Color(COLOUR.warm), intensity: 190 };
       const foyer = { position: new THREE.Vector3(0, floor + 7, -13), colour: new THREE.Color(0xffe2b8), intensity: 140 };
       const lamp = new THREE.PointLight(porch.colour, porch.intensity, 44, 2);
-      const doorway = new THREE.PointLight(0xffb469, 0, 34, 2); // just inside: comes up as the doors open
-      doorway.position.set(0, floor + 4, -6.5);
+      // The other waits just inside the doors, coming up as they open, and later lights the exhibition.
+      const entry = { position: new THREE.Vector3(0, floor + 4, -6.5), colour: new THREE.Color(0xffb469) };
+      const show = { position: new THREE.Vector3(0, floor + 5.2, PLAN.foyer.back + 4.6), colour: new THREE.Color(0xffe6c4), intensity: 150 };
+      const doorway = new THREE.PointLight(entry.colour, 0, 34, 2);
       scene.add(evening, key, key.target, lamp, doorway);
 
       outside.traverse((part) => {
@@ -523,11 +536,16 @@
       });
       renderer.shadowMap.needsUpdate = true;
 
-      /** `within`: 0 out in the evening, 1 in the foyer, where the sky's light does not follow. `open`: the doors. */
-      return function setMood(within, open) {
+      /**
+       * `within`: 0 out in the evening, 1 in the foyer, where the sky's light does not follow. `open`: the doors.
+       * `deep`: 0 in the foyer, 1 in the exhibition behind the curtains.
+       */
+      return function setMood(within, open, deep) {
         evening.intensity = lerp(1.5, 0.32, within);
         key.intensity = lerp(1.25, 0, within);
-        doorway.intensity = lerp(30, 150, open);
+        doorway.position.lerpVectors(entry.position, show.position, deep);
+        doorway.color.lerpColors(entry.colour, show.colour, deep);
+        doorway.intensity = lerp(lerp(30, 150, open), show.intensity, deep);
         lamp.position.lerpVectors(porch.position, foyer.position, within);
         lamp.color.lerpColors(porch.colour, foyer.colour, within);
         lamp.intensity = lerp(porch.intensity, foyer.intensity, within);
@@ -541,11 +559,10 @@
     buildWall();
     const swingDoors = buildDoors();
     const sign = buildSign();
-    // The inside is built by its own file, from the same kit of materials and shapes.
-    const foyer = window.MuseumFoyer.build(
-      { THREE, floor, inside, colours, materials, maps, lambert, painted, glowing: light, textureOf, box, sheetOf, halo, lettering, letteringPlane },
-      { revealText, curtain }
-    );
+    // The inside is built by its own files, from the same kit of materials and shapes.
+    const kit = { THREE, floor, inside, colours, materials, maps, lambert, painted, glowing: light, textureOf, box, sheetOf, halo, lettering, letteringPlane, redraw: () => wake() };
+    const foyer = window.MuseumFoyer.build(kit, { curtain });
+    const gallery = window.MuseumGallery.build(kit, { exhibits, wallText, coverText });
     const setMood = buildLight();
 
     // ---------- the walk ----------
@@ -585,7 +602,8 @@
       const open = smoothstep(TIMELINE.doors[0], TIMELINE.doors[1], t);
       const within = smoothstep(TIMELINE.inside[0], TIMELINE.inside[1], t);
       swingDoors(open);
-      setMood(within, open);
+      // The second lamp leaves the doorway for the exhibition before the curtains part, so the room is lit when first seen.
+      setMood(within, open, smoothstep(TIMELINE.inside[1] + 0.03, TIMELINE.curtains[0], t));
       state.astir = foyer.update({ t, within, open: smoothstep(TIMELINE.curtains[0], TIMELINE.curtains[1], t), now: state.last });
       renderer.render(scene, camera);
       onFrame(t);
@@ -604,6 +622,7 @@
       gaze.y += (gaze.toY - gaze.y) * GAZE.ease;
       const settled = state.t === state.target && Math.abs(gaze.toX - gaze.x) < 0.002 && Math.abs(gaze.toY - gaze.y) < 0.002;
       draw();
+      canvas.dataset.walk = state.t.toFixed(4); // where the walk is, for tests and for anyone inspecting the page
       if (!settled || state.astir) state.frame = requestAnimationFrame(tick);
     }
 
@@ -629,7 +648,7 @@
       const keys = M.cameraKeys(state.aspect);
       const curve = (points) => new THREE.CatmullRomCurve3(points.map((point) => new THREE.Vector3(...point)), false, 'centripetal');
       path = { times: keys.map((key) => key.t), position: curve(keys.map((key) => key.position)), look: curve(keys.map((key) => key.look)) };
-      foyer.fit(state.aspect);
+      gallery.fit(state.aspect);
       if (state.t !== null) draw();
     }
 
@@ -660,10 +679,10 @@
         state.gaze.toY = clamp(y, -1, 1);
         wake();
       },
-      /** The page's colours changed (light or dark): the room behind the curtains, and its lettering, follow. */
+      /** The page's colours changed (light or dark): the catalogue's cover is the page, so it follows. */
       setColours(next) {
         Object.assign(colours, next);
-        foyer.repaint();
+        gallery.repaint();
         wake();
       },
       /** 'red' or 'navy': the curtains dissolve to the new colour. */

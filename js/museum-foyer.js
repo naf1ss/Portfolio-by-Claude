@@ -1,16 +1,18 @@
 /**
- * The inside of the museum: the foyer, the velvet curtains at its far end, and the bright room behind them
- * where the walk arrives. Built into the scene that js/museum.js sets up; that file hands over a kit of shared
- * materials and shapes.
+ * The inside of the museum up to the curtains: the foyer, and the velvet curtains at its far end. Built into
+ * the scene that js/museum.js sets up; that file hands over a kit of shared materials and shapes. What is
+ * behind the curtains is js/museum-gallery.js.
  *
- *   const foyer = MuseumFoyer.build(kit, { revealText, curtain: 'red' });
+ *   const foyer = MuseumFoyer.build(kit, { curtain: 'red' });
  *   foyer.update({ t, open, within, now });   // each frame; returns true while something here still moves
  *
  * The room: navy walls over a limestone dado, pilasters and a cornice, a floor of light and dark marble, a
  * coffered ceiling, wall lamps, benches and a carpet leading to the curtains. Two lamps on the ceiling throw
  * visible shafts of light at the curtains, with dust drifting in them.
  *
- * Behind the curtains is a room that is all one colour, the page's own: the walk ends inside the page.
+ * A rule this file keeps: no two surfaces lie in exactly the same plane where both can be seen. Where they do,
+ * the graphics card cannot tell which is in front and the two flicker through each other. So a frame stands a
+ * little proud of the wall it is on, rather than flush with it.
  */
 (function () {
   'use strict';
@@ -19,7 +21,6 @@
   const T = window.MuseumTextures;
   const { PLAN, TIMELINE, lerp, clamp } = M;
 
-  const WORD_FACE = "500 {size}px 'Bodoni Moda'";
   const CURTAIN_GRID = { across: 96, down: 12 }; // fine enough across for each fold to curve
   const CURTAIN_COLOURS = { red: 0x7f1424, navy: 0x263a75 }; // theatre red; and a velvet in the site's navy
   const BLEND_MS = 600; // a change of curtain colour dissolves, it does not snap
@@ -36,8 +37,8 @@
     beam: 0xffdcae,
   };
 
-  function build(kit, { revealText, curtain = 'red' }) {
-    const { THREE, floor, inside, colours, materials, maps, lambert, painted, glowing, textureOf, box, sheetOf, halo, lettering, letteringPlane } = kit;
+  function build(kit, { curtain = 'red' }) {
+    const { THREE, floor, inside, materials, maps, lambert, painted, glowing, textureOf, box, sheetOf, halo } = kit;
     const { foyer, wall, proscenium } = PLAN;
     const within = { parent: inside };
     const height = foyer.height;
@@ -140,17 +141,19 @@
       const opening = proscenium.width / 2;
       const pier = half - opening;
       const header = height - proscenium.height;
+      const proud = 0.03; // the frame's inner faces stand this far into the opening, clear of the wall's own
+      const frame = { width: 0.5 + proud, depth: 0.7 };
       [-1, 1].forEach((side) => {
         box(local.wall, [pier, height, proscenium.thickness], [side * (opening + pier / 2), floor + height / 2, proscenium.z], within);
         // A limestone frame round the opening, with a gilt bead on its inner edge.
-        box(materials.stone, [0.5, proscenium.height + 0.5, 0.7], [side * (opening + 0.25), floor + (proscenium.height + 0.5) / 2, proscenium.z + 0.1], within);
-        box(local.gold, [0.05, proscenium.height, 0.06], [side * (opening - 0.02), floor + proscenium.height / 2, proscenium.z + 0.46], within);
+        box(materials.stone, [frame.width, proscenium.height + 0.5, frame.depth], [side * (opening - proud + frame.width / 2), floor + (proscenium.height + 0.5) / 2, proscenium.z + 0.1], within);
+        box(local.gold, [0.05, proscenium.height - proud, 0.06], [side * (opening - proud - 0.025), floor + (proscenium.height - proud) / 2, proscenium.z + 0.46], within);
         pierPanel(side, opening + 0.5 + (pier - 0.5) / 2, pier - 1.3);
       });
       box(local.wall, [proscenium.width, header, proscenium.thickness], [0, floor + proscenium.height + header / 2, proscenium.z], within);
-      box(materials.stone, [proscenium.width + 1, 0.5, 0.7], [0, floor + proscenium.height + 0.25, proscenium.z + 0.1], within);
+      box(materials.stone, [proscenium.width + 1, frame.width, frame.depth], [0, floor + proscenium.height - proud + frame.width / 2, proscenium.z + 0.1], within);
       box(materials.stone, [proscenium.width + 1.6, 0.2, 0.95], [0, floor + proscenium.height + 0.6, proscenium.z + 0.2], within);
-      box(local.gold, [proscenium.width, 0.05, 0.06], [0, floor + proscenium.height - 0.02, proscenium.z + 0.46], within);
+      box(local.gold, [proscenium.width - proud * 2, 0.05, 0.06], [0, floor + proscenium.height - proud - 0.025, proscenium.z + 0.46], within);
     }
 
     /** On the wall each side of the opening: a tall panel outlined in gilt moulding, with a lamp in it. */
@@ -235,20 +238,35 @@
     function buildBeams() {
       const target = new THREE.Vector3(0, floor + 2.9, proscenium.z + 0.4);
       const beamMap = textureOf(T.beam());
-      const down = new THREE.Vector3(0, -1, 0);
+      const sideways = new THREE.Vector3(1, 0, 0);
+      const spread = { narrow: 0.12, wide: 1.6 }; // the shaft's half-width at the lamp and at the curtains
+      const steps = 10;
       const shafts = [-1, 1].map((side) => {
         const source = new THREE.Vector3(side * 3.6, floor + height - 0.3, proscenium.z + 10.5);
         const aim = target.clone().setX(-side * 0.9); // the two shafts cross
         const length = source.distanceTo(aim);
-        const spread = { narrow: 0.1, wide: 1.5 };
-        const cone = new THREE.CylinderGeometry(spread.narrow, spread.wide, length, 28, 1, true);
-        cone.translate(0, -length / 2, 0); // so the lamp end is the mesh's origin
-        const material = painted({ map: beamMap, color: COLOUR.beam, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false });
-        const shaft = new THREE.Mesh(cone, material);
         const direction = aim.clone().sub(source).normalize();
-        shaft.position.copy(source);
-        shaft.quaternion.setFromUnitVectors(down, direction);
-        inside.add(shaft);
+        // The shaft is a flat sheet that widens along its length. Its texture fades to nothing at the sides,
+        // so it has no outline: a solid cone's rim would show as a hard line across the curtains.
+        const positions = [];
+        const uv = [];
+        const indices = [];
+        for (let i = 0; i <= steps; i += 1) {
+          const along = i / steps;
+          const halfWidth = lerp(spread.narrow, spread.wide, along);
+          [-1, 1].forEach((edge) => {
+            const point = source.clone().addScaledVector(direction, along * length).addScaledVector(sideways, edge * halfWidth);
+            positions.push(point.x, point.y, point.z);
+            uv.push((edge + 1) / 2, 1 - along);
+          });
+          if (i < steps) indices.push(i * 2, i * 2 + 2, i * 2 + 1, i * 2 + 1, i * 2 + 2, i * 2 + 3);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+        geometry.setIndex(indices);
+        const material = painted({ map: beamMap, color: COLOUR.beam, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false });
+        inside.add(new THREE.Mesh(geometry, material));
         box(local.wood, [0.3, 0.3, 0.42], [source.x, source.y + 0.1, source.z], within); // the lamp's housing
         return { source, direction, length, spread, material };
       });
@@ -276,7 +294,7 @@
 
       /** `strength` 0 to 1: how bright the shafts are. `seconds`: the clock the dust drifts by. */
       return function light(strength, seconds) {
-        shafts.forEach(({ material }) => { material.opacity = strength * 0.13; });
+        shafts.forEach(({ material }) => { material.opacity = strength * 0.34; });
         dust.material.opacity = strength * 0.75;
         dust.visible = strength > 0.02;
         if (!dust.visible) return;
@@ -294,64 +312,30 @@
       };
     }
 
-    // ---------- the room behind the curtains, and the words on its wall ----------
+    // ---------- behind the curtains ----------
 
-    function buildPageRoom() {
-      // The room starts just behind the curtains. Dark masking fills the gap between, so none of the room's
-      // brightness leaks round the curtains' edges: it is seen only through the opening.
-      const mouth = PLAN.curtain.z - 0.36;
-      const depth = mouth - foyer.back;
+    /**
+     * Dark masking fills the gap between the curtains and the exhibition room, so none of that room's light
+     * leaks round the curtains' edges: it is seen only through the opening. Returns a function that sets what
+     * the foyer's polished floor reflects: the curtains' colour while they are closed, the exhibition's light
+     * as they open.
+     */
+    function buildMasking() {
+      const mouth = PLAN.curtain.z - 0.36; // where the exhibition room begins
       const gap = proscenium.z - proscenium.thickness / 2 - mouth;
       const gapZ = mouth + gap / 2;
       const wings = foyer.halfWidth - PLAN.curtain.width + 0.2;
-      box(local.wood, [foyer.halfWidth * 2, 0.04, gap], [0, floor + 0.0, gapZ], within);
+      box(local.wood, [foyer.halfWidth * 2, 0.04, gap], [0, floor, gapZ], within);
       box(local.wood, [foyer.halfWidth * 2, 0.1, gap], [0, floor + height, gapZ], within);
-      [-1, 1].forEach((side) => box(local.wood, [wings, height, 0.05], [side * (foyer.halfWidth - wings / 2), floor + height / 2, mouth + 0.02], within));
-      // A box seen from within, every face the page's colour: no corners show, so it reads as the page itself.
-      const room = new THREE.Mesh(new THREE.BoxGeometry(foyer.halfWidth * 2, height, depth), materials.page);
-      materials.page.side = THREE.BackSide;
-      room.position.set(0, floor + height / 2 + 0.012, foyer.back + depth / 2);
-      inside.add(room);
+      [-1, 1].forEach((side) => box(local.wood, [wings, height, 0.05], [side * (foyer.halfWidth - wings / 2), floor + height / 2, mouth + 0.04], within));
 
-      // What the bright room throws back onto the foyer's polished floor, and what the curtains do.
-      const fromRoom = sheetOf(new THREE.MeshBasicMaterial(glowing(colours.paper, 0)), [7.5, 10], [0, floor + 0.03, proscenium.z + 4.4], within);
+      const fromRoom = sheetOf(new THREE.MeshBasicMaterial(glowing(COLOUR.warm, 0)), [7.5, 10], [0, floor + 0.03, proscenium.z + 4.4], within);
       const fromCurtains = sheetOf(new THREE.MeshBasicMaterial(glowing(cloth, 0)), [9.5, 6], [0, floor + 0.035, proscenium.z + 2.6], within);
-
-      const words = letteringPlane();
-      words.position.set(0, floor + PLAN.eye, foyer.back + 0.02);
-      inside.add(words);
-
-      return {
-        /** Sets the words for a screen shape: one line on a wide screen, two on a tall one. */
-        write(aspect) {
-          const lines = aspect < 1 ? revealText.split(/\s+[—–-]\s+/) : [revealText];
-          const size = 150;
-          const font = WORD_FACE.replace('{size}', size);
-          const measure = document.createElement('canvas').getContext('2d');
-          measure.font = font;
-          const widest = Math.max(...lines.map((line) => measure.measureText(line).width));
-          const margin = size * 0.3;
-          const leading = size * 1.12;
-          const sheet = { width: widest + margin * 2, height: leading * lines.length + margin * 2 };
-          if (words.material.map) words.material.map.dispose();
-          words.material.map = lettering(sheet.width, sheet.height, (pen) => {
-            pen.font = font;
-            pen.fillStyle = colours.ink;
-            pen.textAlign = 'center';
-            lines.forEach((line, i) => pen.fillText(line, sheet.width / 2, margin + leading * (i + 0.78)));
-          });
-          words.material.needsUpdate = true;
-          const share = aspect < 1 ? 0.72 : 0.6; // of the screen's width, once the walk has arrived
-          const metres = (M.arrival(aspect).visibleWidth * share) / widest;
-          words.scale.set(sheet.width * metres, sheet.height * metres, 1);
-        },
-        /** `open`: how far the curtains are drawn, 0 to 1. `lit`: 0 outside the building, 1 within. */
-        reflect(open, lit) {
-          fromRoom.material.color.set(colours.paper);
-          fromRoom.material.opacity = open * 0.4 * lit;
-          fromCurtains.material.color.copy(cloth);
-          fromCurtains.material.opacity = (1 - open * 0.7) * 0.5 * lit;
-        },
+      /** `open`: how far the curtains are drawn, 0 to 1. `lit`: 0 outside the building, 1 within. */
+      return function reflect(open, lit) {
+        fromRoom.material.opacity = open * 0.22 * lit;
+        fromCurtains.material.color.copy(cloth);
+        fromCurtains.material.opacity = (1 - open * 0.7) * 0.5 * lit;
       };
     }
 
@@ -360,23 +344,12 @@
     buildValance();
     const hang = buildCurtains();
     const lightShafts = buildBeams();
-    const pageRoom = buildPageRoom();
+    const reflect = buildMasking();
 
     // A change of curtain colour dissolves from the old to the new.
     const blend = { from: cloth.clone(), to: cloth.clone(), since: -Infinity };
-    let aspectNow = 1;
 
     return {
-      /** Re-letters the wall for a screen shape. */
-      fit(aspect) {
-        aspectNow = aspect;
-        pageRoom.write(aspect);
-      },
-      /** The page's colours changed: the room behind the curtains is that colour, so it follows. */
-      repaint() {
-        materials.page.color.set(colours.paper);
-        pageRoom.write(aspectNow);
-      },
       /** 'red' or 'navy'. The curtains, the valance and the carpet change together. */
       setCurtain(name, now) {
         if (!CURTAIN_COLOURS[name]) return;
@@ -395,8 +368,8 @@
         local.velvet.color.copy(cloth);
         local.carpet.color.copy(cloth).multiplyScalar(0.55); // underfoot it is a shade deeper
         hang(open);
-        pageRoom.reflect(open, lit);
-        // The shafts are for the foyer: they fade as the walk passes between the curtains and into the page.
+        reflect(open, lit);
+        // The shafts are for the foyer: they fade as the walk passes between the curtains.
         const inFoyer = lit * (1 - clamp((t - TIMELINE.arrive) / 0.1));
         lightShafts(inFoyer, now / 1000);
         return blending < 1 || inFoyer > 0.02;
