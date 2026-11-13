@@ -369,8 +369,9 @@
         local.carpet.color.copy(cloth).multiplyScalar(0.55); // underfoot it is a shade deeper
         hang(open);
         reflect(open, lit);
-        // The shafts are for the foyer: they fade as the walk passes between the curtains.
-        const inFoyer = lit * (1 - clamp((t - TIMELINE.arrive) / 0.1));
+        // The shafts are for the foyer: they are gone once the curtains are open, so their dust does not
+        // drift like stars across the exhibition's dark wall.
+        const inFoyer = lit * (1 - clamp((t - TIMELINE.curtains[1]) / 0.05));
         lightShafts(inFoyer, now / 1000);
         return blending < 1 || inFoyer > 0.02;
       },

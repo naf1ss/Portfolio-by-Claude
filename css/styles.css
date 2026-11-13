@@ -38,6 +38,13 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'Cinzel';
+  src: url('../fonts/cinzel-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Kaushan Script';
   src: url('../fonts/kaushan-script-latin-400-normal.woff2') format('woff2');
   font-weight: 400;
@@ -4947,10 +4954,15 @@ body[data-gallery-view='wall'] .medium-capsule {
    true relative scale; walking slides the whole wall. Picture lights are on by default (--room-lights: 1);
    the pull cord turns them off. Light theme: deep slate wall. Dark theme: deep red. */
 
-.room {
+/* The wall's colours, shared with the exhibition room the home page walks into (js/museum-gallery.js). */
+.room,
+.opening {
   --room-wall: #1d2433;
   --room-ink: #f1ece1;
   --room-muted: #b5bccb;
+}
+
+.room {
   --room-floor-tint: rgb(8 10 18 / 0.5);
   --room-lights: 0;
   --room-walk: 1.5s cubic-bezier(0.5, 0.05, 0.2, 1);
@@ -4970,7 +4982,8 @@ body[data-gallery-view='wall'] .medium-capsule {
 }
 
 @supports (color: light-dark(#000, #fff)) {
-  .room {
+  .room,
+  .opening {
     --room-wall: light-dark(#1d2433, #2e0f13);
     --room-muted: light-dark(#b5bccb, #d7b2ad);
   }

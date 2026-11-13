@@ -62,21 +62,42 @@
   }
 
   /**
-   * What the museum on the home page needs, worked out from the site's settings and its works: the pictures to
-   * hang (image, label and real size), and the wall text with the years the work spans.
+   * What the museum on the home page shows (js/museum.js), from the works chosen in site-config.js: each
+   * exhibit with its label and framing as the gallery page gives them, and the wall text at the start of the row.
    */
-  function museumSettings(settings, works, byId, U) {
-    const exhibits = (settings.exhibitIds || []).map((id) => byId.get(id)).filter(Boolean).map((work) => {
-      const size = window.GalleryRoomUtils.sizeInches(work);
-      return { src: U.imageUrl(work, 1200), title: work.title, year: work.year, medium: work.medium, widthIn: size.w, heightIn: size.h };
+  function museumSettings(settings, byId, U) {
+    const R = window.GalleryRoomUtils;
+    const categories = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
+    const hung = (settings.exhibitIds || []).map((id) => byId.get(id)).filter(Boolean);
+    const exhibits = hung.map((work) => {
+      const { picture, framing } = R.framedInches(work);
+      return {
+        src: U.imageUrl(work, 1200),
+        kicker: categories.get(work.category) || 'Work',
+        title: work.title || work.medium || 'Untitled',
+        facts: [work.medium, U.formatDimensions(work.dimensions), work.year],
+        widthIn: picture.w,
+        heightIn: picture.h,
+        framing: { ...framing, paper: R.frameKind(work) === 'paper' },
+      };
     });
-    const years = works.map((work) => work.year).filter(Number.isFinite);
-    const span = years.length ? ` ${Math.min(...years)}–${Math.max(...years)}.` : '';
+
+    // The wall text counts what hangs and dates it, so it stays true whichever works are chosen.
+    const COUNTS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'];
+    const allPaintings = hung.every((work) => work.category === 'painting');
+    const noun = `${allPaintings ? 'painting' : 'work'}${hung.length === 1 ? '' : 's'}`;
+    const years = hung.map((work) => work.year).filter(Number.isFinite);
+    const [first, last] = [Math.min(...years), Math.max(...years)];
     const text = settings.wallText || {};
     return {
       ...settings,
       exhibits,
-      wallText: { title: text.title || '', subtitle: text.subtitle || '', body: `${text.intro || ''}${span}` },
+      wallText: {
+        kicker: text.kicker || '',
+        title: `${COUNTS[hung.length] || hung.length} ${noun}`,
+        facts: years.length ? [first === last ? first : `${first}–${last}`] : [],
+        body: text.body || '',
+      },
       cover: { title: 'Selected Works', note: '', ...settings.cover },
     };
   }
@@ -95,7 +116,7 @@
       },
       {
         U,
-        museum: museumSettings(home.museum || {}, visible, byId, U),
+        museum: museumSettings(home.museum || {}, byId, U),
         featureWorks: (home.features || [])
           .map(({ id, reveal }) => ({ work: byId.get(id), reveal }))
           .filter(({ work }) => work),

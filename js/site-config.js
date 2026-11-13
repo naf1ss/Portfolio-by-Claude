@@ -32,11 +32,11 @@ window.SITE_CONFIG = {
       curtainDefault: 'red', // 'red' or 'navy'; a visitor's own choice is remembered over this
       // The pictures on the exhibition's wall, left to right. They hang at true size relative to one another.
       exhibitIds: ['A030', 'A046', 'A041'],
-      // The wall text beside them. The years the work spans are added after `intro`.
+      // The wall text at the start of the row. Its heading and date are worked out from the pictures hung
+      // ("Three paintings", "2026"); these are the small line above the heading and the sentence below it.
       wallText: {
-        title: 'Nafis',
-        subtitle: 'Selected Works',
-        intro: 'Paintings, prints, ceramics, photographs and interdisciplinary projects by a multidisciplinary artist.',
+        kicker: 'On view',
+        body: 'The rest of the work is in the catalogue ahead: prints, ceramics, photographs and interdisciplinary projects.',
       },
       // The catalogue's cover, which the walk ends on.
       cover: { title: 'Nafis — Selected Works', note: 'Exhibition catalogue' },

@@ -227,7 +227,23 @@
     /** The page's colours, for the parts of the museum that are the page: its last wall and the words on it. */
     function pageColours() {
       const style = getComputedStyle(stage);
-      return { paper: style.backgroundColor, ink: style.color };
+      return { paper: style.backgroundColor, ink: style.color, room: roomColours() };
+    }
+
+    /**
+     * The gallery wall's colours (--room-wall and its inks, css/styles.css), which the exhibition room shares.
+     * A custom property is read back as it was written, light-dark() and all, so each is resolved by giving
+     * it to an element as its colour.
+     */
+    function roomColours() {
+      const probe = stage.appendChild(document.createElement('span'));
+      const resolved = (name) => {
+        probe.style.color = `var(--room-${name})`;
+        return getComputedStyle(probe).color;
+      };
+      const colours = { wall: resolved('wall'), ink: resolved('ink'), muted: resolved('muted') };
+      probe.remove();
+      return colours;
     }
 
     /** Turns the word to face the viewpoint. Only one transform changes; nothing is redrawn. */
@@ -278,7 +294,7 @@
       const y = sign ? lerp(baseline, sign.y, landing) : baseline;
       const word = layers.word.style;
       word.transform = `translate(${(x - scale * left).toFixed(2)}px, ${(y - scale * baseline).toFixed(2)}px) scale(${scale.toFixed(5)})`;
-      word.opacity = (1 - smoothstep(TIMELINE.wordLands, TIMELINE.wordHandedOver, t)).toFixed(3);
+      word.opacity = (1 - smoothstep(TIMELINE.wordFades[0], TIMELINE.wordFades[1], t)).toFixed(3);
       word.visibility = t < TIMELINE.wordHandedOver ? 'visible' : 'hidden';
       word.setProperty('--depth', (1 - clamp(t / TIMELINE.squareBy)).toFixed(3));
       const paper = 1 - smoothstep(TIMELINE.squareBy, TIMELINE.paperGone, t);
@@ -384,7 +400,7 @@
     }
 
     // The word is measured in the site's faces, and the museum letters its walls in them, so those load first.
-    const faces = [`500 40px '${WORD_FACE}'`, `600 40px '${WORD_FACE}'`, `italic 500 40px '${WORD_FACE}'`, `400 40px '${SCRIPT_FACE}'`, "500 40px 'Manrope'", "600 40px 'Manrope'"]
+    const faces = [`500 40px '${WORD_FACE}'`, `600 40px '${WORD_FACE}'`, `italic 500 40px '${WORD_FACE}'`, `400 40px '${SCRIPT_FACE}'`, "500 40px 'Manrope'", "600 40px 'Manrope'", "500 40px 'Cinzel'"]
       .map((face) => document.fonts.load(face).catch(() => {}));
     Promise.all(faces).then(() => {
       measureWord();

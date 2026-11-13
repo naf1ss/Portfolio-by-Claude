@@ -23,6 +23,14 @@ test('the timeline runs in order: word, doors, threshold, curtains, arrival', ()
   assert.ok(TIMELINE.inGallery < TIMELINE.toCatalogue && TIMELINE.toCatalogue < 1);
 });
 
+test('the wordmark dissolves into the inscription: one is fading before the other starts, and gone before it is done', () => {
+  const [fadeFrom, fadeBy] = TIMELINE.wordFades;
+  const [inkFrom, inkBy] = TIMELINE.inscribed;
+  assert.ok(fadeFrom < inkFrom && inkFrom < fadeBy && fadeBy < inkBy);
+  assert.ok(fadeFrom < TIMELINE.wordLands && TIMELINE.wordLands < fadeBy, 'it lands mid-dissolve, on the spot');
+  assert.equal(inkBy, TIMELINE.wordHandedOver);
+});
+
 test('a tall screen gets a wider field of view than a wide one', () => {
   assert.ok(fieldOfView(TALL) > fieldOfView(WIDE));
 });
@@ -122,6 +130,22 @@ test('two closed curtains meet in the middle of the opening and cover it', () =>
   assert.ok(PLAN.curtain.width * 2 >= PLAN.proscenium.width, 'together they are as wide as the opening');
   assert.ok(PLAN.curtain.height >= PLAN.proscenium.height, 'and as tall');
   assert.ok(PLAN.curtain.z < PLAN.proscenium.z, 'they hang behind it');
+});
+
+test('before the pictures, the walk stands where the stretch of wall it is given just fits, and stays in the room', () => {
+  const { stand } = PLAN.gallery;
+  const stop = (aspect, view) => cameraKeys(aspect, view).find((key) => key.t === TIMELINE.inGallery);
+  const wide = stop(WIDE, { x: 0, width: 9 });
+  const wider = stop(WIDE, { x: 0, width: 10 });
+  assert.ok(wider.position[2] > wide.position[2], 'a wider stretch is seen from further back');
+  const off = stop(TALL, { x: -0.4, width: 3.8 });
+  assert.equal(off.position[0], -0.4, 'it stands square in front of the middle of the stretch');
+  assert.equal(off.look[0], -0.4);
+  [stop(WIDE, { x: 0, width: 1 }), stop(TALL, { x: 0, width: 40 })].forEach(({ position }) => {
+    const fromWall = position[2] - PLAN.foyer.back;
+    assert.ok(fromWall > stand.nearest - 1e-9 && fromWall < stand.furthest + 1e-9);
+  });
+  assert.ok(PLAN.foyer.back + stand.furthest < PLAN.curtain.z, 'never back out through the curtains');
 });
 
 test('pictures hang in a row, centred, at one scale, evenly spaced', () => {

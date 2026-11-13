@@ -5,6 +5,7 @@ Manrope           - https://github.com/sharanda/manrope
 Cormorant Garamond - https://github.com/CatharsisFonts/Cormorant
 Kaushan Script    - https://github.com/impallari/Kaushan-Script (the "by nafis" script)
 Pinyon Script     - https://github.com/googlefonts/pinyon (the "by nafis" script on the home opening)
+Cinzel            - https://github.com/NDISCOVER/Cinzel (the inscription on the museum's frieze, home opening)
 
 Latin subsets are the variable builds from the @fontsource-variable packages.
 Full license texts ship with those packages:

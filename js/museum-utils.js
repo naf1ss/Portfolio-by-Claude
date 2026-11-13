@@ -31,7 +31,11 @@
     squareBy: 0.02, // the 3D wordmark has squared up and flattened
     paperGone: 0.075, // the page has faded off the façade
     wordLands: 0.09, // the wordmark sits on the frieze
-    wordHandedOver: 0.11, // the page's word has faded; the one on the building stays
+    // Landing there, the page's word dissolves and the building's inscription gilds in over the same spot.
+    // The two are set in different letters, so one is nearly gone before the other is nearly there.
+    wordFades: [0.074, 0.097],
+    inscribed: [0.084, 0.11],
+    wordHandedOver: 0.11, // only the inscription is left
     setOff: 0.1, // the walk begins
     doors: [0.235, 0.325],
     inside: [0.31, 0.38], // crossing the threshold: evening light gives way to the foyer's
@@ -65,14 +69,18 @@
     foyer: { halfWidth: 7, height: 8.5, back: -30 }, // `back`: the far wall, where the pictures hang
     // The exhibition room behind the curtains. Pictures hang with their middles on one line, `hangLine` above
     // the floor, at `scale` times their real size (the room is larger than life), `gap` apart.
-    gallery: { hangLine: 2.05, scale: 2.2, gap: 0.85 },
+    // `gap` leaves room for a label beside each work. The walk stops before the wall between `stand.nearest`
+    // and `stand.furthest` metres from it, wherever what it should take in just fits (see cameraKeys).
+    gallery: { hangLine: 2.05, scale: 2.0, gap: 1.3, stand: { nearest: 6.4, furthest: 9.5 } },
     // The catalogue lies on a stand whose top slopes toward the visitor by `tilt` degrees. Its cover is `long`
     // by `short` metres, turned to suit the screen (see closeUp).
     catalogue: { z: -26.6, height: 1.06, tilt: 28, long: 0.5, short: 0.36 },
     proscenium: { z: -19, width: 8, height: 5.6, thickness: 0.5 },
     curtain: { z: -19.5, width: 4.35, height: 5.9, gathered: 0.8, folds: 7 },
     eye: 1.65, // eye height above the floor
-    sign: { width: 4.0, gap: 0.34 }, // the wordmark on the frieze: its width in metres, and the space before "gallery" in ems
+    // The inscription on the frieze: its capitals' height in metres; the space added between letters and the
+    // space between words, both in ems. Roman inscriptions are set wide.
+    sign: { capHeight: 0.6, tracking: 0.14, wordSpace: 0.85 },
     fov: { landscape: 40, portrait: 50 }, // vertical field of view, degrees
   };
   PLAN.frontOfSteps = steps.top + (steps.count - 1) * steps.run;
@@ -129,9 +137,10 @@
 
   /**
    * The camera's stops: where it stands and what it looks at, at each time. Between stops the scene eases
-   * along a curve through them (js/museum.js).
+   * along a curve through them (js/museum.js). `view` is the stretch of the exhibition wall to take in when
+   * standing before it: where its middle is along the wall, and how wide it is, in metres.
    */
-  function cameraKeys(aspect) {
+  function cameraKeys(aspect, view = { x: 0, width: 8.5 }) {
     const { platform: floor, eye, wall, proscenium, foyer } = PLAN;
     const fovDeg = fieldOfView(aspect);
     // The first view is level, as an architectural photograph is, so the columns stand upright: the camera is
@@ -141,7 +150,9 @@
     const head = floor + eye;
     const book = catalogue();
     const reach = closeUp(aspect).distance;
-    const wallOfPictures = [0, floor + PLAN.gallery.hangLine, foyer.back];
+    const { stand } = PLAN.gallery;
+    const wallOfPictures = [view.x, floor + PLAN.gallery.hangLine, foyer.back];
+    const back = clamp(distanceToFit({ width: view.width, height: 0, fovDeg, aspect }), stand.nearest, stand.furthest);
     const above = (distance) => book.centre.map((value, axis) => value + book.facing[axis] * distance); // out from the cover, along the way it faces
     return [
       // The whole façade, from across the square.
@@ -157,9 +168,9 @@
       // A slow step closer while they open.
       { t: TIMELINE.arrive, position: [0, head, proscenium.z + 8.8], look: [0, floor + 2.2, foyer.back] },
       // Between the curtains and into the exhibition, to stand before the pictures.
-      { t: TIMELINE.inGallery, position: [0, head, foyer.back + 7.4], look: wallOfPictures },
+      { t: TIMELINE.inGallery, position: [view.x, head, foyer.back + back], look: wallOfPictures },
       // A pause there, drifting a little closer.
-      { t: TIMELINE.toCatalogue, position: [0, head, foyer.back + 6.6], look: wallOfPictures },
+      { t: TIMELINE.toCatalogue, position: [view.x, head, foyer.back + back - 0.7], look: wallOfPictures },
       // Down to the catalogue: first to stand square over its cover, a little way off, then straight in along
       // the cover's own line until it fills the view. Arriving square means the cover never looks skewed.
       { t: TIMELINE.overCatalogue, position: above(reach * 2.6), look: book.centre },

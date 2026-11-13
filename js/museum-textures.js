@@ -505,25 +505,124 @@
     return canvas;
   }
 
-  /** A floor of long dark boards, near-white for the scene to tint: grain along each, joints between. Tiles. */
-  function planks({ size = 512, boards = 6, seed = 53 } = {}) {
+  /**
+   * A line set with extra space between its letters, which a canvas cannot be asked for in every browser.
+   * Each letter is placed by the width of the pair it makes with the next, so the face's own kerning is kept.
+   * Returns the line's `width` and `write(pen, how, left, baseline)`, where `how` is 'fillText' or 'strokeText'
+   * and `pen` is set to the same font as the pen it was measured with.
+   */
+  function tracked(pen, text, tracking) {
+    const letters = [...text];
+    const single = letters.map((letter) => pen.measureText(letter).width);
+    let width = 0;
+    const places = letters.map((letter, i) => {
+      const at = width;
+      const next = letters[i + 1];
+      width += next === undefined ? single[i] : pen.measureText(letter + next).width - single[i + 1] + tracking;
+      return at;
+    });
+    return { width, write: (onto, how, left, baseline) => letters.forEach((letter, i) => onto[how](letter, left + places[i], baseline)) };
+  }
+
+  // ---------- the exhibition room's painted light ----------
+  // The gallery page draws its light in CSS (the "Gallery room" rules in css/styles.css). These redraw the same
+  // gradients, stop for stop, so the room the walk ends in is lit as that page is.
+
+  /** CSS's `radial-gradient(ellipse rx ry at cx cy, ...stops)`, each stop [offset, colour]. */
+  function ellipse(pen, [cx, cy], [rx, ry], stops) {
+    const gradient = pen.createRadialGradient(0, 0, 0, 0, 0, 1);
+    stops.forEach(([offset, colour]) => gradient.addColorStop(offset, colour));
+    pen.save();
+    pen.translate(cx, cy);
+    pen.scale(rx, ry);
+    pen.fillStyle = gradient;
+    pen.fillRect(-1, -1, 2, 2);
+    pen.restore();
+  }
+
+  /**
+   * The pool a picture light throws on the wall (.room__pool): a hot spot under the shade, a cone opening over
+   * the work, a faint spill past the frame. `width` and `height` are the pool's, and `rem` the gallery page's
+   * rem, all in one unit; only their proportions matter. Drawn on black, to be screened over the wall.
+   */
+  function pool({ width, height, rem, across = 384 }) {
+    const down = Math.max(1, Math.round((across * height) / width));
+    const { canvas, pen } = sheet(across, down);
+    const y = (rems) => (rems * rem * down) / height;
+    const x = across / 2;
+    const size = (w, h) => [(across * w) / 100, (down * h) / 100];
+    ellipse(pen, [x, y(2.3)], size(18, 5), [[0, 'rgba(255, 225, 175, 0.3)'], [1, 'rgba(255, 225, 175, 0)']]);
+    ellipse(pen, [x, y(3)], size(50, 82), [[0, 'rgba(250, 196, 130, 0.13)'], [1, 'rgba(250, 196, 130, 0)']]);
+    ellipse(pen, [x, y(2.5)], size(34, 64), [[0, 'rgba(255, 206, 144, 0.34)'], [0.6, 'rgba(255, 200, 136, 0.13)'], [1, 'rgba(255, 200, 136, 0)']]);
+    ellipse(pen, [x, y(2.6)], size(22, 36), [[0, 'rgba(255, 216, 160, 0.62)'], [0.55, 'rgba(255, 206, 146, 0.26)'], [1, 'rgba(255, 206, 146, 0)']]);
+    ellipse(pen, [x, y(2.5)], size(14, 8), [[0, 'rgba(255, 238, 205, 0.8)'], [1, 'rgba(255, 238, 205, 0)']]);
+    // Nothing above the lamp: the light starts at the shade.
+    const mask = pen.createLinearGradient(0, 0, 0, y(2.1));
+    mask.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    mask.addColorStop(1, '#000');
+    pen.globalCompositeOperation = 'destination-in';
+    pen.fillStyle = mask;
+    pen.fillRect(0, 0, across, down);
+    pen.globalCompositeOperation = 'destination-over';
+    pen.fillStyle = '#000';
+    pen.fillRect(0, 0, across, down);
+    return canvas;
+  }
+
+  /**
+   * The shadow a frame drops on the wall under its lamp (.room__frame's box-shadow), on a clear sheet. The
+   * sheet is the frame's size plus `margin` all round, in the caller's unit; `drop` is how far the shadow falls.
+   */
+  function frameShadow({ width, height, drop, blur, margin, strength = 0.65, across = 256 }) {
+    const scale = across / (width + margin * 2);
+    const { canvas, pen } = sheet(across, Math.round((height + margin * 2) * scale));
+    // The frame itself is drawn off the sheet; only its shadow, offset back onto the sheet, is kept.
+    const away = canvas.width * 2;
+    pen.shadowColor = `rgba(0, 0, 0, ${strength})`;
+    pen.shadowBlur = blur * scale;
+    pen.shadowOffsetX = away;
+    pen.shadowOffsetY = drop * scale;
+    pen.fillRect(margin * scale - away, margin * scale, width * scale, height * scale);
+    return canvas;
+  }
+
+  /** A sheet shaded from top to bottom through `stops`, each [offset, colour]: a gradient to stretch over a shape. */
+  function ramp(stops, height = 128) {
+    const { canvas, pen } = sheet(4, height);
+    const down = pen.createLinearGradient(0, 0, 0, height);
+    stops.forEach(([offset, colour]) => down.addColorStop(offset, colour));
+    pen.fillStyle = down;
+    pen.fillRect(0, 0, 4, height);
+    return canvas;
+  }
+
+  /** Darker corners and a dim ceiling line (.room__shade), for the whole wall. */
+  function roomShade(size = 256) {
     const { canvas, pen } = sheet(size);
-    const random = seeded(seed);
-    const width = size / boards;
-    for (let board = 0; board < boards; board += 1) {
-      const tone = 190 + Math.round(random() * 50);
-      pen.fillStyle = `rgb(${tone}, ${tone - 6}, ${tone - 14})`;
-      pen.fillRect(board * width, 0, width, size);
-      for (let i = 0; i < 46; i += 1) { // grain
-        pen.fillStyle = `rgba(60, 40, 24, ${random() * 0.12})`;
-        pen.fillRect(board * width + random() * width, 0, 1 + random() * 1.5, size);
-      }
-      pen.fillStyle = 'rgba(20, 12, 6, 0.55)';
-      pen.fillRect(board * width, 0, 2, size);
-      pen.fillRect(board * width, Math.floor(random() * size), width, 2); // where one board ends and the next begins
+    const top = pen.createLinearGradient(0, 0, 0, size * 0.3);
+    top.addColorStop(0, 'rgba(0, 0, 0, 0.36)');
+    top.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    pen.fillStyle = top;
+    pen.fillRect(0, 0, size, size);
+    ellipse(pen, [size / 2, size * 0.45], [size * 1.3, size], [[0, 'rgba(0, 0, 0, 0)'], [0.55, 'rgba(0, 0, 0, 0)'], [1, 'rgba(0, 0, 0, 0.48)']]);
+    return canvas;
+  }
+
+  /**
+   * One tile of the gallery wall: its paint with the plaster laid over it in soft light (.room__track::after).
+   * `plaster` is the gallery page's own plaster image, or nothing before it has loaded.
+   */
+  function plasterWall(colour, plaster, size = 512) {
+    const { canvas, pen } = sheet(size);
+    pen.fillStyle = colour;
+    pen.fillRect(0, 0, size, size);
+    if (plaster) {
+      pen.globalAlpha = 0.55;
+      pen.globalCompositeOperation = 'soft-light';
+      pen.drawImage(plaster, 0, 0, size, size);
     }
     return canvas;
   }
 
-  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, planks, seeded, noise };
+  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, tracked, pool, frameShadow, ramp, roomShade, plasterWall, seeded, noise };
 })();

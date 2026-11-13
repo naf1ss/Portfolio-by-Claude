@@ -33,7 +33,7 @@
   // The library sits beside this script; resolving from the script's own address works from any page.
   const LIBRARY = new URL('vendor/three.module.min.js', document.currentScript.src).href;
 
-  const SIGN_FACE = "600 {size}px 'Bodoni Moda'"; // a little heavier than the page's wordmark: it is read from across a square
+  const SIGN_FACE = "500 {size}px 'Cinzel'"; // capitals drawn from Roman inscriptions, as a classical front carries
   const MAX_PIXEL_RATIO = 2; // sharper than this costs frames and cannot be seen in motion
   const FOLLOW_MS = 110; // how quickly the scene catches up with the scroll: long enough to smooth a wheel's steps
   const GAZE = { yaw: 0.07, pitch: 0.04, ease: 0.08 }; // radians the view turns toward the cursor, at most
@@ -461,47 +461,49 @@
     // ---------- lettering ----------
 
     /**
-     * The name on the frieze, in gilded letters: the wordmark, then `signSuffix` ("gallery"), set as two words
-     * with a measured space between them. Returns where the wordmark's first letter starts and its last ends,
-     * in the building's space, so the page can fly its own wordmark onto exactly that spot; the rest of the
-     * name is already there to meet it.
+     * The name on the frieze, as a museum carries it: an inscription in Roman capitals, set wide and gilded.
+     * The wordmark comes first, then `signSuffix` ("gallery"), with a point between the words as inscriptions
+     * divide them. Returns the sheet it is painted on, and where the wordmark's first letter starts and its
+     * last ends, in the building's space: the page lands its own wordmark on that spot, and the inscription
+     * takes over from it there.
      */
     function buildSign() {
-      const size = 240;
+      const size = 200;
       const font = SIGN_FACE.replace('{size}', size);
+      const tracking = size * PLAN.sign.tracking;
+      const space = signSuffix ? size * PLAN.sign.wordSpace : 0;
       const measure = document.createElement('canvas').getContext('2d');
       measure.font = font;
-      const wordWidth = measure.measureText(word).width;
-      const gap = size * PLAN.sign.gap; // wider than the face's own word space, which is tight for a sign
-      const suffixAt = wordWidth + gap;
-      const nameWidth = signSuffix ? suffixAt + measure.measureText(signSuffix).width : wordWidth;
-      // How far the letters reach above and below the baseline, so the name can be centred on the frieze by
-      // what is actually drawn (tall letters and tails included), not by the type's nominal size.
-      const ink = measure.measureText(signSuffix ? `${word}${signSuffix}` : word);
-      const reach = { up: ink.actualBoundingBoxAscent, down: ink.actualBoundingBoxDescent };
+      const name = T.tracked(measure, word.toUpperCase(), tracking);
+      const suffix = T.tracked(measure, signSuffix.toUpperCase(), tracking);
+      const capHeight = measure.measureText('N').actualBoundingBoxAscent;
       const margin = Math.round(size * 0.25);
-      const baseline = margin + Math.ceil(reach.up);
-      const sheet = { width: nameWidth + margin * 2, height: baseline + Math.ceil(reach.down) + margin };
+      const baseline = margin + Math.ceil(capHeight);
+      // Equal margins all round, so the sheet's middle is the middle of the capitals.
+      const sheet = { width: name.width + space + suffix.width + margin * 2, height: baseline + margin };
       const plane = letteringPlane();
       plane.material.map = lettering(sheet.width, sheet.height, (pen) => {
         pen.font = font;
         T.gild(pen, (inked, how) => {
-          inked[how](word, margin, baseline);
-          if (signSuffix) inked[how](signSuffix, margin + suffixAt, baseline);
+          name.write(inked, how, margin, baseline);
+          if (!signSuffix) return;
+          inked.beginPath();
+          inked.arc(margin + name.width + space / 2, baseline - capHeight / 2, size * 0.04, 0, Math.PI * 2);
+          inked[how === 'fillText' ? 'fill' : 'stroke']();
+          suffix.write(inked, how, margin + name.width + space, baseline);
         }, size);
       });
 
       const { entablature, columns, sign } = PLAN;
-      const metres = sign.width / wordWidth; // per canvas pixel
+      const metres = sign.capHeight / capHeight; // per canvas pixel
       const friezeY = floor + columns.height + entablature.architrave + entablature.frieze / 2;
-      plane.scale.set(sheet.width * metres, sheet.height * metres, 1);
       const z = columns.z + (entablature.depth - 0.1) / 2 + 0.01;
-      // The sheet's margins are equal all round, so centring the sheet centres the lettering.
+      plane.scale.set(sheet.width * metres, sheet.height * metres, 1);
       plane.position.set(0, friezeY, z);
       outside.add(plane);
 
-      const start = new THREE.Vector3((-sheet.width / 2 + margin) * metres, friezeY + (sheet.height / 2 - baseline) * metres, z);
-      return { start, end: start.clone().setX(start.x + sign.width) };
+      const start = new THREE.Vector3((-sheet.width / 2 + margin) * metres, friezeY - sign.capHeight / 2, z);
+      return { plane, start, end: start.clone().setX(start.x + name.width * metres) };
     }
 
     // ---------- light ----------
@@ -601,6 +603,8 @@
 
       const open = smoothstep(TIMELINE.doors[0], TIMELINE.doors[1], t);
       const within = smoothstep(TIMELINE.inside[0], TIMELINE.inside[1], t);
+      // The inscription comes up as the page's wordmark lands on the frieze and fades into it.
+      sign.plane.material.opacity = smoothstep(TIMELINE.inscribed[0], TIMELINE.inscribed[1], t);
       swingDoors(open);
       // The second lamp leaves the doorway for the exhibition before the curtains part, so the room is lit when first seen.
       setMood(within, open, smoothstep(TIMELINE.inside[1] + 0.03, TIMELINE.curtains[0], t));
@@ -645,7 +649,7 @@
         view.fov = M.fieldOfView(state.aspect);
         view.updateProjectionMatrix();
       });
-      const keys = M.cameraKeys(state.aspect);
+      const keys = M.cameraKeys(state.aspect, gallery.view(state.aspect));
       const curve = (points) => new THREE.CatmullRomCurve3(points.map((point) => new THREE.Vector3(...point)), false, 'centripetal');
       path = { times: keys.map((key) => key.t), position: curve(keys.map((key) => key.position)), look: curve(keys.map((key) => key.look)) };
       gallery.fit(state.aspect);
