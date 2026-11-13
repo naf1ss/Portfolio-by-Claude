@@ -25,7 +25,7 @@
   const CURTAIN_COLOURS = { red: 0x7f1424, navy: 0x263a75 }; // theatre red; and a velvet in the site's navy
   const BLEND_MS = 600; // a change of curtain colour dissolves, it does not snap
   const TILE = { marble: 4.8, coffers: 2.8, velvet: 1.4 }; // metres one sheet of each texture covers
-  const DUST = { motes: 150, size: 0.05 };
+  const DUST = { motes: 60, size: 0.05, brightness: 0.35 }; // a few faint specks: more, or brighter, and the air reads as grain
   const COLOUR = {
     wall: 0x384769, // the site's gallery navy, as painted plaster under lamplight
     marble: 0xa89f93, // the floor's own tint: a dim room, not a showroom
@@ -38,7 +38,7 @@
   };
 
   function build(kit, { curtain = 'red' }) {
-    const { THREE, floor, inside, materials, maps, lambert, painted, glowing, textureOf, box, sheetOf, halo } = kit;
+    const { THREE, floor, inside, materials, maps, lambert, painted, glowing, textureOf, box, sheetOf, wallLight } = kit;
     const { foyer, wall, proscenium } = PLAN;
     const within = { parent: inside };
     const height = foyer.height;
@@ -58,7 +58,6 @@
       gold: lambert({ color: COLOUR.gold, emissive: 0x3d2c0c }),
       leather: lambert({ color: COLOUR.leather }),
       wood: lambert({ color: COLOUR.wood }),
-      lamp: painted({ color: 0xffe1ae }),
       fringe: painted({ map: textureOf(T.fringe(), { repeats: true }), transparent: true, side: THREE.DoubleSide }),
     };
 
@@ -104,7 +103,7 @@
           box(materials.stone, [0.3, 0.26, 0.94], [face - side * 0.15, floor + 1.32, z], within);
         });
         lampZs.forEach((z) => {
-          wallLamp(side, face, z);
+          wallLight([face, floor + 4.4, z], { facing: -side * Math.PI / 2, parent: inside });
           bench(side * (half - 0.75), z);
         });
       });
@@ -114,18 +113,6 @@
       // A carpet from the doors to the curtains. It takes the curtains' colour.
       const carpet = sheetOf(local.carpet, [2.6, hall.length - 1.6], [0, floor + 0.02, hall.midZ - 0.2], within);
       carpet.geometry.attributes.uv.array.forEach((value, i, uv) => { if (i % 2) uv[i] = value * 6; });
-    }
-
-    /** A lamp on the wall: a bronze bracket, a globe, its halo, and the wash of light it throws on the plaster. */
-    function wallLamp(side, face, z) {
-      const y = floor + 4.4;
-      box(local.wood, [0.3, 0.46, 0.1], [face - side * 0.15, y - 0.3, z], within);
-      const globe = new THREE.Mesh(new THREE.SphereGeometry(0.17, 18, 12), local.lamp);
-      globe.position.set(face - side * 0.34, y, z);
-      inside.add(globe);
-      halo(2.2, [face - side * 0.36, y, z], 0.7, inside);
-      const wash = sheetOf(new THREE.MeshBasicMaterial(glowing(COLOUR.warm, 0.42)), [5, 7], [face - side * 0.02, y - 0.3, z], { flat: false, parent: inside });
-      wash.rotation.y = -side * Math.PI / 2; // turned to lie on the side wall, facing the room
     }
 
     /** A bench: a leather seat on a dark wooden base. */
@@ -165,13 +152,7 @@
       const bead = 0.05;
       [-1, 1].forEach((edge) => box(local.gold, [bead, top - bottom, bead], [x + edge * width / 2, (top + bottom) / 2, z], within));
       [bottom, top].forEach((y) => box(local.gold, [width + bead, bead, bead], [x, y, z], within));
-      const y = floor + 4.3;
-      box(local.wood, [0.1, 0.46, 0.3], [x, y - 0.3, z + 0.13], within);
-      const globe = new THREE.Mesh(new THREE.SphereGeometry(0.17, 18, 12), local.lamp);
-      globe.position.set(x, y, z + 0.32);
-      inside.add(globe);
-      halo(2.2, [x, y, z + 0.34], 0.7, inside);
-      sheetOf(new THREE.MeshBasicMaterial(glowing(COLOUR.warm, 0.4)), [4.2, 6.6], [x, y - 0.3, z + 0.005], { flat: false, parent: inside });
+      wallLight([x, floor + 4.3, proscenium.z + proscenium.thickness / 2], { parent: inside });
     }
 
     /** A strip of cloth as a grid of points: `place(across, down)` gives each point's [x, y, z] and the grid's faces follow. */
@@ -295,7 +276,7 @@
       /** `strength` 0 to 1: how bright the shafts are. `seconds`: the clock the dust drifts by. */
       return function light(strength, seconds) {
         shafts.forEach(({ material }) => { material.opacity = strength * 0.34; });
-        dust.material.opacity = strength * 0.75;
+        dust.material.opacity = strength * DUST.brightness;
         dust.visible = strength > 0.02;
         if (!dust.visible) return;
         const position = geometry.attributes.position;

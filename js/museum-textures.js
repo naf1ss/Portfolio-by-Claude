@@ -215,16 +215,66 @@
     return canvas;
   }
 
-  /** A soft round glow, bright in the middle and gone at the edge: for lamps and pools of light. */
-  function glow(size = 128) {
+  /**
+   * A round sheet of light on black, for adding to what is behind it: `strength(r)` gives its brightness (0 to
+   * 1) at `r`, which runs from 0 at the middle to 1 at the sheet's edge.
+   *
+   * The light is in the colour, never in the transparency. A see-through gradient on a canvas is stored
+   * multiplied by its own faintness, and some browsers hand it to the graphics card with the colour of its
+   * faintest parts scrambled: the glow then comes out speckled in pinks and greens. A sheet with no
+   * transparency has nothing to scramble.
+   */
+  function radiance(strength, size = 256) {
     const { canvas, pen } = sheet(size);
-    const fade = pen.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    fade.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    fade.addColorStop(0.25, 'rgba(255, 255, 255, 0.5)');
-    fade.addColorStop(0.6, 'rgba(255, 255, 255, 0.12)');
-    fade.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    pen.fillStyle = fade;
-    pen.fillRect(0, 0, size, size);
+    const image = pen.createImageData(size, size);
+    const middle = (size - 1) / 2;
+    for (let y = 0; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        const r = Math.hypot(x - middle, y - middle) / middle;
+        const i = (y * size + x) * 4;
+        image.data[i] = image.data[i + 1] = image.data[i + 2] = r < 1 ? 255 * strength(r) : 0;
+        image.data[i + 3] = 255;
+      }
+    }
+    pen.putImageData(image, 0, 0);
+    return canvas;
+  }
+
+  /** A soft round glow, bright in the middle and gone at the edge: for lamps' halos and pools of light. */
+  const glow = (size) => radiance((r) => Math.exp(-2.9 * r) * (1 - r ** 4), size);
+
+  /**
+   * The light a lamp throws on the wall it hangs from: brightest behind the lamp and falling away as light
+   * really does with distance and slant, plus a faint wide spread for what the room bounces back. The sheet
+   * is `reach` times as wide as the lamp stands off the wall.
+   */
+  function wash(reach = 16, size = 256) {
+    const fall = (distance) => (1 + distance * distance) ** -1.5; // off the wall by 1, `distance` along it
+    return radiance((r) => {
+      const along = (r * reach) / 2;
+      return (0.8 * fall(along) + 0.2 * fall(along / 3)) * (1 - r ** 3);
+    }, size);
+  }
+
+  /**
+   * A lit globe of frosted glass, as a "matcap": a picture of a ball that the material wraps round any shape
+   * by the way each face is turned to the viewer. White-hot in the middle, warming toward the rim.
+   */
+  function frostedGlobe(size = 128) {
+    const { canvas, pen } = sheet(size);
+    const image = pen.createImageData(size, size);
+    const middle = (size - 1) / 2;
+    const [core, rim] = [[255, 251, 240], [255, 196, 128]];
+    for (let y = 0; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        const r = Math.min(1, Math.hypot(x - middle, y - middle) / middle);
+        const toRim = r ** 2.4;
+        const i = (y * size + x) * 4;
+        for (let channel = 0; channel < 3; channel += 1) image.data[i + channel] = core[channel] + (rim[channel] - core[channel]) * toRim;
+        image.data[i + 3] = 255;
+      }
+    }
+    pen.putImageData(image, 0, 0);
     return canvas;
   }
 
@@ -242,86 +292,187 @@
     return canvas;
   }
 
+  /** A value from a seamless `noise` field of `size`, at any point: the field repeats every 1 in `u` and `v`. */
+  function sampled(field, size, u, v) {
+    const x = (u - Math.floor(u)) * size;
+    const y = (v - Math.floor(v)) * size;
+    const x0 = Math.floor(x);
+    const y0 = Math.floor(y);
+    const x1 = (x0 + 1) % size;
+    const y1 = (y0 + 1) % size;
+    const tx = x - x0;
+    const ty = y - y0;
+    const top = field[y0 * size + x0] + (field[y0 * size + x1] - field[y0 * size + x0]) * tx;
+    const bottom = field[y1 * size + x0] + (field[y1 * size + x1] - field[y1 * size + x0]) * tx;
+    return top + (bottom - top) * ty;
+  }
+
+  const ramped = (from, to, value) => {
+    const t = Math.min(1, Math.max(0, (value - from) / (to - from)));
+    return t * t * (3 - 2 * t);
+  };
+  const mixed = (a, b, t) => a.map((value, i) => value + (b[i] - value) * t);
+
   /**
-   * The evening sky, to wrap round the inside of a dome: the top of the sheet is overhead, the middle row the
-   * horizon. Deep blue overhead with the first stars, through violet and rose to an amber horizon; long
-   * clouds lit from beneath; and along the horizon the dark line of a city's roofs and trees.
+   * The clouds of the evening sky, on a clear sheet covering the sky from `above` degrees down to the horizon
+   * and `azimuth` degrees across. They lie on one level sheet high overhead, seen from below, so they are
+   * drawn in perspective: broad overhead, drawing out into long thin bars toward the horizon, as a real
+   * evening sky does. Thin cloud catches the last light from beneath; thick cloud is in its own shade.
    */
-  function sky({ width = 4096, height = 1024, seed = 5 } = {}) {
+  function clouds({ azimuth, above, seed, width = 1024, height = 512 }) {
     const { canvas, pen } = sheet(width, height);
-    const horizon = height / 2;
-    const random = seeded(seed);
-
-    const air = pen.createLinearGradient(0, 0, 0, horizon);
-    [[0, '#0b1030'], [0.3, '#1a1f4d'], [0.55, '#3d3470'], [0.74, '#7a4a80'], [0.87, '#c26f78'], [0.95, '#eda072'], [1, '#f9cd8e']]
-      .forEach(([at, colour]) => air.addColorStop(at, colour));
-    pen.fillStyle = air;
-    pen.fillRect(0, 0, width, horizon);
-
-    for (let i = 0; i < 900; i += 1) {
-      const y = random() ** 1.6 * horizon * 0.62;
-      pen.fillStyle = `rgba(255, 250, 235, ${(0.25 + random() * 0.7) * (1 - y / (horizon * 0.62))})`;
-      const r = random() > 0.93 ? 1.5 : 0.8;
-      pen.fillRect(random() * width, y, r, r);
+    const size = 512;
+    // Two fields at scales that never line up, so the pattern does not visibly repeat along the horizon.
+    const broad = noise(size, seed, { cells: 4 });
+    const fine = noise(size, seed + 13, { cells: 4 });
+    const image = pen.createImageData(width, height);
+    const LIT = { low: [255, 196, 132], mid: [244, 146, 128], high: [150, 120, 170] };
+    const SHADE = { low: [168, 100, 112], mid: [112, 78, 122], high: [58, 52, 100] };
+    const byHeight = (tones, elevation) => (elevation < 14
+      ? mixed(tones.low, tones.mid, ramped(3, 14, elevation))
+      : mixed(tones.mid, tones.high, ramped(14, 42, elevation)));
+    for (let y = 0; y < height; y += 1) {
+      const elevation = above * (1 - y / height);
+      const away = 1 / Math.tan((Math.max(elevation, 1.2) * Math.PI) / 180); // how far off the cloud overhead this line of sight meets the sheet
+      const lit = byHeight(LIT, elevation);
+      const shade = byHeight(SHADE, elevation);
+      // Fewer overhead, and none in the last haze above the skyline.
+      const share = ramped(1.5, 7, elevation) * (1 - 0.5 * ramped(34, 70, elevation));
+      for (let x = 0; x < width; x += 1) {
+        const bearing = ((x / width - 0.5) * azimuth * Math.PI) / 180;
+        const across = away * Math.sin(bearing);
+        const along = away * Math.cos(bearing);
+        const density = 0.6 * sampled(broad, size, across / 5, along / 5) + 0.4 * sampled(fine, size, across / 2.3 + 0.37, along / 2.3);
+        const cover = ramped(0.5, 0.68, density) * share;
+        if (cover <= 0) continue;
+        const colour = mixed(lit, shade, ramped(0.56, 0.74, density));
+        const i = (y * width + x) * 4;
+        image.data[i] = colour[0];
+        image.data[i + 1] = colour[1];
+        image.data[i + 2] = colour[2];
+        image.data[i + 3] = 235 * cover;
+      }
     }
+    pen.putImageData(image, 0, 0);
+    return canvas;
+  }
 
-    // Clouds: long soft streaks. Higher ones are dusky; lower ones catch the last light on their undersides.
-    for (let i = 0; i < 90; i += 1) {
-      const up = random(); // 0 near the horizon, 1 high
-      const cy = horizon * (0.93 - up * 0.5);
-      const cx = random() * width;
-      const length = 160 + random() * 460;
-      const thickness = 7 + random() * 16 + up * 12;
-      const lit = `rgba(255, ${Math.round(150 + (1 - up) * 60)}, ${Math.round(125 - (1 - up) * 30)}, ${0.1 + (1 - up) * 0.2})`;
-      const dusk = `rgba(${Math.round(70 + (1 - up) * 80)}, ${Math.round(55 + (1 - up) * 30)}, ${Math.round(110 - (1 - up) * 10)}, ${0.16 + random() * 0.14})`;
-      [[0, dusk], [thickness * 0.45, lit]].forEach(([drop, colour]) => {
-        for (const wrap of [-width, 0, width]) { // drawn again each side, so the sheet's edges join
-          pen.save();
-          pen.translate(cx + wrap, cy + drop);
-          pen.scale(length / thickness, 1);
-          const puff = pen.createRadialGradient(0, 0, 0, 0, 0, thickness);
-          puff.addColorStop(0, colour);
-          puff.addColorStop(1, 'rgba(0, 0, 0, 0)');
-          pen.fillStyle = puff;
-          pen.beginPath();
-          pen.arc(0, 0, thickness, 0, TAU);
-          pen.fill();
-          pen.restore();
+  /**
+   * The far side of the square, along the horizon: a line of hills in the haze, and in front of it the dark
+   * shapes of trees and roofs with a few windows lit. `perDegree` is the sheet's pixels to a degree each way.
+   */
+  function skyline(pen, { width, horizon, perDegree, random }) {
+    const degrees = { x: (value) => value * perDegree.x, y: (value) => value * perDegree.y };
+    const hills = noise(256, 71, { octaves: 4, cells: 8 });
+    pen.fillStyle = '#5b4673';
+    pen.beginPath();
+    pen.moveTo(0, horizon);
+    for (let x = 0; x <= width; x += 8) pen.lineTo(x, horizon - degrees.y(0.35 + 1.5 * sampled(hills, 256, x / width, 0.3)));
+    pen.lineTo(width, horizon);
+    pen.fill();
+
+    const dark = '#1b1630';
+    const tree = (x, w, h) => {
+      const puffs = 3 + Math.floor(random() * 3);
+      for (let i = 0; i < puffs; i += 1) {
+        const r = (w / puffs) * (0.7 + random() * 0.5);
+        pen.beginPath();
+        pen.ellipse(x + (w * (i + 0.5)) / puffs, horizon - h * (0.45 + random() * 0.4), r, r * (0.85 + random() * 0.4), 0, 0, TAU);
+        pen.fill();
+      }
+      pen.fillRect(x, horizon - h * 0.5, w, h * 0.5);
+    };
+    const house = (x, w, h) => {
+      pen.fillRect(x, horizon - h, w, h);
+      if (random() > 0.45) { // a pitched roof
+        pen.beginPath();
+        pen.moveTo(x - 2, horizon - h);
+        pen.lineTo(x + w / 2, horizon - h - w * (0.2 + random() * 0.15));
+        pen.lineTo(x + w + 2, horizon - h);
+        pen.fill();
+      } else if (random() > 0.5) { // or a chimney
+        pen.fillRect(x + w * (0.15 + random() * 0.6), horizon - h - degrees.y(0.14), degrees.x(0.07), degrees.y(0.14));
+      }
+      const pane = { w: Math.max(2, degrees.x(0.05)), h: Math.max(3, degrees.y(0.09)) };
+      for (let wy = horizon - h + pane.h; wy < horizon - pane.h * 2.5; wy += pane.h * 2.2) {
+        for (let wx = x + pane.w * 1.5; wx < x + w - pane.w * 2; wx += pane.w * 2.6) {
+          if (random() > 0.3) continue;
+          pen.fillStyle = `rgba(255, ${190 + Math.round(random() * 30)}, ${120 + Math.round(random() * 30)}, ${0.65 + random() * 0.3})`;
+          pen.fillRect(wx, wy, pane.w, pane.h);
         }
-      });
-    }
-
-    // Below the horizon nothing shows but haze, in the colour the ground fades to.
-    pen.fillStyle = sky.HAZE;
-    pen.fillRect(0, horizon, width, height - horizon);
-
-    // The skyline: roofs and trees, a few lit windows. A pixel here is about a fifth of a degree, so these are
-    // small: a far-off city, not hills.
-    const dark = '#17142b';
+      }
+      pen.fillStyle = dark;
+    };
+    const spire = (x, w, h) => {
+      pen.fillRect(x, horizon - h * 0.55, w, h * 0.55);
+      pen.beginPath();
+      pen.moveTo(x - 1, horizon - h * 0.55);
+      pen.lineTo(x + w / 2, horizon - h);
+      pen.lineTo(x + w + 1, horizon - h);
+      pen.lineTo(x + w + 1, horizon - h * 0.55);
+      pen.fill();
+    };
     pen.fillStyle = dark;
     let x = 0;
     while (x < width) {
-      const tree = random() > 0.6;
-      const w = tree ? 4 + random() * 9 : 5 + random() * 14;
-      const h = tree ? 2 + random() * 3.5 : 1.5 + random() * 5.5;
-      if (tree) {
-        pen.beginPath();
-        pen.ellipse(x + w / 2, horizon - h * 0.5, w / 2, h * 0.75, 0, 0, TAU);
-        pen.fill();
-      } else {
-        pen.fillRect(x, horizon - h, w, h);
-        if (h > 3 && random() > 0.45) {
-          pen.fillStyle = 'rgba(255, 200, 130, 0.85)';
-          pen.fillRect(x + 1 + random() * (w - 2), horizon - h + 1 + random() * (h - 2), 1, 1);
-          pen.fillStyle = dark;
-        }
-      }
-      x += w * 0.85;
+      const kind = random();
+      const w = degrees.x(kind < 0.55 ? 0.6 + random() * 1.3 : kind < 0.97 ? 0.45 + random() * 0.9 : 0.22);
+      if (kind < 0.55) tree(x, w, degrees.y(0.5 + random() * 0.9));
+      else if (kind < 0.97) house(x, w, degrees.y(0.45 + random() * 1.1));
+      else spire(x, w, degrees.y(2 + random() * 0.9));
+      x += w * (0.8 + random() * 0.25);
     }
-    pen.fillRect(0, horizon - 1.5, width, 3);
+  }
+
+  /**
+   * The evening sky behind the building, for the stretch of sky the walk can ever see (`sky.SPAN`, in
+   * degrees: so far each side of straight ahead, so far up, a little below the horizon). Keeping to that
+   * stretch spends every pixel where it is looked at. Deep blue overhead with the first stars, through violet
+   * and rose to amber where the sun has just set, behind the building; clouds lit from beneath; and along the
+   * horizon the far side of the square.
+   */
+  function sky({ width = 4096, height = 2048, seed = 5 } = {}) {
+    const { azimuth, above, below } = sky.SPAN;
+    const { canvas, pen } = sheet(width, height);
+    const random = seeded(seed);
+    const perDegree = { x: width / azimuth, y: height / (above + below) };
+    const horizon = Math.round(above * perDegree.y);
+
+    const air = pen.createLinearGradient(0, 0, 0, horizon);
+    [[75, '#11163c'], [63, '#1a1f4d'], [40, '#3d3470'], [23, '#7a4a80'], [12, '#c26f78'], [4.5, '#eda072'], [0, '#f9cd8e']]
+      .forEach(([elevation, colour]) => air.addColorStop(Math.min(1, Math.max(0, 1 - elevation / above)), colour));
+    pen.fillStyle = air;
+    pen.fillRect(0, 0, width, horizon);
+    // Where the sun went down, straight ahead: the building stands against the brightest of the sky.
+    ellipse(pen, [width / 2, horizon], [perDegree.x * 36, perDegree.y * 15], [[0, 'rgba(255, 232, 178, 0.8)'], [0.4, 'rgba(255, 200, 136, 0.34)'], [1, 'rgba(255, 180, 120, 0)']]);
+
+    for (let i = 0; i < 520; i += 1) {
+      const elevation = 26 + random() ** 0.7 * (above - 26);
+      const faint = ramped(26, 60, elevation);
+      const r = (random() > 0.9 ? 1.7 : 1) * (0.7 + random() * 0.5);
+      pen.fillStyle = `rgba(255, 250, 238, ${(0.25 + random() * 0.75) * faint})`;
+      pen.beginPath();
+      pen.arc(random() * width, horizon - elevation * perDegree.y, r, 0, TAU);
+      pen.fill();
+    }
+
+    pen.imageSmoothingQuality = 'high';
+    pen.drawImage(clouds({ azimuth, above, seed }), 0, 0, width, horizon);
+
+    skyline(pen, { width, horizon, perDegree, random });
+    // The far side of the square stands in the evening's haze, which also hides where the ground ends.
+    const haze = pen.createLinearGradient(0, horizon - perDegree.y * 2.4, 0, horizon);
+    haze.addColorStop(0, 'rgba(42, 36, 64, 0)');
+    haze.addColorStop(1, 'rgba(42, 36, 64, 0.7)');
+    pen.fillStyle = haze;
+    pen.fillRect(0, horizon - perDegree.y * 2.4, width, perDegree.y * 2.4);
+    pen.fillStyle = sky.HAZE;
+    pen.fillRect(0, horizon, width, height - horizon);
     return canvas;
   }
+  sky.SPAN = { azimuth: 140, above: 75, below: 5 };
   sky.HAZE = '#2a2440';
+  sky.ZENITH = '#11163c';
 
   /**
    * Draws lettering as gilded letters on stone. `write(pen, how)` must draw the text with `pen[how](...)`,
@@ -497,8 +648,8 @@
       for (let x = 0; x < size; x += 1) {
         const across = Math.cos(((x / (size - 1)) - 0.5) * Math.PI) ** 2; // 0 at the sides, 1 down the middle
         const i = (y * size + x) * 4;
-        image.data[i] = image.data[i + 1] = image.data[i + 2] = 255;
-        image.data[i + 3] = 255 * strength * across;
+        image.data[i] = image.data[i + 1] = image.data[i + 2] = 255 * strength * across; // light as colour: see `radiance`
+        image.data[i + 3] = 255;
       }
     }
     pen.putImageData(image, 0, 0);
@@ -624,5 +775,5 @@
     return canvas;
   }
 
-  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, glow, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, tracked, pool, frameShadow, ramp, roomShade, plasterWall, seeded, noise };
+  window.MuseumTextures = { stone, blocks, bronzeDoor, volute, radiance, glow, wash, frostedGlobe, uplight, sky, gild, marble, checker, coffers, velvet, runner, fringe, beam, tracked, pool, frameShadow, ramp, roomShade, plasterWall, seeded, noise };
 })();

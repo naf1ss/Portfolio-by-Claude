@@ -38,6 +38,9 @@
   const FOLLOW_MS = 110; // how quickly the scene catches up with the scroll: long enough to smooth a wheel's steps
   const GAZE = { yaw: 0.07, pitch: 0.04, ease: 0.08 }; // radians the view turns toward the cursor, at most
   const SHADOW_MAP = 2048;
+  // A wall light: how far its globe stands off the wall, the globe's radius, and how many times that stand-off
+  // the wash on the wall reaches across (all in metres but the last).
+  const WALL_LIGHT = { off: 0.32, radius: 0.17, reach: 16 };
 
   // Metres of wall one sheet of each texture covers.
   const TILE = { stone: 4, masonry: 4.8, paving: 6 };
@@ -49,7 +52,6 @@
     paving: 0x5a5868, // the square, in evening shade
     bronze: 0xffffff, // the doors' own texture carries their colour
     lampPost: 0x2e261d,
-    lamp: 0xffe1ae,
     warm: 0xffa25a, // lamplight
   };
 
@@ -118,6 +120,8 @@
       volute: textureOf(T.volute(stoneSheet)),
       door: textureOf(T.bronzeDoor()),
       glow: textureOf(T.glow()),
+      wash: textureOf(T.wash(WALL_LIGHT.reach)),
+      globe: textureOf(T.frostedGlobe()),
       uplight: textureOf(T.uplight()),
     };
     maps.uplight.channel = 1; // read with the shafts' second set of coordinates, which run foot to top
@@ -126,7 +130,7 @@
     /** Unlit and untouched by the tone mapping: for things that are painted, not lit (sky, lettering, the page). */
     const painted = (options) => new THREE.MeshBasicMaterial({ toneMapped: false, ...options });
     /** Light added on top of whatever is behind: lamps' halos and the pools they throw. */
-    const light = (color, opacity = 1) => ({ map: maps.glow, color, opacity, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, toneMapped: false });
+    const light = (color, opacity = 1, map = maps.glow) => ({ map, color, opacity, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, toneMapped: false });
 
     const materials = {
       stone: lambert({ color: COLOUR.stone, map: maps.stone }),
@@ -138,7 +142,8 @@
       volute: lambert({ color: COLOUR.stone, map: maps.volute }),
       bronze: lambert({ color: 0x4a3420 }),
       lampPost: lambert({ color: COLOUR.lampPost }),
-      lamp: painted({ color: COLOUR.lamp, fog: false }),
+      // A lamp's globe is frosted glass lit from inside: white-hot in the middle, warmer at the rim, from any side.
+      lamp: new THREE.MeshMatcapMaterial({ matcap: maps.globe, fog: false, toneMapped: false }),
       // The room behind the curtains is the page itself, in the page's own colour, so the walk ends on it.
       page: painted({ color: colours.paper }),
     };
@@ -178,6 +183,34 @@
       sprite.position.set(x, y, z);
       parent.add(sprite);
       return sprite;
+    }
+
+    /**
+     * A light on a wall: a bronze plate and arm holding a globe of frosted glass, the glow round the globe, and
+     * the wash it throws on the wall behind it. `at` is the point of the wall's face behind the globe;
+     * `facing` is the way that wall faces, as a turn about the upright (0 faces +z).
+     */
+    function wallLight([x, y, z], { facing = 0, parent = outside, strength = 0.62 } = {}) {
+      const { off, radius, reach } = WALL_LIGHT;
+      const fitting = new THREE.Group();
+      fitting.position.set(x, y, z);
+      fitting.rotation.y = facing;
+      parent.add(fitting);
+      const part = (geometry, material, [px, py, pz]) => {
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(px, py, pz);
+        fitting.add(mesh);
+        return mesh;
+      };
+      // Dark bronze, so the fitting reads as a fitting beside the light: a tall plate on the wall, an arm, a cup.
+      const armY = -radius - 0.09;
+      part(new THREE.BoxGeometry(0.11, 0.36, 0.025), materials.lampPost, [0, armY + 0.04, 0.0125]);
+      part(new THREE.BoxGeometry(0.03, 0.03, off), materials.lampPost, [0, armY, off / 2]);
+      part(new THREE.CylinderGeometry(0.085, 0.045, 0.1, 20), materials.lampPost, [0, armY + 0.06, off]);
+      part(new THREE.SphereGeometry(radius, 24, 16), materials.lamp, [0, 0, off]);
+      halo(radius * 5, [0, 0, off], 0.85, fitting);
+      halo(radius * 15, [0, 0, off], 0.5, fitting);
+      part(new THREE.PlaneGeometry(off * reach, off * reach), new THREE.MeshBasicMaterial(light(COLOUR.warm, strength, maps.wash)), [0, 0, 0.03]);
     }
 
     /** Lettering drawn on a canvas, as a sheet standing in the scene. `draw(pen)` paints it. */
@@ -241,7 +274,7 @@
     // The building is put up by its own files, outside and in, from this one kit of materials and shapes.
     const kit = {
       THREE, scene, outside, inside, floor, colours, tile: TILE, lamplight: COLOUR.warm,
-      materials, maps, lambert, painted, glowing: light, textureOf, box, sheetOf, halo, lettering, letteringPlane,
+      materials, maps, lambert, painted, glowing: light, textureOf, box, sheetOf, halo, wallLight, lettering, letteringPlane,
       redraw: () => wake(),
     };
     const { swingDoors, sign } = window.MuseumOutside.build(kit, { word, signSuffix });

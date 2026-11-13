@@ -21,7 +21,7 @@
   const DOOR_SWING = 1.5; // radians
 
   function build(kit, { word, signSuffix = '' }) {
-    const { THREE, scene, outside, floor, tile, lamplight, materials, maps, lambert, painted, glowing, textureOf, box, sheetOf, halo, lettering, letteringPlane } = kit;
+    const { THREE, scene, outside, floor, tile, lamplight, materials, maps, lambert, painted, glowing, textureOf, box, sheetOf, halo, wallLight, lettering, letteringPlane } = kit;
 
     // ---------- shapes only the outside needs ----------
 
@@ -77,12 +77,16 @@
     // ---------- the building ----------
 
     function buildSquare() {
+      // The sky is painted for the stretch of it the walk can see, so the dome is only that stretch: so far each
+      // side of straight ahead (-z), from high overhead to just under the horizon.
+      const { azimuth, above, below } = T.sky.SPAN;
+      const degrees = Math.PI / 180;
       const dome = new THREE.Mesh(
-        new THREE.SphereGeometry(1500, 48, 24),
+        new THREE.SphereGeometry(1500, 48, 24, (270 - azimuth / 2) * degrees, azimuth * degrees, (90 - above) * degrees, (above + below) * degrees),
         painted({ map: textureOf(T.sky()), side: THREE.BackSide, fog: false, depthWrite: false })
       );
-      dome.rotation.y = Math.PI * 0.7; // turns a good stretch of cloud to stand behind the building
       scene.add(dome);
+      scene.background = new THREE.Color(T.sky.ZENITH); // beyond the dome's top edge, were it ever seen
       scene.fog = new THREE.Fog(T.sky.HAZE, 150, 1100); // the square fades into the haze below the skyline
 
       const size = 2400;
@@ -130,7 +134,8 @@
       const globe = new THREE.Mesh(new THREE.SphereGeometry(radius, 20, 14), materials.lamp);
       globe.position.set(x, y + height + radius * 0.8, z);
       outside.add(post, globe);
-      halo(radius * 15, [x, y + height + radius * 0.8, z]);
+      halo(radius * 5, [x, y + height + radius * 0.8, z], 0.85);
+      halo(radius * 15, [x, y + height + radius * 0.8, z], 0.6);
     }
 
     function buildColumns() {
@@ -246,24 +251,13 @@
         // The doorway's frame.
         box(materials.stone, [0.44, door.height + 0.42, 0.3], [side * (door.width / 2 + 0.2), floor + (door.height + 0.42) / 2, wall.z + 0.12]);
         box(materials.stone, [0.26, 0.5, 0.42], [side * (door.width / 2 + 0.29), floor + door.height + 0.67, wall.z + 0.2]); // a bracket under the hood
-        sconce(side * (door.width / 2 + 2.2), floor + 4.3);
+        wallLight([side * (door.width / 2 + 2.2), floor + 4.3, wall.z]);
       });
       box(materials.wall, [door.width, above, wall.thickness], [0, floor + door.height + above / 2, wallZ], masonry);
       box(materials.stone, [wall.halfWidth * 2, 0.7, 0.16], [0, floor + 0.35, wall.z + 0.08]); // the wall's footing
       box(materials.stone, [door.width + 0.84, 0.44, 0.34], [0, floor + door.height + 0.2, wall.z + 0.14]);
       box(materials.stone, [door.width + 0.84, 0.5, 0.2], [0, floor + door.height + 0.67, wall.z + 0.1]); // a plain band between the brackets
       box(materials.stone, [door.width + 1.5, 0.18, 0.7], [0, floor + door.height + 1.01, wall.z + 0.3]); // the hood over the door
-    }
-
-    /** A wall lamp: a small bronze bracket, a globe, and the wash of light it throws on the masonry. */
-    function sconce(x, y) {
-      const z = PLAN.wall.z;
-      box(materials.lampPost, [0.1, 0.5, 0.34], [x, y - 0.3, z + 0.17]);
-      const globe = new THREE.Mesh(new THREE.SphereGeometry(0.19, 18, 12), materials.lamp);
-      globe.position.set(x, y, z + 0.38);
-      outside.add(globe);
-      halo(2.6, [x, y, z + 0.4], 0.75);
-      sheetOf(new THREE.MeshBasicMaterial(glowing(lamplight, 0.5)), [5.2, 7], [x, y - 0.4, z + 0.03], { flat: false });
     }
 
     /** Two bronze leaves, each turning on its outer edge, and the light that spills out as they open. */
