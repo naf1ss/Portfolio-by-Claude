@@ -1,7 +1,7 @@
 /**
  * The home page's opening and its featured works.
  *
- *   HomeReveal.mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, hrefFor, U })
+ *   HomeReveal.mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, projectContribution, hrefFor, U })
  *   (hrefFor(work) gives a selected work's link: { href, text })
  *
  * The opening: "nuances" stands on the page as solid 3D letters. The word turns to face the cursor, the letters
@@ -585,8 +585,11 @@
     return strokes;
   }
 
-  /** The interdisciplinary project: a wide picture that unfolds like a folded panorama, and its summary. */
-  function projectFeature(section, { project, cover, U }) {
+  /**
+   * The interdisciplinary project: the artwork it began from, unfolding like a folded panorama, credited to
+   * its artist; then what I made from it (`contribution`: { work, caption }) beside the project's summary.
+   */
+  function projectFeature(section, { project, cover, contribution, U }) {
     const media = section.querySelector('[data-project-media]');
     const source = U.imageUrl(cover, 1800);
     media.style.aspectRatio = `${cover.w} / ${cover.h}`;
@@ -603,6 +606,22 @@
       slice.style.backgroundSize = `${UNFOLD_SLICES * 100}% 100%`;
       slice.style.backgroundPosition = `${(i / (UNFOLD_SLICES - 1)) * 100}% 0`;
       media.append(slice);
+    }
+    // The source is someone else's work: its credit is shown, not only spoken to screen readers.
+    const credit = project.hero && project.hero.caption;
+    section.querySelector('[data-project-credit]').textContent = credit ? plain(credit) : '';
+    const made = section.querySelector('[data-project-made]');
+    if (contribution && contribution.work) {
+      const { work, caption } = contribution;
+      const picture = made.querySelector('img');
+      picture.src = U.imageUrl(work, 1200);
+      picture.srcset = U.buildSrcset(work);
+      picture.sizes = '(min-width: 56rem) 55vw, 92vw';
+      picture.alt = plain(U.altText(work));
+      picture.width = work.w;
+      picture.height = work.h;
+      made.querySelector('[data-project-made-caption]').textContent = plain(caption);
+      made.hidden = false;
     }
     section.querySelector('[data-project-kicker]').textContent = project.kicker;
     section.querySelector('[data-project-title]').textContent = plain(project.title);
@@ -626,13 +645,15 @@
     items.forEach((item) => observer.observe(item));
   }
 
-  function mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, hrefFor, U }) {
+  function mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, projectContribution, hrefFor, U }) {
     if (opening) mountOpening(opening, { trailWorks, museum, U });
     if (features && featureWorks.length) {
       const list = features.querySelector('[data-features]');
       featureWorks.forEach((feature, index) => list.append(featureArticle(feature, index, { U, hrefFor })));
     }
-    if (project && projectData && projectCover) projectFeature(project, { project: projectData, cover: projectCover, U });
+    if (project && projectData && projectCover) {
+      projectFeature(project, { project: projectData, cover: projectCover, contribution: projectContribution, U });
+    }
     watchArrivals(document);
   }
 

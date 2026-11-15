@@ -304,6 +304,11 @@
     summary:
       'A research project with the Chinese American artist Dr. Gan Yu, asking how a website could carry his participatory ink painting *A Moving Mountain* beyond the gallery wall. Presented in his exhibition *Footprints Across the Ocean* at the Schmucker Art Gallery, Gettysburg College.',
     cover: 'dmm-full',
+    // Shown beside the cover on the home page, so the feature shows what I made as well as the painting it began from.
+    contribution: {
+      workId: 'dmm-site-canvas',
+      caption: 'The interactive canvas I designed and built, where visitors’ typed notes join the handwriting left on the painting in the gallery.',
+    },
     hero: {
       workId: 'dmm-full',
       caption: 'Gan Yu, A Moving Mountain: Dow Jones Performance in the First Decade of the 21st Century, ink on canvas, 30 × 240 in, begun 2000. Courtesy of the artist.',

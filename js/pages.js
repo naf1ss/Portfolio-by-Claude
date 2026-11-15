@@ -127,6 +127,9 @@
         },
         projectData: project,
         projectCover: project ? byId.get(project.cover) : null,
+        projectContribution: project && project.contribution
+          ? { work: byId.get(project.contribution.workId), caption: project.contribution.caption }
+          : null,
         // A work that belongs to a series leads to the series, which says why its works belong together.
         hrefFor: (work) => {
           const series = (window.PORTFOLIO_SERIES || []).find((entry) => U.worksInSeries(entry, all).includes(work));
