@@ -284,12 +284,10 @@
     function show(next, { updateUrl, focusId } = {}) {
       category = next;
       // A set's works follow one another, so the grid shows one tile for them and the viewer steps through them together.
-      const visible = U.groupSets(U.filterWorks(all, category));
+      const visible = U.shownInGallery(all, category);
       const wall = showingWall();
-      // The grid leaves out a few works that belong on the wall and in their series (site-config.js); a work
-      // opened by its link is always shown.
-      const gridHidden = new Set(config.gridHiddenIds || []);
-      const inGrid = visible.filter((work) => !gridHidden.has(work.id) || work.id === focusId);
+      // The grid leaves out a few works that belong on the wall and in their series (site-config.js).
+      const inGrid = U.shownInGallery(all, category, { grid: true, gridHidden: config.gridHiddenIds, focusId });
       const showingPhotos = category === 'photography';
       const showingIndex = showingPhotos && currentView() === 'wall';
       list.hidden = wall || showingPhotos;

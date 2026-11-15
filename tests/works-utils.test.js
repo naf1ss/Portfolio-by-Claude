@@ -539,3 +539,28 @@ test('groupSets moves every member of a set up behind the first, and countByCate
   assert.equal(counts.design, 5, 'as the gallery counts what it shows');
   assert.equal(counts.all, 5);
 });
+
+test('the home page counts each medium as the gallery shows it, so the two always agree', () => {
+  const RoomUtils = require('../js/gallery-room-utils.js');
+  const source = fs.readFileSync(path.join(ROOT, 'js', 'site-config.js'), 'utf8');
+  const gridHidden = [...(/gridHiddenIds:\s*\[([^\]]*)\]/.exec(source) || ['', ''])[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  const visible = WORKS.filter((record) => !record.hidden);
+  const counts = U.countByCategory(visible);
+  U.CATEGORIES.forEach(({ id }) => {
+    // The gallery opens each medium on the wall, or (for media that do not hang) as a grid.
+    const grid = !RoomUtils.isWallCategory(id) && id !== 'photography';
+    const shown = U.shownInGallery(visible, id, { grid, gridHidden }).length;
+    assert.equal(counts[id], shown, `${id}: the home page says ${counts[id]}, the gallery shows ${shown}`);
+  });
+  gridHidden.forEach((id) => {
+    const record = WORKS.find((entry) => entry.id === id);
+    assert.ok(record && RoomUtils.isWallCategory(record.category), `${id} is left off the grid but its medium does not open on the wall`);
+  });
+});
+
+test('shownInGallery keeps sets together and leaves grid-hidden works off the grid unless opened by link', () => {
+  const works = [work({ id: 'a' }), work({ id: 's1', set: 'pair' }), work({ id: 'b' }), work({ id: 's2', set: 'pair' })];
+  assert.deepEqual(U.shownInGallery(works, 'painting').map((w) => w.id), ['a', 's1', 's2', 'b']);
+  assert.deepEqual(U.shownInGallery(works, 'painting', { grid: true, gridHidden: ['b'] }).map((w) => w.id), ['a', 's1', 's2']);
+  assert.deepEqual(U.shownInGallery(works, 'painting', { grid: true, gridHidden: ['b'], focusId: 'b' }).map((w) => w.id), ['a', 's1', 's2', 'b']);
+});

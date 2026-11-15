@@ -118,6 +118,18 @@
   }
 
   /**
+   * The works the gallery shows for a medium, which its status line counts ("Showing 28 works on the wall"):
+   * every work of that medium on the wall and in photography; the grid leaves out `gridHidden` ids (works
+   * that only make sense hung beside others), except `focusId`, a work opened by its link. Sets stay together.
+   */
+  function shownInGallery(works, category, { grid = false, gridHidden = [], focusId = null } = {}) {
+    const shown = groupSets(filterWorks(works, category));
+    if (!grid) return shown;
+    const hidden = new Set(gridHidden);
+    return shown.filter((work) => !hidden.has(work.id) || work.id === focusId);
+  }
+
+  /**
    * The same works, with every member of a set moved up to follow the first one, in their own order. The grid
    * then shows each set as one tile, and the viewer steps through its members together.
    */
@@ -340,6 +352,7 @@
     aspectRatio,
     filterWorks,
     countByCategory,
+    shownInGallery,
     groupSets,
     pageHref,
     pageFile,
