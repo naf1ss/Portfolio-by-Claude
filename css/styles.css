@@ -6849,13 +6849,37 @@ body[data-gallery-view='wall'] .hint {
   display: none;
 }
 
-/* Wide screens: Gallery's and Series' menus drop in tilted and straighten as they arrive. A choice under the
-   pointer steps aside for a small dot of its colour. */
+/* Wide screens: Gallery's, Series' and the projects' menus are frosted glass that unrolls from the top, each
+   choice coming into focus one after another. A choice under the pointer steps aside for a small dot of its
+   colour. */
 @media (min-width: 40.0625rem) {
   .site-nav .site-nav__menu {
-    transform: translate(-50%, 1rem) rotate(2.5deg);
-    transform-origin: 50% 0;
-    transition: opacity 0.3s var(--ease), transform 0.5s var(--ease-card), visibility 0s linear 0.5s;
+    border: 0;
+    border-radius: 0.9rem;
+    background: color-mix(in srgb, var(--paper) 80%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent),
+      0 26px 50px -30px rgb(0 0 0 / 0.5);
+    transform: translate(-50%, 0);
+    clip-path: inset(0 0 100% 0 round 0.9rem);
+    transition: clip-path 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s var(--ease), visibility 0s linear 0.5s;
+  }
+
+  /* On the gallery's wall the header's letters are pale, so the glass is dark. */
+  body[data-gallery-view='wall'] .site-header .site-nav__menu {
+    background: color-mix(in srgb, #0b0e15 72%, transparent);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.1),
+      0 26px 50px -30px rgb(0 0 0 / 0.7);
+  }
+
+  .site-nav .site-nav__menu > li {
+    opacity: 0;
+    filter: blur(6px);
+    translate: 0 -0.3rem;
+    transition: opacity 0.25s var(--ease), filter 0.25s var(--ease), translate 0.25s var(--ease);
   }
 
   .site-nav .site-nav__menu a {
@@ -6894,11 +6918,25 @@ body[data-gallery-view='wall'] .hint {
 }
 
 @media (min-width: 40.0625rem) and (hover: hover) {
-  .site-nav__group:hover .site-nav__menu,
-  .site-nav__group:focus-within .site-nav__menu {
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu {
+    clip-path: inset(0 0 0 0 round 0.9rem);
     transform: translate(-50%, 0);
-    transition: opacity 0.3s var(--ease), transform 0.5s var(--ease-card), visibility 0s;
+    transition: clip-path 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s var(--ease), visibility 0s;
   }
+
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li {
+    opacity: 1;
+    filter: none;
+    translate: 0 0;
+    transition: opacity 0.4s var(--ease), filter 0.5s var(--ease-out), translate 0.5s var(--ease-out);
+  }
+
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li:nth-child(2) { transition-delay: 0.04s; }
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li:nth-child(3) { transition-delay: 0.08s; }
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li:nth-child(4) { transition-delay: 0.12s; }
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li:nth-child(5) { transition-delay: 0.16s; }
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li:nth-child(6) { transition-delay: 0.2s; }
+  .site-nav__group:is(:hover, :focus-within) .site-nav__menu > li:nth-child(7) { transition-delay: 0.24s; }
 }
 
 /* Phones: a pill reading MENU beside two dots. The dots turn upright on hover and when open, and the word rolls
@@ -7305,6 +7343,7 @@ body[data-gallery-view='wall'] .hint {
 
 @media (prefers-reduced-motion: reduce) {
   .site-nav .site-nav__menu,
+  .site-nav .site-nav__menu > li,
   .has-menu .site-nav > ul,
   .has-menu .site-nav__theme,
   .menu-toggle__word,
