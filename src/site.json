@@ -30,7 +30,8 @@
     {"file": "site-menu", "defer": false},
     {"file": "intro-utils", "defer": false},
     {"file": "motion", "defer": false},
-    {"file": "header-return"},
+    {"file": "header-radial"},
+    {"file": "header-dot"},
     {"file": "header-dust"},
     {"file": "scroll-scenes"},
     {"file": "works-utils"},
@@ -72,7 +73,7 @@
     {"file": "magnifier"},
     {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "header-return", "header-dust", "interactions", "scroll-scenes", "painted-text"],
+  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "header-radial", "header-dust", "header-dot", "interactions", "scroll-scenes", "painted-text"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",

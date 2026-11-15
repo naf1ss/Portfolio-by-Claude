@@ -8337,118 +8337,6 @@ body {
   }
 }
 
-/* ---------- Returning header (js/header-return.js) ----------
-   Scrolled away from the header, a scroll up brings back a slim bar with the same links; a scroll down sends it
-   away. It moves by `translate`, never by the header itself, so the phone menu is never trapped inside it. */
-.return-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 45;
-  width: max-content;
-  max-width: calc(100vw - 1.5rem);
-  margin-inline: auto;
-  translate: 0 calc(-100% - 1.5rem);
-  visibility: hidden;
-  transition: translate 0.4s cubic-bezier(0.5, 0, 0.75, 0), visibility 0s linear 0.4s;
-}
-
-.return-header.is-shown {
-  translate: 0 0.85rem;
-  visibility: visible;
-  transition: translate 0.6s cubic-bezier(0.3, 1.35, 0.55, 1), visibility 0s;
-}
-
-/* Above the phone menu, so the bar's Close stays at hand while the header is out of sight. */
-.is-menu-open .return-header {
-  z-index: 60;
-}
-
-.return-header__board {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem 0.75rem;
-  padding: 0.3rem 0.4rem 0.3rem 1.1rem;
-  overflow: visible;
-  border: 1px solid var(--rule);
-  border-radius: 0.8rem;
-  background: var(--paper);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 0.5) inset,
-    0 18px 32px -20px rgb(0 0 0 / 0.5);
-}
-
-.return-header .return-header__mark {
-  font-size: 1.45rem;
-}
-
-.return-header .return-header__nav {
-  margin-left: 0;
-}
-
-.return-header .return-header__nav > ul > li > a {
-  padding-block: 0.75rem;
-  padding-inline: 0.6rem;
-  letter-spacing: 0.15em;
-}
-
-.return-header__menu {
-  display: none;
-  padding: 0.55rem 0.95rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--paper);
-  font: 600 0.68rem / 1 var(--font-text);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-/* Phones: the wordmark and a Menu button that opens the phone menu. */
-@media (max-width: 40rem) {
-  .return-header .return-header__nav {
-    display: none;
-  }
-
-  .has-menu .return-header__menu {
-    display: block;
-  }
-
-  .return-header__board {
-    gap: 1.25rem;
-  }
-}
-
-/* Tablets: the links tighten so they keep to one line where they can. */
-@media (min-width: 40.0625rem) and (max-width: 64rem) {
-  .return-header .return-header__nav > ul {
-    justify-content: center;
-  }
-
-  .return-header .return-header__nav > ul > li > a {
-    padding-inline: 0.4rem;
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .return-header,
-  .return-header.is-shown {
-    translate: 0 0.85rem;
-    opacity: 0;
-    transition: opacity 0.2s linear, visibility 0s linear 0.2s;
-  }
-
-  .return-header.is-shown {
-    opacity: 1;
-    transition: opacity 0.2s linear, visibility 0s;
-  }
-}
-
 /* ---------- Header dust (js/header-dust.js) ----------
    Dust drifting across the whole header, stirred by the pointer: dark specks on the light theme, pale on the
    dark. The page names and the wordmark cast long soft shadows (--sun-x) and lift under the pointer. */
@@ -8493,7 +8381,7 @@ body[data-gallery-view='wall'] .site-header {
 }
 
 /* Eight steps of shadow, each a little further and fainter, read as one long soft shadow. */
-:is(.site-header, .return-header) :is(.site-nav > ul > li > a, .wordmark) {
+.site-header :is(.site-nav > ul > li > a, .wordmark) {
   --step-x: calc(var(--sun-x, 1) * var(--lift) * 1px);
   --step-y: calc(var(--lift) * 1px);
   text-shadow:
@@ -8508,7 +8396,7 @@ body[data-gallery-view='wall'] .site-header {
   transition: --lift 0.45s var(--ease-out), translate 0.45s var(--ease-out), opacity 0.25s var(--ease);
 }
 
-:is(.site-header, .return-header) :is(.site-nav > ul > li > a, .wordmark):is(:hover, :focus-visible) {
+.site-header :is(.site-nav > ul > li > a, .wordmark):is(:hover, :focus-visible) {
   --lift: 2.4;
   translate: 0 -3px;
 }
@@ -8521,7 +8409,245 @@ body[data-gallery-view='wall'] .site-header {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.site-header, .return-header) :is(.site-nav > ul > li > a, .wordmark) {
+  .site-header :is(.site-nav > ul > li > a, .wordmark) {
     transition: none;
+  }
+}
+
+/* ---------- Throw the dot (js/header-dot.js) ----------
+   On wide screens the accent dot under the current page hops to the name under the pointer, and the names lean
+   toward it. Thrown at a name, the dot knocks it over and swells to fill the screen; the next page opens as it
+   shrinks back into place. */
+.nav-ball {
+  display: none;
+}
+
+@media (min-width: 40.0625rem) {
+  .site-header .site-nav > ul > li > a[aria-current='page']::after {
+    display: none;
+  }
+
+  .nav-ball {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: calc(var(--sun-x, 1) * 3px) 3px 3px var(--light-shadow);
+    cursor: grab;
+    touch-action: none;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .nav-ball::before {
+    content: '';
+    position: absolute;
+    inset: -9px;
+    border-radius: 50%;
+  }
+
+  .nav-ball.is-held {
+    cursor: grabbing;
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  .nav-ball.is-away {
+    opacity: 0;
+  }
+
+  .site-header .site-nav > ul > li > a {
+    transform-origin: 50% 100%;
+    rotate: calc(var(--lean, 0) * 6deg);
+    translate: calc(var(--lean, 0) * 3px) 0;
+    transition: --lift 0.45s var(--ease-out), rotate 0.35s var(--ease-out), translate 0.35s var(--ease-out), opacity 0.25s var(--ease);
+  }
+
+  .site-header .site-nav > ul > li > a:is(:hover, :focus-visible) {
+    translate: calc(var(--lean, 0) * 3px) -3px;
+  }
+
+  .site-header .site-nav > ul > li > a.is-hit {
+    animation: knocked-over 0.6s var(--ease) forwards;
+  }
+}
+
+@keyframes knocked-over {
+  30% { rotate: -14deg; translate: -2px -6px; }
+  100% { rotate: 80deg; translate: 10px 4px; opacity: 0.3; }
+}
+
+.dot-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: var(--accent);
+  pointer-events: none;
+  animation: dot-swell 0.55s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+.dot-wipe.is-arriving {
+  animation: dot-shrink 0.65s 0.05s cubic-bezier(0.7, 0, 0.3, 1) both;
+}
+
+@keyframes dot-swell {
+  from { clip-path: circle(4px at var(--at)); }
+  to { clip-path: circle(150vmax at var(--at)); }
+}
+
+@keyframes dot-shrink {
+  from { clip-path: circle(150vmax at var(--at)); }
+  to { clip-path: circle(4px at var(--at)); }
+}
+
+/* A page reached by a throw starts under the dot (js/motion.js), until the dot's own shrinking takes over. */
+:root.arrive-throw:not(.is-dot-landing)::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 91;
+  background: var(--accent);
+}
+
+/* Phones: the pages' card lands with a bounce, as the dot would. */
+@media (max-width: 40rem) {
+  .is-menu-open .site-nav > ul {
+    animation: ball-drop 0.8s var(--ease) both;
+  }
+}
+
+@keyframes ball-drop {
+  0% { opacity: 0; transform: translateY(-4rem); }
+  40% { opacity: 1; transform: translateY(0); }
+  58% { transform: translateY(-1.2rem); }
+  76% { transform: translateY(0); }
+  88% { transform: translateY(-0.3rem); }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-wipe,
+  .is-menu-open .site-nav > ul {
+    animation: none !important;
+  }
+}
+
+/* ---------- Radial menu (js/header-radial.js) ----------
+   Scrolled past the header, a round "n." waits in the corner and fans the pages out beside it in a bow. */
+.radial {
+  display: none;
+}
+
+.radial {
+  display: block;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 45;
+  width: 3.2rem;
+  height: 3.2rem;
+  opacity: 0;
+  scale: 0.6;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease), scale 0.45s cubic-bezier(0.3, 1.4, 0.5, 1), visibility 0s linear 0.45s;
+}
+
+.radial.is-shown {
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  transition: opacity 0.3s var(--ease), scale 0.45s cubic-bezier(0.3, 1.4, 0.5, 1), visibility 0s;
+}
+
+/* The hover area reaches over the fan, so moving out to a page keeps it open. */
+.radial.is-open {
+  width: 20rem;
+  height: 16.5rem;
+}
+
+.radial__disc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font: 700 1.5rem / 1 var(--font-display);
+  box-shadow: 0 14px 28px -12px rgb(0 0 0 / 0.5);
+  cursor: pointer;
+  transition: scale 0.3s var(--ease-out), rotate 0.5s var(--ease-out);
+}
+
+.radial__disc span {
+  color: var(--accent);
+}
+
+.radial.is-open .radial__disc {
+  scale: 1.08;
+  rotate: -12deg;
+}
+
+.radial__pages {
+  position: absolute;
+  top: 1.6rem;
+  left: 1.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.radial__pages li {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: 0 0;
+  scale: 0.3;
+  opacity: 0;
+  transition: translate 0.3s var(--ease), scale 0.3s var(--ease), opacity 0.2s var(--ease);
+  transition-delay: calc((5 - var(--i)) * 0.02s);
+}
+
+.radial.is-open .radial__pages li {
+  translate: var(--x) calc(var(--y) - 50%);
+  scale: 1;
+  opacity: 1;
+  transition: translate 0.55s cubic-bezier(0.3, 1.35, 0.5, 1), scale 0.45s cubic-bezier(0.3, 1.35, 0.5, 1), opacity 0.2s var(--ease);
+  transition-delay: calc(var(--i) * 0.045s);
+}
+
+.radial__pages a {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink) 9%, transparent),
+    0 10px 24px -14px rgb(0 0 0 / 0.45);
+  font: 600 0.66rem / 1 var(--font-text);
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.radial__pages a:hover,
+.radial__pages a:focus-visible,
+.radial__pages a[aria-current='page'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radial__pages li,
+  .radial.is-open .radial__pages li {
+    transition: opacity 0.2s linear;
   }
 }

@@ -21,6 +21,18 @@
 
   root.classList.add('js-motion');
 
+  // A page reached by throwing the header's dot (js/header-dot.js) starts covered by the dot, which then
+  // shrinks back into place; the cover has to be up before the first paint.
+  try {
+    if (sessionStorage.getItem('nav-arrival') === 'throw') {
+      sessionStorage.removeItem('nav-arrival');
+      root.classList.add('arrive-throw');
+      setTimeout(() => root.classList.remove('arrive-throw'), 1500);
+    }
+  } catch (error) {
+    // No storage: no entrance.
+  }
+
   const navigationEntry = performance.getEntriesByType('navigation')[0];
   if (
     window.IntroUtils &&
