@@ -2,6 +2,7 @@
  * The home page's opening and its featured works.
  *
  *   HomeReveal.mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, hrefFor, U })
+ *   (hrefFor(work) gives a selected work's link: { href, text })
  *
  * The opening: "nuances" stands on the page as solid 3D letters. The word turns to face the cursor, the letters
  * nearest it step forward, and it sways by itself when the cursor rests. Moving the cursor also leaves two
@@ -552,7 +553,7 @@
         <p class="eyebrow"></p>
         <h3 class="feature__title"></h3>
         <p class="feature__facts"></p>
-        <a class="text-link feature__link">See it in the gallery <span aria-hidden="true">&rarr;</span></a>
+        <a class="text-link feature__link"><span data-link-text></span> <span aria-hidden="true">&rarr;</span></a>
       </div>`;
     const picture = article.querySelector('img');
     picture.src = U.imageUrl(work, 1200);
@@ -564,7 +565,9 @@
     const caption = U.captionParts(work);
     article.querySelector('.feature__title').textContent = plain(caption.title).replace(/, \d+ of \d+$/, '');
     article.querySelector('.feature__facts').textContent = caption.meta;
-    article.querySelector('.feature__link').href = hrefFor(work);
+    const { href, text } = hrefFor(work);
+    article.querySelector('.feature__link').href = href;
+    article.querySelector('[data-link-text]').textContent = text;
     return article;
   }
 

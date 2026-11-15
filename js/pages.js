@@ -127,7 +127,13 @@
         },
         projectData: project,
         projectCover: project ? byId.get(project.cover) : null,
-        hrefFor: (work) => `gallery${U.hashForWork(work)}`,
+        // A work that belongs to a series leads to the series, which says why its works belong together.
+        hrefFor: (work) => {
+          const series = (window.PORTFOLIO_SERIES || []).find((entry) => U.worksInSeries(entry, all).includes(work));
+          return series
+            ? { href: U.seriesPage(series.id), text: `See the series, ${series.title}` }
+            : { href: `gallery${U.hashForWork(work)}`, text: 'See it in the gallery' };
+        },
       }
     );
 

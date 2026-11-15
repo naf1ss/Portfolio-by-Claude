@@ -101,18 +101,16 @@
       : works.filter((work) => work.category === category);
   }
 
-  /** Works per category; a set (several works shown as one tile) counts once. */
+  /**
+   * Works per category. Every work in a set counts, though the grid shows a set as one tile: the gallery says
+   * how many works it is showing the same way, so the home page's count matches what a visitor then finds.
+   */
   function countByCategory(works) {
     const counts = { all: 0 };
     CATEGORIES.forEach(({ id }) => {
       counts[id] = 0;
     });
-    const seenSets = new Set();
     works.forEach((work) => {
-      if (work.set) {
-        if (seenSets.has(work.set)) return;
-        seenSets.add(work.set);
-      }
       counts.all += 1;
       counts[work.category] = (counts[work.category] || 0) + 1;
     });

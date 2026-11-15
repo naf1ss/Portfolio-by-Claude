@@ -526,7 +526,7 @@ test('photography: every photograph has a measured brightness (run tools/photo-b
   assert.deepEqual(missing, []);
 });
 
-test('groupSets moves every member of a set up behind the first, and countByCategory counts a set once', () => {
+test('groupSets moves every member of a set up behind the first, and countByCategory counts each member', () => {
   const works = [
     work({ id: 'a', category: 'design' }),
     work({ id: 's1', category: 'design', set: 'board' }),
@@ -536,6 +536,6 @@ test('groupSets moves every member of a set up behind the first, and countByCate
   ];
   assert.deepEqual(U.groupSets(works).map((w) => w.id), ['a', 's1', 's2', 's3', 'b']);
   const counts = U.countByCategory(works);
-  assert.equal(counts.design, 3);
-  assert.equal(counts.all, 3);
+  assert.equal(counts.design, 5, 'as the gallery counts what it shows');
+  assert.equal(counts.all, 5);
 });
