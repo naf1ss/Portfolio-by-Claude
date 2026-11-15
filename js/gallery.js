@@ -141,10 +141,25 @@
    */
   const SAME_SHAPE_TOLERANCE = 1.02; // proportions within 2% count as the same
 
-  function renderGallery(list, works, { hrefFor, eagerCount = 4, groupSets = true }) {
+  /**
+   * A heading across the grid that starts a new part of it ("Archive"). The row before it keeps its natural
+   * height (the filler takes up its slack), as the last row of the whole grid does.
+   */
+  function createDivider({ title, note }) {
+    const filler = element('li', 'gallery__filler');
+    filler.setAttribute('aria-hidden', 'true');
+    const divider = element('li', 'gallery__divider');
+    divider.append(element('h2', 'gallery__divider-title', title));
+    if (note) divider.append(element('p', 'gallery__divider-note', note));
+    return [filler, divider];
+  }
+
+  /** `divider`: { at, title, note } puts a heading across the grid before the work at index `at`. */
+  function renderGallery(list, works, { hrefFor, eagerCount = 4, groupSets = true, divider = null }) {
     const tiles = [];
     for (let i = 0; i < works.length; i += 1) {
       const work = works[i];
+      if (divider && i === divider.at) tiles.push(...createDivider(divider));
       const options = { hrefFor, eager: tiles.length < eagerCount };
       if (work.set && groupSets) {
         let end = i;

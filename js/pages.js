@@ -257,6 +257,7 @@
     room = window.GalleryRoom.create(document.getElementById('room'), {
       series: window.PORTFOLIO_SERIES || [],
       onOpenWork: (id) => lightbox.open(id, 'user'),
+      archiveBefore: config.archiveBefore,
     });
 
     // A deep-linked work must be in the visible list, so switch to its medium if needed.
@@ -287,10 +288,12 @@
     function show(next, { updateUrl, focusId } = {}) {
       category = next;
       // A set's works follow one another, so the grid shows one tile for them and the viewer steps through them together.
-      const visible = U.shownInGallery(all, category);
+      // Works made before config.archiveBefore are gathered at the end, as the archive.
+      const visible = U.withArchive(U.shownInGallery(all, category), config.archiveBefore).works;
       const wall = showingWall();
       // The grid leaves out a few works that belong on the wall and in their series (site-config.js).
-      const inGrid = U.shownInGallery(all, category, { grid: true, gridHidden: config.gridHiddenIds, focusId });
+      const grid = U.withArchive(U.shownInGallery(all, category, { grid: true, gridHidden: config.gridHiddenIds, focusId }), config.archiveBefore);
+      const inGrid = grid.works;
       const showingPhotos = category === 'photography';
       const showingIndex = showingPhotos && currentView() === 'wall';
       list.hidden = wall || showingPhotos;
@@ -331,6 +334,7 @@
         window.Gallery.renderGallery(list, inGrid, {
           hrefFor: (work) => U.hashForWork(work),
           eagerCount: 6,
+          divider: grid.archiveStart > 0 ? { at: grid.archiveStart, title: 'Archive', note: `Works made before ${config.archiveBefore}` } : null,
         });
         useViewerWorks(inGrid);
       }

@@ -130,6 +130,29 @@
   }
 
   /**
+   * Whether a work belongs to the archive: made before `before` (a year). Photographs are never archived, since
+   * they are shown by series; a set is archived only when all of it is, so it is never split.
+   */
+  function isArchived(work, before, works = [work]) {
+    if (!before || isBulk(work)) return false;
+    const old = (entry) => Boolean(entry.year) && entry.year < before;
+    if (!work.set) return old(work);
+    return works.filter((entry) => entry.set === work.set).every(old);
+  }
+
+  /**
+   * The works in the gallery's order with the archive (see isArchived) gathered after the last recent artwork,
+   * ahead of any photographs. `archiveStart` is where it begins in `works`, or -1 when nothing is archived.
+   */
+  function withArchive(works, before) {
+    const archived = works.filter((work) => isArchived(work, before, works));
+    if (!archived.length) return { works: works.slice(), archiveStart: -1 };
+    const rest = works.filter((work) => !archived.includes(work));
+    const archiveStart = rest.reduce((at, work, i) => (isBulk(work) ? at : i + 1), 0);
+    return { works: [...rest.slice(0, archiveStart), ...archived, ...rest.slice(archiveStart)], archiveStart };
+  }
+
+  /**
    * The same works, with every member of a set moved up to follow the first one, in their own order. The grid
    * then shows each set as one tile, and the viewer steps through its members together.
    */
@@ -353,6 +376,8 @@
     filterWorks,
     countByCategory,
     shownInGallery,
+    isArchived,
+    withArchive,
     groupSets,
     pageHref,
     pageFile,

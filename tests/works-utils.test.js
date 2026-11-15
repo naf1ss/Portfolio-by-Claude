@@ -583,3 +583,25 @@ test('every screen recording a project shows, and its poster, is in the site at 
     if (label !== undefined) assert.ok(label.length > 20, `${src}: needs a description for screen readers`);
   });
 });
+
+test('withArchive gathers works made before the year after the last recent artwork, ahead of photographs', () => {
+  const works = [
+    work({ id: 'new', year: 2026 }),
+    work({ id: 'old', year: 2018 }),
+    work({ id: 'mid', year: 2024 }),
+    work({ id: 'photo', year: 2021, category: 'photography' }),
+  ];
+  const { works: ordered, archiveStart } = U.withArchive(works, 2023);
+  assert.deepEqual(ordered.map((w) => w.id), ['new', 'mid', 'old', 'photo'], 'photographs are never archived, and come after');
+  assert.equal(archiveStart, 2);
+  assert.deepEqual(U.withArchive(works, null), { works, archiveStart: -1 });
+  assert.equal(U.withArchive([work({ year: 2025 })], 2023).archiveStart, -1);
+});
+
+test('isArchived keeps a set whole: archived only when every member is old', () => {
+  const pair = [work({ id: 'a', year: 2020, set: 'p' }), work({ id: 'b', year: 2024, set: 'p' })];
+  assert.equal(U.isArchived(pair[0], 2023, pair), false);
+  const oldPair = [work({ id: 'a', year: 2020, set: 'p' }), work({ id: 'b', year: 2021, set: 'p' })];
+  assert.equal(U.isArchived(oldPair[1], 2023, oldPair), true);
+  assert.equal(U.isArchived(work({ year: null }), 2023), false, 'an undated work stays with the recent ones');
+});

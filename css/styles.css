@@ -3537,6 +3537,38 @@ html {
   height: 0;
 }
 
+/* The archive's heading across the grid, and the filler that keeps the row above it at its natural height. */
+.gallery__filler {
+  flex-grow: 1000000;
+  height: 0;
+}
+
+.gallery__divider {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.gallery__divider-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.gallery__divider-note {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
 .gallery__item {
   flex-grow: calc(var(--ar) * 100);
   flex-basis: calc(var(--ar) * var(--row-height));
@@ -5298,6 +5330,17 @@ body[data-gallery-view='wall'] .medium-capsule {
   position: relative;
   z-index: 2;
   min-width: 0;
+}
+
+/* On the first work of the archive's label: where the archive begins on the wall. */
+.room__archive-note {
+  margin: 1rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--room-ink) 18%, transparent);
+  color: var(--room-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.45;
 }
 
 .room__kicker {

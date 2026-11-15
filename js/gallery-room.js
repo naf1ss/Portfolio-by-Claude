@@ -134,7 +134,7 @@
       if (size) facts.append(size);
       addFact(U.seriesMeta(works).split(' · ')[1] || '');
     } else {
-      label.append(element('p', 'room__kicker', categoryLabel));
+      label.append(element('p', 'room__kicker', section.archived ? `Archive · ${categoryLabel}` : categoryLabel));
       label.append(createTitle(lead.title || lead.medium || 'Untitled'));
       addFact(lead.medium);
       const size = sizeLine(lead.dimensions);
@@ -142,6 +142,7 @@
       addFact(lead.year ? String(lead.year) : '');
     }
     label.append(element('span', 'room__rule'), facts);
+    if (section.archiveNote) label.append(element('p', 'room__archive-note', section.archiveNote));
     if (section.part && !section.series.isSet) label.append(seriesLink(section.series));
     else if (section.series && !section.part) label.append(...seriesDetails(section));
     return label;
@@ -299,7 +300,11 @@
    * options.series      the series list (series marked hangTogether share a stretch of wall)
    * options.onOpenWork  called with a work id when a framed work is clicked
    */
-  function create(room, { series = [], onOpenWork = () => {} } = {}) {
+  /**
+   * `archiveBefore`: works made before this year are labelled as the archive (see WorksUtils.isArchived), so
+   * walking into them is plain from the label and the count beneath the wall.
+   */
+  function create(room, { series = [], onOpenWork = () => {}, archiveBefore = null } = {}) {
     const parts = createShell(room);
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const labels = new Map(U.CATEGORIES.map((category) => [category.id, category.label]));
@@ -331,7 +336,11 @@
 
     function buildWall(works) {
       hung = works;
-      sections = R.wallSections(works, [...series, ...wallSets(works)], { together: !phone.matches });
+      sections = R.wallSections(works, [...series, ...wallSets(works)], { together: !phone.matches })
+        .map((section) => ({ ...section, archived: section.works.every((work) => U.isArchived(work, archiveBefore, works)) }))
+        .map((section, i, all) => (section.archived && !(all[i - 1] && all[i - 1].archived)
+          ? { ...section, archiveNote: `The archive begins here: work made before ${archiveBefore}.` }
+          : section));
       const categoryLabel = labels.get(works[0] && works[0].category) || 'Work';
       // An empty stretch of wall at each end, so the first and last works are not at the edge of the world.
       const segments = [element('div', 'room__segment room__segment--end')];
@@ -481,7 +490,7 @@
       parts.glints.style.transform = `translate3d(${x}px, 0, 0)`;
       parts.plane.style.setProperty('--room-floor-x', `${x}px`);
       revealCurrentText(moving ? TEXT_DELAY_WALK_MS : TEXT_DELAY_JUMP_MS);
-      parts.count.textContent = `Work ${index + 1} of ${sections.length} on the wall`;
+      parts.count.textContent = `Work ${index + 1} of ${sections.length} on the wall${sections[index].archived ? ' · Archive' : ''}`;
       parts.prev.disabled = index === 0;
       parts.next.disabled = index === sections.length - 1;
       // Load the pictures you are about to walk up to.

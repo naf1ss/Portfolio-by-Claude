@@ -19,6 +19,10 @@ window.SITE_CONFIG = {
     ],
   },
 
+  // Works made before this year are gathered at the end of their medium in the gallery, under "Archive" in
+  // the grid and marked "Archive" on the wall. Photographs keep to their series. Set to null for no archive.
+  archiveBefore: 2023,
+
   // The big "Latest work" feature on the home page.
   latestId: 'A046',
 
