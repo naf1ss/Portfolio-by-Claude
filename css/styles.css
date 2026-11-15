@@ -244,6 +244,29 @@ a:hover {
   justify-content: space-between;
   gap: 0.25rem 2rem;
   padding-block: 1.5rem;
+  /* Within reach on long pages: it tucks away while scrolling down and returns on any scroll up
+     (js/header-scroll.js). It moves by `top`, not a transform, which would trap the phone menu inside it. */
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: top 0.35s var(--ease), background-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.site-header.is-tucked {
+  top: calc(-1 * var(--header-h, 6rem) - 2px);
+}
+
+/* Away from the top it lies over the page, so it gets the page's colour, edge to edge: a shadow carries the
+   colour past the centred column without widening the page. */
+.site-header.is-scrolled {
+  background-color: var(--paper);
+  box-shadow: 0 0 0 100vmax var(--paper);
+  clip-path: inset(0 -100vmax);
+}
+
+/* The open phone menu lives inside the header and must not be clipped to it. */
+.is-menu-open .site-header {
+  clip-path: none;
 }
 
 .wordmark,
@@ -489,13 +512,8 @@ html:not(.has-menu) .theme-toggle--slot {
 
   /* The header sits above the open panel, so the wordmark and buttons stay where they were. */
   .is-menu-open .site-header {
-    position: relative;
     z-index: 50;
-  }
-
-  [data-page='home'].is-menu-open .site-header,
-  .is-menu-open [data-page='home'] .site-header {
-    position: absolute;
+    box-shadow: none;
   }
 
   html.is-menu-open {
@@ -1255,12 +1273,6 @@ button:focus-visible > .roll .roll__face + .roll__face {
   white-space: normal;
 }
 
-/* The header floats over the top of the home page's hero. */
-[data-page='home'] .site-header {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 5;
-}
 
 .button {
   display: inline-block;
@@ -6748,6 +6760,8 @@ body[data-gallery-view='wall'] .medium-capsule {
   --wall-ink: #f1ece1;
 }
 
+/* On the wall the header lies over the room and stays with it: the room fills the screen, so there is no long
+   page to lose it on. */
 body[data-gallery-view='wall'] .site-header {
   position: absolute;
   top: 0;
@@ -6755,6 +6769,9 @@ body[data-gallery-view='wall'] .site-header {
   right: 0;
   z-index: 20;
   color: var(--wall-ink);
+  background-color: transparent;
+  box-shadow: none;
+  clip-path: none;
 }
 
 /* An open phone menu is page-coloured, so the header goes back to the page's ink over it. */
@@ -7731,10 +7748,6 @@ body {
    fills the screen. The section is tall; its stage holds the screen while the flight lasts.
    --------------------------------------------------------------------------- */
 
-body[data-page='home'] .site-header {
-  position: relative;
-  z-index: 5;
-}
 
 .opening {
   position: relative;

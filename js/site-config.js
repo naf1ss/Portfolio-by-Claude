@@ -50,7 +50,7 @@ window.SITE_CONFIG = {
     },
     features: [
       { id: 'A041', reveal: 'paint' },
-      { id: 'stage-light-img-7025', reveal: 'develop' },
+      { id: 'negligible-img-9408', reveal: 'develop' },
       { id: 'ceramics-22', reveal: 'turn' },
     ],
     projectId: 'digital-moving-mountain',
