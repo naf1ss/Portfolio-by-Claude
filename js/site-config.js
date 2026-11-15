@@ -50,7 +50,15 @@ window.SITE_CONFIG = {
     },
     features: [
       { id: 'A041', reveal: 'paint' },
-      { id: 'negligible-img-9408', reveal: 'develop' },
+      // A series can be shown as a small grid of its frames (`grid`), leaving the rest for its own page.
+      {
+        id: 'negligible-img-9408',
+        reveal: 'develop',
+        grid: [
+          'negligible-img-9408', 'negligible-england', 'negligible-img-8819',
+          'negligible-img-8826', 'negligible-20231119-img-0127', 'negligible-20250409-img-2190',
+        ],
+      },
       { id: 'ceramics-22', reveal: 'turn' },
     ],
     projectId: 'digital-moving-mountain',

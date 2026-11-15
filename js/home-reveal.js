@@ -542,30 +542,54 @@
   }
 
   /** Builds one featured work: the picture (arriving in its own way) and its label. */
-  function featureArticle({ work, reveal }, index, { U, hrefFor }) {
+  function featureArticle({ work, reveal, grid = [] }, index, { U, hrefFor }) {
     const article = document.createElement('article');
-    article.className = `feature feature--${reveal}${index % 2 ? ' feature--flip' : ''}`;
+    article.className = `feature feature--${reveal}${index % 2 ? ' feature--flip' : ''}${grid.length ? ' feature--grid' : ''}`;
     article.dataset.arrive = reveal;
     const category = U.CATEGORIES.find((entry) => entry.id === work.category);
     article.innerHTML = `
-      <div class="feature__media"><div class="feature__frame"><img alt="" loading="lazy" decoding="async"></div></div>
+      <div class="feature__media"><div class="feature__frame"></div></div>
       <div class="feature__text">
         <p class="eyebrow"></p>
         <h3 class="feature__title"></h3>
         <p class="feature__facts"></p>
         <a class="text-link feature__link"><span data-link-text></span> <span aria-hidden="true">&rarr;</span></a>
       </div>`;
-    const picture = article.querySelector('img');
-    picture.src = U.imageUrl(work, 1200);
-    picture.alt = plain(U.altText(work));
-    picture.style.aspectRatio = `${work.w} / ${work.h}`;
-    if (reveal === 'paint') article.querySelector('.feature__frame').append(brushstrokes());
+    const { href, text, seriesWorks } = hrefFor(work);
+    const frame = article.querySelector('.feature__frame');
+    if (grid.length) {
+      // A few frames of a series, as its page shows them; the rest are for the series itself.
+      const sheet = document.createElement('a');
+      sheet.className = 'feature__grid';
+      sheet.href = href;
+      sheet.setAttribute('aria-label', text);
+      grid.forEach((frameWork, i) => {
+        const picture = document.createElement('img');
+        picture.src = U.imageUrl(frameWork, 600);
+        picture.alt = '';
+        picture.loading = 'lazy';
+        picture.decoding = 'async';
+        picture.style.aspectRatio = `${frameWork.w} / ${frameWork.h}`;
+        picture.style.setProperty('--i', i);
+        sheet.append(picture);
+      });
+      frame.append(sheet);
+    } else {
+      const picture = document.createElement('img');
+      picture.alt = plain(U.altText(work));
+      picture.loading = 'lazy';
+      picture.decoding = 'async';
+      picture.src = U.imageUrl(work, 1200);
+      picture.style.aspectRatio = `${work.w} / ${work.h}`;
+      frame.append(picture);
+      if (reveal === 'paint') frame.append(brushstrokes());
+    }
     article.querySelector('.eyebrow').textContent = category ? category.label : '';
     // A photograph's catalogue title names its place in a series ("Stage Light, 4 of 20"); here the series is enough.
     const caption = U.captionParts(work);
     article.querySelector('.feature__title').textContent = plain(caption.title).replace(/, \d+ of \d+$/, '');
-    article.querySelector('.feature__facts').textContent = caption.meta;
-    const { href, text } = hrefFor(work);
+    // A grid speaks for the series: how many photographs it holds, and the years they span.
+    article.querySelector('.feature__facts').textContent = grid.length && seriesWorks ? U.seriesMeta(seriesWorks).replace('works', 'photographs') : caption.meta;
     article.querySelector('.feature__link').href = href;
     article.querySelector('[data-link-text]').textContent = text;
     return article;

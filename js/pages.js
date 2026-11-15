@@ -118,7 +118,11 @@
         U,
         museum: museumSettings(home.museum || {}, byId, U),
         featureWorks: (home.features || [])
-          .map(({ id, reveal }) => ({ work: byId.get(id), reveal }))
+          .map(({ id, reveal, grid }) => ({
+            work: byId.get(id),
+            reveal,
+            grid: (grid || []).map((gridId) => byId.get(gridId)).filter(Boolean),
+          }))
           .filter(({ work }) => work),
         // The two hands: paintings under the cursor, photographs under its mirror image.
         trailWorks: {
@@ -134,7 +138,7 @@
         hrefFor: (work) => {
           const series = (window.PORTFOLIO_SERIES || []).find((entry) => U.worksInSeries(entry, all).includes(work));
           return series
-            ? { href: U.seriesPage(series.id), text: `See the series, ${series.title}` }
+            ? { href: U.seriesPage(series.id), text: `See the series, ${series.title}`, seriesWorks: U.worksInSeries(series, all) }
             : { href: `gallery${U.hashForWork(work)}`, text: 'See it in the gallery' };
         },
       }

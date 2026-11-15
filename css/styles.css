@@ -8148,6 +8148,26 @@ body {
   filter: grayscale(0);
 }
 
+/* A series as a small grid of its frames, three across, as its own page lays them out. */
+.feature__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.4rem, 1vw, 0.9rem);
+  width: 100%;
+}
+
+.feature__grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
+/* The frames develop one after another. */
+.feature--develop .feature__grid img {
+  transition-delay: calc(var(--i) * 0.12s), calc(0.9s + var(--i) * 0.12s);
+}
+
 /* An object turns to face you. */
 .feature--turn .feature__frame {
   opacity: 0.2;
