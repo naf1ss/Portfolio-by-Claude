@@ -15,7 +15,8 @@
  *   { type: 'question', text }                         the research question, set large
  *   { type: 'criteria', title?, items: [{ title, text }] }   titled "Design criteria" unless given, e.g. "How to read the chart"
  *   { type: 'stats', items: [{ value, label }] }
- *   { type: 'figure', workId, caption, size? }         one picture, whole; size 'medium' keeps it narrower
+ *   { type: 'figure', workId, caption, size? }         one picture, whole; size 'medium' keeps it narrower,
+ *                                                      'phone' narrower still, for a phone screenshot
  *   { type: 'annotated', workId, caption, title, items: [{ title, text }] }   a picture with a guide to reading it beside it
  *   { type: 'row', items: [{ workId, caption }] }      pictures side by side at one height, none cropped
  *   { type: 'grid', columns?, items: [{ workId, label, caption }] }   same-shape pictures in an even grid
@@ -239,21 +240,14 @@
             label: 'Screen recording: the website from the galaxy home page to a planet, the map and the walk tracker, through to the finished walk',
             caption: 'The website in use: through the galaxy to Saturn, the map, then the tracker from the Sun to Pluto. Pluto stamped too early is turned back until every world is found.',
           },
-          { type: 'figure', workId: 'pw-site-solar', caption: 'The home page: the solar system in 3D. Choosing a world opens its page.' },
           {
             type: 'text',
             paragraphs: [
               'At its centre is a walk tracker, built for the phone in a visitor’s hand. Visitors mark each station as they reach it and follow their progress outward from the Sun: the time, the distance covered and the stops reached; when they finish, the site greets them with facts about the journey they have just made. Around the tracker sit a map of the stops and a page for each planet, so the walk carries on for visitors, campus tours and future outreach.',
             ],
           },
-          {
-            type: 'row',
-            items: [
-              { workId: 'pw-site-saturn', caption: 'A planet page: Saturn, and where its marker sits on campus' },
-              { workId: 'pw-site-tracker', caption: 'The walk tracker on a phone, partway along the walk' },
-            ],
-          },
-          { type: 'figure', workId: 'pw-site-map', caption: 'The map: the route from the Planetarium to the Observatory, with all eleven stops.' },
+          // The video above is the website at desktop size; this is the tracker as it is meant to be used.
+          { type: 'figure', size: 'phone', workId: 'pw-site-tracker', caption: 'The walk tracker on a phone, partway along the walk.' },
           { type: 'link', text: 'Open the Planet Walk website', url: 'https://planet-walk.vercel.app/' },
         ],
       },
@@ -484,7 +478,6 @@
               'The interactive canvas follows the rules of the physical one. The ten yearly panels are laid out in order, and a visitor can click anywhere on them to leave a comment at that exact spot: typed, or drawn and handwritten with a finger or stylus. It is saved the moment it is posted, so anyone who opens the painting a second later finds it in place, just as a comment on the canvas stays where it was written.',
             ],
           },
-          { type: 'figure', workId: 'dmm-site-canvas', caption: 'The interactive canvas: the panel for 2000, where visitors’ typed notes sit among the handwriting left in the gallery. The other years wait on either side.' },
           {
             type: 'decision',
             title: 'Open to every view, guarded against abuse',
@@ -531,7 +524,6 @@
               },
             ],
           },
-          { type: 'figure', size: 'medium', workId: 'dmm-site-home', caption: 'The website’s home page, which leads to the gallery of panels, the artist’s biography, the research and the interactive canvas.' },
           { type: 'link', text: 'Visit A Digital Moving Mountain', url: 'https://a-digital-moving-mountain-landing.vercel.app' },
         ],
       },

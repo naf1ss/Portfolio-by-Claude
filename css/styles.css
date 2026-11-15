@@ -1746,6 +1746,11 @@ button:focus-visible > .roll .roll__face + .roll__face {
   max-width: 40rem;
 }
 
+/* A phone screenshot, at about the size of the phone. */
+.pcase__figure--phone {
+  max-width: 17rem;
+}
+
 /* A station: the planet's name, then where its marker sits. */
 .pcase__figure.pcase__figure--station figcaption {
   display: grid;

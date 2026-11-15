@@ -269,10 +269,7 @@
     <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-station-neptune-1800.jpg</image:loc></image:image>
     <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-station-pluto-1800.jpg</image:loc></image:image>
     <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-mural-panels-1800.jpg</image:loc></image:image>
-    <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-site-solar-1800.jpg</image:loc></image:image>
-    <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-site-saturn-1800.jpg</image:loc></image:image>
     <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-site-tracker-1800.jpg</image:loc></image:image>
-    <image:image><image:loc>https://nuancesbynafis.com/images/planet-walk/pw-site-map-1800.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>https://nuancesbynafis.com/project-digital-moving-mountain</loc>
@@ -281,7 +278,6 @@
     <image:image><image:loc>https://nuancesbynafis.com/images/moving-mountain/dmm-full-1800.jpg</image:loc></image:image>
     <image:image><image:loc>https://nuancesbynafis.com/images/moving-mountain/dmm-site-write-1800.jpg</image:loc></image:image>
     <image:image><image:loc>https://nuancesbynafis.com/images/moving-mountain/dmm-site-phone-1800.jpg</image:loc></image:image>
-    <image:image><image:loc>https://nuancesbynafis.com/images/moving-mountain/dmm-site-home-1800.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>https://nuancesbynafis.com/project-women-in-the-art-world</loc>
