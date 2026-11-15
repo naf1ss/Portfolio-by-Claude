@@ -8335,10 +8335,7 @@ body {
   overflow: visible;
   border: 1px solid var(--rule);
   border-radius: 0.8rem;
-  background:
-    linear-gradient(105deg, transparent 20%, rgb(var(--light-rgb) / var(--light-strength)) 35%, transparent 48%,
-      rgb(var(--light-rgb) / calc(var(--light-strength) * 0.7)) 62%, transparent 74%),
-    var(--paper);
+  background: var(--paper);
   box-shadow:
     0 1px 0 rgb(255 255 255 / 0.5) inset,
     0 18px 32px -20px rgb(0 0 0 / 0.5);
@@ -8413,28 +8410,33 @@ body {
   }
 }
 
-/* ---------- Header light (js/header-light.js) ----------
-   Window light across the whole header, slanting with the visitor's time of day, with dust in it. The page names
-   and the wordmark cast long soft shadows away from the light (--sun-x) and lift under the pointer. In the dark
-   theme it is moonlight. */
+/* ---------- Header dust (js/header-dust.js) ----------
+   Dust drifting across the whole header, stirred by the pointer: dark specks on the light theme, pale on the
+   dark. The page names and the wordmark cast long soft shadows (--sun-x) and lift under the pointer. */
 :root {
-  --light-rgb: 255 196 120;
-  --light-strength: 0.3;
+  --dust-rgb: 70 58 44;
+  --dust-alpha: 0.5;
   --light-shadow: color-mix(in srgb, var(--ink) 9%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --light-rgb: 180 205 255;
-    --light-strength: 0.12;
+    --dust-rgb: 236 232 220;
+    --dust-alpha: 0.6;
     --light-shadow: rgb(0 0 0 / 0.45);
   }
 }
 
 :root[data-theme='dark'] {
-  --light-rgb: 180 205 255;
-  --light-strength: 0.12;
+  --dust-rgb: 236 232 220;
+  --dust-alpha: 0.6;
   --light-shadow: rgb(0 0 0 / 0.45);
+}
+
+/* The gallery's wall is dark in either theme. */
+body[data-gallery-view='wall'] .site-header {
+  --dust-rgb: 236 232 220;
+  --dust-alpha: 0.55;
 }
 
 @property --lift {
@@ -8444,7 +8446,7 @@ body {
 }
 
 /* Behind the header's own content (the header is its own stacking context), spilling onto the page below. */
-.site-header .header-light {
+.site-header .header-dust {
   position: absolute;
   top: 0;
   z-index: -1;
@@ -8473,15 +8475,8 @@ body {
   translate: 0 -3px;
 }
 
-/* Phones: the same light across the menu's card, and the shadows on its page names. */
+/* Phones: the shadows on the menu's page names. */
 @media (max-width: 40rem) {
-  .has-menu .site-nav > ul {
-    background:
-      linear-gradient(115deg, transparent 22%, rgb(var(--light-rgb) / var(--light-strength)) 36%, transparent 48%,
-        rgb(var(--light-rgb) / calc(var(--light-strength) * 0.7)) 60%, transparent 72%),
-      var(--paper);
-  }
-
   .has-menu .site-nav > ul > li > a {
     text-shadow: 1px 1px 0 var(--light-shadow), 2px 2px 1px var(--light-shadow), 3px 3px 2px var(--light-shadow);
   }

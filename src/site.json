@@ -31,7 +31,7 @@
     {"file": "intro-utils", "defer": false},
     {"file": "motion", "defer": false},
     {"file": "header-return"},
-    {"file": "header-light"},
+    {"file": "header-dust"},
     {"file": "scroll-scenes"},
     {"file": "works-utils"},
     {"file": "works-data"},
@@ -72,7 +72,7 @@
     {"file": "magnifier"},
     {"file": "intro"}
   ],
-  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "header-return", "header-light", "interactions", "scroll-scenes", "painted-text"],
+  "baseScripts": ["theme-utils", "theme", "site-menu", "motion", "header-return", "header-dust", "interactions", "scroll-scenes", "painted-text"],
   "fonts": [
     "bodoni-moda-latin-wght-normal.woff2",
     "manrope-latin-wght-normal.woff2",
