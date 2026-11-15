@@ -87,4 +87,8 @@ window.SITE_CONFIG = {
     instagram: 'nuancesbynafis', // handle without the @
     linkedin: 'https://www.linkedin.com/in/nafisulhasansami',
   },
+
+  // The contact page's "Chess.com streak" counts up by itself from the streak's first day (day 1). If the
+  // streak ever breaks, put the new first day here; set it to null to hide the line.
+  chessStreakSince: '2025-07-19',
 };

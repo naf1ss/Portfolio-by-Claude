@@ -35,6 +35,13 @@
   page.querySelector('[data-painted-next]').addEventListener('click', nextPainting);
 
   /* ---- clocks ---- */
+  const streak = page.querySelector('[data-chess-streak]');
+  const streakDays = Contact.streakDays(config.chessStreakSince);
+  if (streak && streakDays) {
+    streak.querySelector('[data-chess-days]').textContent = streakDays.toLocaleString('en-US');
+    streak.hidden = false;
+  }
+
   const clockList = page.querySelector('[data-clocks]');
   const places = config.places || [];
 

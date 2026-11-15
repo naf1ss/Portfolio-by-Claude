@@ -60,5 +60,19 @@
     return { time, isDay: hour >= 6 && hour < 18 };
   }
 
-  return { contactEntries, NOTE_TOPICS, composeMailto, clockAt };
+  /**
+   * How many days a daily streak has run on `today`, counting its first day ("2025-07-19") as day 1, by the
+   * calendar where `today` is read. Null before it starts or for a date that cannot be read.
+   */
+  function streakDays(since, today = new Date()) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(since || ''));
+    if (!match) return null;
+    // Whole calendar days, counted in UTC so a clock change in between cannot make a day 23 or 25 hours long.
+    const first = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    const now = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+    const days = Math.round((now - first) / 86400000) + 1;
+    return days >= 1 ? days : null;
+  }
+
+  return { contactEntries, NOTE_TOPICS, composeMailto, clockAt, streakDays };
 });
