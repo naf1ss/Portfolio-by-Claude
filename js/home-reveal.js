@@ -612,14 +612,19 @@
     section.querySelector('[data-project-credit]').textContent = credit ? plain(credit) : '';
     const made = section.querySelector('[data-project-made]');
     if (contribution && contribution.work) {
-      const { work, caption } = contribution;
+      const { work, caption, video } = contribution;
       const picture = made.querySelector('img');
-      picture.src = U.imageUrl(work, 1200);
-      picture.srcset = U.buildSrcset(work);
-      picture.sizes = '(min-width: 56rem) 55vw, 92vw';
-      picture.alt = plain(U.altText(work));
-      picture.width = work.w;
-      picture.height = work.h;
+      if (video && window.DemoVideo) {
+        // The canvas in use says more than a still of it; the still remains the video's label.
+        picture.replaceWith(window.DemoVideo.create({ ...video, label: plain(U.altText(work)) }));
+      } else {
+        picture.src = U.imageUrl(work, 1200);
+        picture.srcset = U.buildSrcset(work);
+        picture.sizes = '(min-width: 56rem) 55vw, 92vw';
+        picture.alt = plain(U.altText(work));
+        picture.width = work.w;
+        picture.height = work.h;
+      }
       made.querySelector('[data-project-made-caption]').textContent = plain(caption);
       made.hidden = false;
     }

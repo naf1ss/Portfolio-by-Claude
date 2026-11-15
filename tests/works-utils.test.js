@@ -564,3 +564,22 @@ test('shownInGallery keeps sets together and leaves grid-hidden works off the gr
   assert.deepEqual(U.shownInGallery(works, 'painting', { grid: true, gridHidden: ['b'] }).map((w) => w.id), ['a', 's1', 's2']);
   assert.deepEqual(U.shownInGallery(works, 'painting', { grid: true, gridHidden: ['b'], focusId: 'b' }).map((w) => w.id), ['a', 's1', 's2', 'b']);
 });
+
+test('every screen recording a project shows, and its poster, is in the site at the size it claims', () => {
+  const PROJECTS = require('../js/projects-data.js');
+  const videos = [];
+  PROJECTS.forEach((project) => {
+    if (project.contribution && project.contribution.video) videos.push(project.contribution.video);
+    (project.sections || []).forEach((section) => (section.blocks || []).forEach((block) => {
+      if (block.type === 'video') videos.push(block);
+    }));
+  });
+  assert.ok(videos.length > 0);
+  videos.forEach(({ src, poster, width, height, label }) => {
+    assert.ok(/\.mp4$/.test(src), `${src}: an MP4, which every browser plays`);
+    assert.ok(fs.existsSync(path.join(ROOT, src)), `${src} is missing`);
+    assert.ok(fs.existsSync(path.join(ROOT, poster)), `${poster} is missing`);
+    assert.ok(width > 0 && height > 0, `${src}: needs its size, so the page keeps room for it`);
+    if (label !== undefined) assert.ok(label.length > 20, `${src}: needs a description for screen readers`);
+  });
+});

@@ -230,6 +230,15 @@
               'The site opens in deep space under its title: scrolling carries the visitor through the Milky Way to the Sun and its planets, and choosing any world opens its page, with the planet, a few facts and where its marker sits on campus.',
             ],
           },
+          {
+            type: 'video',
+            src: 'images/planet-walk/pw-demo.mp4',
+            poster: 'images/planet-walk/pw-demo-poster.jpg',
+            width: 1280,
+            height: 800,
+            label: 'Screen recording: the website from the galaxy home page to a planet, the map and the walk tracker, through to the finished walk',
+            caption: 'The website in use: through the galaxy to Saturn, the map, then the tracker from the Sun to Pluto. Pluto stamped too early is turned back until every world is found.',
+          },
           { type: 'figure', workId: 'pw-site-solar', caption: 'The home page: the solar system in 3D. Choosing a world opens its page.' },
           {
             type: 'text',
@@ -307,7 +316,9 @@
     // Shown beside the cover on the home page, so the feature shows what I made as well as the painting it began from.
     contribution: {
       workId: 'dmm-site-canvas',
-      caption: 'The interactive canvas I designed and built, where visitors’ typed notes join the handwriting left on the painting in the gallery.',
+      // Played on the home page in place of the still, when present.
+      video: { src: 'images/moving-mountain/dmm-demo.mp4', poster: 'images/moving-mountain/dmm-demo-poster.jpg', width: 1280, height: 800 },
+      caption: 'The interactive canvas I designed and built: a visitor clicks the painting, writes a note, and it joins the handwriting left on it in the gallery.',
     },
     hero: {
       workId: 'dmm-full',
@@ -335,6 +346,15 @@
               'I took the project on because it sits where my two fields meet. I study mathematics and studio art, and Gan Yu has spent eighteen years turning stock-market data into ink painting. I wanted to find out whether code, used with care, could do something for his work that a gallery wall cannot.',
               'Exhibitions are made for the people in the room. When a show closes, or for anyone who cannot travel to it, the conversation with the work stops. For most paintings that is a loss of access. For a painting completed by its viewers, it is a loss of the work itself.',
             ],
+          },
+          {
+            type: 'video',
+            src: 'images/moving-mountain/dmm-demo.mp4',
+            poster: 'images/moving-mountain/dmm-demo-poster.jpg',
+            width: 1280,
+            height: 800,
+            label: 'Screen recording: opening the interactive canvas from the website, and leaving a typed note on the panel for 2000',
+            caption: 'From the website to the interactive canvas: a click on the painting opens a note, and once posted it joins the handwriting on the panel.',
           },
           { type: 'link', text: 'Visit A Digital Moving Mountain', url: 'https://a-digital-moving-mountain-landing.vercel.app' },
         ],

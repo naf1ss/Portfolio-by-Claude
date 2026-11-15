@@ -98,6 +98,18 @@
       return figure(work, { caption, className });
     },
 
+    // A screen recording of a website in use (js/demo-video.js), with what it shows beneath.
+    video: ({ src, poster, width, height, label, caption }) => {
+      const node = element('figure', 'pcase__figure pcase__figure--video');
+      node.append(window.DemoVideo.create({ src, poster, width, height, label }));
+      if (caption) {
+        const text = element('figcaption');
+        text.append(element('span', undefined, caption));
+        node.append(text);
+      }
+      return node;
+    },
+
     // A picture with a guide to reading it beside it (below it on narrow screens).
     annotated: ({ workId, caption, title, items }, byId) => {
       const work = byId.get(workId);

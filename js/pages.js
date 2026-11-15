@@ -128,7 +128,7 @@
         projectData: project,
         projectCover: project ? byId.get(project.cover) : null,
         projectContribution: project && project.contribution
-          ? { work: byId.get(project.contribution.workId), caption: project.contribution.caption }
+          ? { work: byId.get(project.contribution.workId), caption: project.contribution.caption, video: project.contribution.video }
           : null,
         // A work that belongs to a series leads to the series, which says why its works belong together.
         hrefFor: (work) => {

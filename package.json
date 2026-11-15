@@ -8,6 +8,8 @@
     "pretest": "node tools/build-pages.js --check",
     "check:phone": "node tools/check-phone.js",
     "stills": "node tools/render-museum-stills.js",
+    "demo:mountain": "node tools/demo-videos/moving-mountain.js",
+    "demo:planet": "node tools/demo-videos/planet-walk.js",
     "indexnow": "node tools/indexnow.js",
     "serve": "node tools/static-server.js"
   }
