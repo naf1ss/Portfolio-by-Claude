@@ -1,7 +1,7 @@
 /**
  * Dust in the air of the header (css/styles.css, "Header dust").
  *
- * Specks drift slowly upward across the whole width of the header and a little way down the page, twinkling.
+ * Specks drift slowly upward across the whole width of the header and on down the page, fading out gradually.
  * The pointer stirs them: they swirl away from it and settle back into their drift. Dark specks on the light
  * theme, pale ones on the dark (--dust-rgb, --dust-alpha). The page names cast long soft shadows (--sun-x,
  * leaning with the visitor's time of day) and lift under the pointer.
@@ -14,7 +14,7 @@
   if (!header) return;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  const SPILL = 80; // px the dust reaches below the header
+  const SPILL = 160; // px the dust reaches below the header, thinning out as it goes
   const SPECKS_PER_100PX = 14;
   const STIR_RADIUS = 120;
   const STIR_FORCE = 1.4;
@@ -69,6 +69,14 @@
     root.style.setProperty('--sun-x', shadowLean().toFixed(2));
   }
 
+  /** 1 within the header, easing to 0 at the bottom of the spill, so the dust thins out instead of stopping. */
+  function fadeBelow(y) {
+    const start = height - SPILL;
+    if (y <= start) return 1;
+    const t = Math.min(1, (y - start) / SPILL);
+    return 1 - t * t * (3 - 2 * t); // a reversed smoothstep
+  }
+
   function draw(time) {
     const seconds = time / 1000;
     context.clearRect(0, 0, width, height);
@@ -96,7 +104,7 @@
       speck.ox = (speck.ox + speck.vx) * 0.985;
       speck.oy = (speck.oy + speck.vy) * 0.985;
       const twinkle = 0.55 + 0.45 * Math.sin(seconds * 1.4 + speck.phase);
-      context.globalAlpha = dust.alpha * twinkle;
+      context.globalAlpha = dust.alpha * twinkle * fadeBelow(y + speck.oy);
       context.beginPath();
       context.arc(x + speck.ox, y + speck.oy, speck.size, 0, Math.PI * 2);
       context.fill();

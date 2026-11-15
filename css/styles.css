@@ -8451,7 +8451,6 @@ body[data-gallery-view='wall'] .site-header {
   top: 0;
   z-index: -1;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 80px), transparent);
 }
 
 /* Eight steps of shadow, each a little further and fainter, read as one long soft shadow. */
