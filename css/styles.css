@@ -244,28 +244,10 @@ a:hover {
   justify-content: space-between;
   gap: 0.25rem 2rem;
   padding-block: 1.5rem;
-  /* Within reach on long pages: it tucks away while scrolling down and returns on any scroll up
-     (js/header-scroll.js). It moves by `top`, not a transform, which would trap the phone menu inside it. */
-  position: sticky;
-  top: 0;
+  /* Above what follows it, so its menus drop over the page. Once it has scrolled away, the hanging sign
+     (js/hanging-sign.js) carries the same links. */
+  position: relative;
   z-index: 40;
-  transition: top 0.35s var(--ease), background-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
-}
-
-.site-header.is-tucked {
-  top: calc(-1 * var(--header-h, 6rem) - 2px);
-}
-
-/* Away from the top it lies over the page, so it gets the page's colour, edge to edge. Copies of the header's
-   own box, shifted sideways as shadows, carry the colour past the centred column: they reach the screen's
-   edges without widening the page, and nothing is clipped, so the menus that drop below it still show. */
-.site-header.is-scrolled {
-  --bleed: var(--paper);
-  background-color: var(--paper);
-  box-shadow:
-    -30vw 0 0 var(--bleed), 30vw 0 0 var(--bleed),
-    -60vw 0 0 var(--bleed), 60vw 0 0 var(--bleed),
-    -90vw 0 0 var(--bleed), 90vw 0 0 var(--bleed);
 }
 
 .wordmark,
@@ -777,9 +759,6 @@ html:not(.has-menu) .theme-toggle--slot {
   background: var(--accent);
 }
 
-.site-nav .site-nav__menu a:hover {
-  color: var(--on-ink);
-}
 
 
 
@@ -847,7 +826,6 @@ html:not(.has-menu) .theme-toggle--slot {
 
 /* Interactive pills. A circle of colour grows from wherever the pointer entered
    (js/interactions.js sets --mx / --my) and shrinks back toward where it left. */
-.site-nav .site-nav__menu a,
 .button,
 .filter {
   position: relative;
@@ -856,7 +834,6 @@ html:not(.has-menu) .theme-toggle--slot {
   border-radius: 999px;
 }
 
-.site-nav .site-nav__menu a::before,
 .button::before,
 .filter::before {
   content: '';
@@ -868,46 +845,11 @@ html:not(.has-menu) .theme-toggle--slot {
   transition: clip-path 0.6s var(--ease-out);
 }
 
-.site-nav .site-nav__menu a:hover::before,
-.site-nav .site-nav__menu a:focus-visible::before,
 .button:hover::before,
 .button:focus-visible::before,
 .filter:hover::before,
 .filter:focus-visible::before {
   clip-path: circle(150% at var(--mx, 50%) var(--my, 50%));
-}
-
-/* Button label that rolls up to reveal a copy of itself (built by interactions.js). */
-.roll {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-}
-
-.roll__face {
-  display: block;
-  transition: transform 0.55s var(--ease-out);
-}
-
-.roll__face + .roll__face {
-  position: absolute;
-  inset: 0;
-  transform: translateY(110%);
-}
-
-a:hover > .roll .roll__face,
-a:focus-visible > .roll .roll__face,
-button:hover > .roll .roll__face,
-button:focus-visible > .roll .roll__face {
-  transform: translateY(-110%);
-}
-
-a:hover > .roll .roll__face + .roll__face,
-a:focus-visible > .roll .roll__face + .roll__face,
-button:hover > .roll .roll__face + .roll__face,
-button:focus-visible > .roll .roll__face + .roll__face {
-  transform: translateY(0);
 }
 
 .site-footer {
@@ -6907,8 +6849,8 @@ body[data-gallery-view='wall'] .hint {
   display: none;
 }
 
-/* Wide screens: Gallery's and Series' menus drop in tilted and straighten as they arrive. Each choice is a soft
-   pill that swells into place under the pointer, with an arrow at its end. */
+/* Wide screens: Gallery's and Series' menus drop in tilted and straighten as they arrive. A choice under the
+   pointer steps aside for a small dot of its colour. */
 @media (min-width: 40.0625rem) {
   .site-nav .site-nav__menu {
     transform: translate(-50%, 1rem) rotate(2.5deg);
@@ -6919,42 +6861,35 @@ body[data-gallery-view='wall'] .hint {
   .site-nav .site-nav__menu a {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-  }
-
-  .site-nav .site-nav__menu a::before {
-    clip-path: none;
-    background: currentColor;
-    opacity: 0;
-    transform: scale(0.85);
-    transition: opacity 0.3s var(--ease), transform 0.4s var(--ease-card);
-  }
-
-  .site-nav .site-nav__menu a:hover::before,
-  .site-nav .site-nav__menu a:focus-visible::before {
-    clip-path: none;
-    opacity: 0.08;
-    transform: scale(1);
   }
 
   .site-nav .site-nav__menu a:hover {
     color: inherit;
   }
 
-  .site-nav__menu .nav-arrow {
-    display: block;
+  .site-nav .site-nav__menu a::before {
+    content: '';
+    position: static;
     flex: none;
-    width: 0.85rem;
-    height: 0.85rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin-right: -0.45rem;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0;
     transform: scale(0);
-    transition: transform 0.2s var(--ease-card);
+    transition: opacity 0.2s var(--ease), transform 0.3s var(--ease-out), margin 0.3s var(--ease-out);
   }
 
-  .site-nav__menu a:hover .nav-arrow,
-  .site-nav__menu a:focus-visible .nav-arrow {
+  .site-nav .site-nav__menu a:hover::before,
+  .site-nav .site-nav__menu a:focus-visible::before {
+    margin-right: 0.7rem;
+    opacity: 0.3;
     transform: scale(1);
-    transition: transform 0.2s 0.15s var(--ease-card);
+  }
+
+  .site-nav__menu .nav-arrow {
+    display: none;
   }
 }
 
@@ -8359,6 +8294,201 @@ body {
   .unfold__slice,
   .unfold__slice::after,
   .project-feature__made[data-arrive] {
+    transition: none;
+  }
+}
+
+/* ---------- Returning header (js/header-return.js) ----------
+   Scrolled away from the header, a scroll up brings back a slim bar with the same links; a scroll down sends it
+   away. It moves by `translate`, never by the header itself, so the phone menu is never trapped inside it. */
+.return-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  width: max-content;
+  max-width: calc(100vw - 1.5rem);
+  margin-inline: auto;
+  translate: 0 calc(-100% - 1.5rem);
+  visibility: hidden;
+  transition: translate 0.4s cubic-bezier(0.5, 0, 0.75, 0), visibility 0s linear 0.4s;
+}
+
+.return-header.is-shown {
+  translate: 0 0.85rem;
+  visibility: visible;
+  transition: translate 0.6s cubic-bezier(0.3, 1.35, 0.55, 1), visibility 0s;
+}
+
+/* Above the phone menu, so the bar's Close stays at hand while the header is out of sight. */
+.is-menu-open .return-header {
+  z-index: 60;
+}
+
+.return-header__board {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  padding: 0.3rem 0.4rem 0.3rem 1.1rem;
+  overflow: visible;
+  border: 1px solid var(--rule);
+  border-radius: 0.8rem;
+  background:
+    linear-gradient(105deg, transparent 20%, rgb(var(--light-rgb) / var(--light-strength)) 35%, transparent 48%,
+      rgb(var(--light-rgb) / calc(var(--light-strength) * 0.7)) 62%, transparent 74%),
+    var(--paper);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.5) inset,
+    0 18px 32px -20px rgb(0 0 0 / 0.5);
+}
+
+.return-header .return-header__mark {
+  font-size: 1.45rem;
+}
+
+.return-header .return-header__nav {
+  margin-left: 0;
+}
+
+.return-header .return-header__nav > ul > li > a {
+  padding-block: 0.75rem;
+  padding-inline: 0.6rem;
+  letter-spacing: 0.15em;
+}
+
+.return-header__menu {
+  display: none;
+  padding: 0.55rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 600 0.68rem / 1 var(--font-text);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Phones: the wordmark and a Menu button that opens the phone menu. */
+@media (max-width: 40rem) {
+  .return-header .return-header__nav {
+    display: none;
+  }
+
+  .has-menu .return-header__menu {
+    display: block;
+  }
+
+  .return-header__board {
+    gap: 1.25rem;
+  }
+}
+
+/* Tablets: the links tighten so they keep to one line where they can. */
+@media (min-width: 40.0625rem) and (max-width: 64rem) {
+  .return-header .return-header__nav > ul {
+    justify-content: center;
+  }
+
+  .return-header .return-header__nav > ul > li > a {
+    padding-inline: 0.4rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .return-header,
+  .return-header.is-shown {
+    translate: 0 0.85rem;
+    opacity: 0;
+    transition: opacity 0.2s linear, visibility 0s linear 0.2s;
+  }
+
+  .return-header.is-shown {
+    opacity: 1;
+    transition: opacity 0.2s linear, visibility 0s;
+  }
+}
+
+/* ---------- Header light (js/header-light.js) ----------
+   Window light across the whole header, slanting with the visitor's time of day, with dust in it. The page names
+   and the wordmark cast long soft shadows away from the light (--sun-x) and lift under the pointer. In the dark
+   theme it is moonlight. */
+:root {
+  --light-rgb: 255 196 120;
+  --light-strength: 0.3;
+  --light-shadow: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --light-rgb: 180 205 255;
+    --light-strength: 0.12;
+    --light-shadow: rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme='dark'] {
+  --light-rgb: 180 205 255;
+  --light-strength: 0.12;
+  --light-shadow: rgb(0 0 0 / 0.45);
+}
+
+@property --lift {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+/* Behind the header's own content (the header is its own stacking context), spilling onto the page below. */
+.site-header .header-light {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 80px), transparent);
+}
+
+/* Eight steps of shadow, each a little further and fainter, read as one long soft shadow. */
+:is(.site-header, .return-header) :is(.site-nav > ul > li > a, .wordmark) {
+  --step-x: calc(var(--sun-x, 1) * var(--lift) * 1px);
+  --step-y: calc(var(--lift) * 1px);
+  text-shadow:
+    calc(var(--step-x) * 1) calc(var(--step-y) * 1) 0 var(--light-shadow),
+    calc(var(--step-x) * 2) calc(var(--step-y) * 2) 1px var(--light-shadow),
+    calc(var(--step-x) * 3) calc(var(--step-y) * 3) 1px var(--light-shadow),
+    calc(var(--step-x) * 4) calc(var(--step-y) * 4) 2px var(--light-shadow),
+    calc(var(--step-x) * 5) calc(var(--step-y) * 5) 2px var(--light-shadow),
+    calc(var(--step-x) * 6) calc(var(--step-y) * 6) 3px var(--light-shadow),
+    calc(var(--step-x) * 7) calc(var(--step-y) * 7) 3px var(--light-shadow),
+    calc(var(--step-x) * 8) calc(var(--step-y) * 8) 4px var(--light-shadow);
+  transition: --lift 0.45s var(--ease-out), translate 0.45s var(--ease-out), opacity 0.25s var(--ease);
+}
+
+:is(.site-header, .return-header) :is(.site-nav > ul > li > a, .wordmark):is(:hover, :focus-visible) {
+  --lift: 2.4;
+  translate: 0 -3px;
+}
+
+/* Phones: the same light across the menu's card, and the shadows on its page names. */
+@media (max-width: 40rem) {
+  .has-menu .site-nav > ul {
+    background:
+      linear-gradient(115deg, transparent 22%, rgb(var(--light-rgb) / var(--light-strength)) 36%, transparent 48%,
+        rgb(var(--light-rgb) / calc(var(--light-strength) * 0.7)) 60%, transparent 72%),
+      var(--paper);
+  }
+
+  .has-menu .site-nav > ul > li > a {
+    text-shadow: 1px 1px 0 var(--light-shadow), 2px 2px 1px var(--light-shadow), 3px 3px 2px var(--light-shadow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.site-header, .return-header) :is(.site-nav > ul > li > a, .wordmark) {
     transition: none;
   }
 }
