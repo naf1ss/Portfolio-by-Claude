@@ -256,17 +256,16 @@ a:hover {
   top: calc(-1 * var(--header-h, 6rem) - 2px);
 }
 
-/* Away from the top it lies over the page, so it gets the page's colour, edge to edge: a shadow carries the
-   colour past the centred column without widening the page. */
+/* Away from the top it lies over the page, so it gets the page's colour, edge to edge. Copies of the header's
+   own box, shifted sideways as shadows, carry the colour past the centred column: they reach the screen's
+   edges without widening the page, and nothing is clipped, so the menus that drop below it still show. */
 .site-header.is-scrolled {
+  --bleed: var(--paper);
   background-color: var(--paper);
-  box-shadow: 0 0 0 100vmax var(--paper);
-  clip-path: inset(0 -100vmax);
-}
-
-/* The open phone menu lives inside the header and must not be clipped to it. */
-.is-menu-open .site-header {
-  clip-path: none;
+  box-shadow:
+    -30vw 0 0 var(--bleed), 30vw 0 0 var(--bleed),
+    -60vw 0 0 var(--bleed), 60vw 0 0 var(--bleed),
+    -90vw 0 0 var(--bleed), 90vw 0 0 var(--bleed);
 }
 
 .wordmark,
@@ -6776,7 +6775,6 @@ body[data-gallery-view='wall'] .site-header {
   color: var(--wall-ink);
   background-color: transparent;
   box-shadow: none;
-  clip-path: none;
 }
 
 /* An open phone menu is page-coloured, so the header goes back to the page's ink over it. */
