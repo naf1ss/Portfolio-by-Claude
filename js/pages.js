@@ -124,7 +124,7 @@
         U,
         museum: museumSettings(home.museum || {}, byId, U),
         featureWorks: (home.features || [])
-          .map(({ id, reveal, grid, project: projectId, beside, video }) => {
+          .map(({ id, reveal, grid, project: projectId, beside, video, lead }) => {
             const featured = (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === projectId) || null;
             return {
               work: byId.get(id),
@@ -134,6 +134,7 @@
               beside: (beside || []).map((besideId) => byId.get(besideId)).filter(Boolean),
               // `video: true` brings in the project's own screen recording, from its case study.
               video: video && featured ? projectVideo(featured) : null,
+              lead: lead === 'video' ? 'video' : 'picture',
             };
           })
           .filter(({ work }) => work),

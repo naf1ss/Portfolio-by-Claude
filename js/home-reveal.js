@@ -542,7 +542,7 @@
   }
 
   /** Builds one featured work: the picture (arriving in its own way) and its label. */
-  function featureArticle({ work, reveal, grid = [], project = null, beside = [], video = null }, index, { U, hrefFor }) {
+  function featureArticle({ work, reveal, grid = [], project = null, beside = [], video = null, lead = 'picture' }, index, { U, hrefFor }) {
     const article = document.createElement('article');
     article.className = `feature feature--${reveal}${index % 2 ? ' feature--flip' : ''}${grid.length ? ' feature--grid' : ''}`;
     article.dataset.arrive = reveal;
@@ -577,6 +577,10 @@
         sheet.append(picture);
       });
       frame.append(sheet);
+    } else if (lead === 'video' && video && window.DemoVideo) {
+      // The recording leads, large; the picture and the rest of the work sit in the row under it.
+      frame.append(demoVideo(video));
+      frame.append(besideRow([work, ...beside], null, U));
     } else {
       const picture = document.createElement('img');
       picture.alt = plain(U.altText(work));
@@ -612,13 +616,20 @@
       picture.decoding = 'async';
       picture.src = U.imageUrl(work, 600);
       picture.style.aspectRatio = `${work.w} / ${work.h}`;
+      picture.style.setProperty('--ar', (work.w / work.h).toFixed(3));
       row.append(picture);
     });
     if (video && window.DemoVideo) {
-      const { src, poster, width, height, label } = video;
-      row.append(window.DemoVideo.create({ src, poster, width, height, label }));
+      const recording = demoVideo(video);
+      recording.style.setProperty('--ar', (video.width / video.height).toFixed(3));
+      row.append(recording);
     }
     return row;
+  }
+
+  /** A project's screen recording (a case study's video block) as a muted, looping demo. */
+  function demoVideo({ src, poster, width, height, label }) {
+    return window.DemoVideo.create({ src, poster, width, height, label });
   }
 
   /** Bands of the page's colour lying over a painting; each sweeps off sideways in turn, like a brush uncovering it. */
