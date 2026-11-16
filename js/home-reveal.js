@@ -542,7 +542,7 @@
   }
 
   /** Builds one featured work: the picture (arriving in its own way) and its label. */
-  function featureArticle({ work, reveal, grid = [], project = null }, index, { U, hrefFor }) {
+  function featureArticle({ work, reveal, grid = [], project = null, beside = [], video = null }, index, { U, hrefFor }) {
     const article = document.createElement('article');
     article.className = `feature feature--${reveal}${index % 2 ? ' feature--flip' : ''}${grid.length ? ' feature--grid' : ''}`;
     article.dataset.arrive = reveal;
@@ -586,6 +586,7 @@
       picture.style.aspectRatio = `${work.w} / ${work.h}`;
       frame.append(picture);
       if (reveal === 'paint') frame.append(brushstrokes());
+      if (beside.length || video) frame.append(besideRow(beside, video, U));
     }
     article.querySelector('.eyebrow').textContent = project ? 'Interdisciplinary project' : category ? category.label : '';
     // A photograph's catalogue title names its place in a series ("Stage Light, 4 of 20"); here the series is enough.
@@ -598,6 +599,26 @@
     article.querySelector('.feature__link').href = href;
     article.querySelector('[data-link-text]').textContent = text;
     return article;
+  }
+
+  /** A row under a feature's picture: more of the work (`beside`) and, last, a screen recording. */
+  function besideRow(works, video, U) {
+    const row = document.createElement('div');
+    row.className = 'feature__beside';
+    works.forEach((work) => {
+      const picture = document.createElement('img');
+      picture.alt = plain(U.altText(work));
+      picture.loading = 'lazy';
+      picture.decoding = 'async';
+      picture.src = U.imageUrl(work, 600);
+      picture.style.aspectRatio = `${work.w} / ${work.h}`;
+      row.append(picture);
+    });
+    if (video && window.DemoVideo) {
+      const { src, poster, width, height, label } = video;
+      row.append(window.DemoVideo.create({ src, poster, width, height, label }));
+    }
+    return row;
   }
 
   /** Bands of the page's colour lying over a painting; each sweeps off sideways in turn, like a brush uncovering it. */

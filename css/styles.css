@@ -8140,6 +8140,22 @@ body {
   max-height: none;
 }
 
+/* Under a featured project's picture: more of its work and its screen recording, side by side. */
+.feature__beside {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(0.4rem, 1vw, 0.9rem);
+  margin-top: clamp(0.4rem, 1vw, 0.9rem);
+}
+
+.feature__beside > * {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
 /* The frames develop one after another. */
 .feature--develop .feature__grid img {
   transition-delay: calc(var(--i) * 0.12s), calc(0.9s + var(--i) * 0.12s);

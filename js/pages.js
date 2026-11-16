@@ -102,6 +102,12 @@
     };
   }
 
+  /** The first screen recording in a project's case study, or null. */
+  function projectVideo(project) {
+    const blocks = (project.sections || []).flatMap((section) => section.blocks || []);
+    return blocks.find((block) => block.type === 'video') || null;
+  }
+
   function initHome() {
     const { U, all, byId } = loadWorks();
     const home = config.home || {};
@@ -118,12 +124,18 @@
         U,
         museum: museumSettings(home.museum || {}, byId, U),
         featureWorks: (home.features || [])
-          .map(({ id, reveal, grid, project: projectId }) => ({
-            work: byId.get(id),
-            reveal,
-            grid: (grid || []).map((gridId) => byId.get(gridId)).filter(Boolean),
-            project: (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === projectId) || null,
-          }))
+          .map(({ id, reveal, grid, project: projectId, beside, video }) => {
+            const featured = (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === projectId) || null;
+            return {
+              work: byId.get(id),
+              reveal,
+              grid: (grid || []).map((gridId) => byId.get(gridId)).filter(Boolean),
+              project: featured,
+              beside: (beside || []).map((besideId) => byId.get(besideId)).filter(Boolean),
+              // `video: true` brings in the project's own screen recording, from its case study.
+              video: video && featured ? projectVideo(featured) : null,
+            };
+          })
           .filter(({ work }) => work),
         // The two hands: paintings under the cursor, photographs under its mirror image.
         trailWorks: {

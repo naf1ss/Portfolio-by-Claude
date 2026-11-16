@@ -59,8 +59,9 @@ window.SITE_CONFIG = {
           'negligible-img-8826', 'negligible-20231119-img-0127', 'negligible-20250409-img-2190',
         ],
       },
-      // A project can be featured too: its picture, leading to its case study.
-      { id: 'pw-mural-mockup', reveal: 'turn', project: 'planet-walk' },
+      // A project can be featured too: its picture, leading to its case study. Under the picture, `beside`
+      // adds more of its works and `video: true` its screen recording.
+      { id: 'pw-mural-mockup', reveal: 'turn', project: 'planet-walk', beside: ['pw-colour-tests'], video: true },
     ],
     projectId: 'digital-moving-mountain',
   },
