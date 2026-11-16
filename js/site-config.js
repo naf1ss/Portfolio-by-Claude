@@ -60,9 +60,9 @@ window.SITE_CONFIG = {
         ],
       },
       // A project can be featured too: its picture, leading to its case study. Under the picture, `beside`
-      // adds more of its works and `video: true` its screen recording; `lead: 'video'` puts the recording on
-      // top, large, with the picture moving down into the row.
-      { id: 'pw-presentation', reveal: 'turn', project: 'planet-walk', beside: ['pw-colour-tests'], video: true, lead: 'video' },
+      // adds more of its works and `video: true` its screen recording; `lead: 'video'` shows the recording in
+      // the picture's place instead.
+      { id: 'pw-mural-mockup', reveal: 'turn', project: 'planet-walk', video: true, lead: 'video' },
     ],
     projectId: 'digital-moving-mountain',
   },

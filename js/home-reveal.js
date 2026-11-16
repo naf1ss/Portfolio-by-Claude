@@ -578,9 +578,9 @@
       });
       frame.append(sheet);
     } else if (lead === 'video' && video && window.DemoVideo) {
-      // The recording leads, large; the picture and the rest of the work sit in the row under it.
+      // The recording takes the picture's place (the picture stays as the fallback without video).
       frame.append(demoVideo(video));
-      frame.append(besideRow([work, ...beside], null, U));
+      if (beside.length) frame.append(besideRow(beside, null, U));
     } else {
       const picture = document.createElement('img');
       picture.alt = plain(U.altText(work));
