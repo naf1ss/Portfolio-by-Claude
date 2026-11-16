@@ -542,7 +542,7 @@
   }
 
   /** Builds one featured work: the picture (arriving in its own way) and its label. */
-  function featureArticle({ work, reveal, grid = [] }, index, { U, hrefFor }) {
+  function featureArticle({ work, reveal, grid = [], project = null }, index, { U, hrefFor }) {
     const article = document.createElement('article');
     article.className = `feature feature--${reveal}${index % 2 ? ' feature--flip' : ''}${grid.length ? ' feature--grid' : ''}`;
     article.dataset.arrive = reveal;
@@ -555,7 +555,10 @@
         <p class="feature__facts"></p>
         <a class="text-link feature__link"><span data-link-text></span> <span aria-hidden="true">&rarr;</span></a>
       </div>`;
-    const { href, text, seriesWorks } = hrefFor(work);
+    // A feature can stand for a project: its picture, but the project's name and a way into its case study.
+    const { href, text, seriesWorks } = project
+      ? { href: U.projectPage(project.id), text: project.cta || 'Read the case study' }
+      : hrefFor(work);
     const frame = article.querySelector('.feature__frame');
     if (grid.length) {
       // A few frames of a series, as its page shows them; the rest are for the series itself.
@@ -584,12 +587,14 @@
       frame.append(picture);
       if (reveal === 'paint') frame.append(brushstrokes());
     }
-    article.querySelector('.eyebrow').textContent = category ? category.label : '';
+    article.querySelector('.eyebrow').textContent = project ? 'Interdisciplinary project' : category ? category.label : '';
     // A photograph's catalogue title names its place in a series ("Stage Light, 4 of 20"); here the series is enough.
     const caption = U.captionParts(work);
-    article.querySelector('.feature__title').textContent = plain(caption.title).replace(/, \d+ of \d+$/, '');
+    article.querySelector('.feature__title').textContent = project ? project.title : plain(caption.title).replace(/, \d+ of \d+$/, '');
     // A grid speaks for the series: how many photographs it holds, and the years they span.
-    article.querySelector('.feature__facts').textContent = grid.length && seriesWorks ? U.seriesMeta(seriesWorks).replace('works', 'photographs') : caption.meta;
+    article.querySelector('.feature__facts').textContent = project
+      ? project.kicker
+      : grid.length && seriesWorks ? U.seriesMeta(seriesWorks).replace('works', 'photographs') : caption.meta;
     article.querySelector('.feature__link').href = href;
     article.querySelector('[data-link-text]').textContent = text;
     return article;

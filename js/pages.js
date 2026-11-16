@@ -118,10 +118,11 @@
         U,
         museum: museumSettings(home.museum || {}, byId, U),
         featureWorks: (home.features || [])
-          .map(({ id, reveal, grid }) => ({
+          .map(({ id, reveal, grid, project: projectId }) => ({
             work: byId.get(id),
             reveal,
             grid: (grid || []).map((gridId) => byId.get(gridId)).filter(Boolean),
+            project: (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === projectId) || null,
           }))
           .filter(({ work }) => work),
         // The two hands: paintings under the cursor, photographs under its mirror image.

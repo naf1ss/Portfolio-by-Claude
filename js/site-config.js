@@ -59,7 +59,8 @@ window.SITE_CONFIG = {
           'negligible-img-8826', 'negligible-20231119-img-0127', 'negligible-20250409-img-2190',
         ],
       },
-      { id: 'ceramics-22', reveal: 'turn' },
+      // A project can be featured too: its picture, leading to its case study.
+      { id: 'pw-mural-mockup', reveal: 'turn', project: 'planet-walk' },
     ],
     projectId: 'digital-moving-mountain',
   },
