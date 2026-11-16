@@ -256,6 +256,7 @@
         label: 'Outcome',
         title: 'Where it stands',
         blocks: [
+          { type: 'figure', workId: 'pw-presentation', caption: 'Presenting the project: the research poster beside the four printed mural panels.' },
           {
             type: 'outcomes',
             items: [

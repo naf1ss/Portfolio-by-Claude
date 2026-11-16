@@ -136,6 +136,7 @@
 
   // Planet Walk & Observatory Mural (Kolbe Summer Research Fellowship, 2026): images for its project page only.
   { id: 'pw-mural-mockup', title: 'Observatory mural, mockup on site', year: 2026, medium: 'The four panels shown on the College Observatory', dimensions: null, category: 'digital', hidden: true, base: 'planet-walk/pw-mural-mockup', ws: [600, 1200, 1800], w: 1800, h: 1200 },
+  { id: 'pw-presentation', title: 'Presenting the Planet Walk', year: 2026, medium: 'The research poster beside the four printed mural panels', dimensions: null, category: 'digital', hidden: true, base: 'planet-walk/pw-presentation', ws: [600, 1200, 1800], w: 1800, h: 1200 },
   { id: 'pw-mural-panels', title: 'Observatory mural: Mars, Earth, Jupiter, Saturn', year: 2026, medium: 'Digital artwork for vinyl print, four panels', dimensions: null, category: 'digital', hidden: true, base: 'planet-walk/pw-mural-panels', ws: [600, 1200, 1800], w: 1800, h: 1158 },
   { id: 'pw-mural-mars', title: 'Observatory mural: Mars', year: 2026, medium: 'Digital mixed media for vinyl print', dimensions: null, category: 'digital', hidden: true, base: 'planet-walk/pw-mural-mars', ws: [600, 769, 769], w: 769, h: 2056 },
   { id: 'pw-mural-earth', title: 'Observatory mural: Earth', year: 2026, medium: 'Digital mixed media for vinyl print', dimensions: null, category: 'digital', hidden: true, base: 'planet-walk/pw-mural-earth', ws: [600, 769, 769], w: 769, h: 2056 },
