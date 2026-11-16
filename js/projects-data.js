@@ -47,10 +47,11 @@
       'Astronomical scale translated into an eleven-station walk across Gettysburg College, from the planetarium to the Observatory, bringing together site planning, ceramic markers, digital illustration and public education. Route and mural production are complete; installation is pending.',
     cover: 'pw-mural-mockup',
     hero: { workId: 'pw-mural-mockup', caption: 'The mural mocked up on the College Observatory, where the walk ends.' },
-    // The home page's "Interdisciplinary projects": a hook in place of the summary, and the labels over its pictures.
+    // The home page's "Interdisciplinary projects": a hook in place of the summary, the labels over its pictures,
+    // and `cover: false` to leave the cover out there.
     home: {
       hook: 'The solar system, shrunk to fit a college campus. An eleven-station walk from the planetarium to the Observatory, with carved ceramic markers along the way, a four-panel mural where it ends, and a website that keeps count as you go.',
-      coverLabel: 'The mural',
+      cover: false, // the website leads on its own; the mural is in the case study
       madeLabel: 'The website',
     },
     contribution: {

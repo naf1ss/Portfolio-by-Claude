@@ -617,6 +617,12 @@
   function projectFeature(template, { project, cover, contribution, U }) {
     const section = template.content.firstElementChild.cloneNode(true);
     const labels = project.home || {};
+    // `home.cover: false` leaves the cover out, so the block opens with what was made.
+    if (labels.cover === false) {
+      section.querySelector('.project-feature__source').remove();
+      fillProjectText(section, { project, contribution, labels, U });
+      return section;
+    }
     const media = section.querySelector('[data-project-media]');
     const source = U.imageUrl(cover, 1800);
     media.style.aspectRatio = `${cover.w} / ${cover.h}`;
@@ -639,6 +645,12 @@
     const credit = project.hero && project.hero.caption;
     section.querySelector('[data-project-cover-label]').textContent = labels.coverLabel || '';
     section.querySelector('[data-project-credit]').textContent = credit ? plain(credit) : '';
+    fillProjectText(section, { project, contribution, labels, U });
+    return section;
+  }
+
+  /** What was made, and the words: kicker, title, hook and the way into the case study. */
+  function fillProjectText(section, { project, contribution, labels, U }) {
     section.querySelector('[data-project-made-label]').textContent = labels.madeLabel || 'My contribution';
     const made = section.querySelector('[data-project-made]');
     if (contribution && contribution.work) {
@@ -663,7 +675,6 @@
     // A short hook reads better here than the case study's summary.
     section.querySelector('[data-project-summary]').textContent = plain(labels.hook || project.summary);
     section.querySelector('[data-project-link]').href = U.projectPage(project.id);
-    return section;
   }
 
   /** Marks everything with data-arrive as arrived once it is well into view; the stylesheet does the rest. */
