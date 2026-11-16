@@ -27,7 +27,7 @@
   <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/kaushan-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css?v=08d76b48">
+  <link rel="stylesheet" href="css/styles.css?v=3dfd3ac5">
   <script src="js/theme-utils.js?v=32f5e1e1"></script>
   <script src="js/theme.js?v=1b99e41c"></script>
   <script src="js/site-menu.js?v=fea090eb"></script>
@@ -42,10 +42,10 @@
   <script src="js/works-photography.js?v=4e357e49" defer></script>
   <script src="js/photo-brightness.js?v=f5447711" defer></script>
   <script src="js/series-data.js?v=7634f917" defer></script>
-  <script src="js/projects-data.js?v=26d9fed8" defer></script>
+  <script src="js/projects-data.js?v=739f8d9c" defer></script>
   <script src="js/demo-video.js?v=f83654e8" defer></script>
   <script src="js/painted-text.js?v=652abef6" defer></script>
-  <script src="js/site-config.js?v=80e2f557" defer></script>
+  <script src="js/site-config.js?v=79bba35e" defer></script>
   <script src="js/gallery.js?v=b84744e5" defer></script>
   <script src="js/museum-utils.js?v=bcdd2cfe" defer></script>
   <script src="js/museum-textures.js?v=f2af4e57" defer></script>
@@ -53,11 +53,11 @@
   <script src="js/museum-foyer.js?v=f380a252" defer></script>
   <script src="js/museum-gallery.js?v=2e4da6b3" defer></script>
   <script src="js/museum.js?v=24f6b0e9" defer></script>
-  <script src="js/home-reveal.js?v=6330a809" defer></script>
+  <script src="js/home-reveal.js?v=416d939b" defer></script>
   <script src="js/gallery-room-utils.js?v=2e33c951" defer></script>
   <script src="js/contact-utils.js?v=dc761443" defer></script>
   <script src="js/hints.js?v=9e5ddd6b" defer></script>
-  <script src="js/pages.js?v=846d9b4f" defer></script>
+  <script src="js/pages.js?v=3688c05a" defer></script>
   <script src="js/interactions.js?v=ed4ef9ac" defer></script>
   <script src="js/magnifier-utils.js?v=05722da6" defer></script>
   <script src="js/magnifier.js?v=31717d78" defer></script>
@@ -147,26 +147,31 @@
       <div class="features__list" data-features></div>
     </section>
 
-    <section class="project-feature" aria-labelledby="project-feature-title">
-      <div class="wrap project-feature__inner">
-        <p class="eyebrow">Interdisciplinary project</p>
-        <figure class="project-feature__source">
-          <div class="project-feature__media unfold" data-arrive="unfold" data-project-media></div>
-          <figcaption class="project-feature__credit"><span class="project-feature__role">The painting</span> <span data-project-credit></span></figcaption>
-        </figure>
-        <div class="project-feature__body">
-          <figure class="project-feature__made" data-arrive="rise" data-project-made hidden>
-            <img alt="" loading="lazy" decoding="async">
-            <figcaption class="project-feature__credit"><span class="project-feature__role">My contribution</span> <span data-project-made-caption></span></figcaption>
-          </figure>
-          <div class="project-feature__text">
-            <p class="project-feature__kicker" data-project-kicker></p>
-            <h2 class="project-feature__title" id="project-feature-title" data-project-title></h2>
-            <p class="project-feature__summary" data-project-summary></p>
-            <a class="button button--solid" data-project-link href="projects">Read the project</a>
-          </div>
-        </div>
+    <section class="project-feature" aria-labelledby="project-feature-heading">
+      <div class="wrap">
+        <h2 class="eyebrow project-feature__heading" id="project-feature-heading">Interdisciplinary projects</h2>
       </div>
+      <div data-project-features></div>
+      <template data-project-template>
+        <article class="wrap project-feature__inner">
+          <figure class="project-feature__source">
+            <div class="project-feature__media unfold" data-arrive="unfold" data-project-media></div>
+            <figcaption class="project-feature__credit"><span class="project-feature__role" data-project-cover-label></span> <span data-project-credit></span></figcaption>
+          </figure>
+          <div class="project-feature__body">
+            <figure class="project-feature__made" data-arrive="rise" data-project-made hidden>
+              <img alt="" loading="lazy" decoding="async">
+              <figcaption class="project-feature__credit"><span class="project-feature__role" data-project-made-label></span> <span data-project-made-caption></span></figcaption>
+            </figure>
+            <div class="project-feature__text">
+              <p class="project-feature__kicker" data-project-kicker></p>
+              <h3 class="project-feature__title" data-project-title></h3>
+              <p class="project-feature__summary" data-project-summary></p>
+              <a class="button button--solid" data-project-link href="projects">Read the project</a>
+            </div>
+          </div>
+        </article>
+      </template>
     </section>
 
     <section class="wrap section" aria-labelledby="mediums-heading">

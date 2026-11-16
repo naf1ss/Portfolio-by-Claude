@@ -1,7 +1,7 @@
 /**
  * The home page's opening and its featured works.
  *
- *   HomeReveal.mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, projectContribution, hrefFor, U })
+ *   HomeReveal.mount({ opening, features, projects }, { museum, featureWorks, trailWorks, homeProjects, hrefFor, U })
  *   (hrefFor(work) gives a selected work's link: { href, text })
  *
  * The opening: "nuances" stands on the page as solid 3D letters. The word turns to face the cursor, the letters
@@ -542,7 +542,7 @@
   }
 
   /** Builds one featured work: the picture (arriving in its own way) and its label. */
-  function featureArticle({ work, reveal, grid = [], project = null, beside = [], video = null, lead = 'picture' }, index, { U, hrefFor }) {
+  function featureArticle({ work, reveal, grid = [] }, index, { U, hrefFor }) {
     const article = document.createElement('article');
     article.className = `feature feature--${reveal}${index % 2 ? ' feature--flip' : ''}${grid.length ? ' feature--grid' : ''}`;
     article.dataset.arrive = reveal;
@@ -555,10 +555,7 @@
         <p class="feature__facts"></p>
         <a class="text-link feature__link"><span data-link-text></span> <span aria-hidden="true">&rarr;</span></a>
       </div>`;
-    // A feature can stand for a project: its picture, but the project's name and a way into its case study.
-    const { href, text, seriesWorks } = project
-      ? { href: U.projectPage(project.id), text: project.cta || 'Read the case study' }
-      : hrefFor(work);
+    const { href, text, seriesWorks } = hrefFor(work);
     const frame = article.querySelector('.feature__frame');
     if (grid.length) {
       // A few frames of a series, as its page shows them; the rest are for the series itself.
@@ -577,10 +574,6 @@
         sheet.append(picture);
       });
       frame.append(sheet);
-    } else if (lead === 'video' && video && window.DemoVideo) {
-      // The recording takes the picture's place (the picture stays as the fallback without video).
-      frame.append(demoVideo(video));
-      if (beside.length) frame.append(besideRow(beside, null, U));
     } else {
       const picture = document.createElement('img');
       picture.alt = plain(U.altText(work));
@@ -590,46 +583,16 @@
       picture.style.aspectRatio = `${work.w} / ${work.h}`;
       frame.append(picture);
       if (reveal === 'paint') frame.append(brushstrokes());
-      if (beside.length || video) frame.append(besideRow(beside, video, U));
     }
-    article.querySelector('.eyebrow').textContent = project ? 'Interdisciplinary project' : category ? category.label : '';
+    article.querySelector('.eyebrow').textContent = category ? category.label : '';
     // A photograph's catalogue title names its place in a series ("Stage Light, 4 of 20"); here the series is enough.
     const caption = U.captionParts(work);
-    article.querySelector('.feature__title').textContent = project ? project.title : plain(caption.title).replace(/, \d+ of \d+$/, '');
+    article.querySelector('.feature__title').textContent = plain(caption.title).replace(/, \d+ of \d+$/, '');
     // A grid speaks for the series: how many photographs it holds, and the years they span.
-    article.querySelector('.feature__facts').textContent = project
-      ? project.kicker
-      : grid.length && seriesWorks ? U.seriesMeta(seriesWorks).replace('works', 'photographs') : caption.meta;
+    article.querySelector('.feature__facts').textContent = grid.length && seriesWorks ? U.seriesMeta(seriesWorks).replace('works', 'photographs') : caption.meta;
     article.querySelector('.feature__link').href = href;
     article.querySelector('[data-link-text]').textContent = text;
     return article;
-  }
-
-  /** A row under a feature's picture: more of the work (`beside`) and, last, a screen recording. */
-  function besideRow(works, video, U) {
-    const row = document.createElement('div');
-    row.className = 'feature__beside';
-    works.forEach((work) => {
-      const picture = document.createElement('img');
-      picture.alt = plain(U.altText(work));
-      picture.loading = 'lazy';
-      picture.decoding = 'async';
-      picture.src = U.imageUrl(work, 600);
-      picture.style.aspectRatio = `${work.w} / ${work.h}`;
-      picture.style.setProperty('--ar', (work.w / work.h).toFixed(3));
-      row.append(picture);
-    });
-    if (video && window.DemoVideo) {
-      const recording = demoVideo(video);
-      recording.style.setProperty('--ar', (video.width / video.height).toFixed(3));
-      row.append(recording);
-    }
-    return row;
-  }
-
-  /** A project's screen recording (a case study's video block) as a muted, looping demo. */
-  function demoVideo({ src, poster, width, height, label }) {
-    return window.DemoVideo.create({ src, poster, width, height, label });
   }
 
   /** Bands of the page's colour lying over a painting; each sweeps off sideways in turn, like a brush uncovering it. */
@@ -650,10 +613,14 @@
    * The interdisciplinary project: the artwork it began from, unfolding like a folded panorama, credited to
    * its artist; then what I made from it (`contribution`: { work, caption }) beside the project's summary.
    */
-  function projectFeature(section, { project, cover, contribution, U }) {
+  /** One project's block in "Interdisciplinary projects", filled from the section's template. */
+  function projectFeature(template, { project, cover, contribution, U }) {
+    const section = template.content.firstElementChild.cloneNode(true);
+    const labels = project.home || {};
     const media = section.querySelector('[data-project-media]');
     const source = U.imageUrl(cover, 1800);
     media.style.aspectRatio = `${cover.w} / ${cover.h}`;
+    media.style.setProperty('--ar', (cover.w / cover.h).toFixed(3));
     media.setAttribute('role', 'img');
     media.setAttribute('aria-label', plain(U.altText(cover)));
     for (let i = 0; i < UNFOLD_SLICES; i += 1) {
@@ -670,7 +637,9 @@
     }
     // The source is someone else's work: its credit is shown, not only spoken to screen readers.
     const credit = project.hero && project.hero.caption;
+    section.querySelector('[data-project-cover-label]').textContent = labels.coverLabel || '';
     section.querySelector('[data-project-credit]').textContent = credit ? plain(credit) : '';
+    section.querySelector('[data-project-made-label]').textContent = labels.madeLabel || 'My contribution';
     const made = section.querySelector('[data-project-made]');
     if (contribution && contribution.work) {
       const { work, caption, video } = contribution;
@@ -691,8 +660,10 @@
     }
     section.querySelector('[data-project-kicker]').textContent = project.kicker;
     section.querySelector('[data-project-title]').textContent = plain(project.title);
-    section.querySelector('[data-project-summary]').textContent = plain(project.summary);
+    // A short hook reads better here than the case study's summary.
+    section.querySelector('[data-project-summary]').textContent = plain(labels.hook || project.summary);
     section.querySelector('[data-project-link]').href = U.projectPage(project.id);
+    return section;
   }
 
   /** Marks everything with data-arrive as arrived once it is well into view; the stylesheet does the rest. */
@@ -711,14 +682,18 @@
     items.forEach((item) => observer.observe(item));
   }
 
-  function mount({ opening, features, project }, { museum, featureWorks, trailWorks, projectData, projectCover, projectContribution, hrefFor, U }) {
+  function mount({ opening, features, projects }, { museum, featureWorks, trailWorks, homeProjects = [], hrefFor, U }) {
     if (opening) mountOpening(opening, { trailWorks, museum, U });
     if (features && featureWorks.length) {
       const list = features.querySelector('[data-features]');
       featureWorks.forEach((feature, index) => list.append(featureArticle(feature, index, { U, hrefFor })));
     }
-    if (project && projectData && projectCover) {
-      projectFeature(project, { project: projectData, cover: projectCover, contribution: projectContribution, U });
+    if (projects && homeProjects.length) {
+      const template = projects.querySelector('[data-project-template]');
+      const list = projects.querySelector('[data-project-features]');
+      homeProjects.forEach((entry) => list.append(projectFeature(template, { ...entry, U })));
+    } else if (projects) {
+      projects.hidden = true;
     }
     watchArrivals(document);
   }

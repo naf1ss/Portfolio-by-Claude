@@ -59,12 +59,10 @@ window.SITE_CONFIG = {
           'negligible-img-8826', 'negligible-20231119-img-0127', 'negligible-20250409-img-2190',
         ],
       },
-      // A project can be featured too: its picture, leading to its case study. Under the picture, `beside`
-      // adds more of its works and `video: true` its screen recording; `lead: 'video'` shows the recording in
-      // the picture's place instead.
-      { id: 'pw-mural-mockup', reveal: 'turn', project: 'planet-walk', video: true, lead: 'video' },
     ],
-    projectId: 'digital-moving-mountain',
+    // "Interdisciplinary projects" on the home page, in this order; each shows its `home` entry in
+    // js/projects-data.js (a short hook, its picture and what I made).
+    projectIds: ['digital-moving-mountain', 'planet-walk'],
   },
 
   // "Selected work" on the home page, in this order: the artworks of 2025 and 2026 worth leading with. Photographs

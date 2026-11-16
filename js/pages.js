@@ -102,52 +102,44 @@
     };
   }
 
-  /** The first screen recording in a project's case study, or null. */
-  function projectVideo(project) {
-    const blocks = (project.sections || []).flatMap((section) => section.blocks || []);
-    return blocks.find((block) => block.type === 'video') || null;
-  }
-
   function initHome() {
     const { U, all, byId } = loadWorks();
     const home = config.home || {};
     const visible = all.filter((work) => !work.hidden);
-    const project = (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === home.projectId);
+    const allProjects = window.PORTFOLIO_PROJECTS || [];
+    const homeProjects = (home.projectIds || [])
+      .map((id) => allProjects.find((entry) => entry.id === id))
+      .filter((entry) => entry && byId.get(entry.cover))
+      .map((entry) => ({
+        project: entry,
+        cover: byId.get(entry.cover),
+        contribution: entry.contribution
+          ? { work: byId.get(entry.contribution.workId), caption: entry.contribution.caption, video: entry.contribution.video }
+          : null,
+      }));
 
     window.HomeReveal.mount(
       {
         opening: document.getElementById('opening'),
         features: document.getElementById('works'),
-        project: document.querySelector('.project-feature'),
+        projects: document.querySelector('.project-feature'),
       },
       {
         U,
         museum: museumSettings(home.museum || {}, byId, U),
         featureWorks: (home.features || [])
-          .map(({ id, reveal, grid, project: projectId, beside, video, lead }) => {
-            const featured = (window.PORTFOLIO_PROJECTS || []).find((entry) => entry.id === projectId) || null;
-            return {
-              work: byId.get(id),
-              reveal,
-              grid: (grid || []).map((gridId) => byId.get(gridId)).filter(Boolean),
-              project: featured,
-              beside: (beside || []).map((besideId) => byId.get(besideId)).filter(Boolean),
-              // `video: true` brings in the project's own screen recording, from its case study.
-              video: video && featured ? projectVideo(featured) : null,
-              lead: lead === 'video' ? 'video' : 'picture',
-            };
-          })
+          .map(({ id, reveal, grid }) => ({
+            work: byId.get(id),
+            reveal,
+            grid: (grid || []).map((gridId) => byId.get(gridId)).filter(Boolean),
+          }))
           .filter(({ work }) => work),
         // The two hands: paintings under the cursor, photographs under its mirror image.
         trailWorks: {
           paintings: U.pickRandom(visible.filter((work) => work.category === 'painting'), 14),
           photographs: U.pickRandom(visible.filter((work) => work.category === 'photography'), 14),
         },
-        projectData: project,
-        projectCover: project ? byId.get(project.cover) : null,
-        projectContribution: project && project.contribution
-          ? { work: byId.get(project.contribution.workId), caption: project.contribution.caption, video: project.contribution.video }
-          : null,
+        homeProjects,
         // A work that belongs to a series leads to the series, which says why its works belong together.
         hrefFor: (work) => {
           const series = (window.PORTFOLIO_SERIES || []).find((entry) => U.worksInSeries(entry, all).includes(work));

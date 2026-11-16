@@ -40,26 +40,31 @@ scripts: intro-utils, works-utils, works-data, works-photography, series-data, p
       <div class="features__list" data-features></div>
     </section>
 
-    <section class="project-feature" aria-labelledby="project-feature-title">
-      <div class="wrap project-feature__inner">
-        <p class="eyebrow">Interdisciplinary project</p>
-        <figure class="project-feature__source">
-          <div class="project-feature__media unfold" data-arrive="unfold" data-project-media></div>
-          <figcaption class="project-feature__credit"><span class="project-feature__role">The painting</span> <span data-project-credit></span></figcaption>
-        </figure>
-        <div class="project-feature__body">
-          <figure class="project-feature__made" data-arrive="rise" data-project-made hidden>
-            <img alt="" loading="lazy" decoding="async">
-            <figcaption class="project-feature__credit"><span class="project-feature__role">My contribution</span> <span data-project-made-caption></span></figcaption>
-          </figure>
-          <div class="project-feature__text">
-            <p class="project-feature__kicker" data-project-kicker></p>
-            <h2 class="project-feature__title" id="project-feature-title" data-project-title></h2>
-            <p class="project-feature__summary" data-project-summary></p>
-            <a class="button button--solid" data-project-link href="projects">Read the project</a>
-          </div>
-        </div>
+    <section class="project-feature" aria-labelledby="project-feature-heading">
+      <div class="wrap">
+        <h2 class="eyebrow project-feature__heading" id="project-feature-heading">Interdisciplinary projects</h2>
       </div>
+      <div data-project-features></div>
+      <template data-project-template>
+        <article class="wrap project-feature__inner">
+          <figure class="project-feature__source">
+            <div class="project-feature__media unfold" data-arrive="unfold" data-project-media></div>
+            <figcaption class="project-feature__credit"><span class="project-feature__role" data-project-cover-label></span> <span data-project-credit></span></figcaption>
+          </figure>
+          <div class="project-feature__body">
+            <figure class="project-feature__made" data-arrive="rise" data-project-made hidden>
+              <img alt="" loading="lazy" decoding="async">
+              <figcaption class="project-feature__credit"><span class="project-feature__role" data-project-made-label></span> <span data-project-made-caption></span></figcaption>
+            </figure>
+            <div class="project-feature__text">
+              <p class="project-feature__kicker" data-project-kicker></p>
+              <h3 class="project-feature__title" data-project-title></h3>
+              <p class="project-feature__summary" data-project-summary></p>
+              <a class="button button--solid" data-project-link href="projects">Read the project</a>
+            </div>
+          </div>
+        </article>
+      </template>
     </section>
 
     <section class="wrap section" aria-labelledby="mediums-heading">
