@@ -13,11 +13,14 @@
  *   galleryOnly       true keeps a series off the Series page and the Series menu; it is reached from the
  *                     gallery (the photography series, shown under Photography)
  *   hangTogether      optional: true hangs the series' works side by side on one stretch of the gallery wall
+ *   hidden            optional: true takes the series off the site for now (no page, no menu entry, no works);
+ *                     set the same flag on its block in works-photography.js, and remove both to bring it back
  *
  * These are a starting point: regroup, rename and add notes here as the
  * photographs and artwork are sorted into projects. Nothing else needs to change.
  */
-(function (root, series) {
+(function (root, allSeries) {
+  const series = allSeries.filter((entry) => !entry.hidden);
   if (typeof module === 'object' && module.exports) {
     module.exports = series;
   } else {
@@ -110,6 +113,7 @@
   },
   {
     id: 'asymmetrical',
+    hidden: true,
     title: 'Asymmetrical',
     medium: 'Photography',
     galleryOnly: true,

@@ -9,6 +9,8 @@
  *   { photo, year, h }     one of the earlier photographs, images/photography/photo-NNNN-*.jpg, whose three
  *                          files are 600, 1100 and 1600 pixels wide
  *
+ * A block with `hidden: true` is kept here but not shown on the site (see series-data.js).
+ *
  * To add a series: run tools/optimize_images.py <folder of originals> images/photography/<series-id>, add a
  * block here, and add the series (with its statement and treatment) to series-data.js.
  */
@@ -144,6 +146,7 @@
     },
     {
       series: 'asymmetrical',
+      hidden: true,
       title: 'Asymmetrical',
       frames: [
         { file: 'england-22', year: 2025, w: 1800, h: 2400 },
@@ -232,7 +235,7 @@
     };
   }
 
-  return SERIES.flatMap(({ series, title, frames }) =>
+  return SERIES.filter((block) => !block.hidden).flatMap(({ series, title, frames }) =>
     frames.map((frame, index) => ({
       ...fileFields(series, frame),
       // A frame is named by its place in its series until it has a title of its own.
