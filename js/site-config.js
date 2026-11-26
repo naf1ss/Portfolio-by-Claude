@@ -71,9 +71,9 @@ window.SITE_CONFIG = {
     'A046', 'A045', 'A044', 'A042', 'A010', 'A017', 'A028', 'A012', 'A041', 'A030', 'A027', 'A018', 'A011', 'A043', 'A014',
   ],
 
-  // Kept off the gallery's grid view, but still hung on the wall and shown in Three Ways of Seeing: two of
-  // the three still-life drawings, which only make sense beside the others.
-  gridHiddenIds: ['A008', 'A009'],
+  // Works kept off the gallery's grid view but still hung on the wall. None for now: the grid shows every work,
+  // so it matches the wall and the home page's counts.
+  gridHiddenIds: [],
 
   // "Browse by medium" on the home page shows one work beside each medium. A visitor's first home page in a
   // session shows each `best`; after that every visit shows a random work from the same medium. A medium
